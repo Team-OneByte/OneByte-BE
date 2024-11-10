@@ -6,11 +6,11 @@ import jakarta.persistence.Column;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import java.util.List;
-import jakarta.persistence.Id;
 
 public class SubClass extends BaseEntity {
 
@@ -20,7 +20,7 @@ public class SubClass extends BaseEntity {
     private Long id;
 
     @Column(nullable = false, length = 20)
-    private String name;
+    private String subClassName;
 
     @ManyToOne
     @JoinColumn(name = "main_class_id", nullable = false)
