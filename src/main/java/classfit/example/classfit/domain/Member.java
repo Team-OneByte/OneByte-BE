@@ -6,6 +6,7 @@ import classfit.example.classfit.common.LoginType;
 import classfit.example.classfit.common.MemberStatus;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
@@ -15,6 +16,7 @@ import jakarta.persistence.OneToMany;
 import java.time.LocalDate;
 import java.util.List;
 
+@Entity
 public class Member extends BaseEntity {
 
     @Id

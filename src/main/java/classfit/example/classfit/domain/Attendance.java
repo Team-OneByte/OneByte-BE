@@ -2,6 +2,7 @@ package classfit.example.classfit.domain;
 
 import classfit.example.classfit.common.AttendanceStatus;
 import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
@@ -12,6 +13,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import java.time.LocalDate;
 
+@Entity
 public class Attendance {
 
     @Id
