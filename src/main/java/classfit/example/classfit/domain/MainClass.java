@@ -12,8 +12,10 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import java.util.List;
+import lombok.Getter;
 
 @Entity
+@Getter
 public class MainClass extends BaseEntity {
 
     @Id
@@ -31,5 +33,11 @@ public class MainClass extends BaseEntity {
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
+    public void setMember(Member member) {
+        this.member = member;
+    }
 
+    public void setMainClassName(String mainClassName) {
+        this.mainClassName = mainClassName;
+    }
 }
