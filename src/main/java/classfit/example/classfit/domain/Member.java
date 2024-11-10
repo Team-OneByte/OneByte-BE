@@ -51,6 +51,6 @@ public class Member extends BaseEntity {
     @Column(columnDefinition = "VARCHAR(20)", nullable = false)
     private MemberStatus status;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<MainClass> mainClasses;
 }
