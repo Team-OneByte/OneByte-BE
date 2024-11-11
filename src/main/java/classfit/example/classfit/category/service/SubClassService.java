@@ -49,22 +49,41 @@ public class SubClassService {
 
     @Transactional
     // 서브 클래스 수정
-    public ApiResponse<SubClassResponse> updateSubClass(Long memberId,Long subClassId,SubClassRequest req) {
+    public ApiResponse<SubClassResponse> updateSubClass(Long memberId, Long subClassId,
+            SubClassRequest req) {
         Member findMember = memberRepository.findById(memberId)
-                .orElseThrow(() -> new ClassfitException("회원을 찾을 수 없어요.",HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new ClassfitException("회원을 찾을 수 없어요.", HttpStatus.NOT_FOUND));
         MainClass findMainClass = mainClassRespository.findById(req.mainClassId())
                 .orElseThrow(
                         () -> new ClassfitException("메인 클래스를 찾을 수 없어요.", HttpStatus.NOT_FOUND));
         SubClass findSubClass = subClassRepository.findById(subClassId)
-                        .orElseThrow(() -> new ClassfitException("서브 클래스를 찾을 수 없어요.",HttpStatus.NOT_FOUND));
+                .orElseThrow(
+                        () -> new ClassfitException("서브 클래스를 찾을 수 없어요.", HttpStatus.NOT_FOUND));
 
-        checkMemberRelationSubClass(findMember,findSubClass);
+        checkMemberRelationSubClass(findMember, findSubClass);
 
         findSubClass.updateSubClassName(req.subClassName());
 
-        return ApiResponse.success(new SubClassResponse(findMainClass.getId(), findSubClass.getId(),findSubClass.getSubClassName()),201,"UPDATED");
+        return ApiResponse.success(new SubClassResponse(findMainClass.getId(), findSubClass.getId(),
+                findSubClass.getSubClassName()), 201, "UPDATED");
 
+    }
 
+    @Transactional
+    // 서브 클래스 삭제
+    public ApiResponse<?> deleteSubClass(Long memberId, Long subClassId) {
+
+        Member findMember = memberRepository.findById(memberId)
+                .orElseThrow(() -> new ClassfitException("회원을 찾을 수 없어요.", HttpStatus.NOT_FOUND));
+
+        SubClass findSubClass = subClassRepository.findById(subClassId)
+                .orElseThrow(
+                        () -> new ClassfitException("서브 클래스를 찾을 수 없어요.", HttpStatus.NOT_FOUND));
+
+        checkMemberRelationSubClass(findMember, findSubClass);
+
+        subClassRepository.delete(findSubClass);
+        return ApiResponse.success(null, 200, "DELETED");
     }
 
     private static void checkMemberRelationMainClass(Member findMember, MainClass findMainClass) {
@@ -72,6 +91,7 @@ public class SubClassService {
             throw new ClassfitException("사용자와 클래스가 일치하지 않습니다.", HttpStatus.FORBIDDEN);
         }
     }
+
     private static void checkMemberRelationSubClass(Member findMember, SubClass findSubClass) {
         if (!Objects.equals(findMember.getId(), findSubClass.getMember().getId())) {
             throw new ClassfitException("사용자와 클래스가 일치하지 않습니다.", HttpStatus.FORBIDDEN);

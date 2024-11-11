@@ -53,7 +53,7 @@ public class MainClassService {
 
         findMainClass.updateMainClassName(req.mainClassName());
         return ApiResponse.success(new MainClassResponse(findMainClass.getId(),
-                findMainClass.getMainClassName()), 200, null);
+                findMainClass.getMainClassName()), 201, "UPDATED");
     }
 
     // 메인 클래스 삭제
@@ -69,7 +69,7 @@ public class MainClassService {
 
         mainClassRespository.delete(mainClass);
 
-        return ApiResponse.success(null,200,null);
+        return ApiResponse.success(null,200,"DELETED");
     }
 
 

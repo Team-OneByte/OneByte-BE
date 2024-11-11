@@ -5,6 +5,7 @@ import classfit.example.classfit.category.dto.response.SubClassResponse;
 import classfit.example.classfit.category.service.SubClassService;
 import classfit.example.classfit.common.ApiResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -33,4 +34,12 @@ public class SubClassController {
             @RequestBody SubClassRequest req) {
         return subClassService.updateSubClass(memberId, subClassId, req);
     }
+
+    @DeleteMapping("/sub-category/{subClassId}")
+    public ApiResponse<?> deleteSubClass(
+            @RequestHeader(name = "member-no") Long memberId,
+            @PathVariable(name = "subClassId") Long subClassId) {
+        return subClassService.deleteSubClass(memberId, subClassId);
+    }
+
 }
