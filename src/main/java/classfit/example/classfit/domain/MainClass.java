@@ -40,4 +40,9 @@ public class MainClass extends BaseEntity {
     public void setMainClassName(String mainClassName) {
         this.mainClassName = mainClassName;
     }
+
+    // 업데이트 관련 메서드
+    public void updateMainClassName(String mainClassName) {
+        this.mainClassName = mainClassName;
+    }
 }

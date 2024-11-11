@@ -15,8 +15,10 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import java.time.LocalDate;
 import java.util.List;
+import lombok.Getter;
 
 @Entity
+@Getter
 public class Member extends BaseEntity {
 
     @Id
