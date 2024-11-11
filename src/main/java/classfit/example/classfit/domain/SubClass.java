@@ -12,8 +12,10 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import java.util.List;
+import lombok.Getter;
 
 @Entity
+@Getter
 public class SubClass extends BaseEntity {
 
     @Id
@@ -36,4 +38,15 @@ public class SubClass extends BaseEntity {
     private List<ClassStudent> classStudents;
 
 
+    public void setMember(Member member) {
+        this.member = member;
+    }
+
+    public void setSubClassName(String subClassName) {
+        this.subClassName = subClassName;
+    }
+
+    public void setMainClass(MainClass mainClass) {
+        this.mainClass = mainClass;
+    }
 }

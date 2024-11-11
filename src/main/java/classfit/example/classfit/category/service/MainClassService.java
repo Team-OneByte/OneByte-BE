@@ -57,6 +57,7 @@ public class MainClassService {
     }
 
     // 메인 클래스 삭제
+    @Transactional
     public ApiResponse<?> deleteMainClass(Long memberId, Long mainClassId) {
 
         Member findMember = memberRepository.findById(memberId)
