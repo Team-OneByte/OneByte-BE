@@ -49,4 +49,8 @@ public class SubClass extends BaseEntity {
     public void setMainClass(MainClass mainClass) {
         this.mainClass = mainClass;
     }
+    // 업데이트 관련 메서드
+    public void updateSubClassName(String subClassName) {
+        this.subClassName = subClassName;
+    }
 }
