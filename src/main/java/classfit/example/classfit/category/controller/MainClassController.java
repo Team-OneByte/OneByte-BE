@@ -5,6 +5,7 @@ import classfit.example.classfit.category.dto.response.MainClassResponse;
 import classfit.example.classfit.category.service.MainClassService;
 import classfit.example.classfit.common.ApiResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -33,5 +34,11 @@ public class MainClassController {
             @PathVariable(name = "mainClassId") Long mainClassId,
             @RequestBody MainClassRequest req) {
         return mainClassService.updateMainClass(memberId, mainClassId, req);
+    }
+
+    @DeleteMapping("/main-category/{mainClassId}")
+    public ApiResponse<?> deleteMainClass(@RequestHeader("member-no") Long memberId,
+            @PathVariable(name = "mainClassId") Long mainClassId) {
+        return mainClassService.deleteMainClass(memberId, mainClassId);
     }
 }

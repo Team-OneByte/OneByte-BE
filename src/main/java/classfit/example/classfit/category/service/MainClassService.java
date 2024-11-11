@@ -56,6 +56,22 @@ public class MainClassService {
                 findMainClass.getMainClassName()), 200, null);
     }
 
+    // 메인 클래스 삭제
+    public ApiResponse<?> deleteMainClass(Long memberId, Long mainClassId) {
+
+        Member findMember = memberRepository.findById(memberId)
+                .orElseThrow(() -> new ClassfitException("회원을 찾을 수 없어요", HttpStatus.NOT_FOUND));
+
+        MainClass mainClass = mainClassRespository.findById(mainClassId)
+                .orElseThrow(
+                        () -> new ClassfitException("해당 메인 클래스를 찾을 수 없습니다.", HttpStatus.NOT_FOUND));
+
+        mainClassRespository.delete(mainClass);
+
+        return ApiResponse.success(null,200,null);
+    }
+
+
     private static void checkMemberRelationMainClass(Member findMember, MainClass findMainClass) {
         if (!Objects.equals(findMember.getId(), findMainClass.getMember().getId())) {
             throw new ClassfitException("사용자와 클래스가 일치하지 않습니다.", HttpStatus.FORBIDDEN);
