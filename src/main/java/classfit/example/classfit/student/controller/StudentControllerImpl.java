@@ -26,7 +26,7 @@ public class StudentControllerImpl {
 
     @PostMapping("/")
     public ApiResponse<StudentResponse> registerStudent(@RequestBody @Valid StudentRequest req) {
-        
+
         StudentResponse studentResponse = studentService.registerStudent(req);
         return ApiResponse.success(studentResponse, 201, "CREATED STUDENT");
     }
@@ -51,5 +51,12 @@ public class StudentControllerImpl {
 
         studentService.updateStudent(studentId, req);
         return ApiResponse.success(null, 200, "UPDATED STUDENT");
+    }
+
+    @GetMapping("/{studentId}")
+    public ApiResponse<StudentResponse> studentInfo(@PathVariable Long studentId) {
+
+        StudentResponse studentInfo = studentService.getStudentInfo(studentId);
+        return ApiResponse.success(studentInfo, 200, studentInfo.name() + "의 정보");
     }
 }

@@ -78,6 +78,14 @@ public class StudentService {
         updateStudentSubClasses(student, req.subClassList());
     }
 
+    @Transactional(readOnly = true)
+    public StudentResponse getStudentInfo(Long studentId) {
+        Student student = studentRepository.findById(studentId).orElseThrow(
+            () -> new ClassfitException("해당하는 학생 정보가 존재하지 않습니다.", HttpStatus.NOT_FOUND));
+
+        return StudentResponse.from(student);
+    }
+
     private void updateStudentFields(Student student, UpdateStudentRequest req) {
         try {
             Field[] fields = UpdateStudentRequest.class.getDeclaredFields();
