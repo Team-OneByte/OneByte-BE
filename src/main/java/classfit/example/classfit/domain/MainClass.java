@@ -12,8 +12,13 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import java.util.List;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class MainClass extends BaseEntity {
 
     @Id
@@ -32,4 +37,13 @@ public class MainClass extends BaseEntity {
     private Member member;
 
 
+    // 업데이트 관련 메서드
+    public void updateMainClassName(String mainClassName) {
+        this.mainClassName = mainClassName;
+    }
+
+    public MainClass(String mainClassName, Member member) {
+        this.mainClassName = mainClassName;
+        this.member = member;
+    }
 }

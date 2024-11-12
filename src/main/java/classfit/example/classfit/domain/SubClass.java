@@ -12,8 +12,13 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import java.util.List;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class SubClass extends BaseEntity {
 
     @Id
@@ -35,5 +40,13 @@ public class SubClass extends BaseEntity {
     @OneToMany(mappedBy = "subClass", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ClassStudent> classStudents;
 
+    // 업데이트 관련 메서드
+    public void updateSubClassName(String subClassName) {
+        this.subClassName = subClassName;
+    }
 
+    public SubClass(String subClassName, Member member) {
+        this.subClassName = subClassName;
+        this.member = member;
+    }
 }

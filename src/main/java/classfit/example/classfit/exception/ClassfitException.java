@@ -12,4 +12,7 @@ public class ClassfitException extends RuntimeException{
         this.message = message;
         this.httpStatus = httpStatus;
     }
+    public int getHttpStatusCode() {
+        return this.httpStatus.value();
+    }
 }
