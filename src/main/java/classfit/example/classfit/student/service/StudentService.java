@@ -7,8 +7,10 @@ import classfit.example.classfit.domain.Student;
 import classfit.example.classfit.domain.SubClass;
 import classfit.example.classfit.exception.ClassfitException;
 import classfit.example.classfit.student.dto.request.StudentRequest;
+import classfit.example.classfit.student.dto.request.UpdateStudentRequest;
 import classfit.example.classfit.student.dto.response.StudentResponse;
 import classfit.example.classfit.student.repository.StudentRepository;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -30,15 +32,15 @@ public class StudentService {
         Student student = req.toEntity(true);
         studentRepository.save(student);
 
-        for (Long subClassId : req.subClassList()) {
-            SubClass subClass = subClassRepository.findById(subClassId).orElseThrow(
-                () -> new ClassfitException("존재하지 않는 SubClass.", HttpStatus.NOT_FOUND));
-
+        req.subClassList().forEach(subClassId -> {
+            SubClass subClass = subClassRepository.findById(subClassId)
+                .orElseThrow(
+                    () -> new ClassfitException("존재하지 않는 SubClass ID입니다.", HttpStatus.NOT_FOUND));
             ClassStudent classStudent = new ClassStudent();
             classStudent.setStudent(student);
             classStudent.setSubClass(subClass);
             classStudentRepository.save(classStudent);
-        }
+        });
 
         return StudentResponse.from(student);
     }
@@ -46,11 +48,10 @@ public class StudentService {
     @Transactional
     public void deleteStudent(Long studentId) {
 
-        Student student = studentRepository.findById(studentId)
-            .orElseThrow(
-                () -> new ClassfitException("해당하는 학생 정보를 찾을 수 없습니다.", HttpStatus.NOT_FOUND));
+        Student student = studentRepository.findById(studentId).orElseThrow(
+            () -> new ClassfitException("해당하는 학생 정보를 찾을 수 없습니다.", HttpStatus.NOT_FOUND));
 
-        classStudentRepository.deleteByStudentId(studentId); // student_id에 해당하는 모든 class_student 삭제
+        classStudentRepository.deleteAllByStudentId(studentId);
         studentRepository.delete(student);
     }
 
@@ -66,5 +67,54 @@ public class StudentService {
         }
 
         return responseList;
+    }
+
+    @Transactional
+    public void updateStudent(Long studentId, UpdateStudentRequest req) {
+        Student student = studentRepository.findById(studentId).orElseThrow(
+            () -> new ClassfitException("해당하는 학생 정보가 존재하지 않습니다.", HttpStatus.NOT_FOUND));
+
+        updateStudentFields(student, req);
+        updateStudentSubClasses(student, req.subClassList());
+    }
+
+    private void updateStudentFields(Student student, UpdateStudentRequest req) {
+        try {
+            Field[] fields = UpdateStudentRequest.class.getDeclaredFields();
+
+            for (Field field : fields) {
+                field.setAccessible(true);
+                Object newValue = field.get(req);
+
+                if (newValue == null) {
+                    continue;
+                }
+
+                Field studentField = Student.class.getDeclaredField(field.getName());
+                studentField.setAccessible(true);
+
+                if (!newValue.equals(studentField.get(student))) {
+                    studentField.set(student, newValue);
+                }
+            }
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            throw new ClassfitException("학생의 정보 수정에 실패했습니다.", HttpStatus.NOT_MODIFIED);
+        }
+    }
+
+    private void updateStudentSubClasses(Student student, List<Long> subClassList) {
+        if (subClassList != null && !subClassList.isEmpty()) {
+            classStudentRepository.deleteAllByStudentId(student.getId());
+
+            subClassList.forEach(subClassId -> {
+                SubClass subClass = subClassRepository.findById(subClassId).orElseThrow(
+                    () -> new ClassfitException("존재하지 않는 SubClass 입니다.", HttpStatus.NOT_FOUND));
+
+                ClassStudent classStudent = new ClassStudent();
+                classStudent.setStudent(student);
+                classStudent.setSubClass(subClass);
+                classStudentRepository.save(classStudent);
+            });
+        }
     }
 }
