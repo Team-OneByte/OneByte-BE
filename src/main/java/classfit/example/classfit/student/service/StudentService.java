@@ -36,4 +36,14 @@ public class StudentService {
 
         return new StudentResponse(student.getId(), student.getName());
     }
+
+    @Transactional
+    public void deleteStudent(Long studentId) {
+
+        Student student = studentRepository.findById(studentId)
+            .orElseThrow(() -> new ClassCastException("해당하는 학생 정보를 찾을 수 없습니다."));
+
+        classStudentRepository.deleteByStudentId(studentId); // student_id에 해당하는 모든 class_student 삭제
+        studentRepository.delete(student);
+    }
 }
