@@ -1,13 +1,16 @@
 package classfit.example.classfit.category.controller;
 
 import classfit.example.classfit.category.dto.request.MainClassRequest;
+import classfit.example.classfit.category.dto.response.AllMainClassResponse;
 import classfit.example.classfit.category.dto.response.MainClassResponse;
 import classfit.example.classfit.category.service.MainClassService;
 import classfit.example.classfit.common.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -34,13 +37,12 @@ public class MainClassController {
         return ApiResponse.success(result, 201, "CREATED");
     }
 
-    @PatchMapping("/main-category/{mainClassId}")
-    @Operation(summary = "메인 클래스 수정", description = "메인 클래스의 이름을 수정하는 api 입니다.")
-    public ApiResponse<MainClassResponse> updateMainClass(@RequestHeader("member-no") Long memberId,
-            @PathVariable(name = "mainClassId") Long mainClassId,
-            @RequestBody MainClassRequest req) {
-        MainClassResponse result = mainClassService.updateMainClass(memberId, mainClassId, req);
-        return ApiResponse.success(result, 200, "UPDATED");
+    @GetMapping("/main-category")
+    @Operation(summary = "추가된 메인 클래스 조회", description = "메인 클래스를 조회할 수 있는 api 입니다.")
+    public ApiResponse<List<AllMainClassResponse>> showMainClass(
+            @RequestHeader("member-no") Long memberId) {
+        List<AllMainClassResponse> result = mainClassService.showMainClass(memberId);
+        return ApiResponse.success(result, 200, "SUCCESS");
     }
 
     @DeleteMapping("/main-category/{mainClassId}")
