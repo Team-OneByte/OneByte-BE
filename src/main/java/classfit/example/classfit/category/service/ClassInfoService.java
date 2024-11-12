@@ -19,7 +19,7 @@ public class ClassInfoService {
 
     @Transactional
     public List<ClassInfoResponse> getClasses() {
-        List<MainClass> mainClasses = mainClassRespository.findAll();
+        List<MainClass> mainClasses = mainClassRespository.findAllByOrderByMainClassNameAsc();
         return mainClasses.stream()
                 .map(this::mapToClassInfoResponse)
                 .collect(Collectors.toList());
@@ -27,6 +27,7 @@ public class ClassInfoService {
 
     private ClassInfoResponse mapToClassInfoResponse(MainClass mainClass) {
         List<SubClassResponse> subClassResponses = mainClass.getSubClasses().stream()
+                .sorted((subClass1, subClass2) -> subClass1.getSubClassName().compareTo(subClass2.getSubClassName()))
                 .map(subClass -> mapToSubClassResponse(mainClass.getId(), subClass))
                 .collect(Collectors.toList());
         return new ClassInfoResponse(mainClass.getId(), mainClass.getMainClassName(), subClassResponses);

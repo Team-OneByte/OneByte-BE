@@ -8,5 +8,5 @@ import java.util.List;
 
 @Repository
 public interface MainClassRespository extends JpaRepository<MainClass,Long> {
-    List<MainClass> findAll();
+    List<MainClass> findAllByOrderByMainClassNameAsc();
 }
