@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -28,10 +29,12 @@ public class AttendanceController {
     @Operation(summary = "전체 출결 관리 조회", description = "전체 학생을 클릭 시 조회되는 출결 api 입니다.")
     public ApiResponse<List<StudentAttendanceResponse>> getAttendance(
             @Parameter(description = "이전 또는 이후 출결 조회 시 필요한 값으로, 현재는 0(디폴트), 이전 주는 음수로, 다음 주는 양수로 표시합니다. 4주 전부터 2주 후까지(-4 ~ +2) 조회 가능합니다.")
-            @RequestParam(value = "weekOffset", defaultValue = "0") int weekOffset) {
+            @RequestParam(value = "weekOffset", defaultValue = "0") int weekOffset,
+            @Parameter(description = "조회할 페이지 번호로, 기본값은 0이며, 페이지는 0부터 시작합니다.")
+            @RequestParam(value = "page", defaultValue = "0") int page) {
         List<LocalDate> weekRange = attendanceService.getWeeklyAttendanceRange(weekOffset);
-        List<Student> students = attendanceService.getAllStudents();
-        List<StudentAttendanceResponse> studentAttendances = attendanceService.getStudentAttendance(students, weekRange);
+        Page<Student> students = attendanceService.getAllStudents(page);
+        List<StudentAttendanceResponse> studentAttendances = attendanceService.getStudentAttendance(students.getContent(), weekRange);
         return ApiResponse.success(studentAttendances, 200, "SUCCESS");
     }
 
@@ -40,11 +43,13 @@ public class AttendanceController {
     public ApiResponse<List<StudentAttendanceResponse>> getClassAttendance(
             @Parameter(description = "이전 또는 이후 출결 조회 시 필요한 값으로, 현재는 0(디폴트), 이전 주는 음수로, 다음 주는 양수로 표시합니다. 4주 전부터 2주 후까지(-4 ~ +2) 조회 가능합니다.")
             @RequestParam(value = "weekOffset", defaultValue = "0") int weekOffset,
+            @Parameter(description = "조회할 페이지 번호로, 기본값은 0이며, 페이지는 0부터 시작합니다.")
+            @RequestParam(value = "page", defaultValue = "0") int page,
             @PathVariable("mainClassId") Long mainClassId,
             @PathVariable("subClassId") Long subClassId) {
         List<LocalDate> weekRange = attendanceService.getWeeklyAttendanceRange(weekOffset);
-        List<ClassStudent> students = attendanceService.getClassStudentsByMainClassAndSubClass(mainClassId, subClassId);
-        List<StudentAttendanceResponse> studentAttendances = attendanceService.getStudentAttendance(students, weekRange);
+        Page<ClassStudent> students = attendanceService.getClassStudentsByMainClassAndSubClass(mainClassId, subClassId, page);
+        List<StudentAttendanceResponse> studentAttendances = attendanceService.getStudentAttendance(students.getContent(), weekRange);
         return ApiResponse.success(studentAttendances, 200, "SUCCESS");
     }
 

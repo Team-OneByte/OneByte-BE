@@ -10,6 +10,9 @@ import classfit.example.classfit.attendance.dto.response.StudentAttendanceRespon
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -25,12 +28,14 @@ public class AttendanceService {
     private final StudentRepository studentRepository;
     private final ClassStudentRepository classStudentRepository;
 
-    public List<Student> getAllStudents() {
-        return studentRepository.findAll();
+    public Page<Student> getAllStudents(int page) {
+        Pageable pageable = PageRequest.of(page, 50);
+        return studentRepository.findAll(pageable);
     }
 
-    public List<ClassStudent> getClassStudentsByMainClassAndSubClass(Long mainClassId, Long subClassId) {
-        return classStudentRepository.findBySubClass_MainClass_IdAndSubClass_Id(mainClassId, subClassId);
+    public Page<ClassStudent> getClassStudentsByMainClassAndSubClass(Long mainClassId, Long subClassId, int page) {
+        Pageable pageable = PageRequest.of(page, 50);
+        return classStudentRepository.findBySubClass_MainClass_IdAndSubClass_Id(mainClassId, subClassId, pageable);
     }
 
     public List<StudentAttendanceResponse> getStudentAttendance(List<?> students, List<LocalDate> weekRange) {
