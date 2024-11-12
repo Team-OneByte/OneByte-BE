@@ -8,6 +8,8 @@ import classfit.example.classfit.domain.SubClass;
 import classfit.example.classfit.student.dto.request.StudentRequest;
 import classfit.example.classfit.student.dto.response.StudentResponse;
 import classfit.example.classfit.student.repository.StudentRepository;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,7 +36,7 @@ public class StudentService {
         classStudent.setSubClass(subClass);
         classStudentRepository.save(classStudent);
 
-        return new StudentResponse(student.getId(), student.getName());
+        return StudentResponse.from(student);
     }
 
     @Transactional
@@ -45,5 +47,19 @@ public class StudentService {
 
         classStudentRepository.deleteByStudentId(studentId); // student_id에 해당하는 모든 class_student 삭제
         studentRepository.delete(student);
+    }
+
+    @Transactional(readOnly = true)
+    public List<StudentResponse> getStudentList() {
+        List<Student> getStudents = studentRepository.findAll();
+
+        List<StudentResponse> responseList = new ArrayList<>();
+
+        for (Student student : getStudents) {
+            StudentResponse studentResponse = StudentResponse.from(student);
+            responseList.add(studentResponse);
+        }
+
+        return responseList;
     }
 }

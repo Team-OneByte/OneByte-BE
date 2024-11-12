@@ -10,38 +10,21 @@ import java.time.LocalDate;
 
 public record StudentRequest
     (
-        @NotNull
-        @Size(max = 30)
-        String name,
+        @NotNull @Size(max = 30) String name,
 
-        @NotNull
-        Gender gender,
+        @NotNull Gender gender,
 
-        @NotNull
-        @Past
-        LocalDate birth,
+        @NotNull @Past LocalDate birth,
 
-        @NotNull
-        @Size(max = 14)
-        @Pattern(regexp = "^[0-9\\-]+$") // 숫자, '-' 기호 허용
-        String studentNumber,
+        @NotNull @Size(max = 14) @Pattern(regexp = "^[0-9\\-]+$") String studentNumber,
 
-        @NotNull
-        @Size(max = 14)
-        @Pattern(regexp = "^[0-9\\-]+$") // 숫자, '-' 기호 허용
-        String parentNumber,
+        @NotNull @Size(max = 14) @Pattern(regexp = "^[0-9\\-]+$") String parentNumber,
 
-        @NotNull
-        @Size(max = 10)
-        String mainClass,
+        @NotNull @Size(max = 10) String mainClass,
 
-        @NotNull
-        @Size(max = 10)
-        String subClass,
+        @NotNull @Size(max = 10) String subClass,
 
-        @NotNull
-        @Size(max = 30)
-        String address,
+        @NotNull @Size(max = 30) String address,
 
         String remark,
 
