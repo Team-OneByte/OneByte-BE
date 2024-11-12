@@ -30,7 +30,8 @@ public class MainClassController {
             @RequestHeader("member-no") Long memberId,
             @RequestBody MainClassRequest req
     ) {
-        return mainClassService.addMainClass(memberId, req);
+        MainClassResponse result = mainClassService.addMainClass(memberId, req);
+        return ApiResponse.success(result, 201, "CREATED");
     }
 
     @PatchMapping("/main-category/{mainClassId}")
@@ -38,13 +39,15 @@ public class MainClassController {
     public ApiResponse<MainClassResponse> updateMainClass(@RequestHeader("member-no") Long memberId,
             @PathVariable(name = "mainClassId") Long mainClassId,
             @RequestBody MainClassRequest req) {
-        return mainClassService.updateMainClass(memberId, mainClassId, req);
+        MainClassResponse result = mainClassService.updateMainClass(memberId, mainClassId, req);
+        return ApiResponse.success(result, 200, "UPDATED");
     }
 
     @DeleteMapping("/main-category/{mainClassId}")
     @Operation(summary = "메인 클래스 삭제", description = "메인 클래스 삭제하는 api 입니다.")
     public ApiResponse<?> deleteMainClass(@RequestHeader("member-no") Long memberId,
             @PathVariable(name = "mainClassId") Long mainClassId) {
-        return mainClassService.deleteMainClass(memberId, mainClassId);
+        mainClassService.deleteMainClass(memberId, mainClassId);
+        return ApiResponse.success(null, 200, "DELETED");
     }
 }

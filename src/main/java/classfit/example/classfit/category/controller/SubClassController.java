@@ -28,7 +28,9 @@ public class SubClassController {
     @Operation(summary = "하위 클래스 추가", description = "하위 클래스 추가하는 api 입니다.")
     public ApiResponse<SubClassResponse> addSubClass(@RequestHeader("member-no") Long memberId,
             @RequestBody SubClassRequest req) {
-        return subClassService.addSubClass(memberId, req);
+        SubClassResponse result = subClassService.addSubClass(memberId, req);
+        return ApiResponse.success(result, 201, "CREATED");
+
     }
 
     @PatchMapping("/sub-category/{subClassId}")
@@ -37,7 +39,8 @@ public class SubClassController {
             @RequestHeader(name = "member-no") Long memberId,
             @PathVariable(name = "subClassId") Long subClassId,
             @RequestBody SubClassRequest req) {
-        return subClassService.updateSubClass(memberId, subClassId, req);
+        SubClassResponse result = subClassService.updateSubClass(memberId, subClassId, req);
+        return ApiResponse.success(result, 200, "UODATED");
     }
 
     @DeleteMapping("/sub-category/{subClassId}")
@@ -45,7 +48,8 @@ public class SubClassController {
     public ApiResponse<?> deleteSubClass(
             @RequestHeader(name = "member-no") Long memberId,
             @PathVariable(name = "subClassId") Long subClassId) {
-        return subClassService.deleteSubClass(memberId, subClassId);
+        subClassService.deleteSubClass(memberId, subClassId);
+        return ApiResponse.success(null, 200, "DELETED");
     }
 
 }

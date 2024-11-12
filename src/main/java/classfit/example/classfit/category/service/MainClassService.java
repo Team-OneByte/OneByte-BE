@@ -23,24 +23,20 @@ public class MainClassService {
 
     // 메인 클래스 추가
     @Transactional
-    public ApiResponse<MainClassResponse> addMainClass(Long memberId, MainClassRequest req) {
+    public MainClassResponse addMainClass(Long memberId, MainClassRequest req) {
         Member findMember = memberRepository.findById(memberId)
                 .orElseThrow(() -> new ClassfitException("회원을 찾을 수 없어요", HttpStatus.NOT_FOUND));
 
-        MainClass mainClass = new MainClass();
-        mainClass.setMember(findMember);
-        mainClass.setMainClassName(req.mainClassName());
+        MainClass mainClass = new MainClass(req.mainClassName(), findMember);
 
         mainClassRespository.save(mainClass);
 
-        return ApiResponse.success(
-                new MainClassResponse(mainClass.getId(), mainClass.getMainClassName()), 201,
-                "CREATED");
+        return new MainClassResponse(mainClass.getId(), mainClass.getMainClassName());
     }
 
     // 메인 클래스 수정
     @Transactional
-    public ApiResponse<MainClassResponse> updateMainClass(Long memberId, Long mainClassId,
+    public MainClassResponse updateMainClass(Long memberId, Long mainClassId,
             MainClassRequest req) {
         Member findMember = memberRepository.findById(memberId)
                 .orElseThrow(() -> new ClassfitException("회원을 찾을 수 없어요", HttpStatus.NOT_FOUND));
@@ -52,13 +48,13 @@ public class MainClassService {
         checkMemberRelationMainClass(findMember, findMainClass);
 
         findMainClass.updateMainClassName(req.mainClassName());
-        return ApiResponse.success(new MainClassResponse(findMainClass.getId(),
-                findMainClass.getMainClassName()), 201, "UPDATED");
+        return new MainClassResponse(findMainClass.getId(),
+                findMainClass.getMainClassName());
     }
 
     // 메인 클래스 삭제
     @Transactional
-    public ApiResponse<?> deleteMainClass(Long memberId, Long mainClassId) {
+    public void deleteMainClass(Long memberId, Long mainClassId) {
 
         Member findMember = memberRepository.findById(memberId)
                 .orElseThrow(() -> new ClassfitException("회원을 찾을 수 없어요", HttpStatus.NOT_FOUND));
@@ -69,7 +65,6 @@ public class MainClassService {
 
         mainClassRespository.delete(mainClass);
 
-        return ApiResponse.success(null,200,"DELETED");
     }
 
 

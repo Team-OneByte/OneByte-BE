@@ -26,64 +26,54 @@ public class SubClassService {
 
     @Transactional
     // 서브클래스 추가
-    public ApiResponse<SubClassResponse> addSubClass(Long memberId, SubClassRequest req) {
+    public SubClassResponse addSubClass(Long memberId, SubClassRequest req) {
         Member findMember = memberRepository.findById(memberId)
                 .orElseThrow(() -> new ClassfitException("회원을 찾을 수 없어요.", HttpStatus.NOT_FOUND));
 
-        MainClass findMainClass = mainClassRespository.findById(req.mainClassId())
-                .orElseThrow(
-                        () -> new ClassfitException("메인 클래스를 찾을 수 없어요.", HttpStatus.NOT_FOUND));
+        MainClass findMainClass = mainClassRespository.findById(req.mainClassId()).orElseThrow(
+                () -> new ClassfitException("메인 클래스를 찾을 수 없어요.", HttpStatus.NOT_FOUND));
 
         checkMemberRelationMainClass(findMember, findMainClass);
-
-        SubClass subClass = new SubClass();
-        subClass.setMember(findMember);
-        subClass.setSubClassName(req.subClassName());
-        subClass.setMainClass(findMainClass);
+        SubClass subClass = new SubClass(req.subClassName(), findMember);
 
         subClassRepository.save(subClass);
 
-        return ApiResponse.success(new SubClassResponse(req.mainClassId(), subClass.getId(),
-                subClass.getSubClassName()), 201, "CREATED");
+        return new SubClassResponse(req.mainClassId(), subClass.getId(),
+                subClass.getSubClassName());
     }
 
     @Transactional
     // 서브 클래스 수정
-    public ApiResponse<SubClassResponse> updateSubClass(Long memberId, Long subClassId,
-            SubClassRequest req) {
+    public SubClassResponse updateSubClass(Long memberId, Long subClassId, SubClassRequest req) {
         Member findMember = memberRepository.findById(memberId)
                 .orElseThrow(() -> new ClassfitException("회원을 찾을 수 없어요.", HttpStatus.NOT_FOUND));
-        MainClass findMainClass = mainClassRespository.findById(req.mainClassId())
-                .orElseThrow(
-                        () -> new ClassfitException("메인 클래스를 찾을 수 없어요.", HttpStatus.NOT_FOUND));
-        SubClass findSubClass = subClassRepository.findById(subClassId)
-                .orElseThrow(
-                        () -> new ClassfitException("서브 클래스를 찾을 수 없어요.", HttpStatus.NOT_FOUND));
+        MainClass findMainClass = mainClassRespository.findById(req.mainClassId()).orElseThrow(
+                () -> new ClassfitException("메인 클래스를 찾을 수 없어요.", HttpStatus.NOT_FOUND));
+        SubClass findSubClass = subClassRepository.findById(subClassId).orElseThrow(
+                () -> new ClassfitException("서브 클래스를 찾을 수 없어요.", HttpStatus.NOT_FOUND));
 
         checkMemberRelationSubClass(findMember, findSubClass);
 
         findSubClass.updateSubClassName(req.subClassName());
 
-        return ApiResponse.success(new SubClassResponse(findMainClass.getId(), findSubClass.getId(),
-                findSubClass.getSubClassName()), 201, "UPDATED");
+        return new SubClassResponse(findMainClass.getId(), findSubClass.getId(),
+                findSubClass.getSubClassName());
 
     }
 
     @Transactional
     // 서브 클래스 삭제
-    public ApiResponse<?> deleteSubClass(Long memberId, Long subClassId) {
+    public void deleteSubClass(Long memberId, Long subClassId) {
 
         Member findMember = memberRepository.findById(memberId)
                 .orElseThrow(() -> new ClassfitException("회원을 찾을 수 없어요.", HttpStatus.NOT_FOUND));
 
-        SubClass findSubClass = subClassRepository.findById(subClassId)
-                .orElseThrow(
-                        () -> new ClassfitException("서브 클래스를 찾을 수 없어요.", HttpStatus.NOT_FOUND));
+        SubClass findSubClass = subClassRepository.findById(subClassId).orElseThrow(
+                () -> new ClassfitException("서브 클래스를 찾을 수 없어요.", HttpStatus.NOT_FOUND));
 
         checkMemberRelationSubClass(findMember, findSubClass);
 
         subClassRepository.delete(findSubClass);
-        return ApiResponse.success(null, 200, "DELETED");
     }
 
     private static void checkMemberRelationMainClass(Member findMember, MainClass findMainClass) {
