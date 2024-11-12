@@ -59,8 +59,8 @@ public class AttendanceService {
         throw new IllegalArgumentException(INVALID_ENTITY_TYPE);
     }
 
-    public List<LocalDate> getWeeklyAttendanceRange() {
+    public List<LocalDate> getWeeklyAttendanceRange(int weekOffset) {
         LocalDate today = LocalDate.now();
-        return DateRangeUtil.getWeekRange(today);
+        return DateRangeUtil.getWeekRange(today, weekOffset);
     }
 }

@@ -8,6 +8,7 @@ import classfit.example.classfit.common.ApiResponse;
 import classfit.example.classfit.domain.ClassStudent;
 import classfit.example.classfit.domain.Student;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -25,8 +26,10 @@ public class AttendanceController {
 
     @GetMapping("/")
     @Operation(summary = "전체 출결 관리 조회", description = "전체 학생을 클릭 시 조회되는 출결 api 입니다.")
-    public ApiResponse<List<StudentAttendanceResponse>> getAttendance() {
-        List<LocalDate> weekRange = attendanceService.getWeeklyAttendanceRange();
+    public ApiResponse<List<StudentAttendanceResponse>> getAttendance(
+            @Parameter(description = "이전 또는 이후 출결 조회 시 필요한 값으로, 현재는 0(디폴트), 이전 주는 음수로, 다음 주는 양수로 표시합니다. 4주 전부터 2주 후까지(-4 ~ +2) 조회 가능합니다.")
+            @RequestParam(value = "weekOffset", defaultValue = "0") int weekOffset) {
+        List<LocalDate> weekRange = attendanceService.getWeeklyAttendanceRange(weekOffset);
         List<Student> students = attendanceService.getAllStudents();
         List<StudentAttendanceResponse> studentAttendances = attendanceService.getStudentAttendance(students, weekRange);
         return ApiResponse.success(studentAttendances, 200, "SUCCESS");
@@ -35,9 +38,11 @@ public class AttendanceController {
     @GetMapping("/{mainClassId}/{subClassId}")
     @Operation(summary = "특정 클래스 출결 관리 조회", description = "특정 클래스를 클릭 시 조회되는 출결 api 입니다.")
     public ApiResponse<List<StudentAttendanceResponse>> getClassAttendance(
+            @Parameter(description = "이전 또는 이후 출결 조회 시 필요한 값으로, 현재는 0(디폴트), 이전 주는 음수로, 다음 주는 양수로 표시합니다. 4주 전부터 2주 후까지(-4 ~ +2) 조회 가능합니다.")
+            @RequestParam(value = "weekOffset", defaultValue = "0") int weekOffset,
             @PathVariable("mainClassId") Long mainClassId,
             @PathVariable("subClassId") Long subClassId) {
-        List<LocalDate> weekRange = attendanceService.getWeeklyAttendanceRange();
+        List<LocalDate> weekRange = attendanceService.getWeeklyAttendanceRange(weekOffset);
         List<ClassStudent> students = attendanceService.getClassStudentsByMainClassAndSubClass(mainClassId, subClassId);
         List<StudentAttendanceResponse> studentAttendances = attendanceService.getStudentAttendance(students, weekRange);
         return ApiResponse.success(studentAttendances, 200, "SUCCESS");
