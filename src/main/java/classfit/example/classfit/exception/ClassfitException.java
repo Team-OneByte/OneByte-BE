@@ -9,6 +9,9 @@ public class ClassfitException extends RuntimeException{
     private final HttpStatus httpStatus;
 
     public static final String INVALID_ENTITY_TYPE = "유효하지 않은 엔티티 타입입니다.";
+    public static final String INVALID_STATUS_TYPE = "유효하지 않은 출결 타입입니다.";
+    public static final String STUDENT_NOT_FOUND = "학생을 찾을 수 없습니다.";
+    public static final String ATTENDANCE_NOT_FOUND = "출결 정보를 찾을 수 없습니다.";
 
     public ClassfitException(String message,HttpStatus httpStatus) {
         this.message = message;

@@ -19,6 +19,8 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 
+import static classfit.example.classfit.exception.ClassfitException.INVALID_STATUS_TYPE;
+
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -46,4 +48,11 @@ public class Attendance {
         this.student = student;
     }
 
+    public void updateStatus(String status) {
+        try {
+            this.status = AttendanceStatus.valueOf(status.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException(INVALID_STATUS_TYPE);
+        }
+    }
 }
