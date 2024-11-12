@@ -91,8 +91,17 @@ public class StudentService {
             Field[] fields = UpdateStudentRequest.class.getDeclaredFields();
 
             for (Field field : fields) {
+
+                if (field.getName().equals("subClassList")) {
+                    continue;
+                }
+
                 field.setAccessible(true);
                 Object newValue = field.get(req);
+
+                if ("isStudent".equals(field.getName()) && newValue == null) {
+                    newValue = true;
+                }
 
                 if (newValue == null) {
                     continue;

@@ -25,11 +25,11 @@ public record UpdateStudentRequest
 
         @Size(max = 30) String address,
 
-        boolean isStudent,
+        Boolean isStudent,
 
         String remark,
 
         String counselingLog
     ) {
-
+    
 }
