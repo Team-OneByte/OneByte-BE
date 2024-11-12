@@ -1,6 +1,7 @@
 package classfit.example.classfit.attendance.controller;
 
 import classfit.example.classfit.attendance.service.AttendanceExportService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,7 @@ public class AttendanceExportController {
     private final AttendanceExportService attendanceExportService;
 
     @GetMapping("/excel/download")
+    @Operation(summary = "엑셀 다운로드", description = "월별 출결 데이터 엑셀 다운로드 api 입니다.")
     public ResponseEntity<byte[]> exportAttendance(
             @Parameter(description = "다운로드 받을 달 (1~12 사이의 값)")
             @RequestParam("month") int month,

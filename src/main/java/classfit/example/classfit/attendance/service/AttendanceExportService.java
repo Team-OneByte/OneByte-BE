@@ -32,7 +32,6 @@ public class AttendanceExportService {
     @Transactional
     public byte[] generateAttendanceExcel(int month, Long subClassId) {
         try (Workbook workbook = new XSSFWorkbook()) {
-
             Sheet sheet = workbook.createSheet("출결");
 
             List<Attendance> attendances = fetchAttendances(month, subClassId);
