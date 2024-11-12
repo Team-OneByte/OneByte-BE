@@ -11,6 +11,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -38,7 +39,7 @@ public class SubClass extends BaseEntity {
     private Member member;
 
     @OneToMany(mappedBy = "subClass", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ClassStudent> classStudents;
+    private List<ClassStudent> classStudents = new ArrayList<>();
 
     // 업데이트 관련 메서드
     public void updateSubClassName(String subClassName) {

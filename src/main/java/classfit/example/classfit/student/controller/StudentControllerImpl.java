@@ -22,17 +22,17 @@ public class StudentControllerImpl {
 
     private final StudentService studentService;
 
-    @GetMapping("/")
-    public ApiResponse<List<StudentResponse>> getStudentList() {
-        List<StudentResponse> studentList = studentService.getStudentList();
-        return ApiResponse.success(studentList, 200, "FIND STUDENTS");
-    }
-
     @PostMapping("/")
     public ApiResponse<StudentResponse> registerStudent(@RequestBody @Valid StudentRequest req
     ) {
         StudentResponse studentResponse = studentService.registerStudent(req);
         return ApiResponse.success(studentResponse, 201, "CREATED STUDENT");
+    }
+
+    @GetMapping("/")
+    public ApiResponse<List<StudentResponse>> getStudentList() {
+        List<StudentResponse> studentList = studentService.getStudentList();
+        return ApiResponse.success(studentList, 200, "FIND STUDENTS");
     }
 
     @DeleteMapping("/{studentId}")

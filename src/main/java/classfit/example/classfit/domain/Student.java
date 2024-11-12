@@ -49,10 +49,7 @@ public class Student extends BaseEntity {
     private String parentNumber;
 
     @Column(nullable = false, length = 10)
-    private String mainClass;
-
-    @Column(nullable = false, length = 10)
-    private String subClass;
+    private String grade;
 
     @Column(nullable = false, length = 10)
     private String address;
@@ -66,5 +63,5 @@ public class Student extends BaseEntity {
 
     @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Attendance> attendances = new ArrayList<>();
-    
+
 }

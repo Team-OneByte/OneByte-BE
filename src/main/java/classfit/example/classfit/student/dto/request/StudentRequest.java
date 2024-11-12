@@ -7,6 +7,7 @@ import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import java.time.LocalDate;
+import java.util.List;
 
 public record StudentRequest
     (
@@ -20,9 +21,9 @@ public record StudentRequest
 
         @NotNull @Size(max = 14) @Pattern(regexp = "^[0-9\\-]+$") String parentNumber,
 
-        @NotNull @Size(max = 10) String mainClass,
+        @NotNull @Size(max = 10) String grade,
 
-        @NotNull @Size(max = 10) String subClass,
+        @NotNull @Size(max = 30) List<Long> subClassList,
 
         @NotNull @Size(max = 30) String address,
 
@@ -38,8 +39,7 @@ public record StudentRequest
             .birth(birth())
             .studentNumber(studentNumber())
             .parentNumber(parentNumber())
-            .mainClass(mainClass())
-            .subClass(subClass())
+            .grade(grade())
             .address(address())
             .isStudent(isStudent)
             .remark(remark())
