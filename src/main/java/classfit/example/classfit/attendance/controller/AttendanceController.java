@@ -7,6 +7,8 @@ import classfit.example.classfit.attendance.service.AttendanceUpdateService;
 import classfit.example.classfit.common.ApiResponse;
 import classfit.example.classfit.domain.ClassStudent;
 import classfit.example.classfit.domain.Student;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,11 +18,13 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/home")
 @RequiredArgsConstructor
+@Tag(name = "출결 관리 컨트롤러", description = "출결 관련 API입니다.")
 public class AttendanceController {
     private final AttendanceService attendanceService;
     private final AttendanceUpdateService attendanceUpdateService;
 
     @GetMapping("/")
+    @Operation(summary = "전체 출결 관리 조회", description = "전체 학생을 클릭 시 조회되는 출결 api 입니다.")
     public ApiResponse<List<StudentAttendanceResponse>> getAttendance() {
         List<LocalDate> weekRange = attendanceService.getWeeklyAttendanceRange();
         List<Student> students = attendanceService.getAllStudents();
@@ -29,6 +33,7 @@ public class AttendanceController {
     }
 
     @GetMapping("/{mainClassId}/{subClassId}")
+    @Operation(summary = "특정 클래스 출결 관리 조회", description = "특정 클래스를 클릭 시 조회되는 출결 api 입니다.")
     public ApiResponse<List<StudentAttendanceResponse>> getClassAttendance(
             @PathVariable("mainClassId") Long mainClassId,
             @PathVariable("subClassId") Long subClassId) {
@@ -39,6 +44,7 @@ public class AttendanceController {
     }
 
     @PatchMapping("/")
+    @Operation(summary = "클래스 출결 수정", description = "학생 출결을 수정할 때 사용되는 api 입니다.")
     public ApiResponse<List<StudentAttendanceResponse>> updateAttendance(@RequestBody List<StudentAttendanceUpdateRequest> requestDTO) {
         List<StudentAttendanceResponse> updatedStudents = attendanceUpdateService.updateStudentAttendances(requestDTO);
         return ApiResponse.success(updatedStudents, 200, "UPDATED");
