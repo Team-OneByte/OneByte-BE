@@ -1,6 +1,6 @@
 package classfit.example.classfit.attendance.dto.request;
 
-public record AttendanceStatusUpdateRequestDTO(
+public record AttendanceStatusUpdateRequest(
         Long attendanceId,
         String status) {
 }

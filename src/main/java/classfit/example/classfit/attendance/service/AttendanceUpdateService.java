@@ -1,9 +1,9 @@
 package classfit.example.classfit.attendance.service;
 
-import classfit.example.classfit.attendance.dto.request.AttendanceStatusUpdateRequestDTO;
-import classfit.example.classfit.attendance.dto.request.StudentAttendanceUpdateRequestDTO;
-import classfit.example.classfit.attendance.dto.response.AttendanceResponseDTO;
-import classfit.example.classfit.attendance.dto.response.StudentAttendanceResponseDTO;
+import classfit.example.classfit.attendance.dto.request.AttendanceStatusUpdateRequest;
+import classfit.example.classfit.attendance.dto.request.StudentAttendanceUpdateRequest;
+import classfit.example.classfit.attendance.dto.response.AttendanceResponse;
+import classfit.example.classfit.attendance.dto.response.StudentAttendanceResponse;
 import classfit.example.classfit.attendance.repository.AttendanceRepository;
 import classfit.example.classfit.domain.Attendance;
 import classfit.example.classfit.domain.Student;
@@ -25,27 +25,27 @@ public class AttendanceUpdateService {
     private final AttendanceRepository attendanceRepository;
     private final StudentRepository studentRepository;
 
-    public List<StudentAttendanceResponseDTO> updateStudentAttendances(List<StudentAttendanceUpdateRequestDTO> students) {
+    public List<StudentAttendanceResponse> updateStudentAttendances(List<StudentAttendanceUpdateRequest> students) {
         return students.stream()
                 .map(this::updateStudentAttendance)
                 .toList();
     }
 
-    private StudentAttendanceResponseDTO updateStudentAttendance(StudentAttendanceUpdateRequestDTO studentRequest) {
+    private StudentAttendanceResponse updateStudentAttendance(StudentAttendanceUpdateRequest studentRequest) {
         Student student = findStudentById(studentRequest.studentId());
-        List<AttendanceResponseDTO> attendanceResponses = studentRequest.attendance().stream()
+        List<AttendanceResponse> attendanceResponses = studentRequest.attendance().stream()
                 .map(this::updateAttendanceStatus)
                 .toList();
 
-        return StudentAttendanceResponseDTO.of(student.getId(), student.getName(), attendanceResponses);
+        return StudentAttendanceResponse.of(student.getId(), student.getName(), attendanceResponses);
     }
 
-    private AttendanceResponseDTO updateAttendanceStatus(AttendanceStatusUpdateRequestDTO attendanceRequest) {
+    private AttendanceResponse updateAttendanceStatus(AttendanceStatusUpdateRequest attendanceRequest) {
         Attendance attendance = findAttendanceById(attendanceRequest.attendanceId());
         attendance.updateStatus(attendanceRequest.status());
         attendanceRepository.save(attendance);
 
-        return AttendanceResponseDTO.of(attendance.getId(), attendance.getDate(), attendance.getStatus().name());
+        return AttendanceResponse.of(attendance.getId(), attendance.getDate(), attendance.getStatus().name());
     }
 
     private Student findStudentById(Long studentId) {

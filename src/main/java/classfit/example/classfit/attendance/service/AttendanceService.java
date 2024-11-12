@@ -8,8 +8,8 @@ import classfit.example.classfit.domain.Attendance;
 import classfit.example.classfit.domain.ClassStudent;
 import classfit.example.classfit.domain.Student;
 import classfit.example.classfit.student.repository.StudentRepository;
-import classfit.example.classfit.attendance.dto.response.AttendanceResponseDTO;
-import classfit.example.classfit.attendance.dto.response.StudentAttendanceResponseDTO;
+import classfit.example.classfit.attendance.dto.response.AttendanceResponse;
+import classfit.example.classfit.attendance.dto.response.StudentAttendanceResponse;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -55,21 +55,21 @@ public class AttendanceService {
         return classStudentRepository.findBySubClass_MainClass_IdAndSubClass_Id(mainClassId, subClassId);
     }
 
-    public List<StudentAttendanceResponseDTO> getStudentAttendance(List<?> students, List<LocalDate> weekRange) {
+    public List<StudentAttendanceResponse> getStudentAttendance(List<?> students, List<LocalDate> weekRange) {
         return students.stream()
                 .map(studentObject -> mapToStudentAttendanceDTO(studentObject, weekRange))
                 .collect(Collectors.toList());
     }
 
-    private StudentAttendanceResponseDTO mapToStudentAttendanceDTO(Object studentObject, List<LocalDate> weekRange) {
+    private StudentAttendanceResponse mapToStudentAttendanceDTO(Object studentObject, List<LocalDate> weekRange) {
         Student student = getStudentFromEntity(studentObject);
 
-        List<AttendanceResponseDTO> attendanceDTOs = student.getAttendances().stream()
+        List<AttendanceResponse> attendanceDTOs = student.getAttendances().stream()
                 .filter(attendance -> weekRange.contains(attendance.getDate()))
-                .map(attendance -> AttendanceResponseDTO.of(attendance.getId(), attendance.getDate(), attendance.getStatus().name()))
+                .map(attendance -> AttendanceResponse.of(attendance.getId(), attendance.getDate(), attendance.getStatus().name()))
                 .collect(Collectors.toList());
 
-        return new StudentAttendanceResponseDTO(student.getId(), student.getName(), attendanceDTOs);
+        return new StudentAttendanceResponse(student.getId(), student.getName(), attendanceDTOs);
     }
 
     private Student getStudentFromEntity(Object entity) {
