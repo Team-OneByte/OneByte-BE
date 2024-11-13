@@ -46,8 +46,9 @@ public class SubClass extends BaseEntity {
         this.subClassName = subClassName;
     }
 
-    public SubClass(String subClassName, Member member) {
+    public SubClass(String subClassName, Member member,MainClass mainClass) {
         this.subClassName = subClassName;
         this.member = member;
+        this.mainClass = mainClass;
     }
 }

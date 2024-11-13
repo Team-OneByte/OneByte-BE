@@ -25,22 +25,25 @@ public class SubClassService {
     private final MemberRepository memberRepository;
 
     @Transactional
-    // 서브클래스 추가
+// 서브클래스 추가
     public SubClassResponse addSubClass(Long memberId, SubClassRequest req) {
         Member findMember = memberRepository.findById(memberId)
                 .orElseThrow(() -> new ClassfitException("회원을 찾을 수 없어요.", HttpStatus.NOT_FOUND));
 
-        MainClass findMainClass = mainClassRespository.findById(req.mainClassId()).orElseThrow(
-                () -> new ClassfitException("메인 클래스를 찾을 수 없어요.", HttpStatus.NOT_FOUND));
+        MainClass findMainClass = mainClassRespository.findById(req.mainClassId())
+                .orElseThrow(() -> new ClassfitException("메인 클래스를 찾을 수 없어요.", HttpStatus.NOT_FOUND));
 
         checkMemberRelationMainClass(findMember, findMainClass);
-        SubClass subClass = new SubClass(req.subClassName(), findMember);
 
+        // 서브클래스에 메인 클래스를 설정
+        SubClass subClass = new SubClass(req.subClassName(), findMember, findMainClass);
+
+        // 서브클래스를 저장
         subClassRepository.save(subClass);
 
-        return new SubClassResponse(req.mainClassId(), subClass.getId(),
-                subClass.getSubClassName());
+        return new SubClassResponse(req.mainClassId(), subClass.getId(), subClass.getSubClassName());
     }
+
 
     @Transactional
     // 서브 클래스 수정
