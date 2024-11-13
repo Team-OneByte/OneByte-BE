@@ -2,7 +2,7 @@ package classfit.example.classfit.student.controller;
 
 import classfit.example.classfit.common.ApiResponse;
 import classfit.example.classfit.student.dto.request.StudentRequest;
-import classfit.example.classfit.student.dto.request.UpdateStudentRequest;
+import classfit.example.classfit.student.dto.request.StudentUpdateRequest;
 import classfit.example.classfit.student.dto.response.StudentInfoResponse;
 import classfit.example.classfit.student.dto.response.StudentResponse;
 import classfit.example.classfit.student.service.StudentService;
@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1/student")
 @RequiredArgsConstructor
-@Tag(name = "Student API", description = "학생 관련 API")
+@Tag(name = "학생 API", description = "학생 관련 API")
 public class StudentControllerImpl {
 
     private final StudentService studentService;
@@ -45,21 +45,21 @@ public class StudentControllerImpl {
         return ApiResponse.success(studentList, 200, "FIND STUDENTS");
     }
 
-    @DeleteMapping("/{studentId}")
+    @DeleteMapping("/")
     @Operation(summary = "학생 정보 삭제", description = "학생 정보 삭제하는 API 입니다. ")
-    public ApiResponse<StudentResponse> deleteStudent(@PathVariable Long studentId) {
+    public ApiResponse<List<Long>> deleteStudent(@RequestParam List<Long> studentIds) {
 
-        studentService.deleteStudent(studentId);
-        return ApiResponse.success(null, 200, "DELETED STUDENT");
+        studentService.deleteStudent(studentIds);
+        return ApiResponse.success(studentIds.stream().toList(), 200, "DELETED STUDENT");
     }
 
     @PatchMapping("/{studentId}")
     @Operation(summary = "학생 정보 수정", description = "학생 정보를 수정하는 API 입니다. ")
-    public ApiResponse<StudentResponse> updateStudent(
-        @PathVariable Long studentId, @RequestBody @Valid UpdateStudentRequest req) {
+    public ApiResponse<Long> updateStudent(
+        @PathVariable Long studentId, @RequestBody @Valid StudentUpdateRequest req) {
 
         studentService.updateStudent(studentId, req);
-        return ApiResponse.success(null, 200, "UPDATED STUDENT");
+        return ApiResponse.success(studentId, 200, "UPDATED STUDENT");
     }
 
     @GetMapping("/{studentId}")
