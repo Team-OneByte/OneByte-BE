@@ -1,7 +1,7 @@
 package classfit.example.classfit.student.service;
 
 import classfit.example.classfit.category.repository.SubClassRepository;
-import classfit.example.classfit.class_student.repository.ClassStudentRepository;
+import classfit.example.classfit.classStudent.repository.ClassStudentRepository;
 import classfit.example.classfit.domain.ClassStudent;
 import classfit.example.classfit.domain.Student;
 import classfit.example.classfit.domain.SubClass;

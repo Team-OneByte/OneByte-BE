@@ -11,8 +11,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
-import lombok.Getter;
-
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -68,8 +66,7 @@ public class Student extends BaseEntity {
 
     private String counselingLog;
 
-
     @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Attendance> attendances = new ArrayList<>();
+    private final List<Attendance> attendances = new ArrayList<>();
 
 }
