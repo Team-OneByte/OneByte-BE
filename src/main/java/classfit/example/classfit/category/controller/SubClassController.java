@@ -26,7 +26,7 @@ public class SubClassController {
 
     @PostMapping("/sub-category")
     @Operation(summary = "하위 클래스 추가", description = "하위 클래스 추가하는 api 입니다.")
-    public ApiResponse<SubClassResponse> addSubClass(@RequestHeader("member-no") Long memberId,
+    public ApiResponse<SubClassResponse> addSubClass(@RequestHeader(name = "member-no",required = false) Long memberId,
             @RequestBody SubClassRequest req) {
         SubClassResponse result = subClassService.addSubClass(memberId, req);
         return ApiResponse.success(result, 201, "CREATED");
