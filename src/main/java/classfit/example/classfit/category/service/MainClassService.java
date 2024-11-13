@@ -8,7 +8,7 @@ import classfit.example.classfit.domain.MainClass;
 import classfit.example.classfit.domain.Member;
 import classfit.example.classfit.exception.ClassfitException;
 import classfit.example.classfit.member.MemberRepository;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
@@ -36,6 +36,7 @@ public class MainClassService {
     }
 
     // 메인 클래스 전체 조회
+    @Transactional(readOnly = true)
     public List<AllMainClassResponse> showMainClass(Long memberId) {
         Member findMember = memberRepository.findById(memberId)
                 .orElseThrow(() -> new ClassfitException("회원을 찾을 수 없어요", HttpStatus.NOT_FOUND));
