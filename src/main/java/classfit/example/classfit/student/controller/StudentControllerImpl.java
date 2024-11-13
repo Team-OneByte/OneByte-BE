@@ -3,6 +3,7 @@ package classfit.example.classfit.student.controller;
 import classfit.example.classfit.common.ApiResponse;
 import classfit.example.classfit.student.dto.request.StudentRequest;
 import classfit.example.classfit.student.dto.request.UpdateStudentRequest;
+import classfit.example.classfit.student.dto.response.StudentInfoResponse;
 import classfit.example.classfit.student.dto.response.StudentResponse;
 import classfit.example.classfit.student.service.StudentService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -29,8 +30,7 @@ public class StudentControllerImpl {
     private final StudentService studentService;
 
     @PostMapping("/")
-    @Operation(summary = "학생 정보 등록", description = "학생 정보 등록하는 API 입니다. "
-        + "[성별 : MALE/FEMALE], [생년월일 : YYYY-MM-DD 형식], [전화번호 - 010-0000-0000 형식] ")
+    @Operation(summary = "학생 정보 등록", description = "학생 정보 등록하는 API 입니다.")
     public ApiResponse<StudentResponse> registerStudent(@RequestBody @Valid StudentRequest req) {
 
         StudentResponse studentResponse = studentService.registerStudent(req);
@@ -39,9 +39,9 @@ public class StudentControllerImpl {
 
     @GetMapping("/")
     @Operation(summary = "학생 정보 조회", description = "전체 학생 정보 조회하는 API 입니다. ")
-    public ApiResponse<List<StudentResponse>> getStudentList() {
+    public ApiResponse<List<StudentResponse>> studentInfoAll() {
 
-        List<StudentResponse> studentList = studentService.getStudentList();
+        List<StudentResponse> studentList = studentService.studentInfoAll();
         return ApiResponse.success(studentList, 200, "FIND STUDENTS");
     }
 
@@ -54,8 +54,7 @@ public class StudentControllerImpl {
     }
 
     @PatchMapping("/{studentId}")
-    @Operation(summary = "학생 정보 수정", description = "학생 정보를 수정하는 API 입니다. "
-        + "변경하고자 하고자 하는 데이터만 입력")
+    @Operation(summary = "학생 정보 수정", description = "학생 정보를 수정하는 API 입니다. ")
     public ApiResponse<StudentResponse> updateStudent(
         @PathVariable Long studentId, @RequestBody @Valid UpdateStudentRequest req) {
 
@@ -65,18 +64,18 @@ public class StudentControllerImpl {
 
     @GetMapping("/{studentId}")
     @Operation(summary = "개인 학생 정보 조회", description = "특정 학생 정보를 조회하는 API 입니다. ")
-    public ApiResponse<StudentResponse> studentInfo(@PathVariable Long studentId) {
+    public ApiResponse<StudentInfoResponse> studentInfo(@PathVariable Long studentId) {
 
-        StudentResponse studentInfo = studentService.getStudentInfo(studentId);
+        StudentInfoResponse studentInfo = studentService.getStudentInfo(studentId);
         return ApiResponse.success(studentInfo, 200, studentInfo.name() + "의 정보");
     }
 
     @GetMapping("/search")
-    @Operation(summary = "학생 이름 검색", description = "특정한 학생 이름으로 정보를 조회하는 API 입니다. ")
-    public ApiResponse<StudentResponse> searchStudentByName(
+    @Operation(summary = "학생 이름 검색", description = "특정한 학생 이름으로 목록 조회하는 API 입니다.")
+    public ApiResponse<StudentResponse> findStudentByName(
         @RequestParam(value = "name") String studentName) {
 
-        StudentResponse searchStudentResponse = studentService.searchStudentByName(studentName);
-        return ApiResponse.success(searchStudentResponse, 200, searchStudentResponse.name());
+        StudentResponse findStudentByName = studentService.findStudentByName(studentName);
+        return ApiResponse.success(findStudentByName, 200, findStudentByName.name());
     }
 }
