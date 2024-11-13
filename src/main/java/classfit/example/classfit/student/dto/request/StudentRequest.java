@@ -2,7 +2,7 @@ package classfit.example.classfit.student.dto.request;
 
 import classfit.example.classfit.common.Gender;
 import classfit.example.classfit.domain.Student;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -11,21 +11,28 @@ import java.util.List;
 
 public record StudentRequest
     (
-        @NotNull @Size(max = 30) String name,
+        @NotBlank(message = "이름은 필수 항목입니다.")
+        @Size(max = 30) String name,
 
-        @NotNull Gender gender,
+        @NotBlank(message = "성별은 필수 항목입니다.") Gender gender,
 
-        @NotNull @Past LocalDate birth,
+        @NotBlank(message = "생년월일은 필수 항목입니다.")
+        @Past LocalDate birth,
 
-        @NotNull @Size(max = 14) @Pattern(regexp = "^[0-9\\-]+$") String studentNumber,
+        @NotBlank(message = "학생 전화번호는 필수 항목입니다.")
+        @Size(max = 14) @Pattern(regexp = "^[0-9\\-]+$") String studentNumber,
 
-        @NotNull @Size(max = 14) @Pattern(regexp = "^[0-9\\-]+$") String parentNumber,
+        @NotBlank(message = "학부모 전화번호는 필수 항목입니다.")
+        @Size(max = 14) @Pattern(regexp = "^[0-9\\-]+$") String parentNumber,
 
-        @NotNull @Size(max = 10) String grade,
+        @NotBlank(message = "학년은 필수 항목입니다.")
+        @Size(max = 10) String grade,
 
-        @NotNull @Size(max = 30) List<Long> subClassList,
+        @NotBlank(message = "클래스는 필수 항목입니다.")
+        @Size(max = 30) List<Long> subClassList,
 
-        @NotNull @Size(max = 30) String address,
+        @NotBlank(message = "주소 등록은 필수 항목입니다.")
+        @Size(max = 30) String address,
 
         String remark,
 
