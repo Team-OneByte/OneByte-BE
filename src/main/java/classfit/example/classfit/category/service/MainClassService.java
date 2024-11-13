@@ -1,14 +1,15 @@
 package classfit.example.classfit.category.service;
 
 import classfit.example.classfit.category.dto.request.MainClassRequest;
+import classfit.example.classfit.category.dto.response.AllMainClassResponse;
 import classfit.example.classfit.category.dto.response.MainClassResponse;
 import classfit.example.classfit.category.repository.MainClassRespository;
-import classfit.example.classfit.common.ApiResponse;
 import classfit.example.classfit.domain.MainClass;
 import classfit.example.classfit.domain.Member;
 import classfit.example.classfit.exception.ClassfitException;
 import classfit.example.classfit.member.MemberRepository;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
+import java.util.List;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -34,23 +35,20 @@ public class MainClassService {
         return new MainClassResponse(mainClass.getId(), mainClass.getMainClassName());
     }
 
-    // 메인 클래스 수정
-    @Transactional
-    public MainClassResponse updateMainClass(Long memberId, Long mainClassId,
-            MainClassRequest req) {
+    // 메인 클래스 전체 조회
+    @Transactional(readOnly = true)
+    public List<AllMainClassResponse> showMainClass(Long memberId) {
         Member findMember = memberRepository.findById(memberId)
                 .orElseThrow(() -> new ClassfitException("회원을 찾을 수 없어요", HttpStatus.NOT_FOUND));
 
-        MainClass findMainClass = mainClassRespository.findById(mainClassId)
-                .orElseThrow(
-                        () -> new ClassfitException("메인 클래스를 찾을 수 없어요.", HttpStatus.NOT_FOUND));
+        List<MainClass> mainClasses = mainClassRespository.findAll();
 
-        checkMemberRelationMainClass(findMember, findMainClass);
-
-        findMainClass.updateMainClassName(req.mainClassName());
-        return new MainClassResponse(findMainClass.getId(),
-                findMainClass.getMainClassName());
+        return mainClasses.stream()
+                .map(mainClass -> new AllMainClassResponse(mainClass.getId(),
+                        mainClass.getMainClassName()))
+                .toList();
     }
+
 
     // 메인 클래스 삭제
     @Transactional
