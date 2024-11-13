@@ -36,7 +36,7 @@ public class SubClassController {
     @PatchMapping("/sub-category/{subClassId}")
     @Operation(summary = "하위 클래스 수정", description = "하위 클래스 이름을 수정하는 api 입니다.")
     public ApiResponse<SubClassResponse> updateSubClass(
-            @RequestHeader(name = "member-no") Long memberId,
+            @RequestHeader(name = "member-no",required = false) Long memberId,
             @PathVariable(name = "subClassId") Long subClassId,
             @RequestBody SubClassRequest req) {
         SubClassResponse result = subClassService.updateSubClass(memberId, subClassId, req);
@@ -46,7 +46,7 @@ public class SubClassController {
     @DeleteMapping("/sub-category/{subClassId}")
     @Operation(summary = "하위 클래스 삭제", description = "하위 클래스 삭제하는 api 입니다.")
     public ApiResponse<?> deleteSubClass(
-            @RequestHeader(name = "member-no") Long memberId,
+            @RequestHeader(name = "member-no",required = false) Long memberId,
             @PathVariable(name = "subClassId") Long subClassId) {
         subClassService.deleteSubClass(memberId, subClassId);
         return ApiResponse.success(null, 200, "DELETED");
