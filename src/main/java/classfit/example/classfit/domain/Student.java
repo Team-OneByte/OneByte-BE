@@ -13,8 +13,10 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import java.time.LocalDate;
 import java.util.List;
+import lombok.Getter;
 
 @Entity
+@Getter
 public class Student extends BaseEntity {
 
     @Id
@@ -51,6 +53,8 @@ public class Student extends BaseEntity {
     private boolean isStudent;
 
     private String remark;
+
+    private boolean receivedSms;
 
     @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ClassStudent> classStudents;
