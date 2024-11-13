@@ -30,7 +30,7 @@ public class MainClassController {
     @PostMapping("/main-category")
     @Operation(summary = "메인 클래스 추가", description = "메인 클래스 추가하는 api 입니다.")
     public ApiResponse<MainClassResponse> addMainClass(
-            @RequestHeader("member-no") Long memberId,
+            @RequestHeader(value = "member-no",required = false) Long memberId,
             @RequestBody MainClassRequest req
     ) {
         MainClassResponse result = mainClassService.addMainClass(memberId, req);
