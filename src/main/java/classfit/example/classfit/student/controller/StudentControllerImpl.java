@@ -72,6 +72,7 @@ public class StudentControllerImpl {
     }
 
     @GetMapping("/search")
+    @Operation(summary = "학생 이름 검색", description = "특정한 학생 이름으로 정보를 조회하는 API 입니다. ")
     public ApiResponse<StudentResponse> searchStudentByName(
         @RequestParam(value = "name") String studentName) {
 
