@@ -7,7 +7,7 @@ import classfit.example.classfit.domain.Student;
 import classfit.example.classfit.domain.SubClass;
 import classfit.example.classfit.exception.ClassfitException;
 import classfit.example.classfit.student.dto.request.StudentRequest;
-import classfit.example.classfit.student.dto.request.UpdateStudentRequest;
+import classfit.example.classfit.student.dto.request.StudentUpdateRequest;
 import classfit.example.classfit.student.dto.response.StudentInfoResponse;
 import classfit.example.classfit.student.dto.response.StudentResponse;
 import classfit.example.classfit.student.repository.StudentRepository;
@@ -46,13 +46,16 @@ public class StudentService {
     }
 
     @Transactional
-    public void deleteStudent(Long studentId) {
+    public void deleteStudent(List<Long> studentIds) {
 
-        Student student = studentRepository.findById(studentId).orElseThrow(
-            () -> new ClassfitException("해당하는 학생 정보를 찾을 수 없습니다.", HttpStatus.NOT_FOUND));
-
-        classStudentRepository.deleteAllByStudentId(studentId);
-        studentRepository.delete(student);
+        studentIds.stream()
+            .map(studentId -> studentRepository.findById(studentId).orElseThrow(
+                () -> new ClassfitException("해당하는 학생 정보를 찾을 수 없습니다: ID = " + studentId,
+                    HttpStatus.NOT_FOUND)))
+            .forEach(student -> {
+                classStudentRepository.deleteAllByStudentId(student.getId());
+                studentRepository.delete(student);
+            });
     }
 
     @Transactional(readOnly = true)
@@ -87,7 +90,7 @@ public class StudentService {
     }
 
     @Transactional
-    public void updateStudent(Long studentId, UpdateStudentRequest req) {
+    public void updateStudent(Long studentId, StudentUpdateRequest req) {
         Student student = studentRepository.findById(studentId).orElseThrow(
             () -> new ClassfitException("해당하는 학생 정보가 존재하지 않습니다.", HttpStatus.NOT_FOUND));
 
@@ -95,9 +98,9 @@ public class StudentService {
         updateStudentSubClasses(student, req.subClassList());
     }
 
-    private void updateStudentFields(Student student, UpdateStudentRequest req) {
+    private void updateStudentFields(Student student, StudentUpdateRequest req) {
         try {
-            Field[] fields = UpdateStudentRequest.class.getDeclaredFields();
+            Field[] fields = StudentUpdateRequest.class.getDeclaredFields();
 
             for (Field field : fields) {
 
