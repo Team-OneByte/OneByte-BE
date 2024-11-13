@@ -52,6 +52,9 @@ public class Member extends BaseEntity {
     @Column(nullable = false, length = 30)
     private String department;
 
+    @Column(nullable = false,length = 20)
+    private String phoneNumber;
+
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "VARCHAR(20)", nullable = false)
     private MemberStatus status;
