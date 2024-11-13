@@ -5,10 +5,10 @@ import classfit.example.classfit.common.AttendanceStatus;
 import classfit.example.classfit.domain.Attendance;
 import classfit.example.classfit.domain.Student;
 import classfit.example.classfit.student.repository.StudentRepository;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -16,6 +16,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class AttendanceSchedulingService {
     private final AttendanceRepository attendanceRepository;
     private final StudentRepository studentRepository;

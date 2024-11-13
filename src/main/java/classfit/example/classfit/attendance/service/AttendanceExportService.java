@@ -24,6 +24,7 @@ import static classfit.example.classfit.exception.ClassfitException.SUB_CLASS_NO
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class AttendanceExportService {
     private final AttendanceRepository attendanceRepository;
     private final MainClassRespository mainClassRespository;

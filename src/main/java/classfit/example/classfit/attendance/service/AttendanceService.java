@@ -8,12 +8,12 @@ import classfit.example.classfit.student.repository.StudentRepository;
 import classfit.example.classfit.attendance.dto.response.AttendanceResponse;
 import classfit.example.classfit.attendance.dto.response.StudentAttendanceResponse;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -23,7 +23,7 @@ import static classfit.example.classfit.exception.ClassfitException.INVALID_ENTI
 
 @Service
 @RequiredArgsConstructor
-@Transactional
+@Transactional(readOnly = true)
 public class AttendanceService {
     private final StudentRepository studentRepository;
     private final ClassStudentRepository classStudentRepository;
