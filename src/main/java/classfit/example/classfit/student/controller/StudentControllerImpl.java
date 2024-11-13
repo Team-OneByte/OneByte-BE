@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -68,5 +69,13 @@ public class StudentControllerImpl {
 
         StudentResponse studentInfo = studentService.getStudentInfo(studentId);
         return ApiResponse.success(studentInfo, 200, studentInfo.name() + "의 정보");
+    }
+
+    @GetMapping("/search")
+    public ApiResponse<StudentResponse> searchStudentByName(
+        @RequestParam(value = "name") String studentName) {
+
+        StudentResponse searchStudentResponse = studentService.searchStudentByName(studentName);
+        return ApiResponse.success(searchStudentResponse, 200, searchStudentResponse.name());
     }
 }

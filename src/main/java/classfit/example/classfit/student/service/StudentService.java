@@ -134,4 +134,12 @@ public class StudentService {
             });
         }
     }
+
+    @Transactional(readOnly = true)
+    public StudentResponse searchStudentByName(String studentName) {
+
+        Student student = studentRepository.findByName(studentName).orElseThrow(
+            () -> new ClassfitException("해당하는 학생은 존재하지 않습니다.", HttpStatus.NOT_FOUND));
+        return StudentResponse.from(student);
+    }
 }
