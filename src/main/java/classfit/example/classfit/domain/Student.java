@@ -12,11 +12,19 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
+@Builder
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 public class Student extends BaseEntity {
 
     @Id
@@ -44,9 +52,6 @@ public class Student extends BaseEntity {
     private String grade;
 
     @Column(nullable = false, length = 10)
-    private String studentClass;
-
-    @Column(nullable = false, length = 10)
     private String address;
 
     @Column(nullable = false)
@@ -59,8 +64,10 @@ public class Student extends BaseEntity {
     @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ClassStudent> classStudents;
 
-    @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Attendance> attendances;
+    private String counselingLog;
 
+
+    @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Attendance> attendances = new ArrayList<>();
 
 }
