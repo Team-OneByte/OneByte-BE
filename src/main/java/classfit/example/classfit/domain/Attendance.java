@@ -26,6 +26,7 @@ import static classfit.example.classfit.exception.ClassfitException.INVALID_STAT
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Attendance {
 
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "attendance_id")
