@@ -45,12 +45,12 @@ public class StudentControllerImpl {
         return ApiResponse.success(studentList, 200, "FIND STUDENTS");
     }
 
-    @DeleteMapping("/{studentId}")
+    @DeleteMapping("/")
     @Operation(summary = "학생 정보 삭제", description = "학생 정보 삭제하는 API 입니다. ")
-    public ApiResponse<Long> deleteStudent(@PathVariable Long studentId) {
+    public ApiResponse<List<Long>> deleteStudent(@RequestParam List<Long> studentIds) {
 
-        studentService.deleteStudent(studentId);
-        return ApiResponse.success(studentId, 200, "DELETED STUDENT");
+        studentService.deleteStudent(studentIds);
+        return ApiResponse.success(studentIds.stream().toList(), 200, "DELETED STUDENT");
     }
 
     @PatchMapping("/{studentId}")

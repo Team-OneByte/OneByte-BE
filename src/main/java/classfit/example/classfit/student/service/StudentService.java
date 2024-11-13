@@ -46,13 +46,16 @@ public class StudentService {
     }
 
     @Transactional
-    public void deleteStudent(Long studentId) {
+    public void deleteStudent(List<Long> studentIds) {
 
-        Student student = studentRepository.findById(studentId).orElseThrow(
-            () -> new ClassfitException("해당하는 학생 정보를 찾을 수 없습니다.", HttpStatus.NOT_FOUND));
-
-        classStudentRepository.deleteAllByStudentId(studentId);
-        studentRepository.delete(student);
+        studentIds.stream()
+            .map(studentId -> studentRepository.findById(studentId).orElseThrow(
+                () -> new ClassfitException("해당하는 학생 정보를 찾을 수 없습니다: ID = " + studentId,
+                    HttpStatus.NOT_FOUND)))
+            .forEach(student -> {
+                classStudentRepository.deleteAllByStudentId(student.getId());
+                studentRepository.delete(student);
+            });
     }
 
     @Transactional(readOnly = true)
