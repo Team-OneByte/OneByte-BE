@@ -60,10 +60,7 @@ public class Student extends BaseEntity {
     private String remark;
 
     private boolean receivedSms;
-
-    @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ClassStudent> classStudents;
-
+    
     private String counselingLog;
 
     @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, orphanRemoval = true)

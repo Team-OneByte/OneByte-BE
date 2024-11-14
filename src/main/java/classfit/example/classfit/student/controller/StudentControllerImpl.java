@@ -71,11 +71,11 @@ public class StudentControllerImpl {
     }
 
     @GetMapping("/search")
-    @Operation(summary = "학생 이름 검색", description = "특정한 학생 이름으로 목록 조회하는 API 입니다.")
-    public ApiResponse<StudentResponse> findStudentByName(
+    @Operation(summary = "학생 이름 검색", description = "특정 학생 이름으로 목록 조회하는 API 입니다.")
+    public ApiResponse<List<StudentResponse>> findStudentByName(
         @RequestParam(value = "name") String studentName) {
 
-        StudentResponse findStudentByName = studentService.findStudentByName(studentName);
-        return ApiResponse.success(findStudentByName, 200, findStudentByName.name());
+        List<StudentResponse> findStudents = studentService.findStudentsByName(studentName);
+        return ApiResponse.success(findStudents, 200, "FIND STUDENTS");
     }
 }

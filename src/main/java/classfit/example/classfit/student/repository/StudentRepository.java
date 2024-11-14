@@ -20,5 +20,5 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
         "WHERE s.id = :studentId")
     List<String> findSubClassesByStudentId(@Param("studentId") Long studentId);
 
-    Optional<Student> findByName(String studentName);
+    Optional<List<Student>> findAllByName(String studentName);
 }

@@ -12,8 +12,8 @@ import classfit.example.classfit.student.dto.response.StudentInfoResponse;
 import classfit.example.classfit.student.dto.response.StudentResponse;
 import classfit.example.classfit.student.repository.StudentRepository;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -49,9 +49,8 @@ public class StudentService {
     public void deleteStudent(List<Long> studentIds) {
 
         studentIds.stream()
-            .map(studentId -> studentRepository.findById(studentId).orElseThrow(
-                () -> new ClassfitException("해당하는 학생 정보를 찾을 수 없습니다: ID = " + studentId,
-                    HttpStatus.NOT_FOUND)))
+            .map(studentId -> studentRepository.findById(studentId).orElseThrow(()
+                -> new ClassfitException("해당하는 학생 정보를 찾을 수 없습니다", HttpStatus.NOT_FOUND)))
             .forEach(student -> {
                 classStudentRepository.deleteAllByStudentId(student.getId());
                 studentRepository.delete(student);
@@ -60,16 +59,11 @@ public class StudentService {
 
     @Transactional(readOnly = true)
     public List<StudentResponse> studentInfoAll() {
-        List<Student> getStudents = studentRepository.findAll();
+        List<Student> studentAll = studentRepository.findAll();
 
-        List<StudentResponse> responseList = new ArrayList<>();
-
-        for (Student student : getStudents) {
-            StudentResponse studentResponse = StudentResponse.from(student);
-            responseList.add(studentResponse);
-        }
-
-        return responseList;
+        return studentAll.stream()
+            .map(StudentResponse::from)
+            .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
@@ -82,11 +76,15 @@ public class StudentService {
     }
 
     @Transactional(readOnly = true)
-    public StudentResponse findStudentByName(String studentName) {
+    public List<StudentResponse> findStudentsByName(String studentName) {
 
-        Student student = studentRepository.findByName(studentName).orElseThrow(
-            () -> new ClassfitException("해당하는 학생은 존재하지 않습니다.", HttpStatus.NOT_FOUND));
-        return StudentResponse.from(student);
+        List<Student> students = studentRepository.findAllByName(studentName)
+            .filter(list -> !list.isEmpty())
+            .orElseThrow(() -> new ClassfitException("해당 학생은 존재하지 않습니다.", HttpStatus.NOT_FOUND));
+
+        return students.stream()
+            .map(StudentResponse::from)
+            .collect(Collectors.toList());
     }
 
     @Transactional
