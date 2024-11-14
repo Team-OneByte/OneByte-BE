@@ -28,8 +28,13 @@ public class MainClassService {
         Member findMember = memberRepository.findById(memberId)
                 .orElseThrow(() -> new ClassfitException("회원을 찾을 수 없어요", HttpStatus.NOT_FOUND));
 
-        MainClass mainClass = new MainClass(req.mainClassName(), findMember);
+        boolean exists = mainClassRespository.existsByMemberAndMainClassName(findMember,
+                req.mainClassName());
+        if (exists) {
+            throw new ClassfitException("이미 같은 이름의 메인 클래스가 있어요.", HttpStatus.CONFLICT);
+        }
 
+        MainClass mainClass = new MainClass(req.mainClassName(), findMember);
         mainClassRespository.save(mainClass);
 
         return new MainClassResponse(mainClass.getId(), mainClass.getMainClassName());
@@ -43,10 +48,8 @@ public class MainClassService {
 
         List<MainClass> mainClasses = mainClassRespository.findAll();
 
-        return mainClasses.stream()
-                .map(mainClass -> new AllMainClassResponse(mainClass.getId(),
-                        mainClass.getMainClassName()))
-                .toList();
+        return mainClasses.stream().map(mainClass -> new AllMainClassResponse(mainClass.getId(),
+                mainClass.getMainClassName())).toList();
     }
 
 
@@ -57,9 +60,8 @@ public class MainClassService {
         Member findMember = memberRepository.findById(memberId)
                 .orElseThrow(() -> new ClassfitException("회원을 찾을 수 없어요", HttpStatus.NOT_FOUND));
 
-        MainClass mainClass = mainClassRespository.findById(mainClassId)
-                .orElseThrow(
-                        () -> new ClassfitException("해당 메인 클래스를 찾을 수 없습니다.", HttpStatus.NOT_FOUND));
+        MainClass mainClass = mainClassRespository.findById(mainClassId).orElseThrow(
+                () -> new ClassfitException("해당 메인 클래스를 찾을 수 없습니다.", HttpStatus.NOT_FOUND));
 
         mainClassRespository.delete(mainClass);
 
