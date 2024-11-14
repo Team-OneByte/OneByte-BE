@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -41,6 +42,7 @@ public class AttendanceService {
     public List<StudentAttendanceResponse> getStudentAttendance(List<?> students, List<LocalDate> weekRange) {
         return students.stream()
                 .map(studentObject -> mapToStudentAttendanceDTO(studentObject, weekRange))
+                .sorted(Comparator.comparing(student -> student.name()))
                 .collect(Collectors.toList());
     }
 

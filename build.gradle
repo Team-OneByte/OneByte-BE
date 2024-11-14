@@ -35,8 +35,6 @@ dependencies {
 	testImplementation 'org.springframework.security:spring-security-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0' // swagger
-	implementation 'org.apache.poi:poi:5.2.3'           // Apache POI 기본 라이브러리
-	implementation 'org.apache.poi:poi-ooxml:5.2.3'
 	implementation 'net.nurigo:sdk:4.3.0'
 }
 
