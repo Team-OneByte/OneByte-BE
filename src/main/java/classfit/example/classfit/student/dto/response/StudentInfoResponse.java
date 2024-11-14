@@ -3,6 +3,7 @@ package classfit.example.classfit.student.dto.response;
 import classfit.example.classfit.common.Gender;
 import classfit.example.classfit.domain.Student;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import java.time.LocalDate;
 import java.util.List;
 import lombok.Builder;
 
@@ -13,6 +14,7 @@ public record StudentInfoResponse
         Long studentId,
         String name,
         Gender gender,
+        LocalDate birth,
         String studentNumber,
         String parentNumber,
         String grade,
@@ -28,6 +30,7 @@ public record StudentInfoResponse
             .studentId(student.getId())
             .name(student.getName())
             .gender(student.getGender())
+            .birth(student.getBirth())
             .studentNumber(student.getStudentNumber())
             .parentNumber(student.getParentNumber())
             .grade(student.getGrade())
