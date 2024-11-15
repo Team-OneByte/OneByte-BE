@@ -31,17 +31,23 @@ public class SubClassService {
                 .orElseThrow(() -> new ClassfitException("회원을 찾을 수 없어요.", HttpStatus.NOT_FOUND));
 
         MainClass findMainClass = mainClassRespository.findById(req.mainClassId())
-                .orElseThrow(() -> new ClassfitException("메인 클래스를 찾을 수 없어요.", HttpStatus.NOT_FOUND));
+                .orElseThrow(
+                        () -> new ClassfitException("메인 클래스를 찾을 수 없어요.", HttpStatus.NOT_FOUND));
+
+        boolean exists = subClassRepository.existsByMemberAndSubClassNameAndMainClass(
+                findMember, req.subClassName(), findMainClass);
+        if (exists) {
+            throw new ClassfitException("해당 메인 클래스 내에 이미 같은 이름의 서브 클래스가 있어요.", HttpStatus.CONFLICT);
+        }
 
         checkMemberRelationMainClass(findMember, findMainClass);
 
-        // 서브클래스에 메인 클래스를 설정
         SubClass subClass = new SubClass(req.subClassName(), findMember, findMainClass);
 
-        // 서브클래스를 저장
         subClassRepository.save(subClass);
 
-        return new SubClassResponse(req.mainClassId(), subClass.getId(), subClass.getSubClassName());
+        return new SubClassResponse(req.mainClassId(), subClass.getId(),
+                subClass.getSubClassName());
     }
 
 
