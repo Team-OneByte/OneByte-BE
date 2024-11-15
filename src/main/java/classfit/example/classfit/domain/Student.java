@@ -51,7 +51,7 @@ public class Student extends BaseEntity {
     @Column(nullable = false, length = 10)
     private String grade;
 
-    @Column(nullable = false, length = 10)
+    @Column(nullable = false, length = 100)
     private String address;
 
     @Column(nullable = false)
