@@ -1,7 +1,10 @@
 package classfit.example.classfit.student.service;
 
+import classfit.example.classfit.attendance.repository.AttendanceRepository;
 import classfit.example.classfit.category.repository.SubClassRepository;
 import classfit.example.classfit.classStudent.repository.ClassStudentRepository;
+import classfit.example.classfit.common.AttendanceStatus;
+import classfit.example.classfit.domain.Attendance;
 import classfit.example.classfit.domain.ClassStudent;
 import classfit.example.classfit.domain.Student;
 import classfit.example.classfit.domain.SubClass;
@@ -12,6 +15,8 @@ import classfit.example.classfit.student.dto.response.StudentInfoResponse;
 import classfit.example.classfit.student.dto.response.StudentResponse;
 import classfit.example.classfit.student.repository.StudentRepository;
 import java.lang.reflect.Field;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +31,7 @@ public class StudentService {
     private final StudentRepository studentRepository;
     private final SubClassRepository subClassRepository;
     private final ClassStudentRepository classStudentRepository;
+    private final AttendanceRepository attendanceRepository;
 
     @Transactional
     public StudentResponse registerStudent(StudentRequest req) {
@@ -40,9 +46,30 @@ public class StudentService {
             classStudent.setStudent(student);
             classStudent.setSubClass(subClass);
             classStudentRepository.save(classStudent);
+
+            createAttendanceForThreeWeeks(student);
         });
 
         return StudentResponse.from(student);
+    }
+
+    private void createAttendanceForThreeWeeks(Student student) {
+        LocalDate currentDate = LocalDate.now();
+        LocalDate weekStart = currentDate.with(DayOfWeek.MONDAY);
+
+        // 3주간의 출결 생성 (현재 주 + 향후 2주)
+        for (int i = 0; i < 3; i++) {
+            LocalDate weekDate = weekStart.plusWeeks(i);
+            for (int j = 0; j < 7; j++) {
+                LocalDate attendanceDate = weekDate.plusDays(j);
+                Attendance attendance = Attendance.builder()
+                        .date(attendanceDate)
+                        .status(AttendanceStatus.PRESENT)
+                        .student(student)
+                        .build();
+                attendanceRepository.save(attendance);
+            }
+        }
     }
 
     @Transactional
