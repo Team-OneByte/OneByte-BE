@@ -44,6 +44,7 @@ public class AttendanceExportService {
 
     private StudentAttendanceResponse toStudentAttendanceResponse(Student student, List<Attendance> attendances) {
         List<AttendanceResponse> attendanceResponses = attendances.stream()
+                .sorted(Comparator.comparing(Attendance::getDate))
                 .map(this::toAttendanceResponse)
                 .collect(Collectors.toList());
         return new StudentAttendanceResponse(student.getId(), student.getName(), attendanceResponses);
