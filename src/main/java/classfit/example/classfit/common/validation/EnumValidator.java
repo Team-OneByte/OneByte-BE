@@ -5,7 +5,7 @@ import jakarta.validation.ConstraintValidatorContext;
 
 import java.util.Arrays;
 
-public class NotBlankEnumValidator implements ConstraintValidator<EnumValue, String> {
+public class EnumValidator implements ConstraintValidator<EnumValue, String> {
 
     private EnumValue enumValue;
 
@@ -16,6 +16,10 @@ public class NotBlankEnumValidator implements ConstraintValidator<EnumValue, Str
 
     @Override
     public boolean isValid(final String value, final ConstraintValidatorContext context) {
+        if (value == null || value.trim().isEmpty()) {
+            return true;
+        }
+
         final Enum<?>[] enumConstants = this.enumValue.target().getEnumConstants();
 
         if (enumConstants == null) {
@@ -23,8 +27,7 @@ public class NotBlankEnumValidator implements ConstraintValidator<EnumValue, Str
         }
 
         return Arrays.stream(enumConstants)
-            .anyMatch(enumConstant -> convertible(value, enumConstant) || convertibleIgnoreCase(value,
-                enumConstant));
+            .anyMatch(enumConstant -> convertible(value, enumConstant) || convertibleIgnoreCase(value, enumConstant));
     }
 
     private boolean convertible(final String value, final Enum<?> enumConstant) {

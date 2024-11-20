@@ -14,6 +14,7 @@ public record StudentRequest
         @NotBlank(message = "이름은 필수 항목입니다.")
         @Size(max = 30) String name,
 
+        @NotBlank(message = "성별은 필수 항목입니다.")
         @EnumValue(target = Gender.class, message = "존재하지 않는 성별입니다.", ignoreCase = true)
         String gender,
 
