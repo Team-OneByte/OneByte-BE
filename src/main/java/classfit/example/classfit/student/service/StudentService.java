@@ -14,15 +14,16 @@ import classfit.example.classfit.student.dto.request.StudentUpdateRequest;
 import classfit.example.classfit.student.dto.response.StudentInfoResponse;
 import classfit.example.classfit.student.dto.response.StudentResponse;
 import classfit.example.classfit.student.repository.StudentRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.lang.reflect.Field;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
-import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -63,10 +64,10 @@ public class StudentService {
             for (int j = 0; j < 7; j++) {
                 LocalDate attendanceDate = weekDate.plusDays(j);
                 Attendance attendance = Attendance.builder()
-                        .date(attendanceDate)
-                        .status(AttendanceStatus.PRESENT)
-                        .student(student)
-                        .build();
+                    .date(attendanceDate)
+                    .status(AttendanceStatus.PRESENT)
+                    .student(student)
+                    .build();
                 attendanceRepository.save(attendance);
             }
         }
