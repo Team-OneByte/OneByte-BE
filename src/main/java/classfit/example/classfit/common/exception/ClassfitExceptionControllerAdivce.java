@@ -1,4 +1,4 @@
-package classfit.example.classfit.exception;
+package classfit.example.classfit.common.exception;
 
 import classfit.example.classfit.common.ApiResponse;
 import com.fasterxml.jackson.databind.exc.MismatchedInputException;

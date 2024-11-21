@@ -1,7 +1,7 @@
 package classfit.example.classfit.attendance.repository;
 
-import classfit.example.classfit.domain.Attendance;
-import classfit.example.classfit.domain.Student;
+import classfit.example.classfit.attendance.domain.Attendance;
+import classfit.example.classfit.student.domain.Student;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 

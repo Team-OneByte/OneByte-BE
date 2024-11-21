@@ -1,15 +1,15 @@
 package classfit.example.classfit.student.service;
 
+import classfit.example.classfit.attendance.domain.Attendance;
+import classfit.example.classfit.attendance.domain.AttendanceStatus;
 import classfit.example.classfit.attendance.repository.AttendanceRepository;
+import classfit.example.classfit.category.domain.SubClass;
 import classfit.example.classfit.category.repository.SubClassRepository;
+import classfit.example.classfit.classStudent.domain.ClassStudent;
 import classfit.example.classfit.classStudent.repository.ClassStudentRepository;
-import classfit.example.classfit.common.AttendanceStatus;
-import classfit.example.classfit.common.Gender;
-import classfit.example.classfit.domain.Attendance;
-import classfit.example.classfit.domain.ClassStudent;
-import classfit.example.classfit.domain.Student;
-import classfit.example.classfit.domain.SubClass;
-import classfit.example.classfit.exception.ClassfitException;
+import classfit.example.classfit.common.exception.ClassfitException;
+import classfit.example.classfit.member.domain.Gender;
+import classfit.example.classfit.student.domain.Student;
 import classfit.example.classfit.student.dto.request.StudentRequest;
 import classfit.example.classfit.student.dto.request.StudentUpdateRequest;
 import classfit.example.classfit.student.dto.response.StudentInfoResponse;

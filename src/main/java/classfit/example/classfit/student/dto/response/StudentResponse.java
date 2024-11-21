@@ -1,6 +1,6 @@
 package classfit.example.classfit.student.dto.response;
 
-import classfit.example.classfit.domain.Student;
+import classfit.example.classfit.student.domain.Student;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 

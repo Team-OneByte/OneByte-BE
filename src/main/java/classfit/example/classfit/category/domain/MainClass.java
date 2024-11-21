@@ -1,21 +1,14 @@
-package classfit.example.classfit.domain;
+package classfit.example.classfit.category.domain;
 
-import classfit.example.classfit.common.BaseEntity;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import java.util.ArrayList;
-import java.util.List;
+import classfit.example.classfit.common.domain.BaseEntity;
+import classfit.example.classfit.member.domain.Member;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -38,13 +31,13 @@ public class MainClass extends BaseEntity {
     private Member member;
 
 
-    // 업데이트 관련 메서드
-    public void updateMainClassName(String mainClassName) {
-        this.mainClassName = mainClassName;
-    }
-
     public MainClass(String mainClassName, Member member) {
         this.mainClassName = mainClassName;
         this.member = member;
+    }
+
+    // 업데이트 관련 메서드
+    public void updateMainClassName(String mainClassName) {
+        this.mainClassName = mainClassName;
     }
 }

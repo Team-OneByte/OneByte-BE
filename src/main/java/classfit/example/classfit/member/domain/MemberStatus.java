@@ -1,4 +1,4 @@
-package classfit.example.classfit.common;
+package classfit.example.classfit.member.domain;
 
 public enum MemberStatus {
     ACTIVE, INACTIVE

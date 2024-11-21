@@ -1,9 +1,9 @@
 package classfit.example.classfit.attendance.service;
 
+import classfit.example.classfit.attendance.domain.Attendance;
+import classfit.example.classfit.attendance.domain.AttendanceStatus;
 import classfit.example.classfit.attendance.repository.AttendanceRepository;
-import classfit.example.classfit.common.AttendanceStatus;
-import classfit.example.classfit.domain.Attendance;
-import classfit.example.classfit.domain.Student;
+import classfit.example.classfit.student.domain.Student;
 import classfit.example.classfit.student.repository.StudentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -26,7 +26,7 @@ public class AttendanceSchedulingService {
     @Scheduled(cron = "0 0 0 * * SUN")
     public void createWeeklyAttendance() {
         LocalDate lastGeneratedDate = attendanceRepository.findLastGeneratedDate()
-                .orElse(LocalDate.now().with(DayOfWeek.MONDAY));
+            .orElse(LocalDate.now().with(DayOfWeek.MONDAY));
         LocalDate nextWeekStart = lastGeneratedDate.plusWeeks(1);
         generateAttendanceDataForWeeks(nextWeekStart);
     }
@@ -39,10 +39,10 @@ public class AttendanceSchedulingService {
             for (Student student : students) {
                 if (!attendanceRepository.existsByStudentAndDate(student, date)) {
                     Attendance attendance = Attendance.builder()
-                            .date(date)
-                            .status(AttendanceStatus.PRESENT)
-                            .student(student)
-                            .build();
+                        .date(date)
+                        .status(AttendanceStatus.PRESENT)
+                        .student(student)
+                        .build();
                     attendanceRepository.save(attendance);
                 }
             }

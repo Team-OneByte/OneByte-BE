@@ -1,6 +1,6 @@
 package classfit.example.classfit.classStudent.repository;
 
-import classfit.example.classfit.domain.ClassStudent;
+import classfit.example.classfit.classStudent.domain.ClassStudent;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -13,7 +13,7 @@ import org.springframework.stereotype.Repository;
 public interface ClassStudentRepository extends JpaRepository<ClassStudent, Long> {
 
     Page<ClassStudent> findBySubClass_MainClass_IdAndSubClass_Id(Long mainClassId, Long subClassId,
-        Pageable pageable);
+                                                                 Pageable pageable);
 
     @Modifying
     @Query("DELETE FROM ClassStudent cs WHERE cs.student.id = :studentId")
