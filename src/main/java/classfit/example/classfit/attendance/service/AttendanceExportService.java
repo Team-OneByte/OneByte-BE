@@ -1,10 +1,10 @@
 package classfit.example.classfit.attendance.service;
 
+import classfit.example.classfit.attendance.domain.Attendance;
 import classfit.example.classfit.attendance.dto.response.AttendanceResponse;
 import classfit.example.classfit.attendance.dto.response.StudentAttendanceResponse;
 import classfit.example.classfit.attendance.repository.AttendanceRepository;
-import classfit.example.classfit.domain.Attendance;
-import classfit.example.classfit.domain.Student;
+import classfit.example.classfit.student.domain.Student;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,11 +24,11 @@ public class AttendanceExportService {
         List<Attendance> attendances = findAttendancesBySubClassIdAndMonth(subClassId, month);
 
         return attendances.stream()
-                .collect(Collectors.groupingBy(Attendance::getStudent))
-                .entrySet().stream()
-                .sorted(Comparator.comparing(entry -> entry.getKey().getName()))
-                .map(entry -> toStudentAttendanceResponse(entry.getKey(), entry.getValue()))
-                .collect(Collectors.toList());
+            .collect(Collectors.groupingBy(Attendance::getStudent))
+            .entrySet().stream()
+            .sorted(Comparator.comparing(entry -> entry.getKey().getName()))
+            .map(entry -> toStudentAttendanceResponse(entry.getKey(), entry.getValue()))
+            .collect(Collectors.toList());
     }
 
     private List<Attendance> findAttendancesBySubClassIdAndMonth(Long subClassId, int month) {
@@ -44,9 +44,9 @@ public class AttendanceExportService {
 
     private StudentAttendanceResponse toStudentAttendanceResponse(Student student, List<Attendance> attendances) {
         List<AttendanceResponse> attendanceResponses = attendances.stream()
-                .sorted(Comparator.comparing(Attendance::getDate))
-                .map(this::toAttendanceResponse)
-                .collect(Collectors.toList());
+            .sorted(Comparator.comparing(Attendance::getDate))
+            .map(this::toAttendanceResponse)
+            .collect(Collectors.toList());
         return new StudentAttendanceResponse(student.getId(), student.getName(), attendanceResponses);
     }
 

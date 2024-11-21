@@ -1,5 +1,6 @@
 package classfit.example.classfit.common;
 
+import classfit.example.classfit.common.domain.ResultType;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)

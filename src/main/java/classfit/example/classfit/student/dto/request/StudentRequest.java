@@ -1,8 +1,8 @@
 package classfit.example.classfit.student.dto.request;
 
-import classfit.example.classfit.common.Gender;
 import classfit.example.classfit.common.validation.EnumValue;
-import classfit.example.classfit.domain.Student;
+import classfit.example.classfit.member.domain.Gender;
+import classfit.example.classfit.student.domain.Student;
 import jakarta.validation.constraints.*;
 import org.springframework.format.annotation.DateTimeFormat;
 

@@ -1,17 +1,7 @@
-package classfit.example.classfit.domain;
+package classfit.example.classfit.attendance.domain;
 
-import classfit.example.classfit.common.AttendanceStatus;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-
+import classfit.example.classfit.student.domain.Student;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -19,7 +9,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 
-import static classfit.example.classfit.exception.ClassfitException.INVALID_STATUS_TYPE;
+import static classfit.example.classfit.common.exception.ClassfitException.INVALID_STATUS_TYPE;
 
 @Entity
 @Getter

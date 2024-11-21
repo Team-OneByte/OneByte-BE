@@ -1,13 +1,11 @@
 package classfit.example.classfit.sms.service;
 
-import classfit.example.classfit.domain.Member;
-import classfit.example.classfit.domain.Student;
-import classfit.example.classfit.exception.ClassfitException;
-import classfit.example.classfit.member.MemberRepository;
+import classfit.example.classfit.common.exception.ClassfitException;
+import classfit.example.classfit.member.domain.Member;
+import classfit.example.classfit.member.repository.MemberRepository;
 import classfit.example.classfit.sms.dto.SendRequest;
+import classfit.example.classfit.student.domain.Student;
 import classfit.example.classfit.student.repository.StudentRepository;
-import java.util.ArrayList;
-import java.util.List;
 import net.nurigo.sdk.message.exception.NurigoMessageNotReceivedException;
 import net.nurigo.sdk.message.model.Message;
 import net.nurigo.sdk.message.response.MultipleDetailMessageSentResponse;
@@ -15,6 +13,9 @@ import net.nurigo.sdk.message.service.DefaultMessageService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class SmsService {
@@ -36,7 +37,7 @@ public class SmsService {
     }
 
     public MultipleDetailMessageSentResponse sendMessages(List<SendRequest> requestList,
-        Long memberId) {
+                                                          Long memberId) {
         Member member = memberRepository.findById(memberId)
             .orElseThrow(() -> new ClassfitException("회원이 존재하지 않습니다.", HttpStatus.NOT_FOUND));
 

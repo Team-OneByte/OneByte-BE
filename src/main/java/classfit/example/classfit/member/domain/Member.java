@@ -1,23 +1,14 @@
-package classfit.example.classfit.domain;
+package classfit.example.classfit.member.domain;
 
-import classfit.example.classfit.common.BaseEntity;
-import classfit.example.classfit.common.Gender;
-import classfit.example.classfit.common.LoginType;
-import classfit.example.classfit.common.MemberStatus;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import java.time.LocalDate;
-import java.util.List;
+import classfit.example.classfit.category.domain.MainClass;
+import classfit.example.classfit.common.domain.BaseEntity;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Getter
@@ -52,7 +43,7 @@ public class Member extends BaseEntity {
     @Column(nullable = false, length = 30)
     private String department;
 
-    @Column(nullable = false,length = 20)
+    @Column(nullable = false, length = 20)
     private String phoneNumber;
 
     @Enumerated(EnumType.STRING)

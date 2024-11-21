@@ -1,13 +1,12 @@
 package classfit.example.classfit.attendance.service;
 
-import classfit.example.classfit.classStudent.repository.ClassStudentRepository;
-import classfit.example.classfit.attendance.service.util.DateRangeUtil;
-import classfit.example.classfit.domain.ClassStudent;
-import classfit.example.classfit.domain.Student;
-import classfit.example.classfit.student.repository.StudentRepository;
 import classfit.example.classfit.attendance.dto.response.AttendanceResponse;
 import classfit.example.classfit.attendance.dto.response.StudentAttendanceResponse;
-
+import classfit.example.classfit.classStudent.domain.ClassStudent;
+import classfit.example.classfit.classStudent.repository.ClassStudentRepository;
+import classfit.example.classfit.student.domain.Student;
+import classfit.example.classfit.student.repository.StudentRepository;
+import classfit.example.classfit.util.DateRangeUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -20,7 +19,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static classfit.example.classfit.exception.ClassfitException.INVALID_ENTITY_TYPE;
+import static classfit.example.classfit.common.exception.ClassfitException.INVALID_ENTITY_TYPE;
 
 @Service
 @RequiredArgsConstructor
@@ -41,19 +40,19 @@ public class AttendanceService {
 
     public List<StudentAttendanceResponse> getStudentAttendance(List<?> students, List<LocalDate> weekRange) {
         return students.stream()
-                .map(studentObject -> mapToStudentAttendanceDTO(studentObject, weekRange))
-                .sorted(Comparator.comparing(student -> student.name()))
-                .collect(Collectors.toList());
+            .map(studentObject -> mapToStudentAttendanceDTO(studentObject, weekRange))
+            .sorted(Comparator.comparing(student -> student.name()))
+            .collect(Collectors.toList());
     }
 
     private StudentAttendanceResponse mapToStudentAttendanceDTO(Object studentObject, List<LocalDate> weekRange) {
         Student student = getStudentFromEntity(studentObject);
 
         List<AttendanceResponse> attendanceDTOs = student.getAttendances().stream()
-                .filter(attendance -> weekRange.contains(attendance.getDate()))
-                .sorted(Comparator.comparing(attendance -> attendance.getDate()))
-                .map(attendance -> AttendanceResponse.of(attendance.getId(), attendance.getDate(), attendance.getStatus().name()))
-                .collect(Collectors.toList());
+            .filter(attendance -> weekRange.contains(attendance.getDate()))
+            .sorted(Comparator.comparing(attendance -> attendance.getDate()))
+            .map(attendance -> AttendanceResponse.of(attendance.getId(), attendance.getDate(), attendance.getStatus().name()))
+            .collect(Collectors.toList());
 
         return new StudentAttendanceResponse(student.getId(), student.getName(), attendanceDTOs);
     }
