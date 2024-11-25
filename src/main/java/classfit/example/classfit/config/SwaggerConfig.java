@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Configuration;
         info = @Info(title = "CLASSFIT API 명세서",
                 description = "백엔드 API")
 )
+
 @Configuration
 public class SwaggerConfig {
 }
