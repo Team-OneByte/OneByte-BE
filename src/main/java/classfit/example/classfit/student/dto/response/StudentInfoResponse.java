@@ -1,11 +1,12 @@
 package classfit.example.classfit.student.dto.response;
 
-import classfit.example.classfit.common.Gender;
-import classfit.example.classfit.domain.Student;
+import classfit.example.classfit.member.domain.Gender;
+import classfit.example.classfit.student.domain.Student;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.Builder;
+
 import java.time.LocalDate;
 import java.util.List;
-import lombok.Builder;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Builder

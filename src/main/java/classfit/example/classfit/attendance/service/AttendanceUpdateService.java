@@ -1,13 +1,13 @@
 package classfit.example.classfit.attendance.service;
 
+import classfit.example.classfit.attendance.domain.Attendance;
 import classfit.example.classfit.attendance.dto.request.AttendanceStatusUpdateRequest;
 import classfit.example.classfit.attendance.dto.request.StudentAttendanceUpdateRequest;
 import classfit.example.classfit.attendance.dto.response.AttendanceResponse;
 import classfit.example.classfit.attendance.dto.response.StudentAttendanceResponse;
 import classfit.example.classfit.attendance.repository.AttendanceRepository;
-import classfit.example.classfit.domain.Attendance;
-import classfit.example.classfit.domain.Student;
-import classfit.example.classfit.exception.ClassfitException;
+import classfit.example.classfit.common.exception.ClassfitException;
+import classfit.example.classfit.student.domain.Student;
 import classfit.example.classfit.student.repository.StudentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -16,7 +16,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static classfit.example.classfit.exception.ClassfitException.*;
+import static classfit.example.classfit.common.exception.ClassfitException.ATTENDANCE_NOT_FOUND;
+import static classfit.example.classfit.common.exception.ClassfitException.STUDENT_NOT_FOUND;
 
 @Service
 @RequiredArgsConstructor
@@ -28,15 +29,15 @@ public class AttendanceUpdateService {
     @Transactional
     public List<StudentAttendanceResponse> updateStudentAttendances(List<StudentAttendanceUpdateRequest> students) {
         return students.stream()
-                .map(this::updateStudentAttendance)
-                .toList();
+            .map(this::updateStudentAttendance)
+            .toList();
     }
 
     private StudentAttendanceResponse updateStudentAttendance(StudentAttendanceUpdateRequest studentRequest) {
         Student student = findStudentById(studentRequest.studentId());
         List<AttendanceResponse> attendanceResponses = studentRequest.attendance().stream()
-                .map(this::updateAttendanceStatus)
-                .toList();
+            .map(this::updateAttendanceStatus)
+            .toList();
 
         return StudentAttendanceResponse.of(student.getId(), student.getName(), attendanceResponses);
     }
@@ -51,11 +52,11 @@ public class AttendanceUpdateService {
 
     private Student findStudentById(Long studentId) {
         return studentRepository.findById(studentId)
-                .orElseThrow(() -> new ClassfitException(STUDENT_NOT_FOUND, HttpStatus.NOT_FOUND));
+            .orElseThrow(() -> new ClassfitException(STUDENT_NOT_FOUND, HttpStatus.NOT_FOUND));
     }
 
     private Attendance findAttendanceById(Long attendanceId) {
         return attendanceRepository.findById(attendanceId)
-                .orElseThrow(() -> new ClassfitException(ATTENDANCE_NOT_FOUND, HttpStatus.NOT_FOUND));
+            .orElseThrow(() -> new ClassfitException(ATTENDANCE_NOT_FOUND, HttpStatus.NOT_FOUND));
     }
 }

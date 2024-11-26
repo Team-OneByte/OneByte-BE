@@ -1,15 +1,16 @@
 package classfit.example.classfit.common.util;
 
-import classfit.example.classfit.attendance.service.util.DateRangeUtil;
-import classfit.example.classfit.exception.ClassfitException;
+import classfit.example.classfit.common.exception.ClassfitException;
+import classfit.example.classfit.util.DateRangeUtil;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
 import java.util.List;
 
-import static classfit.example.classfit.exception.ClassfitException.INVALID_WEEK_VALUE;
-import static org.junit.jupiter.api.Assertions.*;
+import static classfit.example.classfit.common.exception.ClassfitException.INVALID_WEEK_VALUE;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class DateRangeUtilTest {
 

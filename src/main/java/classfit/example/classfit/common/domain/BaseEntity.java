@@ -1,4 +1,4 @@
-package classfit.example.classfit.common;
+package classfit.example.classfit.common.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;

@@ -1,6 +1,6 @@
-package classfit.example.classfit.attendance.service.util;
+package classfit.example.classfit.util;
 
-import classfit.example.classfit.exception.ClassfitException;
+import classfit.example.classfit.common.exception.ClassfitException;
 import org.springframework.http.HttpStatus;
 
 import java.time.DayOfWeek;
@@ -8,7 +8,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import static classfit.example.classfit.exception.ClassfitException.INVALID_WEEK_VALUE;
+import static classfit.example.classfit.common.exception.ClassfitException.INVALID_WEEK_VALUE;
 
 public class DateRangeUtil {
     public static void validateWeekOffset(int weekOffset) {

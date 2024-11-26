@@ -11,8 +11,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableScheduling
 public class ClassfitApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(ClassfitApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(ClassfitApplication.class, args);
+    }
 
 }
