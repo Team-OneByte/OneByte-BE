@@ -2,7 +2,6 @@ package classfit.example.classfit.student.domain;
 
 import classfit.example.classfit.attendance.domain.Attendance;
 import classfit.example.classfit.common.domain.BaseEntity;
-import classfit.example.classfit.member.domain.Gender;
 import jakarta.persistence.*;
 import lombok.*;
 
