@@ -67,6 +67,7 @@ public class StudentService {
                 LocalDate attendanceDate = weekDate.plusDays(j);
                 Attendance attendance = Attendance.builder()
                     .date(attendanceDate)
+                    .week(j)
                     .status(AttendanceStatus.PRESENT)
                     .student(student)
                     .build();
