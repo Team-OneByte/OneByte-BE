@@ -26,6 +26,14 @@ public class Academy extends BaseEntity {
     @Column(nullable = false, length = 8)
     private String code;
 
+    @Builder.Default
     @OneToMany(mappedBy = "academy", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Member> members = new ArrayList<>();
+
+    public void addAcademy(Member member) {
+        this.members.add(member);
+        if (member.getAcademy() != this) {
+            member.joinAcademy(this);
+        }
+    }
 }
