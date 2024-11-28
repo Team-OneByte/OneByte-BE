@@ -4,14 +4,14 @@ import classfit.example.classfit.academy.domain.Academy;
 import classfit.example.classfit.category.domain.MainClass;
 import classfit.example.classfit.common.domain.BaseEntity;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.List;
 
 @Entity
 @Getter
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Member extends BaseEntity {
 
@@ -22,6 +22,9 @@ public class Member extends BaseEntity {
 
     @Column(nullable = false, length = 100)
     private String email;
+
+    @Column(nullable = false)
+    private String password;
 
     @Column(nullable = false, length = 30)
     private String name;
@@ -37,7 +40,7 @@ public class Member extends BaseEntity {
     private List<MainClass> mainClasses;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "academy_id", nullable = false)
+    @JoinColumn(name = "academy_id")
     private Academy academy;
 
 }
