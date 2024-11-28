@@ -20,6 +20,9 @@ public class Academy extends BaseEntity {
     @Column(name = "academy_id")
     private Long id;
 
+    @Column(nullable = false, length = 20)
+    private String name;
+
     @Column(nullable = false, length = 8)
     private String code;
 
