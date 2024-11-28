@@ -3,15 +3,15 @@ package classfit.example.classfit.academy.domain;
 import classfit.example.classfit.common.domain.BaseEntity;
 import classfit.example.classfit.member.domain.Member;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Getter
+@AllArgsConstructor
+@Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Academy extends BaseEntity {
 
