@@ -6,6 +6,7 @@ import classfit.example.classfit.mail.dto.request.EmailAuthRequest;
 import classfit.example.classfit.mail.dto.request.EmailAuthVerifyRequest;
 import classfit.example.classfit.mail.dto.response.EmailAuthResponse;
 import classfit.example.classfit.member.repository.MemberRepository;
+import classfit.example.classfit.util.CodeUtil;
 import classfit.example.classfit.util.RedisUtil;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -17,8 +18,6 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring6.SpringTemplateEngine;
-
-import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
@@ -64,7 +63,7 @@ public class EmailAuthService {
 
     private String createEmailForm(String email) {
 
-        String authCode = createdCode();
+        String authCode = CodeUtil.createdCode();
 
         try {
             MimeMessage message = javaMailSender.createMimeMessage();
@@ -80,19 +79,6 @@ public class EmailAuthService {
 
         redisUtil.setDataExpire(email, authCode, 60 * 5L);         // 5분동안 유효
         return email;
-    }
-
-    private String createdCode() {
-        int leftLimit = 48;             // number '0'
-        int rightLimit = 122;           // alphabet 'z'
-        int targetStringLength = 8;
-        Random random = new Random();
-
-        return random.ints(leftLimit, rightLimit + 1)
-            .filter(i -> (i <= 57 || i >= 65) && (i <= 90 || i >= 97))
-            .limit(targetStringLength)
-            .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
-            .toString();
     }
 
     private String setContext(String authCode) {

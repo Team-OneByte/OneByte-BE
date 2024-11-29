@@ -6,6 +6,7 @@ import classfit.example.classfit.member.dto.request.MemberRequest;
 import classfit.example.classfit.member.dto.response.MemberResponse;
 import classfit.example.classfit.member.repository.MemberRepository;
 import classfit.example.classfit.util.RedisUtil;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -19,6 +20,7 @@ public class MemberService {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final RedisUtil redisUtil;
 
+    @Transactional
     public MemberResponse signIn(MemberRequest request) {
 
         String emailToken = redisUtil.getData("Email Token : " + request.email());
