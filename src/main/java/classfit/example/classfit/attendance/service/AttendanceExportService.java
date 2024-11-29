@@ -51,6 +51,6 @@ public class AttendanceExportService {
     }
 
     private AttendanceResponse toAttendanceResponse(Attendance attendance) {
-        return AttendanceResponse.of(attendance.getId(), attendance.getDate(), attendance.getStatus().name());
+        return AttendanceResponse.of(attendance.getId(), attendance.getDate(), attendance.getWeek(), attendance.getStatus().name());
     }
 }

@@ -46,8 +46,7 @@ public class AttendanceUpdateService {
         Attendance attendance = findAttendanceById(attendanceRequest.attendanceId());
         attendance.updateStatus(attendanceRequest.status());
         attendanceRepository.save(attendance);
-
-        return AttendanceResponse.of(attendance.getId(), attendance.getDate(), attendance.getStatus().name());
+        return AttendanceResponse.of(attendance.getId(), attendance.getDate(), attendance.getWeek(), attendance.getStatus().name());
     }
 
     private Student findStudentById(Long studentId) {

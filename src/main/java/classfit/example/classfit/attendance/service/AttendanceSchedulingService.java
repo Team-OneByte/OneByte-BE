@@ -18,6 +18,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class AttendanceSchedulingService {
+
     private final AttendanceRepository attendanceRepository;
     private final StudentRepository studentRepository;
 
@@ -27,8 +28,8 @@ public class AttendanceSchedulingService {
     public void createWeeklyAttendance() {
         LocalDate lastGeneratedDate = attendanceRepository.findLastGeneratedDate()
             .orElse(LocalDate.now().with(DayOfWeek.MONDAY));
-        LocalDate nextWeekStart = lastGeneratedDate.plusWeeks(1);
-        generateAttendanceDataForWeeks(nextWeekStart);
+        LocalDate nextWeekMonday = lastGeneratedDate.plusWeeks(1).with(java.time.DayOfWeek.MONDAY);
+        generateAttendanceDataForWeeks(nextWeekMonday);
     }
 
     private void generateAttendanceDataForWeeks(LocalDate startOfWeek) {

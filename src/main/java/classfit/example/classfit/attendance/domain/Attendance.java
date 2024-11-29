@@ -24,6 +24,8 @@ public class Attendance {
 
     private LocalDate date;
 
+    private int week;
+
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "VARCHAR(20)", nullable = false)
     private AttendanceStatus status;
@@ -33,8 +35,9 @@ public class Attendance {
     private Student student;
 
     @Builder
-    public Attendance(LocalDate date, AttendanceStatus status, Student student) {
+    public Attendance(LocalDate date, int week, AttendanceStatus status, Student student) {
         this.date = date;
+        this.week = week;
         this.status = status;
         this.student = student;
     }

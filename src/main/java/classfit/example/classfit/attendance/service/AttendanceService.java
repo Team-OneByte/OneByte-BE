@@ -51,7 +51,7 @@ public class AttendanceService {
         List<AttendanceResponse> attendanceDTOs = student.getAttendances().stream()
             .filter(attendance -> weekRange.contains(attendance.getDate()))
             .sorted(Comparator.comparing(attendance -> attendance.getDate()))
-            .map(attendance -> AttendanceResponse.of(attendance.getId(), attendance.getDate(), attendance.getStatus().name()))
+            .map(attendance -> AttendanceResponse.of(attendance.getId(), attendance.getDate(), attendance.getWeek(), attendance.getStatus().name()))
             .collect(Collectors.toList());
 
         return new StudentAttendanceResponse(student.getId(), student.getName(), attendanceDTOs);
