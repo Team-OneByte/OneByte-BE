@@ -1,7 +1,6 @@
 package classfit.example.classfit.common.util;
 
 import classfit.example.classfit.common.exception.ClassfitException;
-import classfit.example.classfit.util.DateRangeUtil;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

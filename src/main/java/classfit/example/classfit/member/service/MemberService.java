@@ -1,11 +1,11 @@
 package classfit.example.classfit.member.service;
 
 import classfit.example.classfit.common.exception.ClassfitException;
+import classfit.example.classfit.common.util.RedisUtil;
 import classfit.example.classfit.member.domain.Member;
 import classfit.example.classfit.member.dto.request.MemberRequest;
 import classfit.example.classfit.member.dto.response.MemberResponse;
 import classfit.example.classfit.member.repository.MemberRepository;
-import classfit.example.classfit.util.RedisUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
