@@ -4,12 +4,9 @@ import classfit.example.classfit.attendance.domain.Attendance;
 import classfit.example.classfit.attendance.domain.AttendanceStatus;
 import classfit.example.classfit.attendance.dto.response.StatisticsDateResponse;
 import classfit.example.classfit.attendance.repository.AttendanceRepository;
-import classfit.example.classfit.classStudent.domain.ClassStudent;
-import classfit.example.classfit.classStudent.repository.ClassStudentRepository;
 import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -36,6 +33,7 @@ public class AttendanceStatisticsService {
                 // 출석 상태별 카운팅
                 int presentCount = (int) dayAttendances.stream().filter(a -> a.getStatus() == AttendanceStatus.PRESENT).count();
                 int absentCount = (int) dayAttendances.stream().filter(a -> a.getStatus() == AttendanceStatus.ABSENT).count();
+                int lateCount = (int) dayAttendances.stream().filter(a -> a.getStatus() == AttendanceStatus.LATE).count();
                 int extraCount = 0;
 
                 // 날짜별 출석 통계 응답 생성 (subClassId 포함)
@@ -44,6 +42,7 @@ public class AttendanceStatisticsService {
                     dayAttendances.get(0).getWeek(),
                     presentCount,
                     absentCount,
+                    lateCount,
                     extraCount
                 );
             })
