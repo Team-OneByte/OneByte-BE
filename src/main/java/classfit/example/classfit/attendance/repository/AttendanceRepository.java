@@ -20,4 +20,5 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
 
     @Query("SELECT a FROM Attendance a WHERE FUNCTION('MONTH', a.date) = :month")
     List<Attendance> findByMonth(int month);
+    List<Attendance> findByDateBetween(LocalDate startDate, LocalDate endDate);
 }

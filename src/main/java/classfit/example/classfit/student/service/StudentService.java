@@ -59,6 +59,7 @@ public class StudentService {
     private void createAttendanceForThreeWeeks(Student student) {
         LocalDate currentDate = LocalDate.now();
         LocalDate weekStart = currentDate.with(DayOfWeek.MONDAY);
+        ClassStudent classStudent = classStudentRepository.findByStudent(student);
 
         // 3주간의 출결 생성 (현재 주 + 향후 2주)
         for (int i = 0; i < 3; i++) {
@@ -70,6 +71,7 @@ public class StudentService {
                     .week(j)
                     .status(AttendanceStatus.PRESENT)
                     .student(student)
+                    .classStudent(classStudent)
                     .build();
                 attendanceRepository.save(attendance);
             }
