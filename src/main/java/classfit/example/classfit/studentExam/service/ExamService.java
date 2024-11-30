@@ -35,13 +35,11 @@ public class ExamService {
         Member findMember = memberRepository.findById(memberId)
                 .orElseThrow(() -> new ClassfitException("회원을 찾을 수 없어요.", HttpStatus.NOT_FOUND));
 
-        SubClass findSubClass = subClassRepository.findById(request.subClassId())
-                .orElseThrow(
-                        () -> new ClassfitException("서브 클래스를 찾을 수 없어요.", HttpStatus.NOT_FOUND));
+        SubClass findSubClass = subClassRepository.findById(request.subClassId()).orElseThrow(
+                () -> new ClassfitException("서브 클래스를 찾을 수 없어요.", HttpStatus.NOT_FOUND));
 
-        MainClass findMainClass = mainClassRespository.findById(request.mainClassId())
-                .orElseThrow(
-                        () -> new ClassfitException("메인 클래스를 찾을 수 없어요.", HttpStatus.NOT_FOUND));
+        MainClass findMainClass = mainClassRespository.findById(request.mainClassId()).orElseThrow(
+                () -> new ClassfitException("메인 클래스를 찾을 수 없어요.", HttpStatus.NOT_FOUND));
 
         Exam newExam = request.toEntity(findSubClass, findMainClass);
         Exam savedExam = examRepository.save(newExam);
@@ -50,7 +48,7 @@ public class ExamService {
     }
 
     @Transactional(readOnly = true)
-    public List<ShowExamClassStudentResponse> findExamClassStuent(Long memberId,Long examId) {
+    public List<ShowExamClassStudentResponse> findExamClassStuent(Long memberId, Long examId) {
         Member findMember = memberRepository.findById(memberId)
                 .orElseThrow(() -> new ClassfitException("회원을 찾을 수 없어요.", HttpStatus.NOT_FOUND));
         Exam findExam = examRepository.findById(examId)
@@ -59,8 +57,7 @@ public class ExamService {
 
         List<ClassStudent> classStudents = classStudentRepository.findBySubClass(subClass);
 
-        return classStudents.stream()
-                .map(cs -> ShowExamClassStudentResponse.from(cs.getStudent(), findExam.getHighestScore()))
-                .toList();
+        return classStudents.stream().map(cs -> ShowExamClassStudentResponse.from(cs.getStudent(),
+                findExam.getHighestScore())).toList();
     }
 }

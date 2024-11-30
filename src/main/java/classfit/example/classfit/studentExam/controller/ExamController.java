@@ -29,12 +29,14 @@ public class ExamController {
         CreateExamResponse response = examService.createExam(memberId, req);
         return ApiResponse.success(response, 201, "CREATED EXAM");
     }
+
     @GetMapping("/{examId}")
     public ApiResponse<List<ShowExamClassStudentResponse>> findExamClassStuent(
             @RequestHeader(name = "member-no", required = false) Long memberId,
             @PathVariable Long examId
     ) {
-        List<ShowExamClassStudentResponse> response = examService.findExamClassStuent(memberId,examId);
-        return ApiResponse.success(response,200, "FIND EXAM-STUDENT");
+        List<ShowExamClassStudentResponse> response = examService.findExamClassStuent(memberId,
+                examId);
+        return ApiResponse.success(response, 200, "FIND EXAM-STUDENT");
     }
 }
