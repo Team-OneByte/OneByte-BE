@@ -1,13 +1,13 @@
 package classfit.example.classfit.mail.service;
 
+import classfit.example.classfit.auth.jwt.JWTUtil;
 import classfit.example.classfit.common.exception.ClassfitException;
-import classfit.example.classfit.jwt.JWTUtil;
+import classfit.example.classfit.common.util.CodeUtil;
+import classfit.example.classfit.common.util.RedisUtil;
 import classfit.example.classfit.mail.dto.request.EmailAuthRequest;
 import classfit.example.classfit.mail.dto.request.EmailAuthVerifyRequest;
 import classfit.example.classfit.mail.dto.response.EmailAuthResponse;
 import classfit.example.classfit.member.repository.MemberRepository;
-import classfit.example.classfit.util.CodeUtil;
-import classfit.example.classfit.util.RedisUtil;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.transaction.Transactional;

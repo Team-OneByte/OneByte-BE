@@ -29,6 +29,9 @@ public class Member extends BaseEntity {
     @Column(nullable = false, length = 30)
     private String name;
 
+    @Column(length = 15)
+    private String role;
+
     @Column(nullable = false, length = 20)
     private String phoneNumber;
 
@@ -46,5 +49,9 @@ public class Member extends BaseEntity {
     // 연관관계 편의 메서드
     public void joinAcademy(Academy academy) {
         this.academy = academy;
+    }
+
+    public void updateRole(String admin) {
+        this.role = admin;
     }
 }

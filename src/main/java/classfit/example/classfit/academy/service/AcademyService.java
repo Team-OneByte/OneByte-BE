@@ -5,9 +5,9 @@ import classfit.example.classfit.academy.dto.request.AcademyRequest;
 import classfit.example.classfit.academy.dto.response.AcademyResponse;
 import classfit.example.classfit.academy.repository.AcademyRepository;
 import classfit.example.classfit.common.exception.ClassfitException;
+import classfit.example.classfit.common.util.CodeUtil;
 import classfit.example.classfit.member.domain.Member;
 import classfit.example.classfit.member.repository.MemberRepository;
-import classfit.example.classfit.util.CodeUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -29,6 +29,8 @@ public class AcademyService {
 
         Member member = memberRepository.findByEmail(request.email()).orElseThrow(
             () -> new ClassfitException("등록된 회원 정보가 없습니다. 처음부터 다시 시도해 주세요", HttpStatus.NOT_FOUND));
+
+        member.updateRole("ADMIN");
 
         Academy academy = request.toEntity();
         academy.addAcademy(member);
