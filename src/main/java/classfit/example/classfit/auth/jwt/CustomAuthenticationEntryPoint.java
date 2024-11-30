@@ -1,32 +1,36 @@
 package classfit.example.classfit.auth.jwt;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import classfit.example.classfit.common.exception.ClassfitException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 @Component
+@Slf4j
 public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException {
-        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
+        // 요청에 저장된 예외 확인
+        Throwable exception = (Throwable) request.getAttribute("exception");
 
-        Map<String, Object> responseBody = new HashMap<>();
-        responseBody.put("error", "Unauthorized");
-        responseBody.put("message", "사용 권한이 없습니다. 로그인 후 다시 시도해주세요.");
-        responseBody.put("path", request.getRequestURI());
-        responseBody.put("status", HttpServletResponse.SC_UNAUTHORIZED);
-
-        ObjectMapper objectMapper = new ObjectMapper();
-        response.getWriter().write(objectMapper.writeValueAsString(responseBody));
+        if (exception instanceof ClassfitException classfitException) {
+            log.error("ClassfitException 확인: {}", classfitException.getMessage());
+            response.setStatus(classfitException.getHttpStatus().value());
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+            response.getWriter().write("{\"message\": \"" + classfitException.getMessage() + "\", \"status\": " + classfitException.getHttpStatus().value() + "}");
+        } else {
+            log.error("기타 예외 처리: {}", authException.getMessage());
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.getWriter().write("{\"message\": \"Unauthorized\", \"status\": 401}");
+        }
     }
 }

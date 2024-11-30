@@ -63,10 +63,7 @@ public class SecurityConfig {
         security
             .addFilterBefore(new JWTFilter(customUserDetailService, jwtUtil), CustomLoginFilter.class)
             .addFilterAt(new CustomLoginFilter(authenticationManager(authenticationConfiguration), jwtUtil, redisUtil), UsernamePasswordAuthenticationFilter.class)
-
-            .exceptionHandling(exception -> exception
-                .authenticationEntryPoint(customAuthenticationEntryPoint)
-            );
+            .exceptionHandling(exception -> exception.authenticationEntryPoint(customAuthenticationEntryPoint));
 
         return security.build();
     }

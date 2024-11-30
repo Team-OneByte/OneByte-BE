@@ -57,7 +57,7 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
         GrantedAuthority auth = iterator.next();
 
         String role = auth.getAuthority();
-        String access = jwtUtil.createJwt("access", authResult.getName(), role, 1000 * 60L);        //3시간
+        String access = jwtUtil.createJwt("access", authResult.getName(), role, 1000 * 60 * 3L);                 // 3초
         String refresh = jwtUtil.createJwt("refresh", authResult.getName(), role, 1000 * 60 * 60 * 24 * 7L); //7일
 
         addRefreshEntity(authResult.getName(), refresh, 1000 * 60 * 60 * 24 * 7L);

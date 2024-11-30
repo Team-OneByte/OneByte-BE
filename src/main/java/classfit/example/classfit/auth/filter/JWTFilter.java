@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -37,7 +38,7 @@ public class JWTFilter extends OncePerRequestFilter {
 
         try {
             if (jwtUtil.isExpired(access)) {
-                throw new ClassfitException("액세스 토큰이 만료되었습니다.", HttpStatus.UNAUTHORIZED);
+                throw new ClassfitException("엑세스 토큰이 만료되었습니다.", HttpStatus.REQUEST_TIMEOUT);
             }
 
             if (!"access".equals(jwtUtil.getCategory(access))) {
@@ -50,25 +51,15 @@ public class JWTFilter extends OncePerRequestFilter {
             Authentication authToken = new UsernamePasswordAuthenticationToken(
                 userDetails, null, userDetails.getAuthorities()
             );
+
             SecurityContextHolder.getContext().setAuthentication(authToken);
+            filterChain.doFilter(request, response);
 
-        } catch (Exception ex) {
-            SecurityContextHolder.clearContext();
-            log.error("JWT 필터 예외 발생: {}", ex.getMessage());
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.setContentType("application/json");
-            response.setCharacterEncoding("UTF-8");
-
-            String jsonResponse = String.format(
-                "{ \"message\": \"%s\", \"status\": %d }",
-                ex.getMessage(),
-                HttpServletResponse.SC_UNAUTHORIZED
-            );
-
-            response.getWriter().write(jsonResponse);
-            return;
+        } catch (ClassfitException ex) {
+            request.setAttribute("exception", ex);
+            throw new AuthenticationException(ex.getMessage()) {
+            };
         }
 
-        filterChain.doFilter(request, response);
     }
 }
