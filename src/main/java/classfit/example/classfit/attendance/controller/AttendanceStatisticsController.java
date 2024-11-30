@@ -1,6 +1,7 @@
 package classfit.example.classfit.attendance.controller;
 
 import classfit.example.classfit.attendance.dto.response.StatisticsDateResponse;
+import classfit.example.classfit.attendance.dto.response.StatisticsMemberResponse;
 import classfit.example.classfit.attendance.service.AttendanceStatisticsService;
 import classfit.example.classfit.common.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -41,7 +42,7 @@ public class AttendanceStatisticsController {
         @Parameter(description = "조회 끝 기간")
         @RequestParam(value = "endDate") LocalDate endDate) {
 
-
-        return ApiResponse.success("", 200, "SUCCESS");
+        List<StatisticsMemberResponse> statisticsDate = attendanceStatisticsService.getAttendanceStatisticsByMember(startDate, endDate);
+        return ApiResponse.success(statisticsDate, 200, "SUCCESS");
     }
 }
