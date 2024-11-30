@@ -1,6 +1,8 @@
 package classfit.example.classfit.classStudent.repository;
 
+import classfit.example.classfit.category.domain.SubClass;
 import classfit.example.classfit.classStudent.domain.ClassStudent;
+import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -18,4 +20,6 @@ public interface ClassStudentRepository extends JpaRepository<ClassStudent, Long
     @Modifying
     @Query("DELETE FROM ClassStudent cs WHERE cs.student.id = :studentId")
     void deleteAllByStudentId(@Param("studentId") Long studentId);
+
+    List<ClassStudent> findBySubClass(SubClass subClass);
 }

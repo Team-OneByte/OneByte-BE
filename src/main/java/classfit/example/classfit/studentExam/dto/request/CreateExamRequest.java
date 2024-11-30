@@ -8,7 +8,7 @@ import classfit.example.classfit.studentExam.domain.Standard;
 import java.time.LocalDate;
 import org.springframework.format.annotation.DateTimeFormat;
 
-public record CreateExamRequest( Long subClassId,
+public record CreateExamRequest(Long subClassId,
                                 Long mainClassId,
                                 @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate examDate,
                                 Standard standard,
