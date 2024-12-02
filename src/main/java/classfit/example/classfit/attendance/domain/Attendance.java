@@ -1,5 +1,6 @@
 package classfit.example.classfit.attendance.domain;
 
+import classfit.example.classfit.classStudent.domain.ClassStudent;
 import classfit.example.classfit.student.domain.Student;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -34,12 +35,17 @@ public class Attendance {
     @JoinColumn(name = "student_id", nullable = false)
     private Student student;
 
+    @ManyToOne
+    @JoinColumn(name = "class_student_id")
+    private ClassStudent classStudent;
+
     @Builder
-    public Attendance(LocalDate date, int week, AttendanceStatus status, Student student) {
+    public Attendance(LocalDate date, int week, AttendanceStatus status, Student student, ClassStudent classStudent) {
         this.date = date;
         this.week = week;
         this.status = status;
         this.student = student;
+        this.classStudent = classStudent;
     }
 
     public void updateStatus(String status) {

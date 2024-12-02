@@ -1,6 +1,7 @@
 package classfit.example.classfit.student.domain;
 
 import classfit.example.classfit.attendance.domain.Attendance;
+import classfit.example.classfit.classStudent.domain.ClassStudent;
 import classfit.example.classfit.common.domain.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -43,4 +44,6 @@ public class Student extends BaseEntity {
     private boolean receivedSms;
     private String counselingLog;
 
+    @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ClassStudent> classStudents = new ArrayList<>();
 }

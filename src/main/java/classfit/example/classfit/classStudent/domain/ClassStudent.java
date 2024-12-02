@@ -1,8 +1,11 @@
 package classfit.example.classfit.classStudent.domain;
 
+import classfit.example.classfit.attendance.domain.Attendance;
 import classfit.example.classfit.category.domain.SubClass;
 import classfit.example.classfit.student.domain.Student;
 import jakarta.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -27,6 +30,9 @@ public class ClassStudent {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sub_class_id", nullable = false)
     private SubClass subClass;
+
+    @OneToMany(mappedBy = "classStudent", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Attendance> attendances = new ArrayList<>();
 
     public void setStudent(Student student) {
         this.student = student;
