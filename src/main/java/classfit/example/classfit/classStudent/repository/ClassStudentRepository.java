@@ -1,5 +1,6 @@
 package classfit.example.classfit.classStudent.repository;
 
+import classfit.example.classfit.category.domain.SubClass;
 import classfit.example.classfit.classStudent.domain.ClassStudent;
 import classfit.example.classfit.student.domain.Student;
 import java.util.List;
@@ -22,4 +23,6 @@ public interface ClassStudentRepository extends JpaRepository<ClassStudent, Long
     void deleteAllByStudentId(@Param("studentId") Long studentId);
 
     ClassStudent findByStudent(Student student);
+
+    List<ClassStudent> findBySubClass(SubClass subClass);
 }

@@ -1,4 +1,4 @@
-package classfit.example.classfit.util;
+package classfit.example.classfit.common.util;
 
 import classfit.example.classfit.common.exception.ClassfitException;
 import org.springframework.http.HttpStatus;

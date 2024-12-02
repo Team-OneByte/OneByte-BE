@@ -1,4 +1,4 @@
-package classfit.example.classfit.util;
+package classfit.example.classfit.common.util;
 
 import java.util.Random;
 

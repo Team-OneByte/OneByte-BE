@@ -17,7 +17,7 @@ public record MemberRequest
         String phoneNumber,
 
         @NotBlank(message = "이메일은 공백일 수 없습니다.")
-        @Email
+        @Email(message = "형식이 올바르지 않습니다.")
         String email,
 
         @NotBlank(message = "비밀번호는 공백일 수 없습니다.")
