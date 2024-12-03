@@ -2,7 +2,9 @@ package classfit.example.classfit.studentExam.controller;
 
 import classfit.example.classfit.common.ApiResponse;
 import classfit.example.classfit.studentExam.dto.request.CreateExamRequest;
+import classfit.example.classfit.studentExam.dto.request.FindExamRequest;
 import classfit.example.classfit.studentExam.dto.response.CreateExamResponse;
+import classfit.example.classfit.studentExam.dto.response.FindExamResponse;
 import classfit.example.classfit.studentExam.dto.response.ShowExamClassStudentResponse;
 import classfit.example.classfit.studentExam.service.ExamService;
 import java.util.List;
@@ -38,5 +40,14 @@ public class ExamController {
         List<ShowExamClassStudentResponse> response = examService.findExamClassStuent(memberId,
                 examId);
         return ApiResponse.success(response, 200, "FIND EXAM-STUDENT");
+    }
+
+    @GetMapping("/findexam")
+    public ApiResponse<List<FindExamResponse>> findExamList (
+            @RequestHeader(name = "member-no", required = false) Long memberId,
+            @RequestBody FindExamRequest request
+    ) {
+        List<FindExamResponse> response = examService.findExamList(memberId,request);
+        return ApiResponse.success(response,200,"FIND EXAM-LIST");
     }
 }

@@ -12,8 +12,11 @@ import classfit.example.classfit.member.repository.MemberRepository;
 import classfit.example.classfit.studentExam.domain.Exam;
 import classfit.example.classfit.studentExam.domain.ExamRepository;
 import classfit.example.classfit.studentExam.dto.request.CreateExamRequest;
+import classfit.example.classfit.studentExam.dto.request.FindExamRequest;
 import classfit.example.classfit.studentExam.dto.response.CreateExamResponse;
+import classfit.example.classfit.studentExam.dto.response.FindExamResponse;
 import classfit.example.classfit.studentExam.dto.response.ShowExamClassStudentResponse;
+import java.util.stream.Collectors;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -59,5 +62,35 @@ public class ExamService {
 
         return classStudents.stream().map(cs -> ShowExamClassStudentResponse.from(cs.getStudent(),
                 findExam.getHighestScore())).toList();
+    }
+
+    @Transactional(readOnly = true)
+    public List<FindExamResponse> findExamList(Long memberId, FindExamRequest request) {
+
+        Member findMember = memberRepository.findById(memberId)
+                .orElseThrow(() -> new ClassfitException("회원을 찾을 수 없어요.", HttpStatus.NOT_FOUND));
+
+        if (request.memberName() == null && request.examName() == null) {
+            Long academyId = memberRepository.findAcademyIdByMemberName(request.memberName());
+
+            return examRepository.findAllByAcademyId(academyId)
+                    .stream()
+                    .map(FindExamResponse::from)
+                    .collect(Collectors.toList());
+        } else if (request.memberName() != null && request.examName() == null) {
+
+            return examRepository.findByMainClassMemberName(request.memberName())
+                    .stream()
+                    .map(FindExamResponse::from)
+                    .collect(Collectors.toList());
+        } else if (request.memberName() == null && request.examName() != null) {
+
+            return examRepository.findByExamName(request.examName())
+                    .stream()
+                    .map(FindExamResponse::from)
+                    .collect(Collectors.toList());
+        } else {
+            throw new ClassfitException("검색을 할 수 없습니다.", HttpStatus.BAD_REQUEST);
+        }
     }
 }
