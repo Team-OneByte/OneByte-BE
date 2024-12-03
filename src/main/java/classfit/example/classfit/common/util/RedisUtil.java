@@ -1,7 +1,7 @@
 package classfit.example.classfit.common.util;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
 
@@ -11,7 +11,7 @@ import java.time.Duration;
 @RequiredArgsConstructor
 public class RedisUtil {
 
-    private final RedisTemplate<String, String> redisTemplate;
+    private final StringRedisTemplate redisTemplate;
 
 
     public String getData(String key) {
