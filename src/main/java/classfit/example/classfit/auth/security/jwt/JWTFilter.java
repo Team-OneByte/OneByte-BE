@@ -1,8 +1,7 @@
-package classfit.example.classfit.auth.filter;
+package classfit.example.classfit.auth.security.jwt;
 
 import classfit.example.classfit.auth.dto.request.CustomUserDetails;
-import classfit.example.classfit.auth.jwt.JWTUtil;
-import classfit.example.classfit.auth.service.CustomUserDetailService;
+import classfit.example.classfit.auth.security.CustomUserDetailService;
 import classfit.example.classfit.common.exception.ClassfitException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

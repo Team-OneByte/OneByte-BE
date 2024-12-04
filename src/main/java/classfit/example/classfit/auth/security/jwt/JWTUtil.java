@@ -1,4 +1,4 @@
-package classfit.example.classfit.auth.jwt;
+package classfit.example.classfit.auth.security.jwt;
 
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;

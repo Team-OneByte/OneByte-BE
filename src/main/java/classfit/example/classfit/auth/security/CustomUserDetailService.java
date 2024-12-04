@@ -1,4 +1,4 @@
-package classfit.example.classfit.auth.service;
+package classfit.example.classfit.auth.security;
 
 import classfit.example.classfit.auth.dto.request.CustomUserDetails;
 import classfit.example.classfit.common.exception.ClassfitException;

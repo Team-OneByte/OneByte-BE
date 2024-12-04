@@ -1,6 +1,6 @@
 package classfit.example.classfit.auth.service;
 
-import classfit.example.classfit.auth.jwt.JWTUtil;
+import classfit.example.classfit.auth.security.jwt.JWTUtil;
 import classfit.example.classfit.common.exception.ClassfitException;
 import classfit.example.classfit.common.util.RedisUtil;
 import io.jsonwebtoken.ExpiredJwtException;
