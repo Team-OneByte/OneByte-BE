@@ -1,5 +1,6 @@
 package classfit.example.classfit.auth.filter;
 
+import classfit.example.classfit.auth.dto.request.CustomAuthenticationToken;
 import classfit.example.classfit.auth.dto.request.UserRequest;
 import classfit.example.classfit.auth.jwt.JWTUtil;
 import classfit.example.classfit.common.exception.ClassfitException;
@@ -13,7 +14,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
@@ -41,7 +41,7 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
             ObjectMapper objectMapper = new ObjectMapper();
             UserRequest userRequest = objectMapper.readValue(request.getInputStream(), UserRequest.class);
 
-            UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(userRequest.email(), userRequest.password(), null);
+            CustomAuthenticationToken authRequest = new CustomAuthenticationToken(userRequest.email(), userRequest.password(), null);
             return authenticationManager.authenticate(authRequest);
 
         } catch (IOException e) {
@@ -52,13 +52,16 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
     @Override
     protected void successfulAuthentication(HttpServletRequest req, HttpServletResponse res, FilterChain chain, Authentication authResult) throws IOException, ServletException {
 
-        Collection<? extends GrantedAuthority> authorities = authResult.getAuthorities();
+        CustomAuthenticationToken customAuth = (CustomAuthenticationToken) authResult;
+
+        Collection<? extends GrantedAuthority> authorities = customAuth.getAuthorities();
         Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
         GrantedAuthority auth = iterator.next();
 
+
         String role = auth.getAuthority();
-        String access = jwtUtil.createJwt("access", authResult.getName(), role, 1000 * 60 * 3L);                 // 3초
-        String refresh = jwtUtil.createJwt("refresh", authResult.getName(), role, 1000 * 60 * 60 * 24 * 7L); //7일
+        String access = jwtUtil.createJwt("access", customAuth.getEmail(), role, 1000 * 60 * 3L);                 // 3초
+        String refresh = jwtUtil.createJwt("refresh", customAuth.getEmail(), role, 1000 * 60 * 60 * 24 * 7L); //7일
 
         addRefreshEntity(authResult.getName(), refresh, 1000 * 60 * 60 * 24 * 7L);
 
@@ -99,14 +102,5 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
     @Override
     public void setFilterProcessesUrl(String filterProcessesUrl) {
         super.setFilterProcessesUrl(filterProcessesUrl);
-    }
-
-    @Override
-    protected String obtainUsername(HttpServletRequest request) {
-        return obtainEmail(request);
-    }
-
-    private String obtainEmail(HttpServletRequest request) {
-        return request.getParameter("email");
     }
 }
