@@ -1,6 +1,6 @@
 package classfit.example.classfit.config;
 
-import classfit.example.classfit.auth.filter.CustomLoginFilter;
+import classfit.example.classfit.auth.security.filter.CustomLoginFilter;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import io.swagger.v3.oas.annotations.info.Info;

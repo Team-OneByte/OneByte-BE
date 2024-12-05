@@ -1,10 +1,11 @@
 package classfit.example.classfit.config;
 
-import classfit.example.classfit.auth.filter.CustomLoginFilter;
-import classfit.example.classfit.auth.filter.JWTFilter;
-import classfit.example.classfit.auth.jwt.CustomAuthenticationEntryPoint;
-import classfit.example.classfit.auth.jwt.JWTUtil;
-import classfit.example.classfit.auth.service.CustomUserDetailService;
+import classfit.example.classfit.auth.security.CustomAuthenticationProvider;
+import classfit.example.classfit.auth.security.CustomUserDetailService;
+import classfit.example.classfit.auth.security.filter.CustomLoginFilter;
+import classfit.example.classfit.auth.security.jwt.CustomAuthenticationEntryPoint;
+import classfit.example.classfit.auth.security.jwt.JWTFilter;
+import classfit.example.classfit.auth.security.jwt.JWTUtil;
 import classfit.example.classfit.common.util.RedisUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -16,6 +17,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -30,6 +32,7 @@ public class SecurityConfig {
     private final CustomUserDetailService customUserDetailService;
     private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
     private final RedisUtil redisUtil;
+    private final UserDetailsService userDetailsService;
 
     @Bean
     public BCryptPasswordEncoder bCryptPasswordEncoder() {
@@ -42,6 +45,11 @@ public class SecurityConfig {
     }
 
     @Bean
+    public CustomAuthenticationProvider customAuthenticationProvider() {
+        return new CustomAuthenticationProvider(userDetailsService, bCryptPasswordEncoder());
+    }
+
+    @Bean
     public SecurityFilterChain filterChain(HttpSecurity security) throws Exception {
         security
             .csrf(AbstractHttpConfigurer::disable)
@@ -49,7 +57,8 @@ public class SecurityConfig {
             .httpBasic(AbstractHttpConfigurer::disable)
             .cors(Customizer.withDefaults())
             .sessionManagement((session) -> session
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .authenticationProvider(customAuthenticationProvider());
 
         security
             .authorizeHttpRequests((auth) -> auth
@@ -67,5 +76,4 @@ public class SecurityConfig {
 
         return security.build();
     }
-
 }
