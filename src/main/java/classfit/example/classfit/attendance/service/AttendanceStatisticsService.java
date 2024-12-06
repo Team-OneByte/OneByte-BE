@@ -36,6 +36,14 @@ public class AttendanceStatisticsService {
             .collect(Collectors.toList());
     }
 
+    public List<String> getAttendanceDetailsByDateAndStatus(LocalDate date, Long subClassId, AttendanceStatus status) {
+        List<Attendance> attendances = attendanceRepository.findByDateAndSubClassIdAndStatus(date, subClassId, status);
+
+        return attendances.stream()
+            .map(attendance -> attendance.getStudent().getName())
+            .collect(Collectors.toList());
+    }
+
     private StatisticsDateResponse createStatisticsDateResponse(LocalDate date, List<Attendance> dayAttendances) {
         Attendance firstAttendance = dayAttendances.get(0); // week 정보 가져오기
         return new StatisticsDateResponse(

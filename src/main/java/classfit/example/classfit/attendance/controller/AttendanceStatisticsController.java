@@ -1,5 +1,6 @@
 package classfit.example.classfit.attendance.controller;
 
+import classfit.example.classfit.attendance.domain.AttendanceStatus;
 import classfit.example.classfit.attendance.dto.response.StatisticsDateResponse;
 import classfit.example.classfit.attendance.dto.response.StatisticsMemberResponse;
 import classfit.example.classfit.attendance.service.AttendanceStatisticsService;
@@ -33,6 +34,21 @@ public class AttendanceStatisticsController {
         List<StatisticsDateResponse> statisticsDate = attendanceStatisticsService.getAttendanceStatisticsByDate(startDate, endDate, subClassId);
         return ApiResponse.success(statisticsDate, 200, "SUCCESS");
     }
+
+    @GetMapping("/date/details")
+    @Operation(summary = "클래스 날짜별 통계 세부 조회", description = "날짜별 출결 통계에서 세부 정보 조회 시 사용되는 api 입니다.")
+    public ApiResponse<List<String>> getAttendanceDetailsByDateAndStatus(
+        @Parameter(description = "조회 날짜")
+        @RequestParam(value = "date") LocalDate date,
+        @Parameter(description = "조회하려는 서브 클래스 ID")
+        @RequestParam(value = "subClassId") Long subClassId,
+        @Parameter(description = "조회하려는 출결 상태")
+        @RequestParam(value = "status") AttendanceStatus status
+    ) {
+        List<String> studentDetails = attendanceStatisticsService.getAttendanceDetailsByDateAndStatus(date, subClassId, status);
+        return ApiResponse.success(studentDetails, 200, "SUCCESS");
+    }
+
 
     @GetMapping("/member")
     @Operation(summary = "클래스 구성원별 통계", description = "구성원별 출결 통계 조회 시 사용되는 api 입니다.")
