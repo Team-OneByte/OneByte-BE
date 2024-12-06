@@ -1,6 +1,6 @@
 package classfit.example.classfit.mail.service;
 
-import classfit.example.classfit.auth.jwt.JWTUtil;
+import classfit.example.classfit.auth.security.jwt.JWTUtil;
 import classfit.example.classfit.common.exception.ClassfitException;
 import classfit.example.classfit.common.util.CodeUtil;
 import classfit.example.classfit.common.util.RedisUtil;
