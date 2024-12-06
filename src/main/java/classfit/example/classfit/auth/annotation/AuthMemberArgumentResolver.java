@@ -1,6 +1,6 @@
 package classfit.example.classfit.auth.annotation;
 
-import classfit.example.classfit.auth.security.SecurityUtil;
+import classfit.example.classfit.auth.security.config.SecurityUtil;
 import classfit.example.classfit.common.exception.ClassfitException;
 import classfit.example.classfit.member.domain.Member;
 import classfit.example.classfit.member.repository.MemberRepository;

@@ -1,4 +1,4 @@
-package classfit.example.classfit.auth.dto.request;
+package classfit.example.classfit.auth.security.provider;
 
 import classfit.example.classfit.member.domain.Member;
 import org.springframework.security.core.GrantedAuthority;

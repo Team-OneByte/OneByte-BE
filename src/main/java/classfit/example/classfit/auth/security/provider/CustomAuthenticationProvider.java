@@ -1,7 +1,5 @@
-package classfit.example.classfit.auth.security;
+package classfit.example.classfit.auth.security.provider;
 
-import classfit.example.classfit.auth.dto.request.CustomAuthenticationToken;
-import classfit.example.classfit.auth.dto.request.CustomUserDetails;
 import classfit.example.classfit.common.exception.ClassfitException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;

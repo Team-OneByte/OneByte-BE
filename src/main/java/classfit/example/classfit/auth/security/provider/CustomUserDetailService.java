@@ -1,6 +1,5 @@
-package classfit.example.classfit.auth.security;
+package classfit.example.classfit.auth.security.provider;
 
-import classfit.example.classfit.auth.dto.request.CustomUserDetails;
 import classfit.example.classfit.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetailsService;

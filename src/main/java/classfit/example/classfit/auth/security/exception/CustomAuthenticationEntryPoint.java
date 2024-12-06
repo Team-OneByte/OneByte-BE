@@ -1,4 +1,4 @@
-package classfit.example.classfit.auth.security.jwt;
+package classfit.example.classfit.auth.security.exception;
 
 import classfit.example.classfit.common.exception.ClassfitException;
 import jakarta.servlet.http.HttpServletRequest;

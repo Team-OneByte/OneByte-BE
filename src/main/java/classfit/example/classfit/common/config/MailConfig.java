@@ -1,4 +1,4 @@
-package classfit.example.classfit.config;
+package classfit.example.classfit.common.config;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;

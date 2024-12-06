@@ -1,4 +1,4 @@
-package classfit.example.classfit.auth.dto.request;
+package classfit.example.classfit.auth.security.provider;
 
 import lombok.Getter;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
