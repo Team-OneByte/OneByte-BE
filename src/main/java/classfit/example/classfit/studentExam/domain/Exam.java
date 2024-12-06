@@ -13,12 +13,16 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "exam")
@@ -54,10 +58,23 @@ public class Exam extends BaseEntity {
     private ExamPeriod examPeriod;
 
     @Column(name = "highest_score")
-    private Integer highestScore;
+    private Integer highestScore; // 시험 생성 시 만점 점수
 
     @Column(name = "exam_range")
     private String examRange;
+
+    @Column(name = "perfect_score")
+    private Integer perfectScore;
+
+    @Column(name = "low_score")
+    private Integer lowestScore;
+
+    @Column(name = "average")
+    private Long average;
+
+    @OneToMany(mappedBy = "exam", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<StudentExamScore> studentExamScores = new ArrayList<>();
+
     @Builder
     public Exam(SubClass subClass, MainClass mainClass, String examName, LocalDate examDate,
             Standard standard, ExamPeriod examPeriod, Integer highestScore, String examRange) {
