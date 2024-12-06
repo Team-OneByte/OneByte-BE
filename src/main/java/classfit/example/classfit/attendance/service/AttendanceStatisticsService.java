@@ -25,7 +25,7 @@ public class AttendanceStatisticsService {
     private final ClassStudentRepository classStudentRepository;
 
     public List<StatisticsDateResponse> getAttendanceStatisticsByDate(LocalDate startDate, LocalDate endDate, Long subClassId) {
-        List<Attendance> attendances = attendanceRepository.findByDateBetween(startDate, endDate);
+        List<Attendance> attendances = attendanceRepository.findByDateBetweenAndSubClassId(startDate, endDate, subClassId);
 
         // 날짜별로 출석 통계를 계산
         return attendances.stream()
