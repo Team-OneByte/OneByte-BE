@@ -7,7 +7,6 @@ import classfit.example.classfit.common.exception.ClassfitException;
 import classfit.example.classfit.common.util.RedisUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -45,12 +44,12 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
             return authenticationManager.authenticate(authRequest);
 
         } catch (IOException e) {
-            throw new ClassfitException("로그인 요청의 형식이 잘못되었습니다.", HttpStatus.BAD_REQUEST);
+            throw new ClassfitException("입력 형식이 잘못되었습니다.", HttpStatus.BAD_REQUEST);
         }
     }
 
     @Override
-    protected void successfulAuthentication(HttpServletRequest req, HttpServletResponse res, FilterChain chain, Authentication authResult) throws IOException, ServletException {
+    protected void successfulAuthentication(HttpServletRequest req, HttpServletResponse res, FilterChain chain, Authentication authResult) {
 
         CustomAuthenticationToken customAuth = (CustomAuthenticationToken) authResult;
 
@@ -71,17 +70,27 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
     }
 
     @Override
-    protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
+    protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException {
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
 
-        String jsonResponse = String.format(
-            "{ \"message\": \"로그인에 실패하였습니다. 이메일 또는 비밀번호를 확인해주세요.\", \"status\": %d }",
-            HttpServletResponse.SC_UNAUTHORIZED
-        );
-
-        response.getWriter().write(jsonResponse);
+        if (failed.getCause() instanceof ClassfitException classfitException) {
+            response.setStatus(classfitException.getHttpStatus().value()); // 예외에 정의된 상태 코드
+            String jsonResponse = String.format(
+                "{ \"message\": \"%s\", \"status\": %d }",
+                classfitException.getMessage(),
+                classfitException.getHttpStatus().value()
+            );
+            response.getWriter().write(jsonResponse);
+        } else {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            String jsonResponse = String.format(
+                "{ \"message\": \"로그인에 실패하였습니다. 이메일 또는 비밀번호를 확인해주세요.\", \"status\": %d }",
+                HttpServletResponse.SC_UNAUTHORIZED
+            );
+            response.getWriter().write(jsonResponse);
+        }
     }
 
     private Cookie createCookie(String key, String value) {

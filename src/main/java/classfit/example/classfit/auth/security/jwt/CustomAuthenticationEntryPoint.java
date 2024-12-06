@@ -30,7 +30,7 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().write("{\"message\": \"로그인 후 이용가능합니다. 토큰을 입력해 주세요\", \"status\": 401}");
+            response.getWriter().write("{\"message\": \"로그인 후 이용 가능합니다. 토큰을 입력해 주세요\", \"status\": 401}");
         }
     }
 }
