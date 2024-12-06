@@ -27,61 +27,50 @@ public class AttendanceStatisticsService {
     public List<StatisticsDateResponse> getAttendanceStatisticsByDate(LocalDate startDate, LocalDate endDate, Long subClassId) {
         List<Attendance> attendances = attendanceRepository.findByDateBetweenAndSubClassId(startDate, endDate, subClassId);
 
-        // 날짜별로 출석 통계를 계산
         return attendances.stream()
             .collect(Collectors.groupingBy(Attendance::getDate)) // 날짜별로 그룹화
             .entrySet().stream()
-            .map(entry -> {
-                LocalDate date = entry.getKey();
-                List<Attendance> dayAttendances = entry.getValue();
-
-                // 출석 상태별 카운팅
-                int presentCount = (int) dayAttendances.stream().filter(a -> a.getStatus() == AttendanceStatus.PRESENT).count();
-                int absentCount = (int) dayAttendances.stream().filter(a -> a.getStatus() == AttendanceStatus.ABSENT).count();
-                int lateCount = (int) dayAttendances.stream().filter(a -> a.getStatus() == AttendanceStatus.LATE).count();
-                int extraCount = 0;
-
-                // 날짜별 출석 통계 응답 생성 (subClassId 포함)
-                return new StatisticsDateResponse(
-                    date,
-                    dayAttendances.get(0).getWeek(),
-                    presentCount,
-                    absentCount,
-                    lateCount,
-                    extraCount
-                );
-            })
+            .map(entry -> createStatisticsDateResponse(entry.getKey(), entry.getValue()))
             .sorted(Comparator.comparing(StatisticsDateResponse::date)
                 .thenComparingInt(StatisticsDateResponse::week))
             .collect(Collectors.toList());
+    }
+
+    private StatisticsDateResponse createStatisticsDateResponse(LocalDate date, List<Attendance> dayAttendances) {
+        Attendance firstAttendance = dayAttendances.get(0); // week 정보 가져오기
+        return new StatisticsDateResponse(
+            date,
+            firstAttendance.getWeek(),
+            countByStatus(dayAttendances, AttendanceStatus.PRESENT),
+            countByStatus(dayAttendances, AttendanceStatus.ABSENT),
+            countByStatus(dayAttendances, AttendanceStatus.LATE),
+            0 // extraCount
+        );
     }
 
     public List<StatisticsMemberResponse> getAttendanceStatisticsByMember(LocalDate startDate, LocalDate endDate) {
         List<ClassStudent> allClassStudents = classStudentRepository.findAll();
 
         return allClassStudents.stream()
-            .map(classStudent -> {
-                Student student = classStudent.getStudent();
-
-                // 해당 학생의 출석 데이터를 조회
-                List<Attendance> studentAttendances = attendanceRepository.findByStudentIdAndDateBetween(student.getId(), startDate, endDate);
-
-                // 출석 상태별 카운팅
-                int presentCount = (int) studentAttendances.stream().filter(a -> a.getStatus() == AttendanceStatus.PRESENT).count();
-                int absentCount = (int) studentAttendances.stream().filter(a -> a.getStatus() == AttendanceStatus.ABSENT).count();
-                int lateCount = (int) studentAttendances.stream().filter(a -> a.getStatus() == AttendanceStatus.LATE).count();
-                int extraCount = 0;
-
-                String studentName = student.getName();
-                return new StatisticsMemberResponse(
-                    studentName,
-                    presentCount,
-                    absentCount,
-                    lateCount,
-                    extraCount
-                );
-            })
+            .map(classStudent -> createStatisticsMemberResponse(classStudent, startDate, endDate))
             .sorted(Comparator.comparing(StatisticsMemberResponse::name))
             .collect(Collectors.toList());
+    }
+
+    private StatisticsMemberResponse createStatisticsMemberResponse(ClassStudent classStudent, LocalDate startDate, LocalDate endDate) {
+        Student student = classStudent.getStudent();
+        List<Attendance> studentAttendances = attendanceRepository.findByStudentIdAndDateBetween(student.getId(), startDate, endDate);
+
+        return new StatisticsMemberResponse(
+            student.getName(),
+            countByStatus(studentAttendances, AttendanceStatus.PRESENT),
+            countByStatus(studentAttendances, AttendanceStatus.ABSENT),
+            countByStatus(studentAttendances, AttendanceStatus.LATE),
+            0 // extraCount
+        );
+    }
+
+    private int countByStatus(List<Attendance> attendances, AttendanceStatus status) {
+        return (int) attendances.stream().filter(a -> a.getStatus() == status).count();
     }
 }
