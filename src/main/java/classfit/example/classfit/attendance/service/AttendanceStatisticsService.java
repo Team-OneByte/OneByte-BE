@@ -80,6 +80,7 @@ public class AttendanceStatisticsService {
         List<Attendance> studentAttendances = attendanceRepository.findByStudentIdAndDateBetween(student.getId(), startDate, endDate);
 
         return new StatisticsMemberResponse(
+            student.getId(),
             student.getName(),
             countByStatus(studentAttendances, AttendanceStatus.PRESENT),
             countByStatus(studentAttendances, AttendanceStatus.ABSENT),
