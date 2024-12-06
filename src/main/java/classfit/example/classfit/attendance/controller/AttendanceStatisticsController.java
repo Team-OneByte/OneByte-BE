@@ -49,7 +49,6 @@ public class AttendanceStatisticsController {
         return ApiResponse.success(studentDetails, 200, "SUCCESS");
     }
 
-
     @GetMapping("/member")
     @Operation(summary = "클래스 구성원별 통계", description = "구성원별 출결 통계 조회 시 사용되는 api 입니다.")
     public ApiResponse getAttendanceStaticsByMember(
@@ -60,5 +59,17 @@ public class AttendanceStatisticsController {
 
         List<StatisticsMemberResponse> statisticsDate = attendanceStatisticsService.getAttendanceStatisticsByMember(startDate, endDate);
         return ApiResponse.success(statisticsDate, 200, "SUCCESS");
+    }
+
+    @GetMapping("/member/details")
+    @Operation(summary = "클래스 구성원별 통계 세부 조회", description = "구성원별 출결 통계에서 세부 정보 조회 시 사용되는 api 입니다.")
+    public ApiResponse<List<String>> getAttendanceDetailsByMemberAndStatus(
+        @Parameter(description = "조회 학생")
+        @RequestParam(value = "studentId") Long studentId,
+        @Parameter(description = "조회하려는 출결 상태")
+        @RequestParam(value = "status") AttendanceStatus status
+    ) {
+        List<String> studentDetails = attendanceStatisticsService.getAttendanceDetailsByMemberAndStatus(studentId, status);
+        return ApiResponse.success(studentDetails, 200, "SUCCESS");
     }
 }

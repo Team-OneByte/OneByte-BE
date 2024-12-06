@@ -8,7 +8,9 @@ import classfit.example.classfit.attendance.repository.AttendanceRepository;
 import classfit.example.classfit.classStudent.domain.ClassStudent;
 import classfit.example.classfit.classStudent.repository.ClassStudentRepository;
 import classfit.example.classfit.student.domain.Student;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -65,6 +67,14 @@ public class AttendanceStatisticsService {
             .collect(Collectors.toList());
     }
 
+    public List<String> getAttendanceDetailsByMemberAndStatus(Long studentId, AttendanceStatus status) {
+        List<Attendance> studentAttendances = attendanceRepository.findByStudentIdAndStatus(studentId, status);
+
+        return studentAttendances.stream()
+            .map(attendance -> createFormattedDate(attendance.getDate()))
+            .collect(Collectors.toList());
+    }
+
     private StatisticsMemberResponse createStatisticsMemberResponse(ClassStudent classStudent, LocalDate startDate, LocalDate endDate) {
         Student student = classStudent.getStudent();
         List<Attendance> studentAttendances = attendanceRepository.findByStudentIdAndDateBetween(student.getId(), startDate, endDate);
@@ -76,6 +86,15 @@ public class AttendanceStatisticsService {
             countByStatus(studentAttendances, AttendanceStatus.LATE),
             0 // extraCount
         );
+    }
+
+    private String createFormattedDate(LocalDate date) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd");
+        String formattedDate = date.format(formatter);
+        DayOfWeek dayOfWeek = date.getDayOfWeek();
+        String dayOfWeekName = dayOfWeek.getDisplayName(java.time.format.TextStyle.SHORT, java.util.Locale.KOREAN); // "수"
+
+        return formattedDate + " (" + dayOfWeekName + ")";
     }
 
     private int countByStatus(List<Attendance> attendances, AttendanceStatus status) {
