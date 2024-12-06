@@ -9,6 +9,7 @@ import classfit.example.classfit.classStudent.repository.ClassStudentRepository;
 import classfit.example.classfit.common.exception.ClassfitException;
 import classfit.example.classfit.member.domain.Member;
 import classfit.example.classfit.member.repository.MemberRepository;
+import classfit.example.classfit.student.domain.Student;
 import classfit.example.classfit.studentExam.domain.Exam;
 import classfit.example.classfit.studentExam.domain.ExamRepository;
 import classfit.example.classfit.studentExam.domain.StudentExamScore;
@@ -17,7 +18,6 @@ import classfit.example.classfit.studentExam.dto.request.CreateExamRequest;
 import classfit.example.classfit.studentExam.dto.request.FindExamRequest;
 import classfit.example.classfit.studentExam.dto.response.CreateExamResponse;
 import classfit.example.classfit.studentExam.dto.response.FindExamResponse;
-import classfit.example.classfit.studentExam.dto.response.ShowExamClassStudentResponse;
 import classfit.example.classfit.studentExam.dto.response.ShowExamDetailResponse;
 import java.util.stream.Collectors;
 import org.springframework.transaction.annotation.Transactional;
@@ -55,7 +55,7 @@ public class ExamService {
     }
 
     @Transactional(readOnly = true)
-    public List<ShowExamClassStudentResponse> findExamClassStuent(Long memberId, Long examId) {
+    public List<ExamClassStudent> findExamClassStuent(Long memberId, Long examId) {
         Member findMember = memberRepository.findById(memberId)
                 .orElseThrow(() -> new ClassfitException("회원을 찾을 수 없어요.", HttpStatus.NOT_FOUND));
         Exam findExam = examRepository.findById(examId)
@@ -64,8 +64,13 @@ public class ExamService {
 
         List<ClassStudent> classStudents = classStudentRepository.findBySubClass(subClass);
 
-        return classStudents.stream().map(cs -> ShowExamClassStudentResponse.from(cs.getStudent(),
-                findExam.getHighestScore())).toList();
+        return classStudents.stream()
+                .map(classStudent -> {
+                    Student student = classStudent.getStudent();
+                    return new ExamClassStudent(student.getId(), student.getName(), 0); // 초기 score는 0으로 설정
+                })
+                .collect(Collectors.toList());
+
     }
 
     @Transactional(readOnly = true)
