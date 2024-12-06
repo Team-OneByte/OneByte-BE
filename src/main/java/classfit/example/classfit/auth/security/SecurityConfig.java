@@ -1,7 +1,5 @@
-package classfit.example.classfit.config;
+package classfit.example.classfit.auth.security;
 
-import classfit.example.classfit.auth.security.CustomAuthenticationProvider;
-import classfit.example.classfit.auth.security.CustomUserDetailService;
 import classfit.example.classfit.auth.security.filter.CustomLoginFilter;
 import classfit.example.classfit.auth.security.jwt.CustomAuthenticationEntryPoint;
 import classfit.example.classfit.auth.security.jwt.JWTFilter;

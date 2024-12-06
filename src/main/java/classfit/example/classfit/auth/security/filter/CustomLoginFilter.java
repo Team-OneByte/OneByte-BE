@@ -98,9 +98,4 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
         String redisKey = "Refresh Token : " + email;
         redisUtil.setDataExpire(redisKey, refresh, expiredMs);
     }
-
-    @Override
-    public void setFilterProcessesUrl(String filterProcessesUrl) {
-        super.setFilterProcessesUrl(filterProcessesUrl);
-    }
 }
