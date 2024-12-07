@@ -1,7 +1,6 @@
-package classfit.example.classfit.auth.dto.request;
+package classfit.example.classfit.auth.security.provider;
 
 import classfit.example.classfit.member.domain.Member;
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -9,10 +8,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.ArrayList;
 import java.util.Collection;
 
-@RequiredArgsConstructor
-public class CustomUserDetails implements UserDetails {
-
-    private final Member member;
+public record CustomUserDetails(Member member) implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -31,6 +27,10 @@ public class CustomUserDetails implements UserDetails {
     @Override
     public String getUsername() {
         return getEmail();
+    }
+
+    public Long getMemberId() {
+        return member.getId();
     }
 
     private String getEmail() {
