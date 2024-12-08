@@ -4,15 +4,18 @@ import classfit.example.classfit.common.ApiResponse;
 import classfit.example.classfit.studentExam.dto.process.ExamClassStudent;
 import classfit.example.classfit.studentExam.dto.request.CreateExamRequest;
 import classfit.example.classfit.studentExam.dto.request.FindExamRequest;
+import classfit.example.classfit.studentExam.dto.request.UpdateExamRequest;
 import classfit.example.classfit.studentExam.dto.response.CreateExamResponse;
 import classfit.example.classfit.studentExam.dto.response.FindExamResponse;
 import classfit.example.classfit.studentExam.dto.response.ShowExamDetailResponse;
+import classfit.example.classfit.studentExam.dto.response.UpdateExamResponse;
 import classfit.example.classfit.studentExam.service.ExamService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -59,5 +62,14 @@ public class ExamController {
         ShowExamDetailResponse response = examService.showExamDetail(memberId, examId);
 
         return ApiResponse.success(response, 200, "FIND EXAM");
+    }
+
+    @PutMapping("/{examId}")
+    public ApiResponse<UpdateExamResponse> updateExam(
+            @RequestHeader(name = "member-no", required = false) Long memberId,
+            @PathVariable(name = "examId") Long examId,
+            @RequestBody UpdateExamRequest request) {
+        UpdateExamResponse response = examService.updateExam(memberId, examId, request);
+        return ApiResponse.success(response, 200, "UPDATED EXAM");
     }
 }

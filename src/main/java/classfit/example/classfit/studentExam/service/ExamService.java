@@ -16,9 +16,11 @@ import classfit.example.classfit.studentExam.domain.StudentExamScore;
 import classfit.example.classfit.studentExam.dto.process.ExamClassStudent;
 import classfit.example.classfit.studentExam.dto.request.CreateExamRequest;
 import classfit.example.classfit.studentExam.dto.request.FindExamRequest;
+import classfit.example.classfit.studentExam.dto.request.UpdateExamRequest;
 import classfit.example.classfit.studentExam.dto.response.CreateExamResponse;
 import classfit.example.classfit.studentExam.dto.response.FindExamResponse;
 import classfit.example.classfit.studentExam.dto.response.ShowExamDetailResponse;
+import classfit.example.classfit.studentExam.dto.response.UpdateExamResponse;
 import java.util.stream.Collectors;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
@@ -67,7 +69,8 @@ public class ExamService {
         return classStudents.stream()
                 .map(classStudent -> {
                     Student student = classStudent.getStudent();
-                    return new ExamClassStudent(student.getId(), student.getName(), 0); // 초기 score는 0으로 설정
+                    return new ExamClassStudent(student.getId(), student.getName(),
+                            0); // 초기 score는 0으로 설정
                 })
                 .collect(Collectors.toList());
 
@@ -147,6 +150,33 @@ public class ExamService {
                 average,
                 findExam.getStandard(),
                 examClassStudents
+        );
+    }
+
+    // 시험지 수정 - 클래스 수정은 안됨
+    @Transactional
+    public UpdateExamResponse updateExam(Long memberId, Long examId, UpdateExamRequest request) {
+        Member findMember = memberRepository.findById(memberId)
+                .orElseThrow(() -> new ClassfitException("회원을 찾을 수 없어요.", HttpStatus.NOT_FOUND));
+        Exam findExam = examRepository.findById(examId)
+                .orElseThrow(
+                        () -> new ClassfitException("해당 시험지를 찾을 수 없어요.", HttpStatus.NOT_FOUND));
+
+        findExam.updateExam(request.examDate(), request.standard(), request.highestScore(),
+                request.examPeriod(),
+                request.examName(), request.examRange());
+        examRepository.save(findExam);
+
+        return new UpdateExamResponse(
+                findExam.getId(),
+                findExam.getMainClass().getMainClassName(),
+                findExam.getSubClass().getSubClassName(),
+                findExam.getExamDate(),
+                findExam.getStandard(),
+                findExam.getHighestScore(),
+                findExam.getExamPeriod(),
+                findExam.getExamName(),
+                findExam.getExamRange()
         );
     }
 
