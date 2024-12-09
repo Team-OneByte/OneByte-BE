@@ -1,6 +1,7 @@
 package classfit.example.classfit.attendance.repository;
 
 import classfit.example.classfit.attendance.domain.Attendance;
+import classfit.example.classfit.attendance.domain.AttendanceStatus;
 import classfit.example.classfit.student.domain.Student;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -10,6 +11,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
+
     boolean existsByStudentAndDate(Student student, LocalDate date);
 
     @Query("SELECT MAX(a.date) FROM Attendance a")
@@ -20,6 +22,16 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
 
     @Query("SELECT a FROM Attendance a WHERE FUNCTION('MONTH', a.date) = :month")
     List<Attendance> findByMonth(int month);
-    List<Attendance> findByDateBetween(LocalDate startDate, LocalDate endDate);
-    List<Attendance> findByStudentIdAndDateBetween(Long studentId, LocalDate startDate, LocalDate endDate);
+
+    @Query("SELECT a FROM Attendance a JOIN a.classStudent cs WHERE cs.subClass.id = :subClassId AND a.date BETWEEN :startDate AND :endDate")
+    List<Attendance> findByDateBetweenAndSubClassId(LocalDate startDate, LocalDate endDate,
+        Long subClassId);
+
+    @Query("SELECT a FROM Attendance a JOIN a.classStudent cs WHERE cs.subClass.id = :subClassId AND a.date = :date AND a.status = :status")
+    List<Attendance> findByDateAndSubClassIdAndStatus(LocalDate date, Long subClassId, AttendanceStatus status);
+
+    List<Attendance> findByStudentIdAndDateBetween(Long studentId, LocalDate startDate,
+        LocalDate endDate);
+
+    List<Attendance> findByStudentIdAndStatus(Long studentId, AttendanceStatus status);
 }
