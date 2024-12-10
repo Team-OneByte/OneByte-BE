@@ -180,4 +180,14 @@ public class ExamService {
         );
     }
 
+    @Transactional
+    public void deleteExam(Long memberId,Long examId) {
+        Member findMember = memberRepository.findById(memberId)
+                .orElseThrow(() -> new ClassfitException("회원을 찾을 수 없어요.", HttpStatus.NOT_FOUND));
+        Exam findExam = examRepository.findById(examId)
+                .orElseThrow(
+                        () -> new ClassfitException("해당 시험지를 찾을 수 없어요.", HttpStatus.NOT_FOUND));
+        examRepository.delete(findExam);
+    }
+
 }

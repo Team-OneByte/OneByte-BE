@@ -1,6 +1,7 @@
 package classfit.example.classfit.studentExam.controller;
 
 import classfit.example.classfit.common.ApiResponse;
+import classfit.example.classfit.studentExam.domain.Exam;
 import classfit.example.classfit.studentExam.dto.process.ExamClassStudent;
 import classfit.example.classfit.studentExam.dto.request.CreateExamRequest;
 import classfit.example.classfit.studentExam.dto.request.FindExamRequest;
@@ -12,6 +13,8 @@ import classfit.example.classfit.studentExam.dto.response.UpdateExamResponse;
 import classfit.example.classfit.studentExam.service.ExamService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -72,4 +75,13 @@ public class ExamController {
         UpdateExamResponse response = examService.updateExam(memberId, examId, request);
         return ApiResponse.success(response, 200, "UPDATED EXAM");
     }
+
+    @DeleteMapping("/{examId}")
+    public ResponseEntity<ApiResponse> deleteExam(
+            @RequestHeader(name = "member-no", required = false) Long memberId,
+            @PathVariable(name = "examId") Long examId) {
+        examService.deleteExam(memberId, examId);
+        return ResponseEntity.ok(ApiResponse.success(null,200, "DELETED EXAM"));
+    }
+
 }
