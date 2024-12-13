@@ -32,4 +32,11 @@ public class StudentExamScore {
         this.exam = exam;
         this.score = score;
     }
+
+    public void updateScore(Integer score) {
+        if (score < 0) {
+            throw new IllegalArgumentException("점수는 음수일 수 없습니다.");
+        }
+        this.score = score;
+    }
 }

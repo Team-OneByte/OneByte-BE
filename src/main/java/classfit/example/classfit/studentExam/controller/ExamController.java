@@ -6,6 +6,7 @@ import classfit.example.classfit.studentExam.dto.process.ExamClassStudent;
 import classfit.example.classfit.studentExam.dto.request.CreateExamRequest;
 import classfit.example.classfit.studentExam.dto.request.FindExamRequest;
 import classfit.example.classfit.studentExam.dto.request.UpdateExamRequest;
+import classfit.example.classfit.studentExam.dto.request.UpdateStudentScoreRequest;
 import classfit.example.classfit.studentExam.dto.response.CreateExamResponse;
 import classfit.example.classfit.studentExam.dto.response.FindExamResponse;
 import classfit.example.classfit.studentExam.dto.response.ShowExamDetailResponse;
@@ -18,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -49,7 +51,7 @@ public class ExamController {
             @RequestHeader(name = "member-no", required = false) Long memberId,
             @PathVariable(name = "examId") Long examId
     ) {
-        List<ExamClassStudent> response = examService.findExamClassStuent(memberId,
+        List<ExamClassStudent> response = examService.findExamClassStudent(memberId,
                 examId);
         return ApiResponse.success(response, 200, "FIND EXAM-STUDENT");
     }
@@ -90,7 +92,17 @@ public class ExamController {
             @RequestHeader(name = "member-no", required = false) Long memberId,
             @PathVariable(name = "examId") Long examId) {
         examService.deleteExam(memberId, examId);
-        return ResponseEntity.ok(ApiResponse.success(null,200, "DELETED EXAM"));
+        return ResponseEntity.ok(ApiResponse.success(null, 200, "DELETED EXAM"));
     }
 
+    @PatchMapping("/findexam/{examId}/score")
+    @Operation(summary = "학생들 성적 수정", description = "학생들 성적 수정하는 API 입니다./ 시험 상세조회에서 경로 넘어가도록 작성")
+    public ApiResponse<List<ExamClassStudent>> updateStudentScore(
+            @RequestHeader(name = "member-no", required = false) Long memberId,
+            @PathVariable(name = "examId") Long examId,
+            @RequestBody UpdateStudentScoreRequest request) {
+        List<ExamClassStudent> examClassStudents = examService.updateStudentScore(memberId, examId,
+                request);
+        return ApiResponse.success(examClassStudents, 200, "UPDATED-STUDENT-SCORE");
+    }
 }
