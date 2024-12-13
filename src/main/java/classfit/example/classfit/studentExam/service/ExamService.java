@@ -118,10 +118,10 @@ public class ExamService {
         Exam findExam = examRepository.findById(examId)
                 .orElseThrow(
                         () -> new ClassfitException("해당 시험지를 찾을 수 없어요.", HttpStatus.NOT_FOUND));
-
+        SubClass subClass = findExam.getSubClass();
         List<StudentExamScore> studentScores = findExam.getStudentExamScores();
-        // 초기 상황 : 학생들 점수 입력 안했을 시
-        // 초기 학생들 성적은 null
+        List<ClassStudent> classStudents = classStudentRepository.findBySubClass(subClass);
+        // 초기 상황 : 학생들 점수 입력 안했을 시 -> 학생 성적 0
         Integer perfectScore = studentScores.stream().mapToInt(StudentExamScore::getScore).max()
                 .orElse(findExam.getHighestScore());
         Integer lowestScore = studentScores.stream().mapToInt(StudentExamScore::getScore).min()
@@ -131,13 +131,12 @@ public class ExamService {
                 .average()
                 .orElse((perfectScore + lowestScore) / 2);
 
-        List<ExamClassStudent> examClassStudents = studentScores.stream()
-                .map(studentScore -> new ExamClassStudent(
-                        studentScore.getStudent().getId(),
-                        studentScore.getStudent().getName(),
-                        studentScore.getScore()
-                ))
-                .toList();
+        List<ExamClassStudent> examClassStudents = classStudents.stream()
+                .map(classStudent -> {
+                    Student student = classStudent.getStudent();
+                    return new ExamClassStudent(student.getId(), student.getName(), 0);
+                })
+                .collect(Collectors.toList());
 
         return new ShowExamDetailResponse(
                 findExam.getExamPeriod(),

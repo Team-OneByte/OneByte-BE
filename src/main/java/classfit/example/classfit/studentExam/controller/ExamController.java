@@ -11,6 +11,8 @@ import classfit.example.classfit.studentExam.dto.response.FindExamResponse;
 import classfit.example.classfit.studentExam.dto.response.ShowExamDetailResponse;
 import classfit.example.classfit.studentExam.dto.response.UpdateExamResponse;
 import classfit.example.classfit.studentExam.service.ExamService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -27,11 +29,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1/exam")
 @RequiredArgsConstructor
+@Tag(name = "성적관리 API", description = "성적관리 API입니다.")
 public class ExamController {
 
     private final ExamService examService;
 
     @PostMapping
+    @Operation(summary = "시험 정보 등록", description = "시험 정보 등록하는 API 입니다.")
     public ApiResponse<CreateExamResponse> createExam(
             @RequestHeader(name = "member-no", required = false) Long memberId,
             @RequestBody CreateExamRequest req) {
@@ -40,6 +44,7 @@ public class ExamController {
     }
 
     @GetMapping("/{examId}")
+    @Operation(summary = "시험 등록 시 해당 클래스 학생 조회", description = "시험 등록시 해당 클래스 학생 조회하는 API 입니다.")
     public ApiResponse<List<ExamClassStudent>> findExamClassStuent(
             @RequestHeader(name = "member-no", required = false) Long memberId,
             @PathVariable(name = "examId") Long examId
@@ -50,6 +55,7 @@ public class ExamController {
     }
 
     @PostMapping("/findexam")
+    @Operation(summary = "시험 리스트 조회", description = "시험 이름과 작성자로 시험 검색하는 API 입니다.")
     public ApiResponse<List<FindExamResponse>> findExamList(
             @RequestHeader(name = "member-no", required = false) Long memberId,
             @RequestBody FindExamRequest request
@@ -59,6 +65,7 @@ public class ExamController {
     }
 
     @GetMapping("/findexam/{examId}")
+    @Operation(summary = "시험 상세 조회", description = "시험 상세 내용 조회 API 입니다.")
     public ApiResponse<ShowExamDetailResponse> showExamDetail(
             @RequestHeader(name = "member-no", required = false) Long memberId,
             @PathVariable(name = "examId") Long examId) {
@@ -68,6 +75,7 @@ public class ExamController {
     }
 
     @PutMapping("/{examId}")
+    @Operation(summary = "시험 수정", description = "시험 수정하는 API 입니다.")
     public ApiResponse<UpdateExamResponse> updateExam(
             @RequestHeader(name = "member-no", required = false) Long memberId,
             @PathVariable(name = "examId") Long examId,
@@ -77,6 +85,7 @@ public class ExamController {
     }
 
     @DeleteMapping("/{examId}")
+    @Operation(summary = "시험 삭제", description = "시험 삭제하는 API 입니다.")
     public ResponseEntity<ApiResponse> deleteExam(
             @RequestHeader(name = "member-no", required = false) Long memberId,
             @PathVariable(name = "examId") Long examId) {
