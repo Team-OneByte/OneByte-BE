@@ -3,6 +3,7 @@ package classfit.example.classfit.auth.service;
 import classfit.example.classfit.auth.security.jwt.JWTUtil;
 import classfit.example.classfit.common.exception.ClassfitException;
 import classfit.example.classfit.common.util.RedisUtil;
+import classfit.example.classfit.member.domain.Member;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -60,6 +61,18 @@ public class AuthService {
         response.setHeader("access", newAccess);
         response.addCookie(createCookie("refresh", newRefresh));
         return response;
+    }
+
+    public void logout(Member member) {
+        String redisRefreshTokenKey = "Refresh Token : " + member.getEmail();
+
+        String refreshToken = redisUtil.getData(redisRefreshTokenKey);
+
+        if (jwtUtil.isExpired(refreshToken) || refreshToken == null) {
+            throw new ClassfitException("Refresh 토큰이 유효하지 않거나 만료되었습니다..", HttpStatus.NOT_FOUND);
+        }
+
+        redisUtil.deleteData(redisRefreshTokenKey);
     }
 
     private Cookie createCookie(String key, String value) {
