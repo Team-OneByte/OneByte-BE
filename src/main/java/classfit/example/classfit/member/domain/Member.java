@@ -54,4 +54,8 @@ public class Member extends BaseEntity {
     public void updateRole(String admin) {
         this.role = admin;
     }
+
+    public void updatePassword(String password) {
+        this.password = password;
+    }
 }

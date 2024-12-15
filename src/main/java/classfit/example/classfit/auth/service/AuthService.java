@@ -45,14 +45,14 @@ public class AuthService {
         if (!category.equals("refresh")) {
             throw new ClassfitException("invalid refresh token", HttpStatus.BAD_REQUEST);
         }
-        String redisKey = "Refresh Token : " + email;
+        String redisKey = "refresh:" + email;
         String existedToken = redisUtil.getData(redisKey);
 
         if (existedToken == null) {
             throw new ClassfitException("invalid refresh token", HttpStatus.BAD_REQUEST);
         }
 
-        String newAccess = jwtUtil.createJwt("access", email, role, 1000 * 60 * 3L);
+        String newAccess = jwtUtil.createJwt("access", email, role, 1000 * 60 * 5L);
         String newRefresh = jwtUtil.createJwt("refresh", email, role, 1000 * 60 * 60 * 24 * 7L);
 
         redisUtil.deleteData(redisKey);
@@ -64,7 +64,7 @@ public class AuthService {
     }
 
     public void logout(Member member) {
-        String redisRefreshTokenKey = "Refresh Token : " + member.getEmail();
+        String redisRefreshTokenKey = "refresh:" + member.getEmail();
 
         String refreshToken = redisUtil.getData(redisRefreshTokenKey);
 
@@ -85,7 +85,7 @@ public class AuthService {
     }
 
     private void addRefreshEntity(String email, String refresh, Long expiredMs) {
-        String redisKey = "Refresh Token : " + email;
+        String redisKey = "refresh:" + email;
         redisUtil.setDataExpire(redisKey, refresh, expiredMs);
     }
 }

@@ -1,8 +1,11 @@
 package classfit.example.classfit.member.service;
 
 import classfit.example.classfit.common.exception.ClassfitException;
+import classfit.example.classfit.common.util.EmailUtil;
 import classfit.example.classfit.common.util.RedisUtil;
+import classfit.example.classfit.mail.dto.request.EmailAuthPurpose;
 import classfit.example.classfit.member.domain.Member;
+import classfit.example.classfit.member.dto.request.MemberPasswordRequest;
 import classfit.example.classfit.member.dto.request.MemberRequest;
 import classfit.example.classfit.member.dto.response.MemberResponse;
 import classfit.example.classfit.member.repository.MemberRepository;
@@ -23,7 +26,7 @@ public class MemberService {
     @Transactional
     public MemberResponse signIn(MemberRequest request) {
 
-        String emailToken = redisUtil.getData("Email Token : " + request.email());
+        String emailToken = redisUtil.getData(EmailAuthPurpose.SIGN_IN + ":" + EmailUtil.splitEmail(request.email()) + ":token");
 
         if (!emailToken.equals(request.emailToken())) {
             throw new ClassfitException("이메일 검증에 문제가 발생하였습니다. 이메일 인증을 다시 시도해 주세요", HttpStatus.NOT_FOUND);
@@ -41,5 +44,22 @@ public class MemberService {
 
         memberRepository.save(member);
         return MemberResponse.from(member);
+    }
+
+    @Transactional
+    public void updatePassword(MemberPasswordRequest request) {
+        String emailToken = redisUtil.getData(EmailAuthPurpose.PASSWORD_RESET + ":" + EmailUtil.splitEmail(request.email()) + ":token");
+
+        if (!emailToken.equals(request.emailToken())) {
+            throw new ClassfitException("이메일 검증에 문제가 발생하였습니다. 이메일 인증을 다시 시도해 주세요", HttpStatus.NOT_FOUND);
+        }
+
+        if (!request.password().equals(request.passwordConfirm())) {
+            throw new ClassfitException("비밀번호가 일치하지 않습니다.", HttpStatus.CONFLICT);
+        }
+
+        Member findMember = memberRepository.findByEmail(request.email()).orElseThrow(() -> new ClassfitException("존재하지 않는 계정입니다.", HttpStatus.NOT_FOUND));
+
+        findMember.updatePassword(bCryptPasswordEncoder.encode(request.password()));
     }
 }
