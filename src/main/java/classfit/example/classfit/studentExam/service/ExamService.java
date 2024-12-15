@@ -23,7 +23,6 @@ import classfit.example.classfit.studentExam.dto.response.CreateExamResponse;
 import classfit.example.classfit.studentExam.dto.response.FindExamResponse;
 import classfit.example.classfit.studentExam.dto.response.ShowExamDetailResponse;
 import classfit.example.classfit.studentExam.dto.response.UpdateExamResponse;
-import java.util.ArrayList;
 import java.util.stream.Collectors;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
@@ -53,7 +52,6 @@ public class ExamService {
         MainClass findMainClass = mainClassRespository.findById(request.mainClassId()).orElseThrow(
                 () -> new ClassfitException("메인 클래스를 찾을 수 없어요.", HttpStatus.NOT_FOUND));
 
-        // TODO 시험범위 리스트형식으로 변환하기
         Exam newExam = request.toEntity(findSubClass, findMainClass);
         Exam savedExam = examRepository.save(newExam);
 
@@ -109,11 +107,7 @@ public class ExamService {
     }
 
     @Transactional(readOnly = true)
-    /**TODO
-     *  시험범위 - 리스트형식,제목,클래스(json파싱),시험날짜,최저점수,최고점수,평균,반애들이름,성적리스트
-     *  최저점수,최고점수,평균 : 도메인에 추가 - 초기 null
-     *  상세 시험 애들 성적 수정하면 반영되도록 -> 최저점수
-     */ public ShowExamDetailResponse showExamDetail(Long memberId, Long examId) {
+    public ShowExamDetailResponse showExamDetail(Long memberId, Long examId) {
         Member findMember = memberRepository.findById(memberId)
                 .orElseThrow(() -> new ClassfitException("회원을 찾을 수 없어요.", HttpStatus.NOT_FOUND));
         Exam findExam = examRepository.findById(examId).orElseThrow(
@@ -132,10 +126,9 @@ public class ExamService {
         List<ExamClassStudent> examClassStudents = classStudents.stream().map(classStudent -> {
                     Student student = classStudent.getStudent();
 
-                    // 해당 학생의 점수 가져오기
                     Integer score = studentScores.stream()
                             .filter(scoreObj -> scoreObj.getStudent().getId().equals(student.getId()))
-                            .map(StudentExamScore::getScore).findFirst().orElse(0); // 점수가 없다면 0으로 설정
+                            .map(StudentExamScore::getScore).findFirst().orElse(0);
 
                     return new ExamClassStudent(student.getId(), student.getName(), score);
                 })

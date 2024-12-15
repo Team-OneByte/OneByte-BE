@@ -4,9 +4,11 @@ package classfit.example.classfit.studentExam.dto.response;
 import classfit.example.classfit.studentExam.domain.Exam;
 import classfit.example.classfit.studentExam.domain.Standard;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import org.springframework.format.annotation.DateTimeFormat;
 
 public record FindExamResponse(Long examId, Long memberId, Standard standard, String mainClassName,
-                               String subClassName, String examName, LocalDate examDate // 일단 시험날짜로
+                               String subClassName, String examName, @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate createdAt
 
 ) {
 
@@ -18,7 +20,10 @@ public record FindExamResponse(Long examId, Long memberId, Standard standard, St
                 exam.getMainClass().getMainClassName(),
                 exam.getSubClass().getSubClassName(),
                 exam.getExamName(),
-                exam.getExamDate()
+                convertToLocalDate(exam.getCreatedAt())
         );
     }
+private static LocalDate convertToLocalDate(LocalDateTime dateTime) {
+    return dateTime.toLocalDate();
+}
 }
