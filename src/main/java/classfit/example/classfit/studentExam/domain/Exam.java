@@ -89,12 +89,12 @@ public class Exam extends BaseEntity {
     }
 
     public void updateExam(LocalDate examDate, Standard standard, Integer highestScore,
-            ExamPeriod examPeriod, String examName, String examRange) {
+            ExamPeriod examPeriod, String examName, List<String> examRange) {
         this.examDate = examDate;
         this.standard = standard;
         this.highestScore = highestScore;
         this.examPeriod = examPeriod;
         this.examName = examName;
-        this.examRange = examRange;
+        this.examRange = String.join(",", examRange);
     }
 }

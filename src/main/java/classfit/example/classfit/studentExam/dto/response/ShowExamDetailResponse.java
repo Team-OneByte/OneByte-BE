@@ -9,6 +9,7 @@ import java.util.List;
 public record ShowExamDetailResponse(ExamPeriod examPeriod, String examName, LocalDate examDate,
                                      String mainClassName, String subClassName,
                                      Integer lowestScore, Integer perfectScore, Long average,
+                                     List<String> examRange,
                                      Standard standard, List<ExamClassStudent> examClassStudents) {
 
 }

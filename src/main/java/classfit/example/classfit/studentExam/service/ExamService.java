@@ -23,6 +23,7 @@ import classfit.example.classfit.studentExam.dto.response.CreateExamResponse;
 import classfit.example.classfit.studentExam.dto.response.FindExamResponse;
 import classfit.example.classfit.studentExam.dto.response.ShowExamDetailResponse;
 import classfit.example.classfit.studentExam.dto.response.UpdateExamResponse;
+import java.util.Arrays;
 import java.util.stream.Collectors;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
@@ -134,9 +135,12 @@ public class ExamService {
                 })
 
                 .collect(Collectors.toList());
+
+        List<String> examRangeList = Arrays.asList(findExam.getExamRange().split(","));
         return new ShowExamDetailResponse(findExam.getExamPeriod(), findExam.getExamName(),
                 findExam.getExamDate(), findExam.getMainClass().getMainClassName(),
                 findExam.getSubClass().getSubClassName(), lowestScore, perfectScore, average,
+                examRangeList,
                 findExam.getStandard(), examClassStudents);
     }
 
@@ -146,15 +150,16 @@ public class ExamService {
                 .orElseThrow(() -> new ClassfitException("회원을 찾을 수 없어요.", HttpStatus.NOT_FOUND));
         Exam findExam = examRepository.findById(examId).orElseThrow(
                 () -> new ClassfitException("해당 시험지를 찾을 수 없어요.", HttpStatus.NOT_FOUND));
+        List<String> examRangeList = request.examRange();
 
         findExam.updateExam(request.examDate(), request.standard(), request.highestScore(),
-                request.examPeriod(), request.examName(), request.examRange());
+                request.examPeriod(), request.examName(), examRangeList);
         examRepository.save(findExam);
 
         return new UpdateExamResponse(findExam.getId(), findExam.getMainClass().getMainClassName(),
                 findExam.getSubClass().getSubClassName(), findExam.getExamDate(),
                 findExam.getStandard(), findExam.getHighestScore(), findExam.getExamPeriod(),
-                findExam.getExamName(), findExam.getExamRange());
+                findExam.getExamName(), examRangeList);
     }
 
     @Transactional
