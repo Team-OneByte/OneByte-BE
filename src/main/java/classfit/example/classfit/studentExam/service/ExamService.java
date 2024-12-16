@@ -1,5 +1,6 @@
 package classfit.example.classfit.studentExam.service;
 
+import classfit.example.classfit.auth.annotation.AuthMember;
 import classfit.example.classfit.category.domain.MainClass;
 import classfit.example.classfit.category.domain.SubClass;
 import classfit.example.classfit.category.repository.MainClassRespository;
@@ -7,7 +8,6 @@ import classfit.example.classfit.category.repository.SubClassRepository;
 import classfit.example.classfit.classStudent.domain.ClassStudent;
 import classfit.example.classfit.classStudent.repository.ClassStudentRepository;
 import classfit.example.classfit.common.exception.ClassfitException;
-import classfit.example.classfit.member.domain.Member;
 import classfit.example.classfit.member.repository.MemberRepository;
 import classfit.example.classfit.student.domain.Student;
 import classfit.example.classfit.studentExam.domain.Exam;
@@ -43,10 +43,7 @@ public class ExamService {
     private final StudentExamScoreRepository studentExamScoreRepository;
 
     @Transactional
-    public CreateExamResponse createExam(Long memberId, CreateExamRequest request) {
-        Member findMember = memberRepository.findById(memberId)
-                .orElseThrow(() -> new ClassfitException("회원을 찾을 수 없어요.", HttpStatus.NOT_FOUND));
-
+    public CreateExamResponse createExam(@AuthMember Long memberId, CreateExamRequest request) {
         SubClass findSubClass = subClassRepository.findById(request.subClassId()).orElseThrow(
                 () -> new ClassfitException("서브 클래스를 찾을 수 없어요.", HttpStatus.NOT_FOUND));
 
@@ -67,10 +64,7 @@ public class ExamService {
     }
 
     @Transactional(readOnly = true)
-    public List<ExamClassStudent> findExamClassStudent(Long memberId, Long examId) {
-        Member findMember = memberRepository.findById(memberId)
-                .orElseThrow(() -> new ClassfitException("회원을 찾을 수 없어요.", HttpStatus.NOT_FOUND));
-
+    public List<ExamClassStudent> findExamClassStudent(@AuthMember Long memberId, Long examId) {
         Exam findExam = examRepository.findById(examId)
                 .orElseThrow(() -> new ClassfitException("시험지를 찾을 수 없어요.", HttpStatus.NOT_FOUND));
 
@@ -84,10 +78,7 @@ public class ExamService {
     }
 
     @Transactional(readOnly = true)
-    public List<FindExamResponse> findExamList(Long memberId, FindExamRequest request) {
-
-        Member findMember = memberRepository.findById(memberId)
-                .orElseThrow(() -> new ClassfitException("회원을 찾을 수 없어요.", HttpStatus.NOT_FOUND));
+    public List<FindExamResponse> findExamList(@AuthMember Long memberId, FindExamRequest request) {
 
         if (request.memberName() == null && request.examName() == null) {
             Long academyId = memberRepository.findAcademyIdByMemberName(request.memberName());
@@ -108,9 +99,7 @@ public class ExamService {
     }
 
     @Transactional(readOnly = true)
-    public ShowExamDetailResponse showExamDetail(Long memberId, Long examId) {
-        Member findMember = memberRepository.findById(memberId)
-                .orElseThrow(() -> new ClassfitException("회원을 찾을 수 없어요.", HttpStatus.NOT_FOUND));
+    public ShowExamDetailResponse showExamDetail(@AuthMember Long memberId, Long examId) {
         Exam findExam = examRepository.findById(examId).orElseThrow(
                 () -> new ClassfitException("해당 시험지를 찾을 수 없어요.", HttpStatus.NOT_FOUND));
 
@@ -140,14 +129,12 @@ public class ExamService {
         return new ShowExamDetailResponse(findExam.getExamPeriod(), findExam.getExamName(),
                 findExam.getExamDate(), findExam.getMainClass().getMainClassName(),
                 findExam.getSubClass().getSubClassName(), lowestScore, perfectScore, average,
-                examRangeList,
-                findExam.getStandard(), examClassStudents);
+                examRangeList, findExam.getStandard(), examClassStudents);
     }
 
     @Transactional
-    public UpdateExamResponse updateExam(Long memberId, Long examId, UpdateExamRequest request) {
-        Member findMember = memberRepository.findById(memberId)
-                .orElseThrow(() -> new ClassfitException("회원을 찾을 수 없어요.", HttpStatus.NOT_FOUND));
+    public UpdateExamResponse updateExam(@AuthMember Long memberId, Long examId,
+            UpdateExamRequest request) {
         Exam findExam = examRepository.findById(examId).orElseThrow(
                 () -> new ClassfitException("해당 시험지를 찾을 수 없어요.", HttpStatus.NOT_FOUND));
         List<String> examRangeList = request.examRange();
@@ -163,19 +150,15 @@ public class ExamService {
     }
 
     @Transactional
-    public void deleteExam(Long memberId, Long examId) {
-        Member findMember = memberRepository.findById(memberId)
-                .orElseThrow(() -> new ClassfitException("회원을 찾을 수 없어요.", HttpStatus.NOT_FOUND));
+    public void deleteExam(@AuthMember Long memberId, Long examId) {
         Exam findExam = examRepository.findById(examId).orElseThrow(
                 () -> new ClassfitException("해당 시험지를 찾을 수 없어요.", HttpStatus.NOT_FOUND));
         examRepository.delete(findExam);
     }
 
     @Transactional
-    public List<ExamClassStudent> updateStudentScore(Long memberId, Long examId,
+    public List<ExamClassStudent> updateStudentScore(@AuthMember Long memberId, Long examId,
             UpdateStudentScoreRequest request) {
-        Member findMember = memberRepository.findById(memberId)
-                .orElseThrow(() -> new ClassfitException("회원을 찾을 수 없어요.", HttpStatus.NOT_FOUND));
         Exam findExam = examRepository.findById(examId).orElseThrow(
                 () -> new ClassfitException("해당 시험지를 찾을 수 없어요.", HttpStatus.NOT_FOUND));
         StudentExamScore studentExamScore = studentExamScoreRepository.findByExamAndStudentId(
