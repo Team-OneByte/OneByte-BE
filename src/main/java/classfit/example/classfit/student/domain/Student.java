@@ -3,6 +3,7 @@ package classfit.example.classfit.student.domain;
 import classfit.example.classfit.attendance.domain.Attendance;
 import classfit.example.classfit.classStudent.domain.ClassStudent;
 import classfit.example.classfit.common.domain.BaseEntity;
+import classfit.example.classfit.studentExam.domain.StudentExamScore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -43,6 +44,10 @@ public class Student extends BaseEntity {
     private String remark;
     private boolean receivedSms;
     private String counselingLog;
+
+    @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<StudentExamScore> studentExamScores = new ArrayList<>();
+
 
     @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ClassStudent> classStudents = new ArrayList<>();

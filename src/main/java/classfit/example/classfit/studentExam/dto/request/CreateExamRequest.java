@@ -6,6 +6,7 @@ import classfit.example.classfit.studentExam.domain.Exam;
 import classfit.example.classfit.studentExam.domain.ExamPeriod;
 import classfit.example.classfit.studentExam.domain.Standard;
 import java.time.LocalDate;
+import java.util.List;
 import org.springframework.format.annotation.DateTimeFormat;
 
 public record CreateExamRequest(Long subClassId,
@@ -13,7 +14,7 @@ public record CreateExamRequest(Long subClassId,
                                 @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate examDate,
                                 Standard standard,
                                 Integer highestScore, ExamPeriod examPeriod, String examName,
-                                String range) {
+                                List<String> range) {
 
     public Exam toEntity(SubClass subClass, MainClass mainClass) {
         return Exam.builder()
@@ -24,7 +25,7 @@ public record CreateExamRequest(Long subClassId,
                 .standard(standard)
                 .examPeriod(examPeriod)
                 .highestScore(highestScore)
-                .examRange(range)
+                .examRange(String.join(", ", this.range))
                 .build();
     }
 
