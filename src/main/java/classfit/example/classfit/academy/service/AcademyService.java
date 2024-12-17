@@ -7,7 +7,6 @@ import classfit.example.classfit.academy.dto.response.AcademyResponse;
 import classfit.example.classfit.academy.repository.AcademyRepository;
 import classfit.example.classfit.common.exception.ClassfitException;
 import classfit.example.classfit.common.util.EmailUtil;
-import classfit.example.classfit.inviteMember.repository.InviteMemberRepository;
 import classfit.example.classfit.member.domain.Member;
 import classfit.example.classfit.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +20,6 @@ public class AcademyService {
 
     private final AcademyRepository academyRepository;
     private final MemberRepository memberRepository;
-    private final InviteMemberRepository inviteMemberRepository;
 
     @Transactional
     public AcademyResponse createAcademy(AcademyCreateRequest request) {
