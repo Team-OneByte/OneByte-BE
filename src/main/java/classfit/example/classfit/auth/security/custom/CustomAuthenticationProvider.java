@@ -1,4 +1,4 @@
-package classfit.example.classfit.auth.security.provider;
+package classfit.example.classfit.auth.security.custom;
 
 import classfit.example.classfit.common.exception.ClassfitException;
 import org.springframework.http.HttpStatus;

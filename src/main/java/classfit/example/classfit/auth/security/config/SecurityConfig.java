@@ -1,11 +1,11 @@
 package classfit.example.classfit.auth.security.config;
 
+import classfit.example.classfit.auth.security.custom.CustomAuthenticationProvider;
+import classfit.example.classfit.auth.security.custom.CustomUserDetailService;
 import classfit.example.classfit.auth.security.exception.CustomAuthenticationEntryPoint;
 import classfit.example.classfit.auth.security.filter.CustomLoginFilter;
 import classfit.example.classfit.auth.security.jwt.JWTFilter;
 import classfit.example.classfit.auth.security.jwt.JWTUtil;
-import classfit.example.classfit.auth.security.provider.CustomAuthenticationProvider;
-import classfit.example.classfit.auth.security.provider.CustomUserDetailService;
 import classfit.example.classfit.common.util.RedisUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
