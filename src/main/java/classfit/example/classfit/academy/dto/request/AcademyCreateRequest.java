@@ -4,7 +4,7 @@ import classfit.example.classfit.academy.domain.Academy;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
-public record AcademyRequest
+public record AcademyCreateRequest
     (
 
         @NotBlank(message = "이메일 정보를 입력해 주세요")

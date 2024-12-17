@@ -20,9 +20,6 @@ public class InviteMember extends BaseEntity {
     @Column(nullable = false, length = 20)
     private String email;
 
-    @Column(nullable = false, length = 8)
-    private String code;
-
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "VARCHAR(10)", nullable = false)
     private InviteStatus status;

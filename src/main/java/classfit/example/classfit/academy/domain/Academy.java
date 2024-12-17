@@ -35,10 +35,10 @@ public class Academy extends BaseEntity {
     @OneToMany(mappedBy = "academy", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<InviteMember> inviteMembers = new ArrayList<>();
 
-    public void addAcademy(Member member) {
+    public void addMember(Member member) {
         this.members.add(member);
         if (member.getAcademy() != this) {
-            member.joinAcademy(this);
+            member.addAcademy(this);
         }
     }
 }
