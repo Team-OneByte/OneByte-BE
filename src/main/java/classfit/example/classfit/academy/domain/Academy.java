@@ -1,7 +1,7 @@
 package classfit.example.classfit.academy.domain;
 
 import classfit.example.classfit.common.domain.BaseEntity;
-import classfit.example.classfit.inviteMember.domain.InviteMember;
+import classfit.example.classfit.invitation.domain.Invitation;
 import classfit.example.classfit.member.domain.Member;
 import jakarta.persistence.*;
 import lombok.*;
@@ -33,7 +33,7 @@ public class Academy extends BaseEntity {
 
     @Builder.Default
     @OneToMany(mappedBy = "academy", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<InviteMember> inviteMembers = new ArrayList<>();
+    private List<Invitation> inviteMembers = new ArrayList<>();
 
     public void addMember(Member member) {
         this.members.add(member);

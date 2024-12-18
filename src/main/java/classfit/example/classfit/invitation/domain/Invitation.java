@@ -1,4 +1,4 @@
-package classfit.example.classfit.inviteMember.domain;
+package classfit.example.classfit.invitation.domain;
 
 import classfit.example.classfit.academy.domain.Academy;
 import classfit.example.classfit.common.domain.BaseEntity;
@@ -10,11 +10,11 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class InviteMember extends BaseEntity {
+public class Invitation extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "invite_member_id")
+    @Column(name = "invitation_id")
     private Long id;
 
     @Column(nullable = false, length = 20)
@@ -22,7 +22,7 @@ public class InviteMember extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "VARCHAR(10)", nullable = false)
-    private InviteStatus status;
+    private InvitationStatus status;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "academy_id", nullable = false)
