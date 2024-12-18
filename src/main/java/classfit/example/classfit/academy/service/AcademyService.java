@@ -48,7 +48,7 @@ public class AcademyService {
         Academy academy = academyRepository.findByCode(request.code())
             .orElseThrow(() -> new ClassfitException("유효하지 않는 코드입니다", HttpStatus.NOT_FOUND));
 
-        if (!academyRepository.existsByIdAndInviteMembersEmail(academy.getId(), request.email())) {
+        if (!invitationRepository.existsByAcademyIdAndEmail(academy.getId(), request.email())) {
             throw new ClassfitException("학원으로부터 초대되어지지 않은 계정입니다.", HttpStatus.NOT_FOUND);
         }
 

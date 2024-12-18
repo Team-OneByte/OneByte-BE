@@ -17,7 +17,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -28,11 +27,11 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private final AuthenticationConfiguration authenticationConfiguration;
-    private final JWTUtil jwtUtil;
     private final CustomUserDetailService customUserDetailService;
     private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
     private final RedisUtil redisUtil;
-    private final UserDetailsService userDetailsService;
+    private final JWTUtil jwtUtil;
+
 
     @Bean
     public BCryptPasswordEncoder bCryptPasswordEncoder() {
@@ -46,7 +45,7 @@ public class SecurityConfig {
 
     @Bean
     public CustomAuthenticationProvider customAuthenticationProvider() {
-        return new CustomAuthenticationProvider(userDetailsService, bCryptPasswordEncoder());
+        return new CustomAuthenticationProvider(customUserDetailService, bCryptPasswordEncoder());
     }
 
     @Bean
@@ -66,7 +65,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/v1/login", "/api/v1/sign_in", "/api/v1/reissue", "/api/v1/mail/send", "/api/v1/mail/verify").permitAll()
                 .requestMatchers("/api/v1/academy/code", "/api/v1/academy/register").permitAll()
                 .requestMatchers("/api/v1/**").hasAnyRole("MEMBER", "ADMIN")
-                .requestMatchers("/admin").hasRole("ADMIN")
+                .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
                 .anyRequest().authenticated());
 
         security

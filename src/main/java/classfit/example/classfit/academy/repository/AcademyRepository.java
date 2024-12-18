@@ -11,5 +11,4 @@ public interface AcademyRepository extends JpaRepository<Academy, Long> {
 
     Optional<Academy> findByCode(String code);
 
-    boolean existsByIdAndInviteMembersEmail(Long academyId, String email);
 }

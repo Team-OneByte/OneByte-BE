@@ -7,4 +7,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface InvitationRepository extends JpaRepository<Invitation, Long> {
 
+    boolean existsByAcademyIdAndEmail(Long academyId, String email);
+
 }
