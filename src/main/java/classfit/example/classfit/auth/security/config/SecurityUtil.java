@@ -1,6 +1,6 @@
 package classfit.example.classfit.auth.security.config;
 
-import classfit.example.classfit.auth.security.provider.CustomUserDetails;
+import classfit.example.classfit.auth.security.custom.CustomUserDetails;
 import classfit.example.classfit.common.exception.ClassfitException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;

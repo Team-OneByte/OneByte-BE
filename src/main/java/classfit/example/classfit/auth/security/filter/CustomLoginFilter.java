@@ -1,8 +1,8 @@
 package classfit.example.classfit.auth.security.filter;
 
 import classfit.example.classfit.auth.dto.request.UserRequest;
+import classfit.example.classfit.auth.security.custom.CustomAuthenticationToken;
 import classfit.example.classfit.auth.security.jwt.JWTUtil;
-import classfit.example.classfit.auth.security.provider.CustomAuthenticationToken;
 import classfit.example.classfit.common.exception.ClassfitException;
 import classfit.example.classfit.common.util.RedisUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;

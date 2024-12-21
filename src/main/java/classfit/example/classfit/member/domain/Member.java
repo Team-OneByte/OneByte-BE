@@ -46,8 +46,7 @@ public class Member extends BaseEntity {
     @JoinColumn(name = "academy_id")
     private Academy academy;
 
-    // 연관관계 편의 메서드
-    public void joinAcademy(Academy academy) {
+    public void addAcademy(Academy academy) {
         this.academy = academy;
     }
 
