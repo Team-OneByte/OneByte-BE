@@ -46,8 +46,8 @@ public class StudentService {
             SubClass subClass = subClassRepository.findById(subClassId).orElseThrow(
                 () -> new ClassfitException("존재하지 않는 SubClass ID입니다.", HttpStatus.NOT_FOUND));
             ClassStudent classStudent = new ClassStudent();
-            classStudent.setStudent(student);
-            classStudent.setSubClass(subClass);
+            classStudent.addStudent(student);
+            classStudent.addSubClass(subClass);
             classStudentRepository.save(classStudent);
 
             createAttendanceForThreeWeeks(student);
@@ -171,8 +171,8 @@ public class StudentService {
                 () -> new ClassfitException("존재하지 않는 SubClass 입니다.", HttpStatus.NOT_FOUND));
 
             ClassStudent classStudent = new ClassStudent();
-            classStudent.setStudent(student);
-            classStudent.setSubClass(subClass);
+            classStudent.addStudent(student);
+            classStudent.addSubClass(subClass);
             classStudentRepository.save(classStudent);
         });
     }

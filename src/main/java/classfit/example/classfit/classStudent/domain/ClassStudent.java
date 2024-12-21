@@ -4,12 +4,13 @@ import classfit.example.classfit.attendance.domain.Attendance;
 import classfit.example.classfit.category.domain.SubClass;
 import classfit.example.classfit.student.domain.Student;
 import jakarta.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Builder
@@ -34,11 +35,11 @@ public class ClassStudent {
     @OneToMany(mappedBy = "classStudent", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Attendance> attendances = new ArrayList<>();
 
-    public void setStudent(Student student) {
+    public void addStudent(Student student) {
         this.student = student;
     }
 
-    public void setSubClass(SubClass subClass) {
+    public void addSubClass(SubClass subClass) {
         if (this.subClass != null) {
             this.subClass.getClassStudents().remove(this);
         }
