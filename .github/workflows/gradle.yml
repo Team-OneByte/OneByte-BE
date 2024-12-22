@@ -57,12 +57,13 @@ jobs:
 
 
       - name: Docker Hub push
-        run: docker push ${{ secrets.DOCKER_USERNAME }}/classfit-server
+        run: docker push ${{ secrets.DOCKER_USERNAME }}/classfit-server:latest
 
   deploy-to-server:
     runs-on: ubuntu-latest
     needs: build-docker-image
-
+    env:
+      COMPOSE: "/home/ita/onebyte"
     steps:
       - name: Deploy
         uses: appleboy/ssh-action@v0.1.3
@@ -71,8 +72,19 @@ jobs:
           username: ita
           password: ${{ secrets.SERVER_PASSWORD }}
           port: 22
+          source: docker-compose.yml
+          target: /home/ita/onebyte/
+
+      - name: Run Docker Compose
+        uses: appleboy/ssh-action@v0.1.3
+        with:
+          host: ${{ secrets.SERVER_ADDRESS }}
+          username: ita
+          password: ${{ secrets.SERVER_PASSWORD }}
+          port: 22
           script: |
+            cd /home/ita/onebyte
             docker pull ${{ secrets.DOCKER_USERNAME }}/classfit-server:latest
-            docker-compose -f docker-compose.yml down || true
-            docker-compose -f docker-compose.yml up -d
-            docker-compose -f docker-compose.yml ps
+            docker-compose down || true
+            docker-compose up -d
+            docker-compose ps
