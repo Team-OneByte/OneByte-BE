@@ -62,8 +62,8 @@ jobs:
             # 최신 이미지 Pull
             docker pull ${{ secrets.DOCKER_USERNAME }}/classfit-server:latest
             
-            docker-compose down || true
-            docker-compose up -d --remove-orphans
+            docker-compose -f ./docker-compose down || true
+            docker-compose -f ./docker-compose up -d --remove-orphans
             
             docker image prune -f
             
