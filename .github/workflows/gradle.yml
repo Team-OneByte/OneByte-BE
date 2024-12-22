@@ -53,8 +53,19 @@ jobs:
           password: ${{ secrets.SERVER_PASSWORD }}
           port: 22
           script: |
+            set -e
+            cd /home/ita/onebyte
+            
             docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
-            docker rm $(docker ps -a -q --filter "name=classfit-server")
+            
+            if [ $(docker ps -a -q | wc -l) -gt 0 ]; then
+              docker rm $(docker ps -a -q);
+            fi
+            
+            docker rmi ${{ secrets.USERNAME }}/classfit-server:latest || true
+            
             docker pull ${{ secrets.USERNAME }}/classfit-server
+            
             docker-compose up -d
+            
 
