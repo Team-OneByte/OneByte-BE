@@ -44,17 +44,21 @@ jobs:
 
       - name: Deploy
         uses: appleboy/ssh-action@master
+        env:
+          COMPOSE: "/home/ita/onebyte/compose/docker-compose.yml"
         with:
           host: ${{ secrets.SERVER_ADDRESS }}
           username: ita
           password: ${{ secrets.SERVER_PASSWORD }}
           port: 22
+          envs: COMPOSE
+          script_stop: true
           script: |
-            docker-compose.yml down || true
+            docker-compose -f $COMPOSE down || true
             
-            docker pull ${{ secrets.DOCKER_USERNAME }}/classfit-server
+            docker pull ${{ secrets.DOCKER_USERNAME }}/classfit-server:latest
             
-            docker-compose.yml up -d
+            docker-compose -f $COMPOSE up -d
             
             
 
