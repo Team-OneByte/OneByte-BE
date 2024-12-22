@@ -61,7 +61,7 @@ jobs:
 
   deploy-to-server:
     runs-on: ubuntu-latest
-    needs: build-and-push-docker-image
+    needs: build-docker-image
 
     steps:
       - name: Deploy to Server
