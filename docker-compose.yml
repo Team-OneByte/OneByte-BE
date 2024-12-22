@@ -4,9 +4,7 @@ services:
     container_name: classfit-server
     image: jaehyukbaek/classfit-server
 
-    build:
-      context: .
-      dockerfile: Dockerfile
+    build: .
 
     ports:
       - "20030:8080"
@@ -43,7 +41,7 @@ services:
       - "20038:6379"
     volumes:
       - redis_data:/data
-    restart: always
+    restart: on-failure
 
 volumes:
   mysql_data:
