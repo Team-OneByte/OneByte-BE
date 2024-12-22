@@ -56,16 +56,15 @@ jobs:
             set -e
             cd /home/ita/onebyte
             
+            # Docker 로그인
             docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
             
-            if [ $(docker ps -a -q | wc -l) -gt 0 ]; then
-              docker rm $(docker ps -a -q);
-            fi
+            # 최신 이미지 Pull
+            docker pull ${{ secrets.DOCKER_USERNAME }}/classfit-server
             
-            docker rmi ${{ secrets.USERNAME }}/classfit-server:latest || true
+            docker-compose down || true
+            docker-compose up -d --remove-orphans
             
-            docker pull ${{ secrets.USERNAME }}/classfit-server
-            
-            docker-compose up -d
+            docker image prune -f
             
 
