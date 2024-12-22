@@ -52,12 +52,9 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       # Docker 이미지 빌드
-      - name: Docker image build
+      - name: Docker image build and push
         run: docker build -t ${{ secrets.DOCKER_USERNAME }}/classfit-server .
-
-
-      - name: Docker Hub push
-        run: docker push ${{ secrets.DOCKER_USERNAME }}/classfit-server:latest
+          docker push ${{ secrets.DOCKER_USERNAME }}/classfit-server:latest
 
   deploy-to-server:
     runs-on: ubuntu-latest
@@ -65,26 +62,19 @@ jobs:
     env:
       COMPOSE: "/home/ita/onebyte"
     steps:
-      - name: Deploy
-        uses: appleboy/scp-action@v0.1.3
-        with:
-          host: ${{ secrets.SERVER_ADDRESS }}
-          username: ita
-          password: ${{ secrets.SERVER_PASSWORD }}
-          port: 22
-          source: ./docker-compose.yml
-          target: /home/ita/onebyte/
 
       - name: Run Docker Compose
-        uses: appleboy/ssh-action@v0.1.3
+        uses: appleboy/ssh-action@master
+        env:
+          COMPOSE: "/home/ita/onebyte/docker-compose.yml"
         with:
           host: ${{ secrets.SERVER_ADDRESS }}
           username: ita
           password: ${{ secrets.SERVER_PASSWORD }}
           port: 22
+          envs: COMPOSE
           script: |
-            cd /home/ita/onebyte
+            docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+            docker-compose -f $COMPOSE down --rmi all
             docker pull ${{ secrets.DOCKER_USERNAME }}/classfit-server:latest
-            docker-compose down || true
-            docker-compose up -d
-            docker-compose ps
+            docker-compose -f $COMPOSE up -d
