@@ -5,6 +5,7 @@ services:
     image: jaehyukbaek/classfit-server
 
     build:
+      context: .
       dockerfile: Dockerfile
 
     ports:
