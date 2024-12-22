@@ -73,6 +73,6 @@ jobs:
           port: 22
           script: |
             docker pull ${{ secrets.DOCKER_USERNAME }}/classfit-server:latest
-            docker-compose -p classfit_server down || true
-            docker-compose -p classfit_server up -d
-            docker-compose -p classfit_server ps
+            docker-compose -f docker-compose.yml down || true
+            docker-compose -f docker-compose.yml up -d
+            docker-compose -f docker-compose.yml ps
