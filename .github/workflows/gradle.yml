@@ -64,6 +64,16 @@ jobs:
     needs: build-docker-image
 
     steps:
+      - name: SSH Connection
+        uses: appleboy/ssh-action@v0.1.3
+        with:
+          host: ${{ secrets.SERVER_ADDRESS }}
+          username: ita
+          password: ${{ secrets.SERVER_PASSWORD }}
+          port: 22
+          script: |
+            echo "Attempting to connect..."
+
       - name: Deploy to Server
         uses: appleboy/ssh-action@v0.1.3
         with:
