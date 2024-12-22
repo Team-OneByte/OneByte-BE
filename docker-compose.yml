@@ -4,7 +4,9 @@ services:
     container_name: classfit-server
     image: jaehyukbaek/classfit-server
 
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
 
     ports:
       - "20030:8080"
