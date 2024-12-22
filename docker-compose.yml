@@ -1,7 +1,7 @@
 version: '3'
 services:
   app:
-    container_name: classfit-server:latest
+    container_name: classfit-server
     image: jaehyukbaek/classfit-server
 
     build:
