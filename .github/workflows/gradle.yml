@@ -64,17 +64,7 @@ jobs:
     needs: build-docker-image
 
     steps:
-      - name: SSH Connection
-        uses: appleboy/ssh-action@v0.1.3
-        with:
-          host: ${{ secrets.SERVER_ADDRESS }}
-          username: ita
-          password: ${{ secrets.SERVER_PASSWORD }}
-          port: 22
-          script: |
-            echo "Attempting to connect..."
-
-      - name: Deploy to Server
+      - name: Deploy
         uses: appleboy/ssh-action@v0.1.3
         with:
           host: ${{ secrets.SERVER_ADDRESS }}
@@ -83,12 +73,6 @@ jobs:
           port: 22
           script: |
             docker pull ${{ secrets.DOCKER_USERNAME }}/classfit-server
-            
-            docker stop gclassfit-server || true
-            docker rm classfit-server || true
-            
-            docker run --name classfit-server -d \
-              -p 20030:8080 \
-              ${{ secrets.DOCKER_USERNAME }}/classfit-server
-            
-            docker system prune -f
+            docker-compose -p classfit_project down || true
+            docker-compose -p classfit_project up -d
+            docker-compose -p classfit_project ps

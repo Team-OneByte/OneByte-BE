@@ -2,7 +2,7 @@ version: '3.8'
 services:
   app:
     image: jaehyukbaek/classfit-server:latest
-    container_name: springboot_app
+    container_name: classfit-server
 
     build:
       context: .
@@ -21,7 +21,9 @@ services:
     depends_on:
       - mysql
       - redis
-
+    networks:
+      - classfit_network
+      -
   mysql:
     image: mysql:8.0
     container_name: mysql-container
@@ -34,6 +36,8 @@ services:
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     volumes:
       - mysql_data:/var/lib/mysql
+    networks:
+      - classfit_network
     restart: always
 
 
@@ -45,6 +49,8 @@ services:
       - "20038:6379"
     volumes:
       - redis_data:/data
+    networks:
+      - classfit_network
     restart: always
 
 volumes:
