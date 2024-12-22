@@ -71,8 +71,10 @@ jobs:
           username: ita
           password: ${{ secrets.SERVER_PASSWORD }}
           port: 22
+          source: "./docker-compose.yml"
+          target: "/home/ita/OneByte-BE/"
           script: |
-            docker pull ${{ secrets.DOCKER_USERNAME }}/classfit-server
+            cd /home/ita/OneByte-BE
             docker-compose -p classfit_project down || true
+            docker pull ${{ secrets.DOCKER_USERNAME }}/classfit-server
             docker-compose -p classfit_project up -d
-            docker-compose -p classfit_project ps
