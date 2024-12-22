@@ -13,7 +13,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
 
-      # Code Checkout
       - name: Checkout code
         uses: actions/checkout@v3
 
@@ -23,54 +22,42 @@ jobs:
           java-version: '22'
           distribution: 'temurin'
 
-      # Gradle Wrapper에 실행 권한 부여
       - name: Grant execute permission for Gradle Wrapper
         run: chmod +x gradlew
 
       - name: create resources folder if not exists
         run: mkdir -p src/main/resources
 
-      #  application.properties 설정
       - name: set up application.properties
         run: echo "${{ secrets.APPLICATION }}" > src/main/resources/application.properties
 
-      # .env 파일 생성
       - name: set up .env file
         run: echo "${{ secrets.ENV }}" > .env
 
-      # Gradle 빌드
       - name: Build with Gradle
         uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
         with:
           arguments: clean bootJar
 
-      # Docker 로그인
       - name: Docker login
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      # Docker 이미지 빌드
       - name: Docker image build
         run: docker build -t ${{ secrets.DOCKER_USERNAME }}/classfit-server .
-
 
       - name: Docker Hub push
         run: docker push ${{ secrets.DOCKER_USERNAME }}/classfit-server:latest
 
-
   deploy-to-server:
     runs-on: ubuntu-latest
     needs: build-docker-image
-    env:
-      COMPOSE: "/home/ita/onebyte"
     steps:
 
       - name: Run Docker Compose
         uses: appleboy/ssh-action@master
-        env:
-          COMPOSE: "/home/ita/onebyte/docker-compose.yml"
         with:
           host: ${{ secrets.SERVER_ADDRESS }}
           username: ita
@@ -79,6 +66,7 @@ jobs:
           envs: COMPOSE
           script: |
             docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
-            docker-compose -f $COMPOSE down --rmi all
-            docker pull ${{ secrets.DOCKER_USERNAME }}/classfit-server:latest
-            docker-compose -f $COMPOSE up -d
+            docker rm $(docker ps -a -q)
+            docker rmi ${{ secrets.USERNAME }}/classfit-server:latest
+            docker pull ${{ secrets.USERNAME }}/classfit-server:latest
+            docker-compose up -d
