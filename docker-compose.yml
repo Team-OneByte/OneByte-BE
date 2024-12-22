@@ -1,7 +1,7 @@
 version: '3'
 services:
   app:
-    container_name: classfit-server
+    container_name: classfit-server:latest
     image: jaehyukbaek/classfit-server
 
     build:
@@ -34,7 +34,7 @@ services:
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     volumes:
       - mysql_data:/var/lib/mysql
-    restart: always
+    restart: on-failure
 
   redis:
     image: redis:6.2
