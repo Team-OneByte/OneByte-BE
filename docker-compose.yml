@@ -1,0 +1,65 @@
+version: '3'
+
+services:
+  app:
+    container_name: onebyte-server
+    image: jaehyukbaek/onebyte-server
+    env_file: .env
+    networks:
+      - byte1net
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "20030:8080"
+    environment:
+      SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL}
+      SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
+      SPRING_REDIS_HOST: ${SPRING_REDIS_HOST}
+      SPRING_REDIS_PORT: ${SPRING_REDIS_PORT}
+
+    depends_on:
+      - mysql
+      - redis
+  
+  mysql:
+    image: mysql:8.0
+    container_name: onebyte-mysql
+    ports:
+      - "20035:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - byte1net
+    healthcheck:
+      interval: 10s
+      retries: 5
+    restart: on-failure
+
+  redis:
+    image: redis
+    container_name: onebyte-redis
+    hostname: redis
+    command: redis-server --port 6379 --bind 0.0.0.0
+    ports:
+      - "20038:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - byte1net
+    restart: on-failure
+
+volumes:
+  mysql_data:
+  redis_data:
+
+
+networks:
+  byte1net:
+    driver: bridge
