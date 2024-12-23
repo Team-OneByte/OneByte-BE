@@ -1,9 +1,11 @@
 package classfit.example.classfit.category.controller;
 
+import classfit.example.classfit.auth.annotation.AuthMember;
 import classfit.example.classfit.category.dto.request.SubClassRequest;
 import classfit.example.classfit.category.dto.response.SubClassResponse;
 import classfit.example.classfit.category.service.SubClassService;
 import classfit.example.classfit.common.ApiResponse;
+import classfit.example.classfit.member.domain.Member;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -26,9 +28,9 @@ public class SubClassController {
 
     @PostMapping("/sub-category")
     @Operation(summary = "하위 클래스 추가", description = "하위 클래스 추가하는 api 입니다.")
-    public ApiResponse<SubClassResponse> addSubClass(@RequestHeader(name = "member-no",required = false) Long memberId,
+    public ApiResponse<SubClassResponse> addSubClass(@AuthMember Member findMember,
             @RequestBody SubClassRequest req) {
-        SubClassResponse result = subClassService.addSubClass(memberId, req);
+        SubClassResponse result = subClassService.addSubClass(findMember, req);
         return ApiResponse.success(result, 201, "CREATED");
 
     }
@@ -36,19 +38,19 @@ public class SubClassController {
     @PatchMapping("/sub-category/{subClassId}")
     @Operation(summary = "하위 클래스 수정", description = "하위 클래스 이름을 수정하는 api 입니다.")
     public ApiResponse<SubClassResponse> updateSubClass(
-            @RequestHeader(name = "member-no",required = false) Long memberId,
+            @AuthMember Member findMember,
             @PathVariable(name = "subClassId") Long subClassId,
             @RequestBody SubClassRequest req) {
-        SubClassResponse result = subClassService.updateSubClass(memberId, subClassId, req);
+        SubClassResponse result = subClassService.updateSubClass(findMember, subClassId, req);
         return ApiResponse.success(result, 200, "UODATED");
     }
 
     @DeleteMapping("/sub-category/{subClassId}")
     @Operation(summary = "하위 클래스 삭제", description = "하위 클래스 삭제하는 api 입니다.")
     public ApiResponse<?> deleteSubClass(
-            @RequestHeader(name = "member-no",required = false) Long memberId,
+            @AuthMember Member findMember,
             @PathVariable(name = "subClassId") Long subClassId) {
-        subClassService.deleteSubClass(memberId, subClassId);
+        subClassService.deleteSubClass(findMember, subClassId);
         return ApiResponse.success(null, 200, "DELETED");
     }
 
