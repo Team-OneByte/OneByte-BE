@@ -2,8 +2,8 @@ version: '3'
 
 services:
   app:
-    container_name: Classfit-Server
-    image: jaehyukbaek/Classfit-Server
+    container_name: onebyte-server
+    image: jaehyukbaek/onebyte-server
     env_file: .env
     networks:
       - byte1net
@@ -25,7 +25,7 @@ services:
   
   mysql:
     image: mysql:8.0
-    container_name: OneByte_Mysql
+    container_name: onebyte-mysql
     ports:
       - "20035:3306"
     environment:
@@ -44,7 +44,7 @@ services:
 
   redis:
     image: redis
-    container_name: OneByte_Redis
+    container_name: onebyte-redis
     hostname: redis
     command: redis-server --port 6379 --bind 0.0.0.0
     ports:
