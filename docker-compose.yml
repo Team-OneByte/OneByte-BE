@@ -36,6 +36,11 @@ services:
       - mysql_data:/var/lib/mysql
     networks:
       - byte1net
+    condition: service_healthy
+    healthcheck:
+      test:
+      interval: 10s
+      retries: 5
     restart: on-failure
 
   redis:
