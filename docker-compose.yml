@@ -1,4 +1,5 @@
 version: '3'
+
 services:
   app:
     container_name: Classfit-Server
@@ -42,7 +43,7 @@ services:
     restart: on-failure
 
   redis:
-    image: redis:6.2
+    image: redis
     container_name: OneByte_Redis
     hostname: redis
     command: redis-server --port 6379 --bind 0.0.0.0
@@ -53,8 +54,8 @@ services:
     networks:
       - byte1net
     restart: on-failure
-    extra_hosts:
-      - host.docker.internal:host-gateway
+    volumes:
+      - ./redis.conf:/usr/local/etc/redis/redis.conf
 
 volumes:
   mysql_data:
