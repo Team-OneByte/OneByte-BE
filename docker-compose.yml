@@ -54,8 +54,6 @@ services:
     networks:
       - byte1net
     restart: on-failure
-    volumes:
-      - ./redis.conf:/usr/local/etc/redis/redis.conf
 
 volumes:
   mysql_data:
