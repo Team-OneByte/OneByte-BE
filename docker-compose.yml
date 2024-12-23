@@ -38,8 +38,7 @@ services:
       - byte1net
     condition: service_healthy
     healthcheck:
-      test:
-      interval: 10s
+      inttesterval: 10s
       retries: 5
     restart: on-failure
 
