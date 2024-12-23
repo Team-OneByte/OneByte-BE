@@ -3,7 +3,7 @@ version: '3'
 services:
   app:
     container_name: Classfit-Server
-    image: jaehyukbaek/classfit-server
+    image: jaehyukbaek/Classfit-Server
     env_file: .env
     networks:
       - byte1net
