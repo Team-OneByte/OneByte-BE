@@ -58,7 +58,7 @@ jobs:
             
             docker pull ${{ secrets.DOCKER_USERNAME }}/classfit-server:latest
             
-            docker-compose -f $COMPOSE up -d
+            docker-compose -f $COMPOSE --env-file ./.env up -d
             
             
 
