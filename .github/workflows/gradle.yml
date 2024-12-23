@@ -39,7 +39,7 @@ jobs:
       - name: Docker Hub build & push
         run: |
           docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/Classfit-Server
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/Classfit-Server .
           docker push ${{ secrets.DOCKER_USERNAME }}/Classfit-Server
 
       - name: Deploy
