@@ -1,16 +1,16 @@
 version: '3'
 services:
   app:
-    container_name: classfit-server
+    container_name: Classfit-Server
     image: jaehyukbaek/classfit-server
-
+    env_file: .env
+    networks:
+      - byte1net
     build:
       context: .
       dockerfile: Dockerfile
-
     ports:
       - "20030:8080"
-
     environment:
       SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL}
       SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
@@ -24,7 +24,7 @@ services:
 
   mysql:
     image: mysql:8.0
-    container_name: mysql-container
+    container_name: OneByte_Mysql
     ports:
       - "20035:3306"
     environment:
@@ -34,17 +34,29 @@ services:
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     volumes:
       - mysql_data:/var/lib/mysql
+    networks:
+      - byte1net
     restart: on-failure
 
   redis:
     image: redis:6.2
-    container_name: redis_container
+    container_name: OneByte_Redis
+    hostname: redis
+    command: redis-server --port 6379 --bind 0.0.0.0
     ports:
       - "20038:6379"
     volumes:
       - redis_data:/data
+    networks:
+      - byte1net
     restart: on-failure
+    extra_hosts:
+      - host.docker.internal:host-gateway
 
 volumes:
   mysql_data:
   redis_data:
+
+networks:
+  byte1net:
+    driver: bridge

@@ -55,7 +55,9 @@ jobs:
           script_stop: true
           script: |
             docker-compose -f $COMPOSE down || true
+            
             docker pull ${{ secrets.DOCKER_USERNAME }}/classfit-server:latest
+            
             docker-compose -f $COMPOSE up -d
             
             
