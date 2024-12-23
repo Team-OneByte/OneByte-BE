@@ -1,10 +1,13 @@
 name: Java CI with Gradle
 
 on:
+  pull_request:
+    branches:
+      - master
   push:
     branches:
-      - release
-
+      - master
+  
 jobs:
   build-docker-image:
     runs-on: ubuntu-latest
