@@ -59,6 +59,7 @@ volumes:
   mysql_data:
   redis_data:
 
+
 networks:
   byte1net:
     driver: bridge
