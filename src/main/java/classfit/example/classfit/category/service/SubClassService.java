@@ -1,5 +1,6 @@
 package classfit.example.classfit.category.service;
 
+import classfit.example.classfit.auth.annotation.AuthMember;
 import classfit.example.classfit.category.domain.MainClass;
 import classfit.example.classfit.category.domain.SubClass;
 import classfit.example.classfit.category.dto.request.SubClassRequest;
@@ -38,9 +39,7 @@ public class SubClassService {
 
     @Transactional
 // 서브클래스 추가
-    public SubClassResponse addSubClass(Long memberId, SubClassRequest req) {
-        Member findMember = memberRepository.findById(memberId)
-            .orElseThrow(() -> new ClassfitException("회원을 찾을 수 없어요.", HttpStatus.NOT_FOUND));
+    public SubClassResponse addSubClass(@AuthMember Member findMember, SubClassRequest req) {
 
         MainClass findMainClass = mainClassRespository.findById(req.mainClassId())
             .orElseThrow(
@@ -64,9 +63,7 @@ public class SubClassService {
 
     @Transactional
     // 서브 클래스 수정
-    public SubClassResponse updateSubClass(Long memberId, Long subClassId, SubClassRequest req) {
-        Member findMember = memberRepository.findById(memberId)
-            .orElseThrow(() -> new ClassfitException("회원을 찾을 수 없어요.", HttpStatus.NOT_FOUND));
+    public SubClassResponse updateSubClass(@AuthMember Member findMember, Long subClassId, SubClassRequest req) {
         MainClass findMainClass = mainClassRespository.findById(req.mainClassId()).orElseThrow(
             () -> new ClassfitException("메인 클래스를 찾을 수 없어요.", HttpStatus.NOT_FOUND));
         SubClass findSubClass = subClassRepository.findById(subClassId).orElseThrow(
@@ -83,10 +80,7 @@ public class SubClassService {
 
     @Transactional
     // 서브 클래스 삭제
-    public void deleteSubClass(Long memberId, Long subClassId) {
-
-        Member findMember = memberRepository.findById(memberId)
-            .orElseThrow(() -> new ClassfitException("회원을 찾을 수 없어요.", HttpStatus.NOT_FOUND));
+    public void deleteSubClass(@AuthMember Member findMember, Long subClassId) {
 
         SubClass findSubClass = subClassRepository.findById(subClassId).orElseThrow(
             () -> new ClassfitException("서브 클래스를 찾을 수 없어요.", HttpStatus.NOT_FOUND));

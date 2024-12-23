@@ -1,5 +1,6 @@
 package classfit.example.classfit.category.service;
 
+import classfit.example.classfit.auth.annotation.AuthMember;
 import classfit.example.classfit.category.domain.MainClass;
 import classfit.example.classfit.category.dto.request.MainClassRequest;
 import classfit.example.classfit.category.dto.response.AllMainClassResponse;
@@ -31,9 +32,7 @@ public class MainClassService {
 
     // 메인 클래스 추가
     @Transactional
-    public MainClassResponse addMainClass(Long memberId, MainClassRequest req) {
-        Member findMember = memberRepository.findById(memberId)
-            .orElseThrow(() -> new ClassfitException("회원을 찾을 수 없어요", HttpStatus.NOT_FOUND));
+    public MainClassResponse addMainClass(@AuthMember Member findMember, MainClassRequest req) {
 
         boolean exists = mainClassRespository.existsByMemberAndMainClassName(findMember,
             req.mainClassName());
@@ -49,9 +48,7 @@ public class MainClassService {
 
     // 메인 클래스 전체 조회
     @Transactional(readOnly = true)
-    public List<AllMainClassResponse> showMainClass(Long memberId) {
-        Member findMember = memberRepository.findById(memberId)
-            .orElseThrow(() -> new ClassfitException("회원을 찾을 수 없어요", HttpStatus.NOT_FOUND));
+    public List<AllMainClassResponse> showMainClass(@AuthMember Member findMember) {
 
         List<MainClass> mainClasses = mainClassRespository.findAll();
 
@@ -61,10 +58,7 @@ public class MainClassService {
 
     // 메인 클래스 삭제
     @Transactional
-    public void deleteMainClass(Long memberId, Long mainClassId) {
-
-        Member findMember = memberRepository.findById(memberId)
-            .orElseThrow(() -> new ClassfitException("회원을 찾을 수 없어요", HttpStatus.NOT_FOUND));
+    public void deleteMainClass(@AuthMember Member findMember, Long mainClassId) {
 
         MainClass mainClass = mainClassRespository.findById(mainClassId).orElseThrow(
             () -> new ClassfitException("해당 메인 클래스를 찾을 수 없습니다.", HttpStatus.NOT_FOUND));

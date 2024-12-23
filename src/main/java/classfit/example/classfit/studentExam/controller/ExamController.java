@@ -1,6 +1,8 @@
 package classfit.example.classfit.studentExam.controller;
 
+import classfit.example.classfit.auth.annotation.AuthMember;
 import classfit.example.classfit.common.ApiResponse;
+import classfit.example.classfit.member.domain.Member;
 import classfit.example.classfit.studentExam.domain.Exam;
 import classfit.example.classfit.studentExam.dto.process.ExamClassStudent;
 import classfit.example.classfit.studentExam.dto.request.CreateExamRequest;
@@ -39,19 +41,19 @@ public class ExamController {
     @PostMapping
     @Operation(summary = "시험 정보 등록", description = "시험 정보 등록하는 API 입니다.")
     public ApiResponse<CreateExamResponse> createExam(
-            @RequestHeader(name = "member-no", required = false) Long memberId,
+            @AuthMember Member findMember,
             @RequestBody CreateExamRequest req) {
-        CreateExamResponse response = examService.createExam(memberId, req);
+        CreateExamResponse response = examService.createExam(findMember, req);
         return ApiResponse.success(response, 201, "CREATED EXAM");
     }
 
     @GetMapping("/{examId}")
     @Operation(summary = "시험 등록 시 해당 클래스 학생 조회", description = "시험 등록시 해당 클래스 학생 조회하는 API 입니다.")
     public ApiResponse<List<ExamClassStudent>> findExamClassStuent(
-            @RequestHeader(name = "member-no", required = false) Long memberId,
+            @AuthMember Member findMember,
             @PathVariable(name = "examId") Long examId
     ) {
-        List<ExamClassStudent> response = examService.findExamClassStudent(memberId,
+        List<ExamClassStudent> response = examService.findExamClassStudent(findMember,
                 examId);
         return ApiResponse.success(response, 200, "FIND EXAM-STUDENT");
     }
@@ -59,19 +61,19 @@ public class ExamController {
     @PostMapping("/findexam")
     @Operation(summary = "시험 리스트 조회", description = "시험 이름과 작성자로 시험 검색하는 API 입니다.")
     public ApiResponse<List<FindExamResponse>> findExamList(
-            @RequestHeader(name = "member-no", required = false) Long memberId,
+            @AuthMember Member findMember,
             @RequestBody FindExamRequest request
     ) {
-        List<FindExamResponse> response = examService.findExamList(memberId, request);
+        List<FindExamResponse> response = examService.findExamList(findMember, request);
         return ApiResponse.success(response, 200, "FIND EXAM-LIST");
     }
 
     @GetMapping("/findexam/{examId}")
     @Operation(summary = "시험 상세 조회", description = "시험 상세 내용 조회 API 입니다.")
     public ApiResponse<ShowExamDetailResponse> showExamDetail(
-            @RequestHeader(name = "member-no", required = false) Long memberId,
+            @AuthMember Member findMember,
             @PathVariable(name = "examId") Long examId) {
-        ShowExamDetailResponse response = examService.showExamDetail(memberId, examId);
+        ShowExamDetailResponse response = examService.showExamDetail(findMember, examId);
 
         return ApiResponse.success(response, 200, "FIND EXAM");
     }
@@ -79,29 +81,29 @@ public class ExamController {
     @PutMapping("/{examId}")
     @Operation(summary = "시험 수정", description = "시험 수정하는 API 입니다.")
     public ApiResponse<UpdateExamResponse> updateExam(
-            @RequestHeader(name = "member-no", required = false) Long memberId,
+            @AuthMember Member findMember,
             @PathVariable(name = "examId") Long examId,
             @RequestBody UpdateExamRequest request) {
-        UpdateExamResponse response = examService.updateExam(memberId, examId, request);
+        UpdateExamResponse response = examService.updateExam(findMember, examId, request);
         return ApiResponse.success(response, 200, "UPDATED EXAM");
     }
 
     @DeleteMapping("/{examId}")
     @Operation(summary = "시험 삭제", description = "시험 삭제하는 API 입니다.")
     public ResponseEntity<ApiResponse> deleteExam(
-            @RequestHeader(name = "member-no", required = false) Long memberId,
+            @AuthMember Member findMember,
             @PathVariable(name = "examId") Long examId) {
-        examService.deleteExam(memberId, examId);
+        examService.deleteExam(findMember, examId);
         return ResponseEntity.ok(ApiResponse.success(null, 200, "DELETED EXAM"));
     }
 
     @PatchMapping("/findexam/{examId}/score")
     @Operation(summary = "학생들 성적 수정", description = "학생들 성적 수정하는 API 입니다./ 시험 상세조회에서 경로 넘어가도록 작성")
     public ApiResponse<List<ExamClassStudent>> updateStudentScore(
-            @RequestHeader(name = "member-no", required = false) Long memberId,
+            @AuthMember Member findMember,
             @PathVariable(name = "examId") Long examId,
             @RequestBody UpdateStudentScoreRequest request) {
-        List<ExamClassStudent> examClassStudents = examService.updateStudentScore(memberId, examId,
+        List<ExamClassStudent> examClassStudents = examService.updateStudentScore(findMember, examId,
                 request);
         return ApiResponse.success(examClassStudents, 200, "UPDATED-STUDENT-SCORE");
     }

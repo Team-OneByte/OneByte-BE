@@ -6,7 +6,7 @@ import classfit.example.classfit.studentExam.domain.Standard;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import org.springframework.format.annotation.DateTimeFormat;
-
+// TODO memberName과 examPeriod 나오도록 수정필요
 public record FindExamResponse(Long examId, Long memberId, Standard standard, String mainClassName,
                                String subClassName, String examName, @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate createdAt
 
