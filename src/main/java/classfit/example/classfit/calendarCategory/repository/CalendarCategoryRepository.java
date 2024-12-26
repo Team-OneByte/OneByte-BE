@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface CalendarCategoryRepository extends JpaRepository<CalendarCategory, Long> {
+    boolean existsByName(String name);
 }

@@ -22,13 +22,25 @@ public class CalendarCategoryService {
     public CalendarCategoryResponse addCategory(@AuthMember Member member, CalendarCategoryCreateRequest request) {
         MemberCalendar memberCalendar = memberCalendarService.getMemberCalendar(member, request.type());
 
+        String uniqueName = createUniqueCategoryName(request.name());
         CalendarCategory category = CalendarCategory.builder()
-            .name(request.name())
+            .name(uniqueName)
             .color(request.color())
             .memberCalendar(memberCalendar)
             .build();
 
         CalendarCategory savedCategory = calendarCategoryRepository.save(category);
         return new CalendarCategoryResponse(savedCategory.getId(), savedCategory.getName(), savedCategory.getColor(), savedCategory.getMemberCalendar().getType());
+    }
+
+    private String createUniqueCategoryName(String baseName) {
+        String uniqueName = baseName;
+        int count = 1;
+
+        while (calendarCategoryRepository.existsByName(uniqueName)) {
+            uniqueName = baseName + " (" + count + ")";
+            count++;
+        }
+        return uniqueName;
     }
 }
