@@ -5,7 +5,7 @@ import classfit.example.classfit.category.domain.MainClass;
 import classfit.example.classfit.category.domain.SubClass;
 import classfit.example.classfit.category.dto.request.SubClassRequest;
 import classfit.example.classfit.category.dto.response.SubClassResponse;
-import classfit.example.classfit.category.repository.MainClassRespository;
+import classfit.example.classfit.category.repository.MainClassRepository;
 import classfit.example.classfit.category.repository.SubClassRepository;
 import classfit.example.classfit.common.exception.ClassfitException;
 import classfit.example.classfit.member.domain.Member;
@@ -22,7 +22,7 @@ import java.util.Objects;
 public class SubClassService {
 
     private final SubClassRepository subClassRepository;
-    private final MainClassRespository mainClassRespository;
+    private final MainClassRepository mainClassRepository;
     private final MemberRepository memberRepository;
 
     private static void checkMemberRelationMainClass(Member findMember, MainClass findMainClass) {
@@ -41,7 +41,7 @@ public class SubClassService {
 // 서브클래스 추가
     public SubClassResponse addSubClass(@AuthMember Member findMember, SubClassRequest req) {
 
-        MainClass findMainClass = mainClassRespository.findById(req.mainClassId())
+        MainClass findMainClass = mainClassRepository.findById(req.mainClassId())
             .orElseThrow(
                 () -> new ClassfitException("메인 클래스를 찾을 수 없어요.", HttpStatus.NOT_FOUND));
 
@@ -64,7 +64,7 @@ public class SubClassService {
     @Transactional
     // 서브 클래스 수정
     public SubClassResponse updateSubClass(@AuthMember Member findMember, Long subClassId, SubClassRequest req) {
-        MainClass findMainClass = mainClassRespository.findById(req.mainClassId()).orElseThrow(
+        MainClass findMainClass = mainClassRepository.findById(req.mainClassId()).orElseThrow(
             () -> new ClassfitException("메인 클래스를 찾을 수 없어요.", HttpStatus.NOT_FOUND));
         SubClass findSubClass = subClassRepository.findById(subClassId).orElseThrow(
             () -> new ClassfitException("서브 클래스를 찾을 수 없어요.", HttpStatus.NOT_FOUND));

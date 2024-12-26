@@ -5,7 +5,7 @@ import classfit.example.classfit.category.domain.MainClass;
 import classfit.example.classfit.category.dto.request.MainClassRequest;
 import classfit.example.classfit.category.dto.response.AllMainClassResponse;
 import classfit.example.classfit.category.dto.response.MainClassResponse;
-import classfit.example.classfit.category.repository.MainClassRespository;
+import classfit.example.classfit.category.repository.MainClassRepository;
 import classfit.example.classfit.common.exception.ClassfitException;
 import classfit.example.classfit.member.domain.Member;
 import classfit.example.classfit.member.repository.MemberRepository;
@@ -21,7 +21,7 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class MainClassService {
 
-    private final MainClassRespository mainClassRespository;
+    private final MainClassRepository mainClassRepository;
     private final MemberRepository memberRepository;
 
     private static void checkMemberRelationMainClass(Member findMember, MainClass findMainClass) {
@@ -34,14 +34,14 @@ public class MainClassService {
     @Transactional
     public MainClassResponse addMainClass(@AuthMember Member findMember, MainClassRequest req) {
 
-        boolean exists = mainClassRespository.existsByMemberAndMainClassName(findMember,
+        boolean exists = mainClassRepository.existsByMemberAndMainClassName(findMember,
             req.mainClassName());
         if (exists) {
             throw new ClassfitException("이미 같은 이름의 메인 클래스가 있어요.", HttpStatus.CONFLICT);
         }
 
         MainClass mainClass = new MainClass(req.mainClassName(), findMember);
-        mainClassRespository.save(mainClass);
+        mainClassRepository.save(mainClass);
 
         return new MainClassResponse(mainClass.getId(), mainClass.getMainClassName());
     }
@@ -50,7 +50,7 @@ public class MainClassService {
     @Transactional(readOnly = true)
     public List<AllMainClassResponse> showMainClass(@AuthMember Member findMember) {
 
-        List<MainClass> mainClasses = mainClassRespository.findAll();
+        List<MainClass> mainClasses = mainClassRepository.findAll();
 
         return mainClasses.stream().map(mainClass -> new AllMainClassResponse(mainClass.getId(),
             mainClass.getMainClassName())).toList();
@@ -60,10 +60,10 @@ public class MainClassService {
     @Transactional
     public void deleteMainClass(@AuthMember Member findMember, Long mainClassId) {
 
-        MainClass mainClass = mainClassRespository.findById(mainClassId).orElseThrow(
+        MainClass mainClass = mainClassRepository.findById(mainClassId).orElseThrow(
             () -> new ClassfitException("해당 메인 클래스를 찾을 수 없습니다.", HttpStatus.NOT_FOUND));
 
-        mainClassRespository.delete(mainClass);
+        mainClassRepository.delete(mainClass);
 
     }
 }

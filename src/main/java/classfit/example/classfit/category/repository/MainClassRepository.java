@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface MainClassRespository extends JpaRepository<MainClass, Long> {
+public interface MainClassRepository extends JpaRepository<MainClass, Long> {
     List<MainClass> findAllByOrderByMainClassNameAsc();
 
     boolean existsByMemberAndMainClassName(Member member, String mainClassName);
