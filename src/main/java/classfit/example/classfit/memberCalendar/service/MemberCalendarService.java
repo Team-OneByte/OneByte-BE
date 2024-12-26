@@ -21,4 +21,8 @@ public class MemberCalendarService {
         MemberCalendar sharedCalendar = new MemberCalendar(member, CalendarType.SHARED);
         memberCalendarRepository.save(sharedCalendar);
     }
+
+    public MemberCalendar getMemberCalendar(Member member, CalendarType type) {
+        return memberCalendarRepository.findByMemberAndType(member, type);
+    }
 }
