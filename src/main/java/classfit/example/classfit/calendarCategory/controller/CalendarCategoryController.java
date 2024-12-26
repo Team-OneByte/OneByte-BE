@@ -2,7 +2,7 @@ package classfit.example.classfit.calendarCategory.controller;
 
 
 import classfit.example.classfit.auth.annotation.AuthMember;
-import classfit.example.classfit.calendarCategory.dto.response.CalendarCategoryResponse;
+import classfit.example.classfit.calendarCategory.dto.response.CalendarCategoryCreateResponse;
 import classfit.example.classfit.calendarCategory.dto.request.CalendarCategoryCreateRequest;
 import classfit.example.classfit.calendarCategory.service.CalendarCategoryService;
 import classfit.example.classfit.common.ApiResponse;
@@ -24,11 +24,11 @@ public class CalendarCategoryController {
 
     @PostMapping("/category")
     @Operation(summary = "캘린더 카테고리 추가", description = "캘린더 카테고리 추가하는 api 입니다.")
-    public ApiResponse<CalendarCategoryResponse> addCalendarCategory(
+    public ApiResponse<CalendarCategoryCreateResponse> addCalendarCategory(
         @AuthMember Member member,
         @RequestBody CalendarCategoryCreateRequest request
     ) {
-        CalendarCategoryResponse result = calendarCategoryService.addCategory(member, request);
+        CalendarCategoryCreateResponse result = calendarCategoryService.addCategory(member, request);
         return ApiResponse.success(result, 201, "CREATED");
     }
 }
