@@ -9,6 +9,7 @@ import classfit.example.classfit.member.dto.request.MemberPasswordRequest;
 import classfit.example.classfit.member.dto.request.MemberRequest;
 import classfit.example.classfit.member.dto.response.MemberResponse;
 import classfit.example.classfit.member.repository.MemberRepository;
+import classfit.example.classfit.memberCalendar.service.MemberCalendarService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Service;
 public class MemberService {
 
     private final MemberRepository memberRepository;
+    private final MemberCalendarService memberCalendarService;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final RedisUtil redisUtil;
 
@@ -42,8 +44,15 @@ public class MemberService {
 
         Member member = request.toEntity(bCryptPasswordEncoder);
 
-        memberRepository.save(member);
+        Member savedMember = memberRepository.save(member);
+        createDefaultCalendars(savedMember);
+
         return MemberResponse.from(member);
+    }
+
+    private void createDefaultCalendars(Member member) {
+        memberCalendarService.createPersonalCalendar(member);
+        memberCalendarService.createSharedCalendar(member);
     }
 
     @Transactional

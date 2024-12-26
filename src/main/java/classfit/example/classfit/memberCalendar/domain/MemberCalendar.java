@@ -13,6 +13,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -33,4 +34,10 @@ public class MemberCalendar extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "VARCHAR(10)", nullable = false)
     private CalendarType type;
+
+    @Builder
+    public MemberCalendar(Member member, CalendarType type) {
+        this.member = member;
+        this.type = type;
+    }
 }
