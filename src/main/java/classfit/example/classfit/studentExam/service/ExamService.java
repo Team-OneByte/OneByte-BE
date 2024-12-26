@@ -3,7 +3,7 @@ package classfit.example.classfit.studentExam.service;
 import classfit.example.classfit.auth.annotation.AuthMember;
 import classfit.example.classfit.category.domain.MainClass;
 import classfit.example.classfit.category.domain.SubClass;
-import classfit.example.classfit.category.repository.MainClassRespository;
+import classfit.example.classfit.category.repository.MainClassRepository;
 import classfit.example.classfit.category.repository.SubClassRepository;
 import classfit.example.classfit.classStudent.domain.ClassStudent;
 import classfit.example.classfit.classStudent.repository.ClassStudentRepository;
@@ -38,7 +38,7 @@ public class ExamService {
 
     private final ExamRepository examRepository;
     private final MemberRepository memberRepository;
-    private final MainClassRespository mainClassRespository;
+    private final MainClassRepository mainClassRepository;
     private final SubClassRepository subClassRepository;
     private final ClassStudentRepository classStudentRepository;
     private final StudentExamScoreRepository studentExamScoreRepository;
@@ -48,7 +48,7 @@ public class ExamService {
         SubClass findSubClass = subClassRepository.findById(request.subClassId()).orElseThrow(
                 () -> new ClassfitException("서브 클래스를 찾을 수 없어요.", HttpStatus.NOT_FOUND));
 
-        MainClass findMainClass = mainClassRespository.findById(request.mainClassId()).orElseThrow(
+        MainClass findMainClass = mainClassRepository.findById(request.mainClassId()).orElseThrow(
                 () -> new ClassfitException("메인 클래스를 찾을 수 없어요.", HttpStatus.NOT_FOUND));
 
         Exam newExam = request.toEntity(findSubClass, findMainClass);
