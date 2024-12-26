@@ -4,10 +4,16 @@ import classfit.example.classfit.auth.annotation.AuthMember;
 import classfit.example.classfit.calendarCategory.domain.CalendarCategory;
 import classfit.example.classfit.calendarCategory.dto.request.CalendarCategoryCreateRequest;
 import classfit.example.classfit.calendarCategory.dto.response.CalendarCategoryCreateResponse;
+import classfit.example.classfit.calendarCategory.dto.response.CalendarCategoryListResponse;
+import classfit.example.classfit.calendarCategory.dto.response.CalendarCategoryResponse;
 import classfit.example.classfit.calendarCategory.repository.CalendarCategoryRepository;
 import classfit.example.classfit.member.domain.Member;
+import classfit.example.classfit.memberCalendar.domain.CalendarType;
 import classfit.example.classfit.memberCalendar.domain.MemberCalendar;
 import classfit.example.classfit.memberCalendar.service.MemberCalendarService;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,7 +32,7 @@ public class CalendarCategoryService {
     }
 
     private CalendarCategory buildCategory(Member member, CalendarCategoryCreateRequest request) {
-        MemberCalendar memberCalendar = memberCalendarService.getMemberCalendar(member, request.type());
+        MemberCalendar memberCalendar = getMemberCalendarByMemberAndType(member, request.type());
         String uniqueName = createUniqueCategoryName(request.name());
 
         return CalendarCategory.builder()
@@ -34,6 +40,10 @@ public class CalendarCategoryService {
             .color(request.color())
             .memberCalendar(memberCalendar)
             .build();
+    }
+
+    private MemberCalendar getMemberCalendarByMemberAndType(Member member, CalendarType type) {
+        return memberCalendarService.getMemberCalendar(member, type);
     }
 
     private String createUniqueCategoryName(String baseName) {
@@ -45,5 +55,30 @@ public class CalendarCategoryService {
             count++;
         }
         return uniqueName;
+    }
+
+    @Transactional(readOnly = true)
+    public CalendarCategoryListResponse getCategories(@AuthMember Member member) {
+        MemberCalendar personalCalendar = getMemberCalendarByMemberAndType(member, CalendarType.PERSONAL);
+        MemberCalendar sharedCalendar = getMemberCalendarByMemberAndType(member, CalendarType.SHARED);
+
+        List<CalendarCategoryResponse> personalCategories = classifyAndSortCategories(personalCalendar);
+        List<CalendarCategoryResponse> sharedCategories = classifyAndSortCategories(sharedCalendar);
+
+        return CalendarCategoryListResponse.of(personalCategories, sharedCategories);
+    }
+
+    private List<CalendarCategoryResponse> classifyAndSortCategories(MemberCalendar memberCalendar) {
+        List<CalendarCategoryResponse> typeCategories = calendarCategoryRepository.findByMemberCalendar(memberCalendar)
+            .stream()
+            .map(category -> CalendarCategoryResponse.of(
+                category.getId(),
+                category.getName(),
+                category.getColor()
+            ))
+            .collect(Collectors.toList());
+
+        typeCategories.sort(Comparator.comparing(CalendarCategoryResponse::name));
+        return typeCategories;
     }
 }
