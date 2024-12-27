@@ -13,7 +13,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDate;
 import java.util.List;
@@ -21,7 +20,6 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CascadeType;
 
 @Entity
 @Table(name = "score_report")
@@ -52,7 +50,7 @@ public class ScoreReport extends BaseEntity {
     private MainClass mainClass;
 
     @OneToMany(orphanRemoval = true)
-    @Column(name = "exam_list")
+    @Column(name = "exam_list",nullable = false)
     private List<Exam> examList;
 
     @Column(name = "overall_opinion")

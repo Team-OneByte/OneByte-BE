@@ -9,11 +9,14 @@ import classfit.example.classfit.common.exception.ClassfitException;
 import classfit.example.classfit.member.domain.Member;
 import classfit.example.classfit.scoreReport.domain.ScoreReport;
 import classfit.example.classfit.scoreReport.domain.ScoreReportRepository;
+import classfit.example.classfit.scoreReport.dto.process.ReportExam;
 import classfit.example.classfit.scoreReport.dto.request.CreateReportRequest;
 import classfit.example.classfit.scoreReport.dto.response.CreateReportResponse;
 import classfit.example.classfit.studentExam.domain.Exam;
 import classfit.example.classfit.studentExam.domain.ExamRepository;
+import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -48,5 +51,19 @@ public class ScoreReportService {
                 .examIdList(exams.stream().map(Exam::getId).toList())
                 .overallOpinion(report.getOverallOpinion())
                 .build();
+    }
+    @Transactional(readOnly = true)
+    public List<ReportExam> showReportExam(LocalDate startDate,LocalDate endDate) {
+        List<ReportExam> reports = scoreReportRepository.findExamsByCreatedAtBetween(startDate, endDate);
+        return reports.stream()
+                .map(report -> new ReportExam(
+                        report.examId(),
+                        report.examPeriod(),
+                        report.mainClassName(),
+                        report.subClassName(),
+                        report.examName()
+                ))
+                .collect(Collectors.toList());
+
     }
 }
