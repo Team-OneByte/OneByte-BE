@@ -1,6 +1,5 @@
 package classfit.example.classfit.calendarCategory.controller;
 
-
 import classfit.example.classfit.auth.annotation.AuthMember;
 import classfit.example.classfit.calendarCategory.dto.request.CalendarCategoryUpdateRequest;
 import classfit.example.classfit.calendarCategory.dto.response.CalendarCategoryCreateResponse;
@@ -47,11 +46,11 @@ public class CalendarCategoryController {
 
     @PatchMapping("/{categoryId}")
     @Operation(summary = "캘린더 카테고리 수정", description = "캘린더 카테고리 수정하는 api 입니다.")
-    public ApiResponse<CalendarCategoryResponse> updateCalendarCategories(
+    public ApiResponse<CalendarCategoryResponse> updateCalendarCategory(
         @PathVariable Long categoryId,
         @RequestBody CalendarCategoryUpdateRequest request
     ) {
-        CalendarCategoryResponse result = calendarCategoryService.updateCategories(categoryId, request);
+        CalendarCategoryResponse result = calendarCategoryService.updateCategory(categoryId, request);
         return ApiResponse.success(result, 200, "UPDATED");
     }
 }

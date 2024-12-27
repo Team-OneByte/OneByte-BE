@@ -36,7 +36,7 @@ public class CalendarCategoryService {
 
     private CalendarCategory buildCategory(Member member, CalendarCategoryCreateRequest request) {
         MemberCalendar memberCalendar = getMemberCalendarByMemberAndType(member, request.type());
-        String uniqueName = createUniqueCategoryName(request.name());
+        String uniqueName = createUniqueCategoryName(request.name(), -1L);
 
         return CalendarCategory.builder()
             .name(uniqueName)
@@ -49,15 +49,19 @@ public class CalendarCategoryService {
         return memberCalendarService.getMemberCalendar(member, type);
     }
 
-    private String createUniqueCategoryName(String baseName) {
+    private String createUniqueCategoryName(String baseName, Long categoryId) {
         String uniqueName = baseName;
         int count = 1;
 
-        while (calendarCategoryRepository.existsByName(uniqueName)) {
+        while (isDuplicateName(uniqueName, categoryId)) {
             uniqueName = baseName + " (" + count + ")";
             count++;
         }
         return uniqueName;
+    }
+
+    private boolean isDuplicateName(String name, Long categoryId) {
+        return calendarCategoryRepository.existsByNameAndIdNot(name, categoryId);
     }
 
     @Transactional(readOnly = true)
@@ -86,10 +90,10 @@ public class CalendarCategoryService {
     }
 
     @Transactional
-    public CalendarCategoryResponse updateCategories(Long categoryId, CalendarCategoryUpdateRequest request) {
+    public CalendarCategoryResponse updateCategory(Long categoryId, CalendarCategoryUpdateRequest request) {
         CalendarCategory category = getCategoryById(categoryId);
 
-        String uniqueName = createUniqueCategoryName(request.newName());
+        String uniqueName = createUniqueCategoryName(request.newName(), categoryId);
         category.updateNameAndColor(uniqueName, request.newColor());
 
         return CalendarCategoryResponse.of(category.getId(), category.getName(), category.getColor());

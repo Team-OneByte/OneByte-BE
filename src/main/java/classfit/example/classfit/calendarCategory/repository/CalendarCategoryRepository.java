@@ -10,6 +10,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface CalendarCategoryRepository extends JpaRepository<CalendarCategory, Long> {
-    boolean existsByName(String name);
+    boolean existsByNameAndIdNot(String name, Long id);
     List<CalendarCategory> findByMemberCalendar(MemberCalendar memberCalendar);
 }
