@@ -1,5 +1,6 @@
 package classfit.example.classfit.event.controller;
 
+import classfit.example.classfit.event.dto.request.EventModalCreateRequest;
 import classfit.example.classfit.common.ApiResponse;
 import classfit.example.classfit.event.dto.request.EventCreateRequest;
 import classfit.example.classfit.event.dto.response.EventCreateResponse;
@@ -39,6 +40,13 @@ public class EventController {
     ) {
         List<EventCreateResponse> events = eventService.getMonthlyEventsByCategory(categoryId, year, month);
         return ApiResponse.success(events, 200, "SUCCESS");
+    }
+
+    @PostMapping("/modal")
+    @Operation(summary = "모달 일정 등록", description = "모달 일정을 등록하는 api 입니다.")
+    public ApiResponse<EventCreateResponse> createModalEvent(@RequestBody EventModalCreateRequest request) {
+        EventCreateResponse createdModalEvent = eventService.createModalEvent(request);
+        return ApiResponse.success(createdModalEvent, 200, "CREATED");
     }
 
     @GetMapping("/modal/{eventId}")
