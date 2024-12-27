@@ -12,6 +12,7 @@ public class ClassfitException extends RuntimeException {
     public static final String ATTENDANCE_NOT_FOUND = "출결 정보를 찾을 수 없습니다.";
     public static final String MAIN_CLASS_NOT_FOUND = "메인 클래스를 찾을 수 없습니다.";
     public static final String SUB_CLASS_NOT_FOUND = "서브 클래스를 찾을 수 없습니다.";
+    public static final String CATEGORY_NOT_FOUND = "해당 카테고리를 찾을 수 없습니다.";
     private final String message;
     private final HttpStatus httpStatus;
 

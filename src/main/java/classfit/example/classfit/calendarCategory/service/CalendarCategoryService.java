@@ -1,8 +1,11 @@
 package classfit.example.classfit.calendarCategory.service;
 
+import static classfit.example.classfit.common.exception.ClassfitException.CATEGORY_NOT_FOUND;
+
 import classfit.example.classfit.auth.annotation.AuthMember;
 import classfit.example.classfit.calendarCategory.domain.CalendarCategory;
 import classfit.example.classfit.calendarCategory.dto.request.CalendarCategoryCreateRequest;
+import classfit.example.classfit.calendarCategory.dto.request.CalendarCategoryUpdateRequest;
 import classfit.example.classfit.calendarCategory.dto.response.CalendarCategoryCreateResponse;
 import classfit.example.classfit.calendarCategory.dto.response.CalendarCategoryListResponse;
 import classfit.example.classfit.calendarCategory.dto.response.CalendarCategoryResponse;
@@ -80,5 +83,20 @@ public class CalendarCategoryService {
 
         typeCategories.sort(Comparator.comparing(CalendarCategoryResponse::name));
         return typeCategories;
+    }
+
+    @Transactional
+    public CalendarCategoryResponse updateCategories(Long categoryId, CalendarCategoryUpdateRequest request) {
+        CalendarCategory category = getCategoryById(categoryId);
+
+        String uniqueName = createUniqueCategoryName(request.newName());
+        category.updateNameAndColor(uniqueName, request.newColor());
+
+        return CalendarCategoryResponse.of(category.getId(), category.getName(), category.getColor());
+    }
+
+    private CalendarCategory getCategoryById(Long categoryId) {
+        return calendarCategoryRepository.findById(categoryId)
+            .orElseThrow(() -> new IllegalArgumentException(CATEGORY_NOT_FOUND));
     }
 }

@@ -34,4 +34,9 @@ public class CalendarCategory extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "member_calendar_id")
     private MemberCalendar memberCalendar;
+
+    public void updateNameAndColor(String newName, String newColor) {
+        this.name = newName;
+        this.color = newColor;
+    }
 }
