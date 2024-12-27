@@ -1,5 +1,6 @@
 package classfit.example.classfit.event.dto.request;
 
+import classfit.example.classfit.event.domain.NotificationTime;
 import java.time.LocalDateTime;
 
 public record EventCreateRequest(
@@ -9,7 +10,7 @@ public record EventCreateRequest(
     LocalDateTime endDate,
     boolean isAllDay,
     boolean isRepeating,
-    String notificationTime,
+    NotificationTime notificationTime,
     String location,
     String memo) {
 }

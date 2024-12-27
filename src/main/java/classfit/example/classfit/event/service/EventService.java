@@ -26,7 +26,6 @@ public class EventService {
 
     private Event buildEvent(EventCreateRequest request) {
         CalendarCategory category = calendarCategoryService.getCategoryById(request.categoryId());
-        NotificationTime notificationTime = NotificationTime.valueOf(request.notificationTime());
 
         return Event.builder()
             .name(request.name())
@@ -35,7 +34,7 @@ public class EventService {
             .endDate(request.endDate())
             .isAllDay(request.isAllDay())
             .isRepeating(request.isRepeating())
-            .notificationTime(notificationTime)
+            .notificationTime(request.notificationTime())
             .location(request.location())
             .memo(request.memo())
             .build();
