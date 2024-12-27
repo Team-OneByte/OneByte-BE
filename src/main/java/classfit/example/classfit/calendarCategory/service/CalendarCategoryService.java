@@ -10,6 +10,7 @@ import classfit.example.classfit.calendarCategory.dto.response.CalendarCategoryC
 import classfit.example.classfit.calendarCategory.dto.response.CalendarCategoryListResponse;
 import classfit.example.classfit.calendarCategory.dto.response.CalendarCategoryResponse;
 import classfit.example.classfit.calendarCategory.repository.CalendarCategoryRepository;
+import classfit.example.classfit.common.exception.ClassfitException;
 import classfit.example.classfit.member.domain.Member;
 import classfit.example.classfit.memberCalendar.domain.CalendarType;
 import classfit.example.classfit.memberCalendar.domain.MemberCalendar;
@@ -18,6 +19,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -101,7 +103,7 @@ public class CalendarCategoryService {
 
     private CalendarCategory getCategoryById(Long categoryId) {
         return calendarCategoryRepository.findById(categoryId)
-            .orElseThrow(() -> new IllegalArgumentException(CATEGORY_NOT_FOUND));
+            .orElseThrow(() -> new ClassfitException(CATEGORY_NOT_FOUND, HttpStatus.NOT_FOUND));
     }
 
     @Transactional
