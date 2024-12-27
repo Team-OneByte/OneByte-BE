@@ -36,7 +36,7 @@ public class ScoreReportController {
     }
 
     @GetMapping("/exam-list")
-    @Operation(summary = "성적 리포트 생성", description = "성적 리포트 생성하는 API 입니다.")
+    @Operation(summary = "기간 내 시험지 조회", description = "성적 리포트 생성 시 기간 내 시험지 조회 API 입니다.")
     public ApiResponse<List<ReportExam>> findExamList(@RequestParam("startDate") LocalDate startDate,@RequestParam("endDate") LocalDate endDate) {
         List<ReportExam> exams = scoreReportService.showReportExam(startDate, endDate);
         return  ApiResponse.success(exams, 200, "FIND-REPORT-EXAM");

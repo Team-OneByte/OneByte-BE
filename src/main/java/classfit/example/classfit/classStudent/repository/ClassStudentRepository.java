@@ -22,6 +22,8 @@ public interface ClassStudentRepository extends JpaRepository<ClassStudent, Long
     @Query("DELETE FROM ClassStudent cs WHERE cs.student.id = :studentId")
     void deleteAllByStudentId(@Param("studentId") Long studentId);
 
+    @Query("SELECT s FROM ClassStudent s WHERE s.subClass.id = :subClassId")
+    List<ClassStudent> findAllBySubClassId(@Param("subClassId") Long subClassId);
     ClassStudent findByStudent(Student student);
 
     List<ClassStudent> findBySubClass(SubClass subClass);
