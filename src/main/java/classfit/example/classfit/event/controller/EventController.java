@@ -1,0 +1,28 @@
+package classfit.example.classfit.event.controller;
+
+import classfit.example.classfit.common.ApiResponse;
+import classfit.example.classfit.event.dto.request.EventCreateRequest;
+import classfit.example.classfit.event.dto.response.EventCreateResponse;
+import classfit.example.classfit.event.service.EventService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequestMapping("/api/v1/calendar")
+@RequiredArgsConstructor
+@Tag(name = "일정관리 일정등록 컨트롤러", description = "일정관리 일정 등록 관련 API입니다.")
+public class EventController {
+    private final EventService eventService;
+
+    @PostMapping("/event")
+    @Operation(summary = "캘린더 일정 등록", description = "캘린더 일정 등록하는 api 입니다.")
+    public ApiResponse<EventCreateResponse> createEvent(@RequestBody EventCreateRequest request) {
+        EventCreateResponse createdEvent = eventService.createEvent(request);
+        return ApiResponse.success(createdEvent, 200, "CREATED");
+    }
+}

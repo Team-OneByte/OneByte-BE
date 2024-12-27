@@ -101,7 +101,7 @@ public class CalendarCategoryService {
         return CalendarCategoryResponse.of(category.getId(), category.getName(), category.getColor());
     }
 
-    private CalendarCategory getCategoryById(Long categoryId) {
+    public CalendarCategory getCategoryById(Long categoryId) {
         return calendarCategoryRepository.findById(categoryId)
             .orElseThrow(() -> new ClassfitException(CATEGORY_NOT_FOUND, HttpStatus.NOT_FOUND));
     }
