@@ -103,4 +103,10 @@ public class CalendarCategoryService {
         return calendarCategoryRepository.findById(categoryId)
             .orElseThrow(() -> new IllegalArgumentException(CATEGORY_NOT_FOUND));
     }
+
+    @Transactional
+    public void deleteCategory(Long categoryId) {
+        CalendarCategory category = getCategoryById(categoryId);
+        calendarCategoryRepository.delete(category);
+    }
 }

@@ -12,6 +12,7 @@ import classfit.example.classfit.member.domain.Member;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -52,5 +53,14 @@ public class CalendarCategoryController {
     ) {
         CalendarCategoryResponse result = calendarCategoryService.updateCategory(categoryId, request);
         return ApiResponse.success(result, 200, "UPDATED");
+    }
+
+    @DeleteMapping("/{categoryId}")
+    @Operation(summary = "캘린더 카테고리 삭제", description = "캘린더 카테고리 삭제하는 api 입니다.")
+    public ApiResponse<CalendarCategoryResponse> updateCalendarCategories(
+        @PathVariable Long categoryId
+    ) {
+        calendarCategoryService.deleteCategory(categoryId);
+        return ApiResponse.success(null, 204, "DELETED");
     }
 }
