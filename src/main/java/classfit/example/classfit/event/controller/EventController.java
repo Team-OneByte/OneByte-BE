@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1/calendar")
 @RequiredArgsConstructor
-@Tag(name = "일정관리 일정등록 컨트롤러", description = "일정관리 일정 등록 관련 API입니다.")
+@Tag(name = "일정관리 컨트롤러", description = "일정관리 관련 API입니다.")
 public class EventController {
     private final EventService eventService;
 
