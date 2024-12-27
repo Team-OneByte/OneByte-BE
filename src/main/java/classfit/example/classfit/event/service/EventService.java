@@ -7,6 +7,7 @@ import classfit.example.classfit.calendarCategory.domain.CalendarCategory;
 import classfit.example.classfit.calendarCategory.service.CalendarCategoryService;
 import classfit.example.classfit.common.exception.ClassfitException;
 import classfit.example.classfit.event.domain.Event;
+import classfit.example.classfit.event.domain.EventType;
 import classfit.example.classfit.event.dto.request.EventCreateRequest;
 import classfit.example.classfit.event.dto.response.EventCreateResponse;
 import classfit.example.classfit.event.repository.EventRepository;
@@ -37,6 +38,7 @@ public class EventService {
         return Event.builder()
             .name(request.name())
             .category(category)
+            .eventType(EventType.SCHEDULE)
             .startDate(request.startDate())
             .endDate(request.endDate())
             .isAllDay(request.isAllDay())

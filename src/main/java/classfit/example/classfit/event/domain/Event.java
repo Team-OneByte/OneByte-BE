@@ -35,6 +35,9 @@ public class Event extends BaseEntity {
     private CalendarCategory category;
 
     @Column(nullable = false)
+    private EventType eventType;
+
+    @Column(nullable = false)
     private LocalDateTime startDate;
 
     @Column(nullable = false)
