@@ -108,7 +108,7 @@ public class EventService {
     }
 
     @Transactional(readOnly = true)
-    public EventCreateResponse getMonthlyEvent(long eventId) {
+    public EventCreateResponse getEvent(long eventId) {
         Event event = getEventById(eventId);
         return EventCreateResponse.of(event.getId(), event.getName(), event.getEventType(), event.getStartDate(), event.getEndDate());
     }

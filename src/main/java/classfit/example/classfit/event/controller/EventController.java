@@ -51,10 +51,10 @@ public class EventController {
 
     @GetMapping("/modal/{eventId}")
     @Operation(summary = "모달 일정 상세 조회", description = "모달 일정을 상세조회하는 api 입니다.")
-    public ApiResponse<EventCreateResponse> getMonthlyEvent(
+    public ApiResponse<EventCreateResponse> getEventDetails(
         @PathVariable Long eventId
     ) {
-        EventCreateResponse event = eventService.getMonthlyEvent(eventId);
+        EventCreateResponse event = eventService.getEvent(eventId);
         return ApiResponse.success(event, 200, "SUCCESS");
     }
 }
