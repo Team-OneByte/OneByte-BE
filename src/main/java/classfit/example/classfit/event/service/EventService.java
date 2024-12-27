@@ -1,7 +1,11 @@
 package classfit.example.classfit.event.service;
 
+import static classfit.example.classfit.common.exception.ClassfitException.CATEGORY_NOT_FOUND;
+import static classfit.example.classfit.common.exception.ClassfitException.EVENT_NOT_FOUND;
+
 import classfit.example.classfit.calendarCategory.domain.CalendarCategory;
 import classfit.example.classfit.calendarCategory.service.CalendarCategoryService;
+import classfit.example.classfit.common.exception.ClassfitException;
 import classfit.example.classfit.event.domain.Event;
 import classfit.example.classfit.event.dto.request.EventCreateRequest;
 import classfit.example.classfit.event.dto.response.EventCreateResponse;
@@ -10,6 +14,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -48,18 +53,34 @@ public class EventService {
         LocalDateTime endOfMonth = startOfMonth.plusMonths(1).minusSeconds(1);
 
         CalendarCategory category = calendarCategoryService.getCategoryById(categoryId);
-        List<Event> events = eventRepository.findByCategoryAndStartDateBetween(category, startOfMonth, endOfMonth);
+        List<Event> events = getEventsByCategoryAndStartDate(category, startOfMonth, endOfMonth);
 
         return mapToEventCreateResponse(events);
     }
 
+    private List<Event> getEventsByCategoryAndStartDate(CalendarCategory category, LocalDateTime startOfMonth, LocalDateTime endOfMonth) {
+        return eventRepository.findByCategoryAndStartDateBetween(category, startOfMonth, endOfMonth)
+            .orElseThrow(() -> new ClassfitException(CATEGORY_NOT_FOUND, HttpStatus.NOT_FOUND));
+    }
+
     private List<EventCreateResponse> mapToEventCreateResponse(List<Event> events) {
         return events.stream()
-            .map(event -> new EventCreateResponse(
+            .map(event -> EventCreateResponse.of(
                 event.getId(),
                 event.getName(),
                 event.getStartDate(),
                 event.getEndDate()))
             .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public EventCreateResponse getMonthlyEvent(long eventId) {
+        Event event = getEventById(eventId);
+        return EventCreateResponse.of(event.getId(), event.getName(), event.getStartDate(), event.getEndDate());
+    }
+
+    private Event getEventById(long eventId) {
+        return eventRepository.findById(eventId)
+            .orElseThrow(() -> new ClassfitException(EVENT_NOT_FOUND, HttpStatus.NOT_FOUND));
     }
 }

@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -38,5 +39,14 @@ public class EventController {
     ) {
         List<EventCreateResponse> events = eventService.getMonthlyEventsByCategory(categoryId, year, month);
         return ApiResponse.success(events, 200, "SUCCESS");
+    }
+
+    @GetMapping("/modal/{eventId}")
+    @Operation(summary = "모달 일정 상세 조회", description = "모달 일정을 상세조회하는 api 입니다.")
+    public ApiResponse<EventCreateResponse> getMonthlyEvent(
+        @PathVariable Long eventId
+    ) {
+        EventCreateResponse event = eventService.getMonthlyEvent(eventId);
+        return ApiResponse.success(event, 200, "SUCCESS");
     }
 }
