@@ -59,6 +59,8 @@ jobs:
           if [ -n "$CONTAINER_IDS" ]; then
             sudo docker stop $CONTAINER_IDS
             sudo docker rm $CONTAINER_IDS
+          else
+            echo "No containers to stop or remove."
           fi
 
       - name: Run new container
