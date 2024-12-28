@@ -10,5 +10,7 @@ public interface StudentExamScoreRepository extends JpaRepository<StudentExamSco
 
     Optional<StudentExamScore> findByExamAndStudentId(Exam exam, Long studentId);
 
+    List<StudentExamScore> findByStudentIdAndExamIdIn(Long studentId, List<Long> examIdList);
+
     List<StudentExamScore> findByExam(Exam exam);
 }

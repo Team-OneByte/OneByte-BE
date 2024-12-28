@@ -11,14 +11,16 @@ import classfit.example.classfit.common.exception.ClassfitException;
 import classfit.example.classfit.member.domain.Member;
 import classfit.example.classfit.scoreReport.domain.ScoreReport;
 import classfit.example.classfit.scoreReport.domain.ScoreReportRepository;
+import classfit.example.classfit.scoreReport.domain.StudentReport;
+import classfit.example.classfit.scoreReport.domain.StudentReportRepository;
 import classfit.example.classfit.scoreReport.dto.process.ReportExam;
 import classfit.example.classfit.scoreReport.dto.request.CreateReportRequest;
 import classfit.example.classfit.scoreReport.dto.response.CreateReportResponse;
 import classfit.example.classfit.student.domain.Student;
 import classfit.example.classfit.student.dto.StudentList;
-import classfit.example.classfit.student.repository.StudentRepository;
 import classfit.example.classfit.studentExam.domain.Exam;
 import classfit.example.classfit.studentExam.domain.ExamRepository;
+import classfit.example.classfit.studentExam.domain.StudentExamScore;
 import classfit.example.classfit.studentExam.domain.StudentExamScoreRepository;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -38,6 +40,8 @@ public class ScoreReportService {
     private final SubClassRepository subClassRepository;
     private final ExamRepository examRepository;
     private final ClassStudentRepository classStudentRepository;
+    private final StudentReportRepository studentReportRepository;
+    private final StudentExamScoreRepository studentExamScoreRepository;
 
     @Transactional
     public CreateReportResponse createReport(@AuthMember Member member,
@@ -48,10 +52,12 @@ public class ScoreReportService {
         SubClass subClass = subClassRepository.findById(request.subClassId())
                 .orElseThrow(
                         () -> new ClassfitException("서브 클래스를 찾을 수 없어요.", HttpStatus.NOT_FOUND));
+
         List<Exam> exams = examRepository.findAllById(request.examIdList());
         if (exams.isEmpty()) {
             throw new ClassfitException("시험지를 찾을 수 없어요.", HttpStatus.NOT_FOUND);
         }
+
         List<ClassStudent> studentsInSubClass = classStudentRepository.findAllBySubClassId(
                 subClass.getId());
         if (studentsInSubClass.isEmpty()) {
@@ -59,12 +65,34 @@ public class ScoreReportService {
         }
 
         List<StudentList> allStudents = new ArrayList<>();
+        List<StudentReport> studentReports = new ArrayList<>();
 
         for (ClassStudent classStudent : studentsInSubClass) {
             Student student = classStudent.getStudent();
-            ScoreReport report = request.toEntity(subClass, mainClass, student);
-            scoreReportRepository.save(report);
             allStudents.add(new StudentList(student.getId(), student.getName()));
+
+            ScoreReport report = ScoreReport.builder()
+                    .mainClass(mainClass)
+                    .subClass(subClass)
+                    .student(student)
+                    .reportName(request.reportName())
+                    .startDate(request.startDate())
+                    .endDate(request.endDate())
+                    .overallOpinion(request.overallOpinion())
+                    .build();
+            scoreReportRepository.save(report);
+
+            List<StudentExamScore> examIdList = studentExamScoreRepository.findByStudentIdAndExamIdIn(
+                    student.getId(), request.examIdList());
+
+            StudentReport studentReport = StudentReport.builder()
+                    .scoreReport(report)
+                    .student(student)
+                    .examIdList(examIdList)
+                    .build();
+            studentReportRepository.save(studentReport);
+
+            studentReports.add(studentReport);
         }
 
         return CreateReportResponse.builder()
@@ -78,6 +106,7 @@ public class ScoreReportService {
                 .overallOpinion(request.overallOpinion())
                 .build();
     }
+
 
     @Transactional(readOnly = true)
     public List<ReportExam> showReportExam(LocalDate startDate, LocalDate endDate) {
