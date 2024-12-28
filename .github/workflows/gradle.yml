@@ -62,6 +62,8 @@ jobs:
           else
             echo "No containers to stop or remove."
           fi
+          exit 0
+
 
       - name: Run new container
         run: sudo docker run --name classfit-dev --rm -d -p 8080:8080 ${{ secrets.DOCKER_USERNAME }}/classfit-dev
