@@ -16,6 +16,7 @@ import classfit.example.classfit.scoreReport.domain.StudentReportRepository;
 import classfit.example.classfit.scoreReport.dto.process.ReportExam;
 import classfit.example.classfit.scoreReport.dto.request.CreateReportRequest;
 import classfit.example.classfit.scoreReport.dto.response.CreateReportResponse;
+import classfit.example.classfit.scoreReport.dto.response.FindReportResponse;
 import classfit.example.classfit.student.domain.Student;
 import classfit.example.classfit.student.dto.StudentList;
 import classfit.example.classfit.studentExam.domain.Exam;
@@ -122,5 +123,31 @@ public class ScoreReportService {
                 ))
                 .collect(Collectors.toList());
 
+    }
+
+    @Transactional(readOnly = true)
+    //TODO 다른 시험지(같은반일 때)로 추가 리포트 생성시 다른 시험지로 생성된 리포트 안뜨고 처음 생성된 리포트만 뜸 -> 학생별 리포트 조회시에 시험 히스토리 추가되는걸로 일단 진행
+    public List<FindReportResponse> findReport(@AuthMember Member member, Long mainClassId,
+            Long subClassId, String memberName) {
+        MainClass mainClass = mainClassRepository.findById(mainClassId)
+                .orElseThrow(
+                        () -> new ClassfitException("메인 클래스를 찾을 수 없어요.", HttpStatus.NOT_FOUND));
+        SubClass subClass = subClassRepository.findById(subClassId)
+                .orElseThrow(
+                        () -> new ClassfitException("서브 클래스를 찾을 수 없어요.", HttpStatus.NOT_FOUND));
+
+        List<StudentReport> studentReports = studentReportRepository.findFirstReportByStudent(
+                mainClassId, subClassId);
+
+        return studentReports.stream()
+                .map(report -> new FindReportResponse(
+                        report.getId(),
+                        report.getStudent().getId(),
+                        report.getStudent().getName(),
+                        report.getScoreReport().getReportName(),
+                        member.getName(),
+                        report.getCreatedAt().toLocalDate()
+                ))
+                .collect(Collectors.toList());
     }
 }
