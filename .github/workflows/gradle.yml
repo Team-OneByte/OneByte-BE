@@ -1,20 +1,17 @@
 name: Java CI with Gradle
 
 on:
-  pull_request:
-    branches:
-      - master
   push:
-    branches:
-      - master
-  
+    branches: [ "ci/119" ]
+
+permissions:
+  contents: read
+
 jobs:
   build-docker-image:
     runs-on: ubuntu-latest
     steps:
-
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
       - name: Set up JDK 22
         uses: actions/setup-java@v3
@@ -31,35 +28,41 @@ jobs:
       - name: set up application.properties
         run: echo "${{ secrets.APPLICATION }}" > src/main/resources/application.properties
 
-      - name: set up .env file
-        run: echo "${{ secrets.ENV }}" > .env
-
       - name: Build with Gradle
         uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
         with:
           arguments: clean bootJar
 
-      - name: Docker Hub build & push
-        run: |
-          docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/onebyte-server .
-          docker push ${{ secrets.DOCKER_USERNAME }}/onebyte-server
+      - name: Docker image build
+        run: docker build -t ${{ secrets.DOCKER_USERNAME }}/classfit-dev .
 
-      - name: Deploy
-        uses: appleboy/ssh-action@master
-        env:
-          COMPOSE: "/home/ita/onebyte/compose/docker-compose.yml"
+      - name: Docker login
+        uses: docker/login-action@v2
         with:
-          host: ${{ secrets.SERVER_ADDRESS }}
-          username: ita
-          password: ${{ secrets.SERVER_PASSWORD }}
-          port: 22
-          envs: COMPOSE
-          script_stop: true
-          script: |
-            docker-compose -f $COMPOSE down || true   
-            docker pull ${{ secrets.DOCKER_USERNAME }}/onebyte-server:latest          
-            docker-compose -f $COMPOSE --env-file ./.env up -d
-            
-            
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
 
+      - name: Docker Hub push
+        run: docker push ${{ secrets.DOCKER_USERNAME }}/classfit-dev
+
+  run-docker-image-on-ec2:
+    needs: build-docker-image
+    runs-on: self-hosted
+
+    steps:
+      - name: Docker pull
+        run: sudo docker pull ${{ secrets.DOCKER_USERNAME }}/classfit-dev
+
+      - name: Stop and remove existing containers
+        run: |
+          CONTAINER_IDS=$(sudo docker ps -q)
+          if [ -n "$CONTAINER_IDS" ]; then
+            sudo docker stop $CONTAINER_IDS
+            sudo docker rm $CONTAINER_IDS
+          fi
+
+      - name: Run new container
+        run: sudo docker run --name github-actions-demo --rm -d -p 8080:8080 ${{ secrets.DOCKER_USERNAME }}/classfit-dev
+
+      - name: Clean up old Docker images
+        run: sudo docker system prune -f
