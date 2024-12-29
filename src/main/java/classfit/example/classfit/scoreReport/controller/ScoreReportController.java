@@ -58,11 +58,11 @@ public class ScoreReportController {
         return ApiResponse.success(response, 200, "FIND-STUDENT-REPORT");
     }
 
-//    @DeleteMapping("/{student-report-id}")
-//    @Operation(summary = "학습리포트 삭제", description = "학생 학습리포트 삭제 API입니다.")
-//    public ApiResponse<?> deleteStudentReport(@AuthMember Member member,
-//            @PathVariable(name = "student-report-id")Long studentReportId) {
-//        scoreReportService.deleteStudentReport(member,studentReportId);
-//        return ApiResponse.success(null,200,"DELETED-STUDENT-REPORT");
-//    }
+    @DeleteMapping("/{student-report-id}")
+    @Operation(summary = "학습리포트 삭제", description = "학생 학습리포트 삭제 API입니다.")
+    public ApiResponse<?> deleteStudentReport(@AuthMember Member member,
+            @PathVariable(name = "student-report-id") Long studentReportId) {
+        scoreReportService.deleteReport(member, studentReportId);
+        return ApiResponse.success(null, 200, "DELETED-STUDENT-REPORT");
+    }
 }

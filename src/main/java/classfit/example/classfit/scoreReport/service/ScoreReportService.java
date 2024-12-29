@@ -134,27 +134,9 @@ public class ScoreReportService {
                 ))
                 .collect(Collectors.toList());
     }
-//    @Transactional
-//    public void deleteStudentReport(@AuthMember Member member,Long studentReportId) {
-//        // student-report에서 studentId조회 -> scoreReport에서 해당 studentId 관련된 mainClass,subClass가 같은 데이터들 모두 삭제
-//        Long studentId = studentReportRepository.findStudentIdByStudentReportId(studentReportId)
-//                .orElseThrow(() -> new ClassfitException("학생을 찾을 수 없습니다.", HttpStatus.NOT_FOUND));
-//
-//        List<ScoreReport> scoreReports = scoreReportRepository.findByStudentId(studentId);
-//        if (scoreReports.isEmpty()) {
-//            throw new ClassfitException("학생의 ScoreReport를 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
-//        }
-//        ScoreReport scoreReport = scoreReports.get(0);
-//        Long mainClassId = scoreReport.getMainClass().getId();
-//        Long subClassId = scoreReport.getSubClass().getId();
-//
-//        List<Long> reportIds = scoreReportRepository.findReportIdsByStudentIdAndClass(studentId, mainClassId, subClassId);
-//        studentReportRepository.deleteById(studentReportId);
-//
-//        if (!reportIds.isEmpty()) {
-//            scoreReportRepository.deleteByIds(reportIds);
-//        }
-//
-//
-//    }
+
+    @Transactional
+    public void deleteReport(@AuthMember Member member, Long studentReportId) {
+        scoreReportRepository.deleteById(studentReportId);
+    }
 }
