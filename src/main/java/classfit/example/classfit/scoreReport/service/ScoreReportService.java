@@ -95,9 +95,10 @@ public class ScoreReportService {
 
 
     @Transactional(readOnly = true)
-    public List<ReportExam> showReportExam(LocalDate startDate, LocalDate endDate) {
+    public List<ReportExam> showReportExam(LocalDate startDate, LocalDate endDate, Long mainClassId,
+            Long subClassId) {
         List<ReportExam> reports = scoreReportRepository.findExamsByCreatedAtBetween(startDate,
-                endDate);
+                endDate, mainClassId, subClassId);
         return reports.stream()
                 .map(report -> new ReportExam(
                         report.examId(),
