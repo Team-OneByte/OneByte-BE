@@ -13,7 +13,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -55,4 +57,12 @@ public class ScoreReportController {
                 subClassId, memberName);
         return ApiResponse.success(response, 200, "FIND-STUDENT-REPORT");
     }
+
+//    @DeleteMapping("/{student-report-id}")
+//    @Operation(summary = "학습리포트 삭제", description = "학생 학습리포트 삭제 API입니다.")
+//    public ApiResponse<?> deleteStudentReport(@AuthMember Member member,
+//            @PathVariable(name = "student-report-id")Long studentReportId) {
+//        scoreReportService.deleteStudentReport(member,studentReportId);
+//        return ApiResponse.success(null,200,"DELETED-STUDENT-REPORT");
+//    }
 }

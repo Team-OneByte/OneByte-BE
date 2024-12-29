@@ -24,8 +24,6 @@ public record CreateReportRequest(Long mainClassId, Long subClassId, String repo
                 .mainClass(mainClass)
                 .student(student)
                 .reportName(reportName)
-                .startDate(startDate)
-                .endDate(endDate)
                 .overallOpinion(overallOpinion)
                 .build();
     }

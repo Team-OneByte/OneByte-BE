@@ -11,8 +11,6 @@ import classfit.example.classfit.common.exception.ClassfitException;
 import classfit.example.classfit.member.domain.Member;
 import classfit.example.classfit.scoreReport.domain.ScoreReport;
 import classfit.example.classfit.scoreReport.domain.ScoreReportRepository;
-import classfit.example.classfit.scoreReport.domain.StudentReport;
-import classfit.example.classfit.scoreReport.domain.StudentReportRepository;
 import classfit.example.classfit.scoreReport.dto.process.ReportExam;
 import classfit.example.classfit.scoreReport.dto.request.CreateReportRequest;
 import classfit.example.classfit.scoreReport.dto.response.CreateReportResponse;
@@ -41,7 +39,6 @@ public class ScoreReportService {
     private final SubClassRepository subClassRepository;
     private final ExamRepository examRepository;
     private final ClassStudentRepository classStudentRepository;
-    private final StudentReportRepository studentReportRepository;
     private final StudentExamScoreRepository studentExamScoreRepository;
 
     @Transactional
@@ -66,7 +63,6 @@ public class ScoreReportService {
         }
 
         List<StudentList> allStudents = new ArrayList<>();
-        List<StudentReport> studentReports = new ArrayList<>();
 
         for (ClassStudent classStudent : studentsInSubClass) {
             Student student = classStudent.getStudent();
@@ -77,23 +73,12 @@ public class ScoreReportService {
                     .subClass(subClass)
                     .student(student)
                     .reportName(request.reportName())
-                    .startDate(request.startDate())
-                    .endDate(request.endDate())
                     .overallOpinion(request.overallOpinion())
                     .build();
             scoreReportRepository.save(report);
 
             List<StudentExamScore> examIdList = studentExamScoreRepository.findByStudentIdAndExamIdIn(
                     student.getId(), request.examIdList());
-
-            StudentReport studentReport = StudentReport.builder()
-                    .scoreReport(report)
-                    .student(student)
-                    .examIdList(examIdList)
-                    .build();
-            studentReportRepository.save(studentReport);
-
-            studentReports.add(studentReport);
         }
 
         return CreateReportResponse.builder()
@@ -135,8 +120,7 @@ public class ScoreReportService {
         SubClass subClass = subClassRepository.findById(subClassId)
                 .orElseThrow(
                         () -> new ClassfitException("서브 클래스를 찾을 수 없어요.", HttpStatus.NOT_FOUND));
-
-        List<StudentReport> studentReports = studentReportRepository.findFirstReportByStudent(
+        List<ScoreReport> studentReports = scoreReportRepository.findFirstReportByStudent(
                 mainClassId, subClassId);
 
         return studentReports.stream()
@@ -144,10 +128,33 @@ public class ScoreReportService {
                         report.getId(),
                         report.getStudent().getId(),
                         report.getStudent().getName(),
-                        report.getScoreReport().getReportName(),
+                        report.getReportName(),
                         member.getName(),
                         report.getCreatedAt().toLocalDate()
                 ))
                 .collect(Collectors.toList());
     }
+//    @Transactional
+//    public void deleteStudentReport(@AuthMember Member member,Long studentReportId) {
+//        // student-report에서 studentId조회 -> scoreReport에서 해당 studentId 관련된 mainClass,subClass가 같은 데이터들 모두 삭제
+//        Long studentId = studentReportRepository.findStudentIdByStudentReportId(studentReportId)
+//                .orElseThrow(() -> new ClassfitException("학생을 찾을 수 없습니다.", HttpStatus.NOT_FOUND));
+//
+//        List<ScoreReport> scoreReports = scoreReportRepository.findByStudentId(studentId);
+//        if (scoreReports.isEmpty()) {
+//            throw new ClassfitException("학생의 ScoreReport를 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
+//        }
+//        ScoreReport scoreReport = scoreReports.get(0);
+//        Long mainClassId = scoreReport.getMainClass().getId();
+//        Long subClassId = scoreReport.getSubClass().getId();
+//
+//        List<Long> reportIds = scoreReportRepository.findReportIdsByStudentIdAndClass(studentId, mainClassId, subClassId);
+//        studentReportRepository.deleteById(studentReportId);
+//
+//        if (!reportIds.isEmpty()) {
+//            scoreReportRepository.deleteByIds(reportIds);
+//        }
+//
+//
+//    }
 }
