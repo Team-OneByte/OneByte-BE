@@ -18,13 +18,20 @@ public class Invitation extends BaseEntity {
     private Long id;
 
     @Column(nullable = false, length = 20)
+    private String name;
+
+    @Column(nullable = false, length = 20)
     private String email;
 
     @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "VARCHAR(10)", nullable = false)
+    @Column(columnDefinition = "VARCHAR(20)", nullable = false)
     private InvitationStatus status;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "academy_id", nullable = false)
     private Academy academy;
+
+    public void updateStatus(InvitationStatus status) {
+        this.status = status;
+    }
 }

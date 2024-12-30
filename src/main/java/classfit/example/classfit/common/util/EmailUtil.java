@@ -16,9 +16,4 @@ public class EmailUtil {
             .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
             .toString();
     }
-
-    public static String splitEmail(String email) {
-        String[] splitEmail = email.split("@");
-        return splitEmail[0];
-    }
 }
