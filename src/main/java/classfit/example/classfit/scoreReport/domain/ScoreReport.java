@@ -53,17 +53,32 @@ public class ScoreReport extends BaseEntity {
     @JoinColumn(name = "student",nullable = false)
     private Student student;
 
+    @Column(name = "start-date")
+    private LocalDate startDate;
+
+    @Column(name = "end-date")
+    private LocalDate endDate;
+
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "report_id")
     @Column(name = "exam_id_list")
     private List<StudentExamScore> examIdList;
+    //TODO 개별의견 생성시 update하는 방식으로 studentId request받아서 개별의견 칸만 Update로 하자
+    @Column(name = "student_opinion")
+    private String studentOpinion;
 
     @Builder
-    public ScoreReport(SubClass subClass,MainClass mainClass,String reportName,Student student,String overallOpinion) {
+    public ScoreReport(SubClass subClass,MainClass mainClass,String reportName,Student student,String overallOpinion,LocalDate startDate,
+            LocalDate endDate) {
         this.subClass = subClass;
         this.mainClass = mainClass;
         this.reportName = reportName;
         this.student = student;
         this.overallOpinion = overallOpinion;
+        this.startDate = startDate;
+        this.endDate = endDate;
+    }
+    public void updateStudentOpinion(String studentOpinion) {
+        this.studentOpinion = studentOpinion;
     }
 }

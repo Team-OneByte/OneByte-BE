@@ -5,9 +5,11 @@ import classfit.example.classfit.common.ApiResponse;
 import classfit.example.classfit.member.domain.Member;
 import classfit.example.classfit.scoreReport.dto.process.ReportExam;
 import classfit.example.classfit.scoreReport.dto.request.CreateReportRequest;
+import classfit.example.classfit.scoreReport.dto.request.SentStudentOpinionRequest;
 import classfit.example.classfit.scoreReport.dto.response.CreateReportResponse;
 import classfit.example.classfit.scoreReport.dto.response.FindClassStudent;
 import classfit.example.classfit.scoreReport.dto.response.FindReportResponse;
+import classfit.example.classfit.scoreReport.dto.response.SentStudentOpinionResponse;
 import classfit.example.classfit.scoreReport.service.ScoreReportService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -16,6 +18,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -79,4 +82,12 @@ public class ScoreReportController {
                 subClassId);
         return ApiResponse.success(response, 200, "FIND-CLASS-STUDENT");
     }
+    @PatchMapping("/student-opinion")
+    @Operation(summary = "학생리포트에 개인의견 전송", description = "학생에게 개인의견 전송 API입니다. 학습 리포트 생성 후에 사용가능.")
+    public ApiResponse<List<SentStudentOpinionResponse>> sentStudentOpinion(@AuthMember Member member,
+            @RequestBody List<SentStudentOpinionRequest> requests) {
+        List<SentStudentOpinionResponse> response = scoreReportService.sentStudentOpinion(member,requests);
+        return ApiResponse.success(response,200,"SENT-STUDENT-OPINION");
+    }
+
 }

@@ -13,9 +13,11 @@ import classfit.example.classfit.scoreReport.domain.ScoreReport;
 import classfit.example.classfit.scoreReport.domain.ScoreReportRepository;
 import classfit.example.classfit.scoreReport.dto.process.ReportExam;
 import classfit.example.classfit.scoreReport.dto.request.CreateReportRequest;
+import classfit.example.classfit.scoreReport.dto.request.SentStudentOpinionRequest;
 import classfit.example.classfit.scoreReport.dto.response.CreateReportResponse;
 import classfit.example.classfit.scoreReport.dto.response.FindClassStudent;
 import classfit.example.classfit.scoreReport.dto.response.FindReportResponse;
+import classfit.example.classfit.scoreReport.dto.response.SentStudentOpinionResponse;
 import classfit.example.classfit.student.domain.Student;
 import classfit.example.classfit.student.dto.StudentList;
 import classfit.example.classfit.studentExam.domain.Exam;
@@ -75,6 +77,8 @@ public class ScoreReportService {
                     .student(student)
                     .reportName(request.reportName())
                     .overallOpinion(request.overallOpinion())
+                    .startDate(request.startDate())
+                    .endDate(request.endDate())
                     .build();
             scoreReportRepository.save(report);
 
@@ -158,4 +162,26 @@ public class ScoreReportService {
                         classStudent.studentId(), classStudent.studentName()))
                 .collect(Collectors.toList());
     }
+
+    @Transactional
+    public List<SentStudentOpinionResponse> sentStudentOpinion(@AuthMember Member member, List<SentStudentOpinionRequest> requests) {
+        ScoreReport scoreReport = scoreReportRepository.findById(requests.getFirst().reportId())
+                .orElseThrow(() -> new ClassfitException("학습리포트를 찾을 수 없어요.", HttpStatus.NOT_FOUND));
+
+        List<SentStudentOpinionResponse> responses = new ArrayList<>();
+
+        for (SentStudentOpinionRequest request : requests) {
+            scoreReport.updateStudentOpinion(request.studentOpinion());
+
+            SentStudentOpinionResponse response = new SentStudentOpinionResponse(
+                    scoreReport.getId(),
+                    request.studentId(),
+                    scoreReport.getStudent().getName(),
+                    scoreReport.getStudentOpinion()
+            );
+            responses.add(response);
+        }
+        return responses;
+    }
+
 }
