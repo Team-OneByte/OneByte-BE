@@ -43,7 +43,8 @@ import java.util.Optional;
 public class SwaggerConfig {
 
     private final ApplicationContext applicationContext; // ApplicationContext 주입
-    private static final String LOGIN_ENDPOINT = "/api/v1/sigin";
+    private static final String LOGIN_ENDPOINT = "/api/v1/signin";
+
 
     @Bean
     public OpenApiCustomizer springSecurityLoginCustomised() {
