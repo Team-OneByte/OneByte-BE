@@ -3,6 +3,7 @@ package classfit.example.classfit.event.controller;
 import classfit.example.classfit.event.dto.request.EventModalRequest;
 import classfit.example.classfit.common.ApiResponse;
 import classfit.example.classfit.event.dto.request.EventCreateRequest;
+import classfit.example.classfit.event.dto.response.EventMontylyResponse;
 import classfit.example.classfit.event.dto.response.EventResponse;
 import classfit.example.classfit.event.service.EventService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -35,12 +36,12 @@ public class EventController {
 
     @GetMapping("/monthly")
     @Operation(summary = "월별 일정 조회", description = "월별 일정들을 조회하는 api 입니다.")
-    public ApiResponse<List<EventResponse>> getMonthlyEvents(
+    public ApiResponse<List<EventMontylyResponse>> getMonthlyEvents(
         @RequestParam long categoryId,
         @RequestParam int year,
         @RequestParam int month
     ) {
-        List<EventResponse> events = eventService.getMonthlyEventsByCategory(categoryId, year, month);
+        List<EventMontylyResponse> events = eventService.getMonthlyEventsByCategory(categoryId, year, month);
         return ApiResponse.success(events, 200, "SUCCESS");
     }
 

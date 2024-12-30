@@ -11,9 +11,11 @@ import classfit.example.classfit.event.domain.Event;
 import classfit.example.classfit.event.domain.EventType;
 import classfit.example.classfit.event.dto.request.EventCreateRequest;
 import classfit.example.classfit.event.dto.request.EventModalRequest;
+import classfit.example.classfit.event.dto.response.EventMontylyResponse;
 import classfit.example.classfit.event.dto.response.EventResponse;
 import classfit.example.classfit.event.repository.EventRepository;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -52,7 +54,7 @@ public class EventService {
     }
 
     @Transactional(readOnly = true)
-    public List<EventResponse> getMonthlyEventsByCategory(long categoryId, int year, int month) {
+    public List<EventMontylyResponse> getMonthlyEventsByCategory(long categoryId, int year, int month) {
         LocalDateTime startOfMonth = LocalDateTime.of(year, month, 1, 0, 0, 0, 0);
         LocalDateTime endOfMonth = startOfMonth.plusMonths(1).minusSeconds(1);
 
@@ -67,14 +69,16 @@ public class EventService {
             .orElseThrow(() -> new ClassfitException(CATEGORY_NOT_FOUND, HttpStatus.NOT_FOUND));
     }
 
-    private List<EventResponse> mapToEventCreateResponse(List<Event> events) {
+    private List<EventMontylyResponse> mapToEventCreateResponse(List<Event> events) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
         return events.stream()
-            .map(event -> EventResponse.of(
-                event.getId(),
+            .map(event -> EventMontylyResponse.of(
+                String.valueOf(event.getId()),
                 event.getName(),
-                event.getEventType(),
-                event.getStartDate(),
-                event.getEndDate()))
+                event.getEventType().toString(),
+                event.getStartDate().format(formatter),
+                event.getEndDate().format(formatter)))
             .collect(Collectors.toList());
     }
 
