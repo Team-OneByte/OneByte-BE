@@ -55,14 +55,13 @@ jobs:
 
       - name: Stop and remove existing containers
         run: |
-          CONTAINER_IDS=$(sudo docker ps -q)
+          CONTAINER_IDS=$(sudo docker ps -aq) 
           if [ -n "$CONTAINER_IDS" ]; then
-            sudo docker stop $CONTAINER_IDS
-            sudo docker rm $CONTAINER_IDS
+            sudo docker stop $CONTAINER_IDS || true 
+            sudo docker rm $CONTAINER_IDS || true  
           else
             echo "No containers to stop or remove."
           fi
-          exit 0
 
 
       - name: Run new container
