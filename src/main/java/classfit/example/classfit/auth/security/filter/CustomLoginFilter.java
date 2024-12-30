@@ -26,7 +26,7 @@ import java.util.Iterator;
 public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
 
     {
-        setFilterProcessesUrl("/api/v1/login");
+        setFilterProcessesUrl("/api/v1/signin");
     }
 
     private final AuthenticationManager authenticationManager;

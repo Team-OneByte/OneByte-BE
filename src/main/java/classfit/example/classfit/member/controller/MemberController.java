@@ -22,7 +22,7 @@ public class MemberController {
 
     private final MemberService memberService;
 
-    @PostMapping("/sign_in")
+    @PostMapping("/signup")
     @Operation(summary = "회원 가입", description = "회원가입 API 입니다.")
     public ApiResponse<MemberResponse> signIn(@RequestBody @Valid MemberRequest request) {
         MemberResponse memberResponse = memberService.signIn(request);
