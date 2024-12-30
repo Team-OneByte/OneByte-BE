@@ -4,7 +4,7 @@ import classfit.example.classfit.event.domain.EventType;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
-public record EventModalCreateRequest(
+public record EventModalRequest(
     String name,
     EventType eventType,
     long categoryId,

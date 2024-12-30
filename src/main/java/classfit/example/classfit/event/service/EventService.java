@@ -10,8 +10,8 @@ import classfit.example.classfit.common.exception.ClassfitException;
 import classfit.example.classfit.event.domain.Event;
 import classfit.example.classfit.event.domain.EventType;
 import classfit.example.classfit.event.dto.request.EventCreateRequest;
-import classfit.example.classfit.event.dto.request.EventModalCreateRequest;
-import classfit.example.classfit.event.dto.response.EventCreateResponse;
+import classfit.example.classfit.event.dto.request.EventModalRequest;
+import classfit.example.classfit.event.dto.response.EventResponse;
 import classfit.example.classfit.event.repository.EventRepository;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -28,10 +28,10 @@ public class EventService {
     private final CalendarCategoryService calendarCategoryService;
 
     @Transactional
-    public EventCreateResponse createEvent(EventCreateRequest request) {
+    public EventResponse createEvent(EventCreateRequest request) {
         Event event = buildEvent(request);
         Event savedEvent = eventRepository.save(event);
-        return EventCreateResponse.of(savedEvent.getId(), savedEvent.getName(), savedEvent.getEventType(), savedEvent.getStartDate(), savedEvent.getEndDate());
+        return EventResponse.of(savedEvent.getId(), savedEvent.getName(), savedEvent.getEventType(), savedEvent.getStartDate(), savedEvent.getEndDate());
     }
 
     private Event buildEvent(EventCreateRequest request) {
@@ -52,7 +52,7 @@ public class EventService {
     }
 
     @Transactional(readOnly = true)
-    public List<EventCreateResponse> getMonthlyEventsByCategory(long categoryId, int year, int month) {
+    public List<EventResponse> getMonthlyEventsByCategory(long categoryId, int year, int month) {
         LocalDateTime startOfMonth = LocalDateTime.of(year, month, 1, 0, 0, 0, 0);
         LocalDateTime endOfMonth = startOfMonth.plusMonths(1).minusSeconds(1);
 
@@ -67,9 +67,9 @@ public class EventService {
             .orElseThrow(() -> new ClassfitException(CATEGORY_NOT_FOUND, HttpStatus.NOT_FOUND));
     }
 
-    private List<EventCreateResponse> mapToEventCreateResponse(List<Event> events) {
+    private List<EventResponse> mapToEventCreateResponse(List<Event> events) {
         return events.stream()
-            .map(event -> EventCreateResponse.of(
+            .map(event -> EventResponse.of(
                 event.getId(),
                 event.getName(),
                 event.getEventType(),
@@ -79,13 +79,13 @@ public class EventService {
     }
 
     @Transactional
-    public EventCreateResponse createModalEvent(EventModalCreateRequest request) {
+    public EventResponse createModalEvent(EventModalRequest request) {
         Event event = buildModalEvent(request);
         Event savedEvent = eventRepository.save(event);
-        return EventCreateResponse.of(savedEvent.getId(), savedEvent.getName(), savedEvent.getEventType(), savedEvent.getStartDate(), savedEvent.getEndDate());
+        return EventResponse.of(savedEvent.getId(), savedEvent.getName(), savedEvent.getEventType(), savedEvent.getStartDate(), savedEvent.getEndDate());
     }
 
-    private Event buildModalEvent(EventModalCreateRequest request) {
+    private Event buildModalEvent(EventModalRequest request) {
         CalendarCategory category = calendarCategoryService.getCategoryById(request.categoryId());
         LocalDateTime endDate = getEndDate(request);
 
@@ -99,7 +99,7 @@ public class EventService {
             .build();
     }
 
-    private LocalDateTime getEndDate(EventModalCreateRequest request) {
+    private LocalDateTime getEndDate(EventModalRequest request) {
         LocalDateTime endDate = request.startDate();
         if (SCHEDULE.equals(request.eventType())) {
             endDate = request.endDate().orElse(request.startDate());
@@ -108,13 +108,32 @@ public class EventService {
     }
 
     @Transactional(readOnly = true)
-    public EventCreateResponse getEvent(long eventId) {
+    public EventResponse getEvent(long eventId) {
         Event event = getEventById(eventId);
-        return EventCreateResponse.of(event.getId(), event.getName(), event.getEventType(), event.getStartDate(), event.getEndDate());
+        return EventResponse.of(event.getId(), event.getName(), event.getEventType(), event.getStartDate(), event.getEndDate());
     }
 
     private Event getEventById(long eventId) {
         return eventRepository.findById(eventId)
             .orElseThrow(() -> new ClassfitException(EVENT_NOT_FOUND, HttpStatus.NOT_FOUND));
+    }
+
+    @Transactional
+    public EventResponse updateEvent(long eventId, EventModalRequest request) {
+        Event event = getEventById(eventId);
+        CalendarCategory category = calendarCategoryService.getCategoryById(request.categoryId());
+        LocalDateTime endDate = getEndDate(request);
+
+        event.update(
+            request.name(),
+            category,
+            request.eventType(),
+            request.startDate(),
+            endDate,
+            request.isAllDay()
+        );
+
+        eventRepository.save(event);
+        return EventResponse.of(event.getId(), event.getName(), event.getEventType(), event.getStartDate(), event.getEndDate());
     }
 }

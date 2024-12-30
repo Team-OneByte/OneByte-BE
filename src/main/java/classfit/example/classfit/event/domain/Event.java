@@ -54,4 +54,20 @@ public class Event extends BaseEntity {
 
     @Column(length = 100)
     private String memo;
+
+    public void update(
+        String name,
+        CalendarCategory category,
+        EventType eventType,
+        LocalDateTime startDate,
+        LocalDateTime endDate,
+        boolean isAllDay
+    ) {
+        this.name = name;
+        this.category = category;
+        this.eventType = eventType;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.isAllDay = isAllDay;
+    }
 }
