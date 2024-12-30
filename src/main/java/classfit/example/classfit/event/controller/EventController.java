@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -67,5 +68,14 @@ public class EventController {
     ) {
         EventResponse updatedEvent = eventService.updateEvent(eventId, request);
         return ApiResponse.success(updatedEvent, 200, "UPDATED");
+    }
+
+    @DeleteMapping("/modal/{eventId}")
+    @Operation(summary = "모달 일정 삭제", description = "모달 일정을 삭제하는 api 입니다.")
+    public ApiResponse<EventResponse> deleteEvent(
+        @PathVariable Long eventId
+    ) {
+        eventService.deleteEvent(eventId);
+        return ApiResponse.success(null, 204, "DELETED");
     }
 }

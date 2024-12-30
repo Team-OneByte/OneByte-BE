@@ -136,4 +136,10 @@ public class EventService {
         eventRepository.save(event);
         return EventResponse.of(event.getId(), event.getName(), event.getEventType(), event.getStartDate(), event.getEndDate());
     }
+
+    @Transactional
+    public void deleteEvent(long eventId) {
+        Event event = getEventById(eventId);
+        eventRepository.delete(event);
+    }
 }
