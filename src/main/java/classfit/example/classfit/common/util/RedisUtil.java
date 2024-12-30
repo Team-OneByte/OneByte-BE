@@ -39,7 +39,6 @@ public class RedisUtil {
             Duration expireDuration = Duration.ofSeconds(duration);
             valueOperations.set(key, value, expireDuration);
         } catch (DataAccessException e) {
-            log.error("Redis 서버에 데이터를 설정하는 중 오류 발생", e); // 로그 추가
             throw new ClassfitException("Redis 서버에 데이터를 설정하는 중 오류가 발생했습니다: ", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

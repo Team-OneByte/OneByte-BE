@@ -7,6 +7,8 @@ import classfit.example.classfit.academy.dto.response.AcademyResponse;
 import classfit.example.classfit.academy.repository.AcademyRepository;
 import classfit.example.classfit.common.exception.ClassfitException;
 import classfit.example.classfit.common.util.EmailUtil;
+import classfit.example.classfit.invitation.domain.Invitation;
+import classfit.example.classfit.invitation.domain.InvitationStatus;
 import classfit.example.classfit.invitation.repository.InvitationRepository;
 import classfit.example.classfit.member.domain.Member;
 import classfit.example.classfit.member.repository.MemberRepository;
@@ -46,13 +48,14 @@ public class AcademyService {
     public void joinAcademy(Member member, AcademyJoinRequest request) {
 
         Academy academy = academyRepository.findByCode(request.code())
-            .orElseThrow(() -> new ClassfitException("유효하지 않는 코드입니다", HttpStatus.NOT_FOUND));
+            .orElseThrow(() -> new ClassfitException("유효하지 않은 코드입니다.", HttpStatus.NOT_FOUND));
 
-        if (!invitationRepository.existsByAcademyIdAndEmail(academy.getId(), request.email())) {
-            throw new ClassfitException("학원으로부터 초대되어지지 않은 계정입니다.", HttpStatus.NOT_FOUND);
-        }
+        Invitation invitation = invitationRepository.findByAcademyIdAndEmail(academy.getId(), request.email())
+            .orElseThrow(() -> new ClassfitException("학원으로부터 초대받지 않은 계정입니다.", HttpStatus.NOT_FOUND));
 
+        invitation.updateStatus(InvitationStatus.COMPLETED);
         member.updateRole("MEMBER");
+
         academy.addMember(member);
     }
 
