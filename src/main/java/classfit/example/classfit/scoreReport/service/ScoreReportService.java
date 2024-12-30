@@ -14,6 +14,7 @@ import classfit.example.classfit.scoreReport.domain.ScoreReportRepository;
 import classfit.example.classfit.scoreReport.dto.process.ReportExam;
 import classfit.example.classfit.scoreReport.dto.request.CreateReportRequest;
 import classfit.example.classfit.scoreReport.dto.response.CreateReportResponse;
+import classfit.example.classfit.scoreReport.dto.response.FindClassStudent;
 import classfit.example.classfit.scoreReport.dto.response.FindReportResponse;
 import classfit.example.classfit.student.domain.Student;
 import classfit.example.classfit.student.dto.StudentList;
@@ -139,5 +140,22 @@ public class ScoreReportService {
     @Transactional
     public void deleteReport(@AuthMember Member member, Long studentReportId) {
         scoreReportRepository.deleteById(studentReportId);
+    }
+
+    @Transactional(readOnly = true)
+    public List<FindClassStudent> findClassStudents(@AuthMember Member member, Long mainClassId,
+            Long subClassId) {
+        MainClass mainClass = mainClassRepository.findById(mainClassId)
+                .orElseThrow(
+                        () -> new ClassfitException("메인 클래스를 찾을 수 없어요.", HttpStatus.NOT_FOUND));
+        SubClass subClass = subClassRepository.findById(subClassId)
+                .orElseThrow(
+                        () -> new ClassfitException("서브 클래스를 찾을 수 없어요.", HttpStatus.NOT_FOUND));
+        List<FindClassStudent> classStudents = classStudentRepository.findStudentIdsByMainClassIdAndSubClassId(
+                mainClassId, subClassId);
+        return classStudents.stream()
+                .map(classStudent -> new FindClassStudent(
+                        classStudent.studentId(), classStudent.studentName()))
+                .collect(Collectors.toList());
     }
 }

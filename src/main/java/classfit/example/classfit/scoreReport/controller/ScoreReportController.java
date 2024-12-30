@@ -6,6 +6,7 @@ import classfit.example.classfit.member.domain.Member;
 import classfit.example.classfit.scoreReport.dto.process.ReportExam;
 import classfit.example.classfit.scoreReport.dto.request.CreateReportRequest;
 import classfit.example.classfit.scoreReport.dto.response.CreateReportResponse;
+import classfit.example.classfit.scoreReport.dto.response.FindClassStudent;
 import classfit.example.classfit.scoreReport.dto.response.FindReportResponse;
 import classfit.example.classfit.scoreReport.service.ScoreReportService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -25,15 +26,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/report")
-@Tag(name = "학습 리포트 API", description = "성적 리포트 API 입니다.")
+@Tag(name = "학습 리포트 API", description = "학습 리포트 API 입니다.")
 public class ScoreReportController {
 
     private final ScoreReportService scoreReportService;
 
     @PostMapping
     @Operation(summary = "학습 리포트 생성", description = "학습 리포트 생성하는 API 입니다.")
-    public ApiResponse<CreateReportResponse> createReport(@AuthMember Member member, @RequestBody
-    CreateReportRequest request) {
+    public ApiResponse<CreateReportResponse> createReport(@AuthMember Member member,
+            @RequestBody CreateReportRequest request) {
         CreateReportResponse response = scoreReportService.createReport(member, request);
         return ApiResponse.success(response, 201, "CREATED-REPORT");
     }
@@ -67,5 +68,15 @@ public class ScoreReportController {
             @PathVariable(name = "student-report-id") Long studentReportId) {
         scoreReportService.deleteReport(member, studentReportId);
         return ApiResponse.success(null, 200, "DELETED-STUDENT-REPORT");
+    }
+
+    @GetMapping("/class-student")
+    @Operation(summary = "클래스 별 학생 조회", description = "클래스 별 학생 조회 API 입니다.")
+    public ApiResponse<List<FindClassStudent>> findClassStudent(@AuthMember Member member,
+            @RequestParam(name = "mainClassId") Long mainClassId,
+            @RequestParam(name = "subClassId") Long subClassId) {
+        List<FindClassStudent> response = scoreReportService.findClassStudents(member, mainClassId,
+                subClassId);
+        return ApiResponse.success(response, 200, "FIND-CLASS-STUDENT");
     }
 }
