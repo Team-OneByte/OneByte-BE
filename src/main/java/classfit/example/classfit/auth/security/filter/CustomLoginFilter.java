@@ -59,7 +59,7 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
 
 
         String role = auth.getAuthority();
-        String access = jwtUtil.createJwt("access", customAuth.getEmail(), role, 1000 * 60 * 5L);             // 5분
+        String access = jwtUtil.createJwt("access", customAuth.getEmail(), role, 1000 * 30L);             // 5분
         String refresh = jwtUtil.createJwt("refresh", customAuth.getEmail(), role, 1000 * 60 * 60 * 24 * 7L); // 7일
 
         addRefreshEntity(authResult.getName(), refresh, 1000 * 60 * 60 * 24 * 7L);
