@@ -164,18 +164,20 @@ public class ScoreReportService {
     }
 
     @Transactional
-    public List<SentStudentOpinionResponse> sentStudentOpinion(@AuthMember Member member, List<SentStudentOpinionRequest> requests) {
-        ScoreReport scoreReport = scoreReportRepository.findById(requests.getFirst().reportId())
-                .orElseThrow(() -> new ClassfitException("학습리포트를 찾을 수 없어요.", HttpStatus.NOT_FOUND));
-
+    public List<SentStudentOpinionResponse> sentStudentOpinion(@AuthMember Member member,
+            List<SentStudentOpinionRequest> requests) {
         List<SentStudentOpinionResponse> responses = new ArrayList<>();
 
         for (SentStudentOpinionRequest request : requests) {
+            ScoreReport scoreReport = scoreReportRepository.findById(request.reportId())
+                    .orElseThrow(
+                            () -> new ClassfitException("학습리포트를 찾을 수 없어요.", HttpStatus.NOT_FOUND));
+
             scoreReport.updateStudentOpinion(request.studentOpinion());
 
             SentStudentOpinionResponse response = new SentStudentOpinionResponse(
                     scoreReport.getId(),
-                    request.studentId(),
+                    scoreReport.getStudent().getId(),
                     scoreReport.getStudent().getName(),
                     scoreReport.getStudentOpinion()
             );
