@@ -1,11 +1,15 @@
 package classfit.example.classfit.event.controller;
 
+import classfit.example.classfit.auth.annotation.AuthMember;
 import classfit.example.classfit.event.dto.request.EventModalRequest;
 import classfit.example.classfit.common.ApiResponse;
 import classfit.example.classfit.event.dto.request.EventCreateRequest;
 import classfit.example.classfit.event.dto.response.EventMontylyResponse;
 import classfit.example.classfit.event.dto.response.EventResponse;
 import classfit.example.classfit.event.service.EventService;
+import classfit.example.classfit.member.domain.Member;
+import classfit.example.classfit.member.dto.response.AcademyMemberResponse;
+import classfit.example.classfit.member.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
@@ -26,6 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "일정관리 컨트롤러", description = "일정관리 관련 API입니다.")
 public class EventController {
     private final EventService eventService;
+    private final MemberService memberService;
 
     @PostMapping("/event")
     @Operation(summary = "캘린더 일정 등록", description = "캘린더 일정 등록하는 api 입니다.")
@@ -78,5 +83,12 @@ public class EventController {
     ) {
         eventService.deleteEvent(eventId);
         return ApiResponse.success(null, 204, "DELETED");
+    }
+
+    @GetMapping("/academy-members")
+    @Operation(summary = "참석자 필드 조회", description = "일정 등록 시 참석자 필드에 들어갈 리스트를 조회하는 api 입니다.")
+    public ApiResponse<List<AcademyMemberResponse>> getAcademyMembers(@AuthMember Member loggedInMember) {
+        List<AcademyMemberResponse> members = memberService.getMembersByLoggedInMemberAcademy(loggedInMember);
+        return ApiResponse.success(members, 200, "SUCCESS");
     }
 }
