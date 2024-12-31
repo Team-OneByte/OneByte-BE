@@ -60,7 +60,7 @@ public class AuthService {
         redisUtil.deleteData(redisKey);
         addRefreshEntity(email, newRefresh, 1000 * 60 * 60 * 24 * 7L);
 
-        response.setHeader("access", newAccess);
+        response.setHeader("Authorization", "Bearer " + newAccess);
         CookieUtil.addCookie(response, "refresh", refresh, 24 * 60 * 60);
         return new ResponseEntity<>(HttpStatus.OK);
     }
