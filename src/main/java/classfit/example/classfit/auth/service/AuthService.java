@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -21,7 +22,7 @@ public class AuthService {
     private final JWTUtil jwtUtil;
     private final RedisUtil redisUtil;
 
-    public HttpServletResponse reissue(HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity<?> reissue(HttpServletRequest request, HttpServletResponse response) {
 
         String refresh = null;
         Cookie[] cookies = request.getCookies();
@@ -60,7 +61,7 @@ public class AuthService {
 
         response.setHeader("access", newAccess);
         response.addCookie(createCookie("refresh", newRefresh));
-        return response;
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     public void logout(Member member) {
@@ -79,6 +80,7 @@ public class AuthService {
 
         Cookie cookie = new Cookie(key, value);
         cookie.setMaxAge(24 * 60 * 60);
+        cookie.setHttpOnly(true);
         cookie.setSecure(true);
 
         return cookie;
