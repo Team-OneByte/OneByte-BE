@@ -3,6 +3,7 @@ package classfit.example.classfit.member.service;
 import static classfit.example.classfit.common.exception.ClassfitException.ACADEMY_MEMBERS_NOT_FOUND;
 import static classfit.example.classfit.common.exception.ClassfitException.CATEGORY_NOT_FOUND;
 import static classfit.example.classfit.common.exception.ClassfitException.INVALID_MEMBER_ACADEMY;
+import static classfit.example.classfit.common.exception.ClassfitException.MEMBER_NOT_FOUND;
 
 import classfit.example.classfit.common.exception.ClassfitException;
 import classfit.example.classfit.common.util.EmailUtil;
@@ -105,5 +106,10 @@ public class MemberService {
         return members.stream()
             .map(AcademyMemberResponse::from)
             .collect(Collectors.toList());
+    }
+
+    public Member getMembers(Long memberId) {
+        return memberRepository.findById(memberId)
+            .orElseThrow(() -> new ClassfitException(MEMBER_NOT_FOUND, HttpStatus.NOT_FOUND));
     }
 }

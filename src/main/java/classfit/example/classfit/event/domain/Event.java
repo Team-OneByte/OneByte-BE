@@ -1,20 +1,24 @@
 package classfit.example.classfit.event.domain;
 
-import static classfit.example.classfit.event.domain.EventType.SCHEDULE;
-
 import classfit.example.classfit.calendarCategory.domain.CalendarCategory;
 import classfit.example.classfit.common.domain.BaseEntity;
-import classfit.example.classfit.event.dto.request.EventModalRequest;
+import classfit.example.classfit.eventMember.domain.EventMember;
+import classfit.example.classfit.member.domain.Member;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -34,7 +38,7 @@ public class Event extends BaseEntity {
 
     private String name;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
     private CalendarCategory category;
 
@@ -52,6 +56,10 @@ public class Event extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     private NotificationTime notificationTime;
+
+    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private List<EventMember> attendances = new ArrayList<>();
 
     @Column(length = 50)
     private String location;
@@ -80,6 +88,15 @@ public class Event extends BaseEntity {
             this.startDate = startDate;
             this.endDate = endDate;
         }
+    }
+
+    public void addAttendee(Member member) {
+        EventMember eventMember = EventMember.builder()
+            .event(this)
+            .member(member)
+            .build();
+
+        this.attendances.add(eventMember);
     }
 
     public void update(

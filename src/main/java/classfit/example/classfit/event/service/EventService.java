@@ -12,6 +12,9 @@ import classfit.example.classfit.event.dto.request.EventModalRequest;
 import classfit.example.classfit.event.dto.response.EventMontylyResponse;
 import classfit.example.classfit.event.dto.response.EventResponse;
 import classfit.example.classfit.event.repository.EventRepository;
+import classfit.example.classfit.eventMember.domain.EventMember;
+import classfit.example.classfit.member.domain.Member;
+import classfit.example.classfit.member.service.MemberService;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -26,11 +29,13 @@ import org.springframework.transaction.annotation.Transactional;
 public class EventService {
     private final EventRepository eventRepository;
     private final CalendarCategoryService calendarCategoryService;
+    private final MemberService memberService;
 
     @Transactional
     public EventResponse createEvent(EventCreateRequest request) {
         Event event = buildEvent(request);
         Event savedEvent = eventRepository.save(event);
+        addAttendeesToEvent(savedEvent, request.memberIds());
         return EventResponse.of(savedEvent.getId(), savedEvent.getName(), savedEvent.getEventType(), savedEvent.getStartDate(), savedEvent.getEndDate());
     }
 
@@ -51,6 +56,13 @@ public class EventService {
             .build();
         event.setDates(request.isAllDay(), request.startDate(), request.getEndDate());
         return event;
+    }
+
+    private void addAttendeesToEvent(Event event, List<Long> memberIds) {
+        for (Long memberId : memberIds) {
+            Member member = memberService.getMembers(memberId);
+            event.addAttendee(member);
+        }
     }
 
     @Transactional(readOnly = true)

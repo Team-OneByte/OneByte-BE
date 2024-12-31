@@ -16,6 +16,7 @@ public class ClassfitException extends RuntimeException {
     public static final String CATEGORY_NOT_FOUND = "해당 카테고리를 찾을 수 없습니다.";
     public static final String EVENT_NOT_FOUND = "해당 일정을 찾을 수 없습니다.";
     public static final String ACADEMY_MEMBERS_NOT_FOUND = "학원의 멤버들을 찾을 수 없습니다.";
+    public static final String MEMBER_NOT_FOUND = "멤버를 찾을 수 없습니다.";
 
     private final String message;
     private final HttpStatus httpStatus;

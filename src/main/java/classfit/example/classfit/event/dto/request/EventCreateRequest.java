@@ -4,6 +4,7 @@ import classfit.example.classfit.event.domain.Event;
 import classfit.example.classfit.event.domain.EventType;
 import classfit.example.classfit.event.domain.NotificationTime;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 public record EventCreateRequest(
@@ -15,6 +16,7 @@ public record EventCreateRequest(
     boolean isAllDay,
     boolean isRepeating,
     NotificationTime notificationTime,
+    List<Long> memberIds,
     String location,
     String memo) {
     public LocalDateTime getEndDate() {
