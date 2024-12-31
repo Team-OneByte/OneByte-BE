@@ -54,14 +54,14 @@ public class AuthService {
             throw new ClassfitException("invalid refresh token", HttpStatus.BAD_REQUEST);
         }
 
-        String newAccess = jwtUtil.createJwt("access", email, role, 1000 * 30L);
+        String newAccess = jwtUtil.createJwt("access", email, role, 1000 * 60 * 5L);
         String newRefresh = jwtUtil.createJwt("refresh", email, role, 1000 * 60 * 60 * 24 * 7L);
 
         redisUtil.deleteData(redisKey);
         addRefreshEntity(email, newRefresh, 1000 * 60 * 60 * 24 * 7L);
 
         response.setHeader("Authorization", "Bearer " + newAccess);
-        CookieUtil.addCookie(response, "refresh", refresh, 24 * 60 * 60);
+        CookieUtil.addCookie(response, "refresh", refresh, 7 * 24 * 60 * 60);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

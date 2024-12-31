@@ -23,7 +23,7 @@ public record MemberRequest
         @NotBlank(message = "비밀번호는 공백일 수 없습니다.")
         @Size(min = 8, max = 20, message = "비밀번호는 8 ~ 20자리로 입력해 주세요")
         @Pattern(
-            regexp = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,20}$",
+            regexp = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d!@#$%^&*()_+\\-\\[\\]{};':\"\\\\|,.<>\\/?]{8,20}$",
             message = "비밀번호는 영문자 숫자를 포함해야 합니다."
         )
         String password,
