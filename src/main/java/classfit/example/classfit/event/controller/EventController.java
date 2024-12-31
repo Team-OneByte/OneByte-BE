@@ -39,6 +39,13 @@ public class EventController {
         return ApiResponse.success(createdEvent, 200, "CREATED");
     }
 
+    @GetMapping("/academy-members")
+    @Operation(summary = "참석자 필드 조회", description = "일정 등록 시 참석자 필드에 들어갈 리스트를 조회하는 api 입니다.")
+    public ApiResponse<List<AcademyMemberResponse>> getAcademyMembers(@AuthMember Member loggedInMember) {
+        List<AcademyMemberResponse> members = memberService.getMembersByLoggedInMemberAcademy(loggedInMember);
+        return ApiResponse.success(members, 200, "SUCCESS");
+    }
+
     @GetMapping("/monthly")
     @Operation(summary = "월별 일정 조회", description = "월별 일정들을 조회하는 api 입니다.")
     public ApiResponse<List<EventMontylyResponse>> getMonthlyEvents(
@@ -83,12 +90,5 @@ public class EventController {
     ) {
         eventService.deleteEvent(eventId);
         return ApiResponse.success(null, 204, "DELETED");
-    }
-
-    @GetMapping("/academy-members")
-    @Operation(summary = "참석자 필드 조회", description = "일정 등록 시 참석자 필드에 들어갈 리스트를 조회하는 api 입니다.")
-    public ApiResponse<List<AcademyMemberResponse>> getAcademyMembers(@AuthMember Member loggedInMember) {
-        List<AcademyMemberResponse> members = memberService.getMembersByLoggedInMemberAcademy(loggedInMember);
-        return ApiResponse.success(members, 200, "SUCCESS");
     }
 }
