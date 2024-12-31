@@ -41,8 +41,8 @@ public class EventService {
 
         return Event.builder()
             .name(request.name())
+            .eventType(request.eventType())
             .category(category)
-            .eventType(EventType.SCHEDULE)
             .startDate(request.startDate())
             .endDate(request.endDate())
             .isAllDay(request.isAllDay())
