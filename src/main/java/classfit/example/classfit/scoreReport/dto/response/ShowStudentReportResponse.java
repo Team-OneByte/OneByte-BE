@@ -1,11 +1,17 @@
 package classfit.example.classfit.scoreReport.dto.response;
 
+import classfit.example.classfit.attendance.dto.process.AttendanceInfo;
+import classfit.example.classfit.studentExam.dto.process.ExamHistory;
 import java.time.LocalDate;
+import java.util.List;
 import org.springframework.cglib.core.Local;
 
-public record ShowStudentReportResponse(Long studentId, String studentName, Long mainClassId,
-                                        Long subClassId, String reportName, LocalDate startDate,
-                                        Local endDate //attendance list로 출결석,횟수,토탈횟수까지 보여주기
+public record ShowStudentReportResponse(Long studentId, String studentName, String mainClassName,
+                                        String subClassName, String reportName, LocalDate startDate,
+                                        LocalDate endDate, List<AttendanceInfo> attendanceInfoList,
+                                        Integer totalAttendanceCount,
+                                        List<ExamHistory> examHistoryList, String overallOpinion,
+                                        String studentOpinion
 ) {
 
 }

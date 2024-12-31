@@ -1,5 +1,8 @@
 package classfit.example.classfit.scoreReport.service;
 
+import classfit.example.classfit.attendance.domain.Attendance;
+import classfit.example.classfit.attendance.domain.AttendanceStatus;
+import classfit.example.classfit.attendance.dto.process.AttendanceInfo;
 import classfit.example.classfit.auth.annotation.AuthMember;
 import classfit.example.classfit.category.domain.MainClass;
 import classfit.example.classfit.category.domain.SubClass;
@@ -18,12 +21,14 @@ import classfit.example.classfit.scoreReport.dto.response.CreateReportResponse;
 import classfit.example.classfit.scoreReport.dto.response.FindClassStudent;
 import classfit.example.classfit.scoreReport.dto.response.FindReportResponse;
 import classfit.example.classfit.scoreReport.dto.response.SentStudentOpinionResponse;
+import classfit.example.classfit.scoreReport.dto.response.ShowStudentReportResponse;
 import classfit.example.classfit.student.domain.Student;
 import classfit.example.classfit.student.dto.StudentList;
 import classfit.example.classfit.studentExam.domain.Exam;
 import classfit.example.classfit.studentExam.domain.ExamRepository;
 import classfit.example.classfit.studentExam.domain.StudentExamScore;
 import classfit.example.classfit.studentExam.domain.StudentExamScoreRepository;
+import classfit.example.classfit.studentExam.dto.process.ExamHistory;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -184,6 +189,56 @@ public class ScoreReportService {
             responses.add(response);
         }
         return responses;
+    }
+
+    @Transactional(readOnly = true)
+    public ShowStudentReportResponse showStudentReport(@AuthMember Member member,Long reportId) {
+        ScoreReport scoreReport = scoreReportRepository.findById(reportId)
+                .orElseThrow(
+                        () -> new ClassfitException("학습리포트를 찾을 수 없어요.", HttpStatus.NOT_FOUND));
+
+        List<AttendanceInfo> attendanceInfoList = scoreReport.getStudent().getAttendances().stream()
+                .collect(Collectors.groupingBy(
+                        Attendance::getStatus,
+                        Collectors.summingInt(attendance -> 1)
+                ))
+                .entrySet()
+                .stream()
+                .map(entry -> new AttendanceInfo(
+                        entry.getKey(),
+                        entry.getValue()
+                ))
+                .toList();
+        Integer totalAttendanceCount = attendanceInfoList.stream()
+                .mapToInt(AttendanceInfo::attendanceCount)
+                .sum();
+        // TODO 선택한 시험지들의 history만 보이게 수정 -> studentId로 같이 받는걸로 수정하면 되나 ?
+        List<ExamHistory> examHistoryList = scoreReport.getExamIdList().stream()
+                .map(studentExamScore -> {
+                    Exam exam = studentExamScore.getExam();
+                    return new ExamHistory(
+                            exam.getId(),
+                            exam.getExamName(),
+                            exam.getAverage(),
+                            studentExamScore.getScore()
+                    );
+                })
+                .toList();
+        return new ShowStudentReportResponse(
+                scoreReport.getStudent().getId(),
+                scoreReport.getStudent().getName(),
+                scoreReport.getMainClass().getMainClassName(),
+                scoreReport.getSubClass().getSubClassName(),
+                scoreReport.getReportName(),
+                scoreReport.getStartDate(),
+                scoreReport.getEndDate(),
+                attendanceInfoList,
+                totalAttendanceCount,
+                examHistoryList,
+                scoreReport.getOverallOpinion(),
+                scoreReport.getStudentOpinion()
+        );
+
     }
 
 }

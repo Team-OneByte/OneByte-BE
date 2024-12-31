@@ -10,6 +10,7 @@ import classfit.example.classfit.scoreReport.dto.response.CreateReportResponse;
 import classfit.example.classfit.scoreReport.dto.response.FindClassStudent;
 import classfit.example.classfit.scoreReport.dto.response.FindReportResponse;
 import classfit.example.classfit.scoreReport.dto.response.SentStudentOpinionResponse;
+import classfit.example.classfit.scoreReport.dto.response.ShowStudentReportResponse;
 import classfit.example.classfit.scoreReport.service.ScoreReportService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -88,6 +89,12 @@ public class ScoreReportController {
             @RequestBody List<SentStudentOpinionRequest> requests) {
         List<SentStudentOpinionResponse> response = scoreReportService.sentStudentOpinion(member,requests);
         return ApiResponse.success(response,200,"SENT-STUDENT-OPINION");
+    }
+    @GetMapping("/{student-report-id}")
+    @Operation(summary = "학생 리포트 상세조회", description = "학생의 학습리포트 상세조회 API입니다.")
+    public ApiResponse<ShowStudentReportResponse> showStudentReport(@AuthMember Member member,@PathVariable(name = "student-report-id") Long reportId) {
+        ShowStudentReportResponse response = scoreReportService.showStudentReport(member, reportId);
+        return ApiResponse.success(response,200,"SHOW-STUDENT-REPORT");
     }
 
 }
