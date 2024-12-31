@@ -4,6 +4,7 @@ import static classfit.example.classfit.common.exception.ClassfitException.CATEG
 
 import classfit.example.classfit.auth.annotation.AuthMember;
 import classfit.example.classfit.calendarCategory.domain.CalendarCategory;
+import classfit.example.classfit.calendarCategory.domain.CategoryColor;
 import classfit.example.classfit.calendarCategory.dto.request.CalendarCategoryCreateRequest;
 import classfit.example.classfit.calendarCategory.dto.request.CalendarCategoryUpdateRequest;
 import classfit.example.classfit.calendarCategory.dto.response.CalendarCategoryCreateResponse;
@@ -33,7 +34,8 @@ public class CalendarCategoryService {
     public CalendarCategoryCreateResponse addCategory(@AuthMember Member member, CalendarCategoryCreateRequest request) {
         CalendarCategory category = buildCategory(member, request);
         CalendarCategory savedCategory = calendarCategoryRepository.save(category);
-        return CalendarCategoryCreateResponse.of(savedCategory.getId(), savedCategory.getName(), savedCategory.getColor(), savedCategory.getMemberCalendar().getType());
+        return CalendarCategoryCreateResponse.of(savedCategory.getId(), savedCategory.getName(),
+            String.valueOf(savedCategory.getColor()), savedCategory.getMemberCalendar().getType());
     }
 
     private CalendarCategory buildCategory(Member member, CalendarCategoryCreateRequest request) {
@@ -42,7 +44,7 @@ public class CalendarCategoryService {
 
         return CalendarCategory.builder()
             .name(uniqueName)
-            .color(request.color())
+            .color(CategoryColor.valueOf(request.color()))
             .memberCalendar(memberCalendar)
             .build();
     }

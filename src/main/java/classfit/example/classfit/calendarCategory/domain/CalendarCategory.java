@@ -4,6 +4,8 @@ import classfit.example.classfit.common.domain.BaseEntity;
 import classfit.example.classfit.memberCalendar.domain.MemberCalendar;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -28,8 +30,8 @@ public class CalendarCategory extends BaseEntity {
     @Column(nullable = false, length = 10)
     private String name;
 
-    @Column(nullable = false, length = 10)
-    private String color;
+    @Enumerated(EnumType.STRING)
+    private CategoryColor color;
 
     @ManyToOne
     @JoinColumn(name = "member_calendar_id")
@@ -37,6 +39,6 @@ public class CalendarCategory extends BaseEntity {
 
     public void updateNameAndColor(String newName, String newColor) {
         this.name = newName;
-        this.color = newColor;
+        this.color = CategoryColor.valueOf(newColor);
     }
 }
