@@ -32,8 +32,10 @@ import java.util.Optional;
 @OpenAPIDefinition(
     info = @Info(title = "CLASSFIT API 명세서", description = "백엔드 API"),
     security = @SecurityRequirement(name = "JWT TOKEN"),
-    servers = {@Server(url = "https://classfit.duckdns.org", description = "Default Server URL")}
-
+    servers = {
+        @Server(url = "https://classfit.duckdns.org", description = "Default Server URL"),
+        @Server(url = "http://localhost:8080", description = "Localhost Server URL")
+    }
 )
 @SecurityScheme(
     name = "JWT TOKEN",

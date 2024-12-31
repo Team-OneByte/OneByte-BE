@@ -2,6 +2,7 @@ package classfit.example.classfit.auth.service;
 
 import classfit.example.classfit.auth.security.jwt.JWTUtil;
 import classfit.example.classfit.common.exception.ClassfitException;
+import classfit.example.classfit.common.util.CookieUtil;
 import classfit.example.classfit.common.util.RedisUtil;
 import classfit.example.classfit.member.domain.Member;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -60,7 +61,7 @@ public class AuthService {
         addRefreshEntity(email, newRefresh, 1000 * 60 * 60 * 24 * 7L);
 
         response.setHeader("access", newAccess);
-        response.addCookie(createCookie("refresh", newRefresh));
+        CookieUtil.addCookie(response, "refresh", refresh, 24 * 60 * 60);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -74,16 +75,6 @@ public class AuthService {
         }
 
         redisUtil.deleteData(redisRefreshTokenKey);
-    }
-
-    private Cookie createCookie(String key, String value) {
-
-        Cookie cookie = new Cookie(key, value);
-        cookie.setMaxAge(24 * 60 * 60);
-        cookie.setHttpOnly(true);
-        cookie.setSecure(true);
-
-        return cookie;
     }
 
     private void addRefreshEntity(String email, String refresh, Long expiredMs) {
