@@ -1,8 +1,10 @@
 package classfit.example.classfit.event.dto.request;
 
+import classfit.example.classfit.event.domain.Event;
 import classfit.example.classfit.event.domain.EventType;
 import classfit.example.classfit.event.domain.NotificationTime;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 public record EventCreateRequest(
     String name,
@@ -15,4 +17,7 @@ public record EventCreateRequest(
     NotificationTime notificationTime,
     String location,
     String memo) {
+    public LocalDateTime getEndDate() {
+        return Event.getEndDate(eventType, startDate, endDate);
+    }
 }

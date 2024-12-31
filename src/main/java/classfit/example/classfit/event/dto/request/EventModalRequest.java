@@ -1,5 +1,6 @@
 package classfit.example.classfit.event.dto.request;
 
+import classfit.example.classfit.event.domain.Event;
 import classfit.example.classfit.event.domain.EventType;
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -9,7 +10,10 @@ public record EventModalRequest(
     EventType eventType,
     long categoryId,
     LocalDateTime startDate,
-    Optional<LocalDateTime> endDate,
+    LocalDateTime endDate,
     boolean isAllDay
 ) {
+    public LocalDateTime getEndDate() {
+        return Event.getEndDate(eventType, startDate, endDate);
+    }
 }

@@ -1,7 +1,10 @@
 package classfit.example.classfit.event.domain;
 
+import static classfit.example.classfit.event.domain.EventType.SCHEDULE;
+
 import classfit.example.classfit.calendarCategory.domain.CalendarCategory;
 import classfit.example.classfit.common.domain.BaseEntity;
+import classfit.example.classfit.event.dto.request.EventModalRequest;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -12,6 +15,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import java.time.LocalDateTime;
+import java.util.Optional;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -54,6 +58,29 @@ public class Event extends BaseEntity {
 
     @Column(length = 100)
     private String memo;
+
+    public static LocalDateTime getEndDate(
+        EventType eventType,
+        LocalDateTime startDate,
+        LocalDateTime endDate) {
+        LocalDateTime resultEndDate = startDate;
+
+        if (eventType.equals(EventType.SCHEDULE)) {
+            resultEndDate = endDate;
+        }
+        return resultEndDate;
+    }
+
+    public void setDates(boolean isAllDay, LocalDateTime startDate, LocalDateTime endDate) {
+        this.isAllDay = isAllDay;
+        if (isAllDay) {
+            this.startDate = startDate.toLocalDate().atStartOfDay();
+            this.endDate = startDate.toLocalDate().atTime(23, 59, 59);
+        } else {
+            this.startDate = startDate;
+            this.endDate = endDate;
+        }
+    }
 
     public void update(
         String name,

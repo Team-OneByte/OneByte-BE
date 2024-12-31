@@ -2,13 +2,11 @@ package classfit.example.classfit.event.service;
 
 import static classfit.example.classfit.common.exception.ClassfitException.CATEGORY_NOT_FOUND;
 import static classfit.example.classfit.common.exception.ClassfitException.EVENT_NOT_FOUND;
-import static classfit.example.classfit.event.domain.EventType.SCHEDULE;
 
 import classfit.example.classfit.calendarCategory.domain.CalendarCategory;
 import classfit.example.classfit.calendarCategory.service.CalendarCategoryService;
 import classfit.example.classfit.common.exception.ClassfitException;
 import classfit.example.classfit.event.domain.Event;
-import classfit.example.classfit.event.domain.EventType;
 import classfit.example.classfit.event.dto.request.EventCreateRequest;
 import classfit.example.classfit.event.dto.request.EventModalRequest;
 import classfit.example.classfit.event.dto.response.EventMontylyResponse;
@@ -39,18 +37,20 @@ public class EventService {
     private Event buildEvent(EventCreateRequest request) {
         CalendarCategory category = calendarCategoryService.getCategoryById(request.categoryId());
 
-        return Event.builder()
+        Event event = Event.builder()
             .name(request.name())
             .eventType(request.eventType())
             .category(category)
             .startDate(request.startDate())
-            .endDate(request.endDate())
+            .endDate(request.getEndDate())
             .isAllDay(request.isAllDay())
             .isRepeating(request.isRepeating())
             .notificationTime(request.notificationTime())
             .location(request.location())
             .memo(request.memo())
             .build();
+        event.setDates(request.isAllDay(), request.startDate(), request.getEndDate());
+        return event;
     }
 
     @Transactional(readOnly = true)
@@ -91,24 +91,17 @@ public class EventService {
 
     private Event buildModalEvent(EventModalRequest request) {
         CalendarCategory category = calendarCategoryService.getCategoryById(request.categoryId());
-        LocalDateTime endDate = getEndDate(request);
 
-        return Event.builder()
+        Event event = Event.builder()
             .name(request.name())
             .category(category)
             .eventType(request.eventType())
             .startDate(request.startDate())
-            .endDate(endDate)
+            .endDate(request.getEndDate())
             .isAllDay(request.isAllDay())
             .build();
-    }
-
-    private LocalDateTime getEndDate(EventModalRequest request) {
-        LocalDateTime endDate = request.startDate();
-        if (SCHEDULE.equals(request.eventType())) {
-            endDate = request.endDate().orElse(request.startDate());
-        }
-        return endDate;
+        event.setDates(request.isAllDay(), request.startDate(), request.getEndDate());
+        return event;
     }
 
     @Transactional(readOnly = true)
@@ -126,14 +119,13 @@ public class EventService {
     public EventResponse updateEvent(long eventId, EventModalRequest request) {
         Event event = getEventById(eventId);
         CalendarCategory category = calendarCategoryService.getCategoryById(request.categoryId());
-        LocalDateTime endDate = getEndDate(request);
 
         event.update(
             request.name(),
             category,
             request.eventType(),
             request.startDate(),
-            endDate,
+            request.getEndDate(),
             request.isAllDay()
         );
 
