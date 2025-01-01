@@ -54,9 +54,6 @@ public class Event extends BaseEntity {
     private boolean isAllDay;
     private boolean isRepeating;
 
-    @Enumerated(EnumType.STRING)
-    private NotificationTime notificationTime;
-
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<EventMember> attendances = new ArrayList<>();

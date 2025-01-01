@@ -12,7 +12,6 @@ import classfit.example.classfit.event.dto.request.EventModalRequest;
 import classfit.example.classfit.event.dto.response.EventMontylyResponse;
 import classfit.example.classfit.event.dto.response.EventResponse;
 import classfit.example.classfit.event.repository.EventRepository;
-import classfit.example.classfit.eventMember.domain.EventMember;
 import classfit.example.classfit.member.domain.Member;
 import classfit.example.classfit.member.service.MemberService;
 import java.time.LocalDateTime;
@@ -50,7 +49,6 @@ public class EventService {
             .endDate(request.getEndDate())
             .isAllDay(request.isAllDay())
             .isRepeating(request.isRepeating())
-            .notificationTime(request.notificationTime())
             .location(request.location())
             .memo(request.memo())
             .build();
