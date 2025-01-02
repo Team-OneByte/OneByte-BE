@@ -57,7 +57,7 @@ public class ExamService {
         List<ClassStudent> classStudents = classStudentRepository.findBySubClass(findSubClass);
         List<StudentExamScore> studentExamScores = classStudents.stream().map(classStudent -> {
             Student student = classStudent.getStudent();
-            return new StudentExamScore(student, savedExam, 0); // 초기 점수는 0
+            return new StudentExamScore(student, savedExam, 0, null); // 초기 점수는 0
         }).collect(Collectors.toList());
         studentExamScoreRepository.saveAll(studentExamScores);
 
@@ -79,7 +79,8 @@ public class ExamService {
     }
 
     @Transactional(readOnly = true)
-    public List<FindExamResponse> findExamList(@AuthMember Member findMember, FindExamRequest request) {
+    public List<FindExamResponse> findExamList(@AuthMember Member findMember,
+            FindExamRequest request) {
 
         if (request.memberName() == null && request.examName() == null) {
             Long academyId = memberRepository.findAcademyIdByMemberName(request.memberName());

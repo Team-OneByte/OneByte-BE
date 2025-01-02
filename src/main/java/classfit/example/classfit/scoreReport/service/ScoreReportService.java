@@ -1,7 +1,6 @@
 package classfit.example.classfit.scoreReport.service;
 
 import classfit.example.classfit.attendance.domain.Attendance;
-import classfit.example.classfit.attendance.domain.AttendanceStatus;
 import classfit.example.classfit.attendance.dto.process.AttendanceInfo;
 import classfit.example.classfit.auth.annotation.AuthMember;
 import classfit.example.classfit.category.domain.MainClass;
@@ -87,8 +86,16 @@ public class ScoreReportService {
                     .build();
             scoreReportRepository.save(report);
 
-            List<StudentExamScore> examIdList = studentExamScoreRepository.findByStudentIdAndExamIdIn(
-                    student.getId(), request.examIdList());
+            for (Long examId : request.examIdList()) {
+                StudentExamScore studentExamScore = studentExamScoreRepository.findByStudentAndExamId(
+                                student, examId)
+                        .orElseThrow(() -> new ClassfitException("시험 점수를 찾을 수 없어요.",
+                                HttpStatus.NOT_FOUND));
+
+                studentExamScore.updateScoreReport(report);
+                studentExamScoreRepository.save(studentExamScore);
+
+            }
         }
 
         return CreateReportResponse.builder()
@@ -122,7 +129,6 @@ public class ScoreReportService {
     }
 
     @Transactional(readOnly = true)
-    //TODO 다른 시험지(같은반일 때)로 추가 리포트 생성시 다른 시험지로 생성된 리포트 안뜨고 처음 생성된 리포트만 뜸 -> 학생별 리포트 조회시에 시험 히스토리 추가되는걸로 일단 진행
     public List<FindReportResponse> findReport(@AuthMember Member member, Long mainClassId,
             Long subClassId, String memberName) {
         MainClass mainClass = mainClassRepository.findById(mainClassId)
@@ -192,7 +198,7 @@ public class ScoreReportService {
     }
 
     @Transactional(readOnly = true)
-    public ShowStudentReportResponse showStudentReport(@AuthMember Member member,Long reportId) {
+    public ShowStudentReportResponse showStudentReport(@AuthMember Member member, Long reportId) {
         ScoreReport scoreReport = scoreReportRepository.findById(reportId)
                 .orElseThrow(
                         () -> new ClassfitException("학습리포트를 찾을 수 없어요.", HttpStatus.NOT_FOUND));
@@ -212,8 +218,12 @@ public class ScoreReportService {
         Integer totalAttendanceCount = attendanceInfoList.stream()
                 .mapToInt(AttendanceInfo::attendanceCount)
                 .sum();
-        // TODO 선택한 시험지들의 history만 보이게 수정 -> studentId로 같이 받는걸로 수정하면 되나 ?
-        List<ExamHistory> examHistoryList = scoreReport.getExamIdList().stream()
+        List<StudentExamScore> studentExamScores = studentExamScoreRepository.findByScoreReport(
+                scoreReport);
+
+        List<ExamHistory> examHistoryList = studentExamScores.stream()
+                .filter(studentExamScore -> studentExamScore.getScoreReport().getId()
+                        .equals(scoreReport.getId()))
                 .map(studentExamScore -> {
                     Exam exam = studentExamScore.getExam();
                     return new ExamHistory(
@@ -223,7 +233,8 @@ public class ScoreReportService {
                             studentExamScore.getScore()
                     );
                 })
-                .toList();
+                .collect(Collectors.toList());
+
         return new ShowStudentReportResponse(
                 scoreReport.getStudent().getId(),
                 scoreReport.getStudent().getName(),
