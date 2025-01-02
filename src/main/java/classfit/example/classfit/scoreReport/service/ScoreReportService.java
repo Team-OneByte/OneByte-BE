@@ -70,12 +70,13 @@ public class ScoreReportService {
         }
 
         List<StudentList> allStudents = new ArrayList<>();
+        ScoreReport report = null;
 
         for (ClassStudent classStudent : studentsInSubClass) {
             Student student = classStudent.getStudent();
             allStudents.add(new StudentList(student.getId(), student.getName()));
 
-            ScoreReport report = ScoreReport.builder()
+            report = ScoreReport.builder()
                     .mainClass(mainClass)
                     .subClass(subClass)
                     .student(student)
@@ -99,6 +100,7 @@ public class ScoreReportService {
         }
 
         return CreateReportResponse.builder()
+                .reportId(report.getId())
                 .mainClassId(mainClass.getId())
                 .subClassId(subClass.getId())
                 .studentList(allStudents)

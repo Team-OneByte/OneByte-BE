@@ -100,7 +100,7 @@ public class ExamService {
         }
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public ShowExamDetailResponse showExamDetail(@AuthMember Member findMember, Long examId) {
         Exam findExam = examRepository.findById(examId).orElseThrow(
                 () -> new ClassfitException("해당 시험지를 찾을 수 없어요.", HttpStatus.NOT_FOUND));
@@ -114,6 +114,11 @@ public class ExamService {
                 .orElse(0);
         Long average = (long) studentScores.stream().mapToInt(StudentExamScore::getScore).average()
                 .orElse((perfectScore + lowestScore) / 2);
+        findExam.setLowestScore(lowestScore);
+        findExam.setPerfectScore(perfectScore);
+        findExam.setAverage(average);
+
+        examRepository.save(findExam);
 
         List<ExamClassStudent> examClassStudents = classStudents.stream().map(classStudent -> {
                     Student student = classStudent.getStudent();
