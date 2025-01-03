@@ -97,4 +97,10 @@ public class Exam extends BaseEntity {
         this.examName = examName;
         this.examRange = String.join(",", examRange);
     }
+
+    public void updateScores(Integer lowestScore, Integer perfectScore, Long average) {
+        this.lowestScore = lowestScore;
+        this.perfectScore = perfectScore;
+        this.average = average;
+    }
 }

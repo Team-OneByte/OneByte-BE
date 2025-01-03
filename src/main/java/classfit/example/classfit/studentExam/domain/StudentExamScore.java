@@ -1,5 +1,6 @@
 package classfit.example.classfit.studentExam.domain;
 
+import classfit.example.classfit.scoreReport.domain.ScoreReport;
 import classfit.example.classfit.student.domain.Student;
 import jakarta.persistence.*;
 import lombok.*;
@@ -26,11 +27,16 @@ public class StudentExamScore {
     @Column(name = "score", nullable = false)
     private Integer score;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "report_id")
+    private ScoreReport scoreReport;
+
     @Builder
-    public StudentExamScore(Student student, Exam exam, Integer score) {
+    public StudentExamScore(Student student, Exam exam, Integer score, ScoreReport scoreReport) {
         this.student = student;
         this.exam = exam;
         this.score = score;
+        this.scoreReport = scoreReport;
     }
 
     public void updateScore(Integer score) {
@@ -38,5 +44,9 @@ public class StudentExamScore {
             throw new IllegalArgumentException("점수는 음수일 수 없습니다.");
         }
         this.score = score;
+    }
+
+    public void updateScoreReport(ScoreReport scoreReport) {
+        this.scoreReport = scoreReport;
     }
 }
