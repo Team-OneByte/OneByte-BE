@@ -1,9 +1,12 @@
 package classfit.example.classfit.drive.controller;
 
+import classfit.example.classfit.auth.annotation.AuthMember;
 import classfit.example.classfit.common.ApiResponse;
+import classfit.example.classfit.drive.domain.DriveType;
 import classfit.example.classfit.drive.dto.response.FileInfo;
 import classfit.example.classfit.drive.service.DriveGetService;
 import classfit.example.classfit.drive.service.DriveUploadService;
+import classfit.example.classfit.member.domain.Member;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.io.IOException;
@@ -33,8 +36,12 @@ public class DriveController {
 
     @PostMapping("/files")
     @Operation(summary = "다중 파일 업로드", description = "다중 파일 업로드 API 입니다.")
-    public ApiResponse<List<String>> uploadFiles(@RequestParam("multipartFiles") List<MultipartFile> multipartFiles) throws IOException {
-        List<String> fileUrls = driveUploadService.uploadFiles(multipartFiles);
+    public ApiResponse<List<String>> uploadFiles(
+        @AuthMember Member member,
+        @RequestParam DriveType driveType,
+        @RequestParam("multipartFiles") List<MultipartFile> multipartFiles
+    ) throws IOException {
+        List<String> fileUrls = driveUploadService.uploadFiles(member, driveType, multipartFiles);
         return ApiResponse.success(fileUrls, 200, "SUCCESS");
     }
 }
