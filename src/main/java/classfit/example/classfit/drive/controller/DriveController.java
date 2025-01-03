@@ -21,13 +21,6 @@ import org.springframework.web.multipart.MultipartFile;
 public class DriveController {
     private final DriveUploadService driveUploadService;
 
-    @PostMapping("/file")
-    @Operation(summary = "개별 파일 업로드", description = "개별 파일 업로드 API 입니다.")
-    public ApiResponse<String> uploadFile(MultipartFile multipartFile) throws IOException {
-        String fileUrl = driveUploadService.uploadFile(multipartFile);
-        return ApiResponse.success(fileUrl, 200, "SUCCESS");
-    }
-
     @PostMapping("/files")
     @Operation(summary = "다중 파일 업로드", description = "다중 파일 업로드 API 입니다.")
     public ApiResponse<List<String>> uploadFiles(@RequestParam("multipartFiles") List<MultipartFile> multipartFiles) throws IOException {

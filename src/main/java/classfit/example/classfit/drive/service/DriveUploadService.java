@@ -23,10 +23,6 @@ public class DriveUploadService {
     @Value("${cloud.aws.s3.bucket}")
     private String bucketName;
 
-    public String uploadFile(MultipartFile file) throws IOException {
-        return uploadToS3(file);
-    }
-
     public List<String> uploadFiles(List<MultipartFile> files) throws IOException {
         List<String> fileUrls = new ArrayList<>();
         for (MultipartFile file : files) {
