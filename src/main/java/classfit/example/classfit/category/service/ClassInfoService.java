@@ -4,7 +4,7 @@ import classfit.example.classfit.category.domain.MainClass;
 import classfit.example.classfit.category.domain.SubClass;
 import classfit.example.classfit.category.dto.response.ClassInfoResponse;
 import classfit.example.classfit.category.dto.response.SubClassResponse;
-import classfit.example.classfit.category.repository.MainClassRespository;
+import classfit.example.classfit.category.repository.MainClassRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,11 +15,11 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class ClassInfoService {
-    private final MainClassRespository mainClassRespository;
+    private final MainClassRepository mainClassRepository;
 
     @Transactional
     public List<ClassInfoResponse> getClasses() {
-        List<MainClass> mainClasses = mainClassRespository.findAllByOrderByMainClassNameAsc();
+        List<MainClass> mainClasses = mainClassRepository.findAllByOrderByMainClassNameAsc();
         return mainClasses.stream()
             .map(this::mapToClassInfoResponse)
             .collect(Collectors.toList());
