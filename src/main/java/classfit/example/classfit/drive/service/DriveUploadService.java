@@ -27,6 +27,14 @@ public class DriveUploadService {
         return uploadToS3(file);
     }
 
+    public List<String> uploadFiles(List<MultipartFile> files) throws IOException {
+        List<String> fileUrls = new ArrayList<>();
+        for (MultipartFile file : files) {
+            fileUrls.add(uploadToS3(file));
+        }
+        return fileUrls;
+    }
+
     private String uploadToS3(MultipartFile file) throws IOException {
         try (InputStream inputStream = file.getInputStream()) {
             return uploadAndGetUrl(inputStream, file);
