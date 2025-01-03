@@ -1,6 +1,7 @@
 package classfit.example.classfit.event.dto.request;
 
 import classfit.example.classfit.event.domain.Event;
+import classfit.example.classfit.event.domain.EventRepeatType;
 import classfit.example.classfit.event.domain.EventType;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -12,7 +13,8 @@ public record EventCreateRequest(
     LocalDateTime startDate,
     LocalDateTime endDate,
     boolean isAllDay,
-    boolean isRepeating,
+    EventRepeatType eventRepeatType,
+    LocalDateTime repeatEndDate,
     List<Long> memberIds,
     String location,
     String memo) {

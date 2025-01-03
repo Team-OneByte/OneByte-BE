@@ -19,7 +19,6 @@ import jakarta.persistence.OneToMany;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -28,7 +27,7 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-@Builder
+@Builder(toBuilder = true)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class Event extends BaseEntity {
@@ -52,7 +51,11 @@ public class Event extends BaseEntity {
     private LocalDateTime endDate;
 
     private boolean isAllDay;
-    private boolean isRepeating;
+
+    @Enumerated(EnumType.STRING)
+    private EventRepeatType eventRepeatType;
+
+    private LocalDateTime repeatEndDate;
 
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default

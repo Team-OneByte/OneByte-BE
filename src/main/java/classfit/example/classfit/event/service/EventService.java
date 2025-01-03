@@ -7,6 +7,7 @@ import classfit.example.classfit.calendarCategory.domain.CalendarCategory;
 import classfit.example.classfit.calendarCategory.service.CalendarCategoryService;
 import classfit.example.classfit.common.exception.ClassfitException;
 import classfit.example.classfit.event.domain.Event;
+import classfit.example.classfit.event.domain.EventRepeatType;
 import classfit.example.classfit.event.dto.request.EventCreateRequest;
 import classfit.example.classfit.event.dto.request.EventModalRequest;
 import classfit.example.classfit.event.dto.response.EventMontylyResponse;
@@ -34,6 +35,9 @@ public class EventService {
     public EventResponse createEvent(EventCreateRequest request) {
         Event event = buildEvent(request);
         Event savedEvent = eventRepository.save(event);
+
+        addRepeatedEvents(savedEvent, request.eventRepeatType(), request.repeatEndDate());
+
         addAttendeesToEvent(savedEvent, request.memberIds());
         return EventResponse.of(savedEvent.getId(), savedEvent.getName(), savedEvent.getEventType(), savedEvent.getStartDate(), savedEvent.getEndDate());
     }
@@ -48,12 +52,42 @@ public class EventService {
             .startDate(request.startDate())
             .endDate(request.getEndDate())
             .isAllDay(request.isAllDay())
-            .isRepeating(request.isRepeating())
+            .eventRepeatType(request.eventRepeatType())
+            .repeatEndDate(request.repeatEndDate())
             .location(request.location())
             .memo(request.memo())
             .build();
         event.setDates(request.isAllDay(), request.startDate(), request.getEndDate());
         return event;
+    }
+
+    private void addRepeatedEvents(Event event, EventRepeatType eventRepeatType, LocalDateTime repeatEndDate) {
+        LocalDateTime currentStartDate = event.getStartDate();
+        LocalDateTime currentEndDate = event.getEndDate();
+
+        while (currentStartDate.isBefore(repeatEndDate)) {
+            currentStartDate = getNextRepeatDate(currentStartDate, eventRepeatType);
+            currentEndDate = getNextRepeatDate(currentEndDate, eventRepeatType);
+
+            if (currentStartDate.isAfter(repeatEndDate)) break;
+
+            Event repeatedEvent = event.toBuilder()
+                .startDate(currentStartDate)
+                .endDate(currentEndDate)
+                .build();
+
+            eventRepository.save(repeatedEvent);
+        }
+    }
+
+    private LocalDateTime getNextRepeatDate(LocalDateTime date, EventRepeatType eventRepeatType) {
+        return switch (eventRepeatType) {
+            case DAILY -> date.plusDays(1);
+            case WEEKLY -> date.plusWeeks(1);
+            case MONTHLY -> date.plusMonths(1);
+            case YEARLY -> date.plusYears(1);
+            default -> throw new IllegalArgumentException("유효한 반복 타입을 지정해주세요.");
+        };
     }
 
     private void addAttendeesToEvent(Event event, List<Long> memberIds) {
