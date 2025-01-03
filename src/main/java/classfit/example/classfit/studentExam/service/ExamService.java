@@ -114,9 +114,7 @@ public class ExamService {
                 .orElse(0);
         Long average = (long) studentScores.stream().mapToInt(StudentExamScore::getScore).average()
                 .orElse((perfectScore + lowestScore) / 2);
-        findExam.setLowestScore(lowestScore);
-        findExam.setPerfectScore(perfectScore);
-        findExam.setAverage(average);
+        findExam.updateScores(lowestScore,perfectScore,average);
 
         examRepository.save(findExam);
 
