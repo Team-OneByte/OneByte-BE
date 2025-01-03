@@ -29,8 +29,11 @@ public class DriveController {
 
     @GetMapping("/files")
     @Operation(summary = "파일 목록 조회", description = "S3에 업로드된 파일들을 조회하는 API입니다.")
-    public ApiResponse<List<FileInfo>> getFilesFromS3() {
-        List<FileInfo> fileUrls = driveGetService.getFilesFromS3();
+    public ApiResponse<List<FileInfo>> getFiles(
+        @AuthMember Member member,
+        @RequestParam DriveType driveType
+    ) {
+        List<FileInfo> fileUrls = driveGetService.getFilesFromS3(member, driveType);
         return ApiResponse.success(fileUrls, 200, "SUCCESS");
     }
 

@@ -1,10 +1,16 @@
 package classfit.example.classfit.drive.service;
 
+import classfit.example.classfit.drive.domain.DriveType;
 import classfit.example.classfit.drive.dto.response.FileInfo;
+import classfit.example.classfit.member.domain.Member;
 import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.GetObjectMetadataRequest;
 import com.amazonaws.services.s3.model.ListObjectsV2Request;
 import com.amazonaws.services.s3.model.ListObjectsV2Result;
+import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -19,21 +25,43 @@ public class DriveGetService {
     @Value("${cloud.aws.s3.bucket}")
     private String bucketName;
 
-    public List<FileInfo> getFilesFromS3() {
-        List<S3ObjectSummary> objectSummaries = getS3ObjectList();
+    public List<FileInfo> getFilesFromS3(Member member, DriveType driveType) {
         List<FileInfo> files = new ArrayList<>();
+        String prefix = getPrefixByDriveType(member, driveType);
+        List<S3ObjectSummary> objectSummaries = getS3ObjectList(prefix);
 
         for (S3ObjectSummary summary : objectSummaries) {
-            String fileName = summary.getKey();
-            String fileUrl = amazonS3.getUrl(bucketName, fileName).toString();
-            files.add(new FileInfo(fileName, fileUrl));
+            FileInfo fileInfo = buildFileInfo(summary);
+            files.add(fileInfo);
         }
         return files;
     }
 
-    private List<S3ObjectSummary> getS3ObjectList() {
-        ListObjectsV2Request listObjectsV2Request = new ListObjectsV2Request().withBucketName(bucketName);
+    private String getPrefixByDriveType(Member member, DriveType driveType) {
+        switch (driveType) {
+            case PERSONAL:
+            return "personal/" + member.getId() + "/";
+            case SHARED:
+                Long academyId = member.getAcademy().getId();
+                return "shared/" + academyId + "/";
+            default:
+                throw new IllegalArgumentException("유효하지 않은 드라이브 타입");
+        }
+    }
+
+    private List<S3ObjectSummary> getS3ObjectList(String prefix) {
+        ListObjectsV2Request listObjectsV2Request = new ListObjectsV2Request()
+            .withBucketName(bucketName)
+            .withPrefix(prefix);
         ListObjectsV2Result result = amazonS3.listObjectsV2(listObjectsV2Request);
         return result.getObjectSummaries();
+    }
+
+    private FileInfo buildFileInfo(S3ObjectSummary summary) {
+        String fileName = summary.getKey();
+        String fileUrl = amazonS3.getUrl(bucketName, fileName).toString();
+
+        ObjectMetadata metadata = amazonS3.getObjectMetadata(new GetObjectMetadataRequest(bucketName, fileName));
+        return new FileInfo(fileName, fileUrl);
     }
 }
