@@ -231,6 +231,7 @@ public class ScoreReportService {
                     return new ExamHistory(
                             exam.getId(),
                             exam.getExamName(),
+                            exam.getStandard(),
                             exam.getAverage(),
                             studentExamScore.getScore()
                     );

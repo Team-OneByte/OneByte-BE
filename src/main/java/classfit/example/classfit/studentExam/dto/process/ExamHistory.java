@@ -1,5 +1,7 @@
 package classfit.example.classfit.studentExam.dto.process;
 
-public record ExamHistory(Long examId,String examName,Long average,Integer score) {
+import classfit.example.classfit.studentExam.domain.Standard;
+
+public record ExamHistory(Long examId, String examName, Standard standard, Long average, Integer score) {
 
 }
