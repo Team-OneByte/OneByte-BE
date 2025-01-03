@@ -114,7 +114,7 @@ public class ExamService {
                 .orElse(0);
         Long average = (long) studentScores.stream().mapToInt(StudentExamScore::getScore).average()
                 .orElse((perfectScore + lowestScore) / 2);
-        findExam.updateScores(lowestScore,perfectScore,average);
+        findExam.updateScores(lowestScore, perfectScore, average);
 
         examRepository.save(findExam);
 
@@ -163,14 +163,18 @@ public class ExamService {
 
     @Transactional
     public List<ExamClassStudent> updateStudentScore(@AuthMember Member findMember, Long examId,
-            UpdateStudentScoreRequest request) {
+            List<UpdateStudentScoreRequest> requests) {
         Exam findExam = examRepository.findById(examId).orElseThrow(
                 () -> new ClassfitException("해당 시험지를 찾을 수 없어요.", HttpStatus.NOT_FOUND));
-        StudentExamScore studentExamScore = studentExamScoreRepository.findByExamAndStudentId(
-                findExam, request.studentId()).orElseThrow(
-                () -> new ClassfitException("해당 학생의 점수를 찾을 수 없어요.", HttpStatus.NOT_FOUND));
+        StudentExamScore studentExamScore = null;
+        for (UpdateStudentScoreRequest request : requests) {
 
-        studentExamScore.updateScore(request.score());
+            studentExamScore = studentExamScoreRepository.findByExamAndStudentId(
+                    findExam, request.studentId()).orElseThrow(
+                    () -> new ClassfitException("해당 학생의 점수를 찾을 수 없어요.", HttpStatus.NOT_FOUND));
+            studentExamScore.updateScore(request.score());
+        }
+
         studentExamScoreRepository.save(studentExamScore);
 
         List<ClassStudent> classStudents = classStudentRepository.findBySubClass(

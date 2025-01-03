@@ -102,9 +102,9 @@ public class ExamController {
     public ApiResponse<List<ExamClassStudent>> updateStudentScore(
             @AuthMember Member findMember,
             @PathVariable(name = "examId") Long examId,
-            @RequestBody UpdateStudentScoreRequest request) {
+            @RequestBody List<UpdateStudentScoreRequest> requests) {
         List<ExamClassStudent> examClassStudents = examService.updateStudentScore(findMember, examId,
-                request);
+                requests);
         return ApiResponse.success(examClassStudents, 200, "UPDATED-STUDENT-SCORE");
     }
 }
