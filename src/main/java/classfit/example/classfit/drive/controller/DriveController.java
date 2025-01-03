@@ -9,6 +9,7 @@ import classfit.example.classfit.drive.service.DriveGetService;
 import classfit.example.classfit.drive.service.DriveUploadService;
 import classfit.example.classfit.member.domain.Member;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -39,6 +40,7 @@ public class DriveController {
     @Operation(summary = "파일 목록 조회", description = "S3에 업로드된 파일들을 조회하는 API입니다.")
     public ApiResponse<List<FileInfo>> getFiles(
         @AuthMember Member member,
+        @Parameter(description = "내 드라이브는 PERSONAL, 공용 드라이브는 SHARED 입니다.")
         @RequestParam DriveType driveType
     ) {
         List<FileInfo> fileUrls = driveGetService.getFilesFromS3(member, driveType);
@@ -49,14 +51,16 @@ public class DriveController {
     @Operation(summary = "다중 파일 업로드", description = "다중 파일 업로드 API 입니다.")
     public ApiResponse<List<String>> uploadFiles(
         @AuthMember Member member,
+        @Parameter(description = "내 드라이브는 PERSONAL, 공용 드라이브는 SHARED 입니다.")
         @RequestParam DriveType driveType,
         @RequestParam("multipartFiles") List<MultipartFile> multipartFiles
-    ) throws IOException {
+    ) {
         List<String> fileUrls = driveUploadService.uploadFiles(member, driveType, multipartFiles);
         return ApiResponse.success(fileUrls, 200, "SUCCESS");
     }
 
     @GetMapping("/download")
+    @Operation(summary = "파일 다운로드", description = "파일 다운로드 API 입니다.")
     public ResponseEntity<InputStreamResource> downloadFile(
         @RequestParam("fileName") String fileName
     ) throws UnsupportedEncodingException {
