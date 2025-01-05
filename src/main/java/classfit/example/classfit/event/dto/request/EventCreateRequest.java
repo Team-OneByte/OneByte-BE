@@ -21,4 +21,8 @@ public record EventCreateRequest(
     public LocalDateTime getEndDate() {
         return Event.getEndDate(eventType, startDate, endDate);
     }
+
+    public boolean shouldReceiveRepeatEndDate() {
+        return eventRepeatType != EventRepeatType.NONE;
+    }
 }

@@ -53,7 +53,7 @@ public class EventService {
             .endDate(request.getEndDate())
             .isAllDay(request.isAllDay())
             .eventRepeatType(request.eventRepeatType())
-            .repeatEndDate(request.repeatEndDate())
+            .repeatEndDate(request.shouldReceiveRepeatEndDate() ? request.repeatEndDate() : null)
             .location(request.location())
             .memo(request.memo())
             .build();
