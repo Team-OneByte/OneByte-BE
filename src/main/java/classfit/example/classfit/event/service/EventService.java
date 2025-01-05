@@ -36,7 +36,7 @@ public class EventService {
         Event event = buildEvent(request);
         Event savedEvent = eventRepository.save(event);
 
-        addRepeatedEvents(savedEvent, request.eventRepeatType(), request.repeatEndDate());
+        addRepeatedEvents(request);
 
         addAttendeesToEvent(savedEvent, request.memberIds());
         return EventResponse.of(savedEvent.getId(), savedEvent.getName(), savedEvent.getEventType(), savedEvent.getStartDate(), savedEvent.getEndDate());
@@ -61,23 +61,31 @@ public class EventService {
         return event;
     }
 
-    private void addRepeatedEvents(Event event, EventRepeatType eventRepeatType, LocalDateTime repeatEndDate) {
-        LocalDateTime currentStartDate = event.getStartDate();
-        LocalDateTime currentEndDate = event.getEndDate();
+    private void addRepeatedEvents(EventCreateRequest request) {
+        LocalDateTime currentStartDate = request.startDate();
+        LocalDateTime currentEndDate = request.endDate();
+        EventRepeatType eventRepeatType = request.eventRepeatType();
+        LocalDateTime repeatEndDate = request.repeatEndDate();
 
-        while (currentStartDate.isBefore(repeatEndDate)) {
+        while (shouldCreateEvent(currentEndDate, repeatEndDate)) {
+            Event repeatedEvent = buildEventWithUpdatedDates(request, currentStartDate, currentEndDate);
+            eventRepository.save(repeatedEvent);
+
             currentStartDate = getNextRepeatDate(currentStartDate, eventRepeatType);
             currentEndDate = getNextRepeatDate(currentEndDate, eventRepeatType);
-
-            if (currentStartDate.isAfter(repeatEndDate)) break;
-
-            Event repeatedEvent = event.toBuilder()
-                .startDate(currentStartDate)
-                .endDate(currentEndDate)
-                .build();
-
-            eventRepository.save(repeatedEvent);
         }
+    }
+
+    private boolean shouldCreateEvent(LocalDateTime currentEndDate, LocalDateTime repeatEndDate) {
+        return currentEndDate.isBefore(repeatEndDate) || currentEndDate.isEqual(repeatEndDate);
+    }
+
+    private Event buildEventWithUpdatedDates(EventCreateRequest request, LocalDateTime currentStartDate, LocalDateTime currentEndDate) {
+        Event event = buildEvent(request);
+        return event.toBuilder()
+            .startDate(currentStartDate)
+            .endDate(currentEndDate)
+            .build();
     }
 
     private LocalDateTime getNextRepeatDate(LocalDateTime date, EventRepeatType eventRepeatType) {
