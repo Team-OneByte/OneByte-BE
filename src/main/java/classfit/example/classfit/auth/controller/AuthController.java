@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -23,9 +24,9 @@ public class AuthController {
 
     @PostMapping("/reissue")
     @Operation(summary = "토큰 재발급", description = "토큰 재발급하는 API 입니다.")
-    public ApiResponse<HttpServletResponse> reissue(HttpServletRequest request, HttpServletResponse response) {
-        HttpServletResponse reissueResponse = authService.reissue(request, response);
-        return ApiResponse.success(reissueResponse, 200, "재발급이 완료되었습니다");
+    public ResponseEntity<?> reissue(HttpServletRequest request, HttpServletResponse response) {
+        ResponseEntity<?> responseEntity = authService.reissue(request, response);
+        return responseEntity;
     }
 
     @PostMapping("/logout")

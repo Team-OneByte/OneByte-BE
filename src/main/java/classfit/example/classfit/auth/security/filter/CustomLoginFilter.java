@@ -4,10 +4,10 @@ import classfit.example.classfit.auth.dto.request.UserRequest;
 import classfit.example.classfit.auth.security.custom.CustomAuthenticationToken;
 import classfit.example.classfit.auth.security.jwt.JWTUtil;
 import classfit.example.classfit.common.exception.ClassfitException;
+import classfit.example.classfit.common.util.CookieUtil;
 import classfit.example.classfit.common.util.RedisUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -65,7 +65,7 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
         addRefreshEntity(authResult.getName(), refresh, 1000 * 60 * 60 * 24 * 7L);
 
         res.setHeader("Authorization", "Bearer " + access);
-        res.addCookie(createCookie("refresh", refresh));
+        CookieUtil.addCookie(res, "refresh", refresh, 7 * 24 * 60 * 60);
         res.setStatus(HttpStatus.OK.value());
     }
 
@@ -91,16 +91,6 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
             );
             response.getWriter().write(jsonResponse);
         }
-    }
-
-    private Cookie createCookie(String key, String value) {
-
-        Cookie cookie = new Cookie(key, value);
-        cookie.setMaxAge(24 * 60 * 60);
-        cookie.setHttpOnly(true);
-        cookie.setSecure(true);
-
-        return cookie;
     }
 
     private void addRefreshEntity(String email, String refresh, Long expiredMs) {

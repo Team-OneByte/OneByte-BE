@@ -7,9 +7,9 @@ import java.time.LocalDate;
 import java.util.List;
 
 public record ShowExamDetailResponse(ExamPeriod examPeriod, String examName, LocalDate examDate,
-                                     String mainClassName, String subClassName,
-                                     Integer lowestScore, Integer perfectScore, Long average,
-                                     List<String> examRange,
-                                     Standard standard, List<ExamClassStudent> examClassStudents) {
+                                     String mainClassName, String subClassName, Integer lowestScore,
+                                     Integer perfectScore, Long average, Integer highestScore,
+                                     List<String> examRange, Standard standard,
+                                     List<ExamClassStudent> examClassStudents) {
 
 }

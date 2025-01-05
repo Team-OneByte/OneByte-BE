@@ -13,6 +13,7 @@ import classfit.example.classfit.studentExam.dto.response.CreateExamResponse;
 import classfit.example.classfit.studentExam.dto.response.FindExamResponse;
 import classfit.example.classfit.studentExam.dto.response.ShowExamDetailResponse;
 import classfit.example.classfit.studentExam.dto.response.UpdateExamResponse;
+import classfit.example.classfit.studentExam.dto.response.UpdateStudentScoreResponse;
 import classfit.example.classfit.studentExam.service.ExamService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -39,7 +40,7 @@ public class ExamController {
     private final ExamService examService;
 
     @PostMapping
-    @Operation(summary = "시험 정보 등록", description = "시험 정보 등록하는 API 입니다.")
+    @Operation(summary = "시험 정보 등록", description = "시험 정보 등록하는 API 입니다.초기 생성 시 학생 성적 0점으로 생성 학생 성적 수정에서 점수등록 가능 / PF일 경우 highestScore == -1 ,evaluation 경우 highestScore == -2")
     public ApiResponse<CreateExamResponse> createExam(
             @AuthMember Member findMember,
             @RequestBody CreateExamRequest req) {
@@ -59,7 +60,7 @@ public class ExamController {
     }
 
     @PostMapping("/findexam")
-    @Operation(summary = "시험 리스트 조회", description = "시험 이름과 작성자로 시험 검색하는 API 입니다.")
+    @Operation(summary = "시험 리스트 조회", description = "시험 이름과 작성자로 시험 검색하는 API 입니다. request값이 둘다 null일시 전체조회")
     public ApiResponse<List<FindExamResponse>> findExamList(
             @AuthMember Member findMember,
             @RequestBody FindExamRequest request
@@ -98,13 +99,13 @@ public class ExamController {
     }
 
     @PatchMapping("/findexam/{examId}/score")
-    @Operation(summary = "학생들 성적 수정", description = "학생들 성적 수정하는 API 입니다./ 시험 상세조회에서 경로 넘어가도록 작성")
-    public ApiResponse<List<ExamClassStudent>> updateStudentScore(
+    @Operation(summary = "학생들 성적 수정", description = "학생들 성적 수정하는 API 입니다. highestScore == -1 : P(-3)F(-4) / highestScore == -2 : evaluation : score(-5)로 저장됨")
+    public ApiResponse<UpdateStudentScoreResponse> updateStudentScore(
             @AuthMember Member findMember,
             @PathVariable(name = "examId") Long examId,
-            @RequestBody UpdateStudentScoreRequest request) {
-        List<ExamClassStudent> examClassStudents = examService.updateStudentScore(findMember, examId,
-                request);
-        return ApiResponse.success(examClassStudents, 200, "UPDATED-STUDENT-SCORE");
+            @RequestBody List<UpdateStudentScoreRequest> requests) {
+        UpdateStudentScoreResponse response = examService.updateStudentScore(findMember, examId,
+                requests);
+        return ApiResponse.success(response, 200, "UPDATED-STUDENT-SCORE");
     }
 }

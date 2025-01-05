@@ -50,7 +50,7 @@ public class EmailService {
                 handler.getExpirationTime()
             );
         }
-        
+
         return EmailResponse.of(email);
 
     }
@@ -69,7 +69,7 @@ public class EmailService {
 
         String emailJwt = jwtUtil.createEmailJwt("email", 60 * 5L);
 
-        redisUtil.setDataExpire(request.purpose() + ":" + request.email() + ":token", emailJwt, 60 * 5L);
+        redisUtil.setDataExpire("email_code:" + request.purpose() + ":" + request.email(), emailJwt, 60 * 5L);
         return EmailResponse.from(request.email(), emailJwt);
     }
 

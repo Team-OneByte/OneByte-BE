@@ -2,6 +2,7 @@ package classfit.example.classfit.auth.service;
 
 import classfit.example.classfit.auth.security.jwt.JWTUtil;
 import classfit.example.classfit.common.exception.ClassfitException;
+import classfit.example.classfit.common.util.CookieUtil;
 import classfit.example.classfit.common.util.RedisUtil;
 import classfit.example.classfit.member.domain.Member;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -11,6 +12,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -21,7 +23,7 @@ public class AuthService {
     private final JWTUtil jwtUtil;
     private final RedisUtil redisUtil;
 
-    public HttpServletResponse reissue(HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity<?> reissue(HttpServletRequest request, HttpServletResponse response) {
 
         String refresh = null;
         Cookie[] cookies = request.getCookies();
@@ -58,9 +60,9 @@ public class AuthService {
         redisUtil.deleteData(redisKey);
         addRefreshEntity(email, newRefresh, 1000 * 60 * 60 * 24 * 7L);
 
-        response.setHeader("access", newAccess);
-        response.addCookie(createCookie("refresh", newRefresh));
-        return response;
+        response.setHeader("Authorization", "Bearer " + newAccess);
+        CookieUtil.addCookie(response, "refresh", refresh, 7 * 24 * 60 * 60);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     public void logout(Member member) {
@@ -73,15 +75,6 @@ public class AuthService {
         }
 
         redisUtil.deleteData(redisRefreshTokenKey);
-    }
-
-    private Cookie createCookie(String key, String value) {
-
-        Cookie cookie = new Cookie(key, value);
-        cookie.setMaxAge(24 * 60 * 60);
-        cookie.setSecure(true);
-
-        return cookie;
     }
 
     private void addRefreshEntity(String email, String refresh, Long expiredMs) {
