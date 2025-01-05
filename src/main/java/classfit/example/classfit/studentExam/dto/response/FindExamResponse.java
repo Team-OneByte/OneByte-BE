@@ -7,7 +7,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import org.springframework.format.annotation.DateTimeFormat;
 // TODO memberName과 examPeriod 나오도록 수정필요
-public record FindExamResponse(Long examId, Long memberId, Standard standard, String mainClassName,
+public record FindExamResponse(Long examId, Long memberId,String memberName, Standard standard, String mainClassName,
                                String subClassName, String examName, @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate createdAt
 
 ) {
@@ -16,6 +16,7 @@ public record FindExamResponse(Long examId, Long memberId, Standard standard, St
         return new FindExamResponse(
                 exam.getId(),
                 exam.getMainClass().getMember().getId(),
+                exam.getMainClass().getMember().getName(),
                 exam.getStandard(),
                 exam.getMainClass().getMainClassName(),
                 exam.getSubClass().getSubClassName(),
