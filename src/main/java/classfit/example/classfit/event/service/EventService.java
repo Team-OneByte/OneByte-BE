@@ -62,6 +62,10 @@ public class EventService {
     }
 
     private void addRepeatedEvents(EventCreateRequest request) {
+        if (request.eventRepeatType() == EventRepeatType.NONE) {
+            return;
+        }
+
         LocalDateTime currentStartDate = request.startDate();
         LocalDateTime currentEndDate = request.endDate();
         EventRepeatType eventRepeatType = request.eventRepeatType();
