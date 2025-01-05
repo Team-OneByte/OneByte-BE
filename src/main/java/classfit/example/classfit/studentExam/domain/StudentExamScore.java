@@ -1,9 +1,11 @@
 package classfit.example.classfit.studentExam.domain;
 
+import classfit.example.classfit.common.exception.ClassfitException;
 import classfit.example.classfit.scoreReport.domain.ScoreReport;
 import classfit.example.classfit.student.domain.Student;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.http.HttpStatus;
 
 @Entity
 @Table(name = "student_exam_score")
@@ -41,8 +43,9 @@ public class StudentExamScore {
     }
 
     public void updateScore(Integer score) {
-        if (score < 0) {
-            throw new IllegalArgumentException("점수는 음수일 수 없습니다.");
+        if (score != -3 && score != -4 && score != -5) {
+            throw new ClassfitException("점수는 -3, -4, -5만 허용됩니다. 그 외의 값은 유효하지 않습니다.",
+                    HttpStatus.BAD_REQUEST);
         }
         this.score = score;
     }
