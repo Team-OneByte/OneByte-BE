@@ -59,7 +59,7 @@ public class ExamController {
     }
 
     @PostMapping("/findexam")
-    @Operation(summary = "시험 리스트 조회", description = "시험 이름과 작성자로 시험 검색하는 API 입니다.")
+    @Operation(summary = "시험 리스트 조회", description = "시험 이름과 작성자로 시험 검색하는 API 입니다. request값이 둘다 null일시 전체조회")
     public ApiResponse<List<FindExamResponse>> findExamList(
             @AuthMember Member findMember,
             @RequestBody FindExamRequest request

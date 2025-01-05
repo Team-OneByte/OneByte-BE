@@ -83,9 +83,8 @@ public class ExamService {
             FindExamRequest request) {
 
         if (request.memberName() == null && request.examName() == null) {
-            Long academyId = memberRepository.findAcademyIdByMemberName(request.memberName());
-
-            return examRepository.findAllByAcademyId(academyId).stream().map(FindExamResponse::from)
+            return examRepository.findAll().stream()
+                    .map(FindExamResponse::from)
                     .collect(Collectors.toList());
         } else if (request.memberName() != null && request.examName() == null) {
 
@@ -175,6 +174,7 @@ public class ExamService {
             studentExamScore.updateScore(request.score());
         }
 
+        //TODO flush로 수정 ?
         studentExamScoreRepository.save(studentExamScore);
 
         List<ClassStudent> classStudents = classStudentRepository.findBySubClass(
