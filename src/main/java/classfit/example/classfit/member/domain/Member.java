@@ -6,6 +6,7 @@ import classfit.example.classfit.common.domain.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Entity
@@ -38,6 +39,12 @@ public class Member extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "VARCHAR(20)", nullable = false)
     private MemberStatus status;
+
+    @Column(length = 30)
+    private LocalDate birthDate;
+
+    @Column(length = 30)
+    private String subject;
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<MainClass> mainClasses;
