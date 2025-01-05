@@ -52,24 +52,24 @@ public class EventService {
             .startDate(request.startDate())
             .endDate(request.getEndDate())
             .isAllDay(request.isAllDay())
-            .eventRepeatType(request.eventRepeatType())
-            .repeatEndDate(request.shouldReceiveRepeatEndDate() ? request.repeatEndDate() : null)
-            .location(request.location())
-            .memo(request.memo())
+            .eventRepeatType(request.eventRepeatType().orElse(EventRepeatType.NONE))
+            .repeatEndDate(request.repeatEndDate().orElse(null))
+            .location(request.location().orElse(null))
+            .memo(request.memo().orElse(null))
             .build();
         event.setDates(request.isAllDay(), request.startDate(), request.getEndDate());
         return event;
     }
 
     private void addRepeatedEvents(EventCreateRequest request) {
-        if (request.eventRepeatType() == EventRepeatType.NONE) {
+        if (request.eventRepeatType().orElse(EventRepeatType.NONE) == EventRepeatType.NONE) {
             return;
         }
 
         LocalDateTime currentStartDate = request.startDate();
         LocalDateTime currentEndDate = request.endDate();
-        EventRepeatType eventRepeatType = request.eventRepeatType();
-        LocalDateTime repeatEndDate = request.repeatEndDate();
+        EventRepeatType eventRepeatType = request.eventRepeatType().orElse(EventRepeatType.NONE);
+        LocalDateTime repeatEndDate = request.repeatEndDate().orElse(null);
 
         while (shouldCreateEvent(currentEndDate, repeatEndDate)) {
             Event repeatedEvent = buildEventWithUpdatedDates(request, currentStartDate, currentEndDate);
