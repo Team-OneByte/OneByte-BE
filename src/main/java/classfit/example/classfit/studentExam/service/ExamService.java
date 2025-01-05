@@ -9,13 +9,14 @@ import classfit.example.classfit.classStudent.domain.ClassStudent;
 import classfit.example.classfit.classStudent.repository.ClassStudentRepository;
 import classfit.example.classfit.common.exception.ClassfitException;
 import classfit.example.classfit.member.domain.Member;
-import classfit.example.classfit.member.repository.MemberRepository;
 import classfit.example.classfit.student.domain.Student;
 import classfit.example.classfit.studentExam.domain.Exam;
 import classfit.example.classfit.studentExam.domain.ExamRepository;
+import classfit.example.classfit.studentExam.domain.Standard;
 import classfit.example.classfit.studentExam.domain.StudentExamScore;
 import classfit.example.classfit.studentExam.domain.StudentExamScoreRepository;
 import classfit.example.classfit.studentExam.dto.process.ExamClassStudent;
+import classfit.example.classfit.studentExam.dto.process.ExamStudent;
 import classfit.example.classfit.studentExam.dto.request.CreateExamRequest;
 import classfit.example.classfit.studentExam.dto.request.FindExamRequest;
 import classfit.example.classfit.studentExam.dto.request.UpdateExamRequest;
@@ -24,6 +25,7 @@ import classfit.example.classfit.studentExam.dto.response.CreateExamResponse;
 import classfit.example.classfit.studentExam.dto.response.FindExamResponse;
 import classfit.example.classfit.studentExam.dto.response.ShowExamDetailResponse;
 import classfit.example.classfit.studentExam.dto.response.UpdateExamResponse;
+import classfit.example.classfit.studentExam.dto.response.UpdateStudentScoreResponse;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,7 +39,6 @@ import org.springframework.stereotype.Service;
 public class ExamService {
 
     private final ExamRepository examRepository;
-    private final MemberRepository memberRepository;
     private final MainClassRepository mainClassRepository;
     private final SubClassRepository subClassRepository;
     private final ClassStudentRepository classStudentRepository;
@@ -54,10 +55,19 @@ public class ExamService {
         Exam newExam = request.toEntity(findSubClass, findMainClass);
         Exam savedExam = examRepository.save(newExam);
 
+        int defaultScore;
+        if (request.standard() == Standard.PF) {
+            defaultScore = -3; // PF : -3(P) / -4(F)
+        } else if (request.standard() == Standard.EVALUATION) {
+            defaultScore = -5; // Evaluation : -5
+        } else {
+            defaultScore = 0; // 기본값은 0
+        }
+
         List<ClassStudent> classStudents = classStudentRepository.findBySubClass(findSubClass);
         List<StudentExamScore> studentExamScores = classStudents.stream().map(classStudent -> {
             Student student = classStudent.getStudent();
-            return new StudentExamScore(student, savedExam, 0, null); // 초기 점수는 0
+            return new StudentExamScore(student, savedExam, defaultScore, null); // 초기 점수는 0
         }).collect(Collectors.toList());
         studentExamScoreRepository.saveAll(studentExamScores);
 
@@ -133,6 +143,7 @@ public class ExamService {
         return new ShowExamDetailResponse(findExam.getExamPeriod(), findExam.getExamName(),
                 findExam.getExamDate(), findExam.getMainClass().getMainClassName(),
                 findExam.getSubClass().getSubClassName(), lowestScore, perfectScore, average,
+                findExam.getHighestScore(),
                 examRangeList, findExam.getStandard(), examClassStudents);
     }
 
@@ -153,6 +164,7 @@ public class ExamService {
                 findExam.getExamName(), examRangeList);
     }
 
+
     @Transactional
     public void deleteExam(@AuthMember Member findMember, Long examId) {
         Exam findExam = examRepository.findById(examId).orElseThrow(
@@ -161,32 +173,56 @@ public class ExamService {
     }
 
     @Transactional
-    public List<ExamClassStudent> updateStudentScore(@AuthMember Member findMember, Long examId,
+    public UpdateStudentScoreResponse updateStudentScore(@AuthMember Member findMember, Long examId,
             List<UpdateStudentScoreRequest> requests) {
         Exam findExam = examRepository.findById(examId).orElseThrow(
                 () -> new ClassfitException("해당 시험지를 찾을 수 없어요.", HttpStatus.NOT_FOUND));
         StudentExamScore studentExamScore = null;
-        for (UpdateStudentScoreRequest request : requests) {
 
+        for (UpdateStudentScoreRequest request : requests) {
             studentExamScore = studentExamScoreRepository.findByExamAndStudentId(
                     findExam, request.studentId()).orElseThrow(
                     () -> new ClassfitException("해당 학생의 점수를 찾을 수 없어요.", HttpStatus.NOT_FOUND));
             studentExamScore.updateScore(request.score());
+
+            if (findExam.getHighestScore() == -1) { // PF
+                if (request.score() == -3) {  // P
+                    studentExamScore.updateScore(-3);
+                } else if (request.score() == -4) {  // F
+                    studentExamScore.updateScore(-4);
+                } else {
+                    throw new ClassfitException("PF 상태에서 점수는 -3(P) 또는 -4(F)여야 합니다.",
+                            HttpStatus.BAD_REQUEST);
+                }
+            } else if (findExam.getHighestScore() == -2) { // Evaluation
+                studentExamScore.updateScore(-5);  // Evaluation -5 //TODO 정성평가 저장 column 만들어야함
+            }
         }
 
-        //TODO flush로 수정 ?
-        studentExamScoreRepository.save(studentExamScore);
+        studentExamScoreRepository.flush();
+        Standard standard = findExam.getStandard();
 
         List<ClassStudent> classStudents = classStudentRepository.findBySubClass(
                 findExam.getSubClass());
 
-        List<ExamClassStudent> examClassStudents = classStudents.stream().map(classStudent -> {
+        List<ExamStudent> examStudents = classStudents.stream().map(classStudent -> {
             Student student = classStudent.getStudent();
             Integer score = studentExamScoreRepository.findByExamAndStudentId(findExam,
-                    student.getId()).map(StudentExamScore::getScore).orElse(0);
-            return new ExamClassStudent(student.getId(), student.getName(), score);
+                            student.getId())
+                    .map(StudentExamScore::getScore)
+                    .orElse(0);
+
+            boolean checkedStudent = requests.stream()
+                    .filter(request -> request.studentId().equals(student.getId()))
+                    .map(UpdateStudentScoreRequest::checkedStudent)
+                    .findFirst()
+                    .orElse(false);
+
+            return ExamStudent.of(student.getId(), student.getName(), score,
+                    findExam.getHighestScore(), checkedStudent);
         }).collect(Collectors.toList());
 
-        return examClassStudents;
+        return new UpdateStudentScoreResponse(standard, findExam.getHighestScore(), examStudents);
     }
+
 }

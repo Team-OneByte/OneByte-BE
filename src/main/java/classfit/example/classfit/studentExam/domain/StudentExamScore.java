@@ -31,6 +31,7 @@ public class StudentExamScore {
     @JoinColumn(name = "report_id")
     private ScoreReport scoreReport;
 
+
     @Builder
     public StudentExamScore(Student student, Exam exam, Integer score, ScoreReport scoreReport) {
         this.student = student;
