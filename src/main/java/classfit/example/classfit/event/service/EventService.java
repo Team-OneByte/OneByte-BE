@@ -142,6 +142,9 @@ public class EventService {
     public EventResponse createModalEvent(EventModalRequest request) {
         Event event = buildModalEvent(request);
         Event savedEvent = eventRepository.save(event);
+
+        addRepeatedModalEvents(request);
+
         return EventResponse.of(savedEvent.getId(), savedEvent.getName(), savedEvent.getEventType(), savedEvent.getStartDate(), savedEvent.getEndDate());
     }
 
@@ -155,9 +158,38 @@ public class EventService {
             .startDate(request.startDate())
             .endDate(request.getEndDate())
             .isAllDay(request.isAllDay())
+            .eventRepeatType(request.eventRepeatType().orElse(EventRepeatType.NONE))
+            .repeatEndDate(request.repeatEndDate().orElse(null))
             .build();
         event.setDates(request.isAllDay(), request.startDate(), request.getEndDate());
         return event;
+    }
+
+    private void addRepeatedModalEvents(EventModalRequest request) {
+        if (request.eventRepeatType().orElse(EventRepeatType.NONE) == EventRepeatType.NONE) {
+            return;
+        }
+
+        LocalDateTime currentStartDate = request.startDate();
+        LocalDateTime currentEndDate = request.endDate();
+        EventRepeatType eventRepeatType = request.eventRepeatType().orElse(EventRepeatType.NONE);
+        LocalDateTime repeatEndDate = request.repeatEndDate().orElse(null);
+
+        while (shouldCreateEvent(currentEndDate, repeatEndDate)) {
+            Event repeatedEvent = buildModalEventWithUpdatedDates(request, currentStartDate, currentEndDate);
+            eventRepository.save(repeatedEvent);
+
+            currentStartDate = getNextRepeatDate(currentStartDate, eventRepeatType);
+            currentEndDate = getNextRepeatDate(currentEndDate, eventRepeatType);
+        }
+    }
+
+    private Event buildModalEventWithUpdatedDates(EventModalRequest request, LocalDateTime currentStartDate, LocalDateTime currentEndDate) {
+        Event event = buildModalEvent(request);
+        return event.toBuilder()
+            .startDate(currentStartDate)
+            .endDate(currentEndDate)
+            .build();
     }
 
     @Transactional(readOnly = true)
