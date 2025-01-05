@@ -55,7 +55,7 @@ public class DriveUploadService {
 
     private String generateObjectKey(Member member, MultipartFile file, DriveType driveType) {
         String uniqueFileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
-        ;
+
         if (driveType == PERSONAL) {
             return String.format("personal/%d/%s", member.getId(), uniqueFileName);
         } else if (driveType == SHARED) {
