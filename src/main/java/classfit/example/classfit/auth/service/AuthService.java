@@ -54,7 +54,7 @@ public class AuthService {
             throw new ClassfitException("invalid refresh token", HttpStatus.BAD_REQUEST);
         }
 
-        String newAccess = jwtUtil.createJwt("access", email, role, 1000 * 60 * 5L);
+        String newAccess = jwtUtil.createJwt("access", email, role, 1000 * 60 * 60 * 3L);
         String newRefresh = jwtUtil.createJwt("refresh", email, role, 1000 * 60 * 60 * 24 * 7L);
 
         redisUtil.deleteData(redisKey);
