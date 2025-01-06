@@ -67,8 +67,8 @@ public class AttendanceStatisticsService {
             .collect(Collectors.toList());
     }
 
-    public List<String> getAttendanceDetailsByMemberAndStatus(Long studentId, AttendanceStatus status) {
-        List<Attendance> studentAttendances = attendanceRepository.findByStudentIdAndStatus(studentId, status);
+    public List<String> getAttendanceDetailsByMemberAndStatus(Long studentId, int month, AttendanceStatus status) {
+        List<Attendance> studentAttendances = attendanceRepository.findByStudentIdAndMonthAndStatus(studentId, month, status);
 
         return studentAttendances.stream()
             .map(attendance -> createFormattedDate(attendance.getDate()))
