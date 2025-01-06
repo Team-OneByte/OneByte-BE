@@ -14,5 +14,5 @@ public interface MainClassRepository extends JpaRepository<MainClass, Long> {
 
     List<MainClass> findByMemberAcademy(Academy academy);
 
-    boolean existsByMemberAcademyAndMainClassName(Academy academy,Member member, String mainClassName);
+    boolean existsByMember_AcademyAndMainClassName(Academy academy, String mainClassName);
 }

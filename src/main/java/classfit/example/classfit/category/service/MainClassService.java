@@ -37,8 +37,7 @@ public class MainClassService {
 
         Academy academy = findMember.getAcademy();
 
-        boolean exists = mainClassRepository.existsByMemberAcademyAndMainClassName(academy,
-                findMember,
+        boolean exists = mainClassRepository.existsByMember_AcademyAndMainClassName(academy,
                 req.mainClassName());
         if (exists) {
             throw new ClassfitException("이미 같은 이름의 메인 클래스가 있어요.", HttpStatus.CONFLICT);
