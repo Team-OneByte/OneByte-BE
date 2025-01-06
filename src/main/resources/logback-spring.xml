@@ -26,10 +26,10 @@
         <logger name="classfit.example.classfit" level="DEBUG"/>
         <root level="INFO">
             <appender-ref ref="CONSOLE"/>
+            <appender-ref ref="FILE"/>
         </root>
     </springProfile>
 
-    <!-- default 프로파일 설정 -->
     <springProfile name="default">
         <root level="ERROR">
             <appender-ref ref="CONSOLE"/>
