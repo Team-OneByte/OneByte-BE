@@ -1,28 +1,28 @@
 package classfit.example.classfit.member.service;
 
-import static classfit.example.classfit.common.exception.ClassfitException.ACADEMY_MEMBERS_NOT_FOUND;
-import static classfit.example.classfit.common.exception.ClassfitException.CATEGORY_NOT_FOUND;
-import static classfit.example.classfit.common.exception.ClassfitException.INVALID_MEMBER_ACADEMY;
-import static classfit.example.classfit.common.exception.ClassfitException.MEMBER_NOT_FOUND;
-
 import classfit.example.classfit.common.exception.ClassfitException;
 import classfit.example.classfit.common.util.RedisUtil;
 import classfit.example.classfit.mail.dto.request.EmailPurpose;
 import classfit.example.classfit.member.domain.Member;
 import classfit.example.classfit.member.dto.request.MemberPasswordRequest;
 import classfit.example.classfit.member.dto.request.MemberRequest;
+import classfit.example.classfit.member.dto.request.MemberUpdateInfoRequest;
 import classfit.example.classfit.member.dto.response.AcademyMemberResponse;
+import classfit.example.classfit.member.dto.response.MemberInfoResponse;
 import classfit.example.classfit.member.dto.response.MemberResponse;
 import classfit.example.classfit.member.repository.MemberRepository;
 import classfit.example.classfit.memberCalendar.service.MemberCalendarService;
-import jakarta.transaction.Transactional;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static classfit.example.classfit.common.exception.ClassfitException.*;
 
 @RequiredArgsConstructor
 @Service
@@ -58,11 +58,6 @@ public class MemberService {
         return MemberResponse.from(member);
     }
 
-    private void createDefaultCalendars(Member member) {
-        memberCalendarService.createPersonalCalendar(member);
-        memberCalendarService.createSharedCalendar(member);
-    }
-
     @Transactional
     public void updatePassword(MemberPasswordRequest request) {
         String emailToken = redisUtil.getData("email_code:" + EmailPurpose.PASSWORD_RESET + ":" + request.email());
@@ -80,6 +75,17 @@ public class MemberService {
         findMember.updatePassword(bCryptPasswordEncoder.encode(request.password()));
     }
 
+    @Transactional(readOnly = true)
+    public MemberInfoResponse myPage(Member member) {
+        return MemberInfoResponse.from(member);
+    }
+
+    @Transactional
+    public MemberInfoResponse updateMyPage(Member member, MemberUpdateInfoRequest request) {
+        member.updateInfo(request);
+        return MemberInfoResponse.from(member);
+    }
+
     public List<AcademyMemberResponse> getMembersByLoggedInMemberAcademy(Member loggedInMember) {
         if (hasAcademy(loggedInMember)) {
             Long academyId = loggedInMember.getAcademy().getId();
@@ -87,6 +93,11 @@ public class MemberService {
             return mapToMemberResponse(academyMembers);
         }
         return new ArrayList<>();
+    }
+
+    private void createDefaultCalendars(Member member) {
+        memberCalendarService.createPersonalCalendar(member);
+        memberCalendarService.createSharedCalendar(member);
     }
 
     private boolean hasAcademy(Member loggedInMember) {
@@ -111,4 +122,6 @@ public class MemberService {
         return memberRepository.findById(memberId)
             .orElseThrow(() -> new ClassfitException(MEMBER_NOT_FOUND, HttpStatus.NOT_FOUND));
     }
+
+
 }

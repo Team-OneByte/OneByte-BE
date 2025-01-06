@@ -66,10 +66,12 @@ public class AttendanceStatisticsController {
     public ApiResponse<List<String>> getAttendanceDetailsByMemberAndStatus(
         @Parameter(description = "조회 학생")
         @RequestParam(value = "studentId") Long studentId,
+        @Parameter(description = "조회하려는 달")
+        @RequestParam(value = "month") int month,
         @Parameter(description = "조회하려는 출결 상태")
         @RequestParam(value = "status") AttendanceStatus status
     ) {
-        List<String> studentDetails = attendanceStatisticsService.getAttendanceDetailsByMemberAndStatus(studentId, status);
+        List<String> studentDetails = attendanceStatisticsService.getAttendanceDetailsByMemberAndStatus(studentId, month, status);
         return ApiResponse.success(studentDetails, 200, "SUCCESS");
     }
 }

@@ -33,5 +33,6 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
     List<Attendance> findByStudentIdAndDateBetween(Long studentId, LocalDate startDate,
         LocalDate endDate);
 
-    List<Attendance> findByStudentIdAndStatus(Long studentId, AttendanceStatus status);
+    @Query("SELECT a FROM Attendance a WHERE a.student.id = :studentId AND FUNCTION('MONTH', a.date) = :month AND a.status = :status")
+    List<Attendance> findByStudentIdAndMonthAndStatus(Long studentId, int month, AttendanceStatus status);
 }
