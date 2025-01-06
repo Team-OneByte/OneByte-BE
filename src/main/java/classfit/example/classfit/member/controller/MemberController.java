@@ -5,6 +5,7 @@ import classfit.example.classfit.common.ApiResponse;
 import classfit.example.classfit.member.domain.Member;
 import classfit.example.classfit.member.dto.request.MemberPasswordRequest;
 import classfit.example.classfit.member.dto.request.MemberRequest;
+import classfit.example.classfit.member.dto.request.MemberUpdateInfoRequest;
 import classfit.example.classfit.member.dto.response.MemberInfoResponse;
 import classfit.example.classfit.member.dto.response.MemberResponse;
 import classfit.example.classfit.member.service.MemberService;
@@ -40,6 +41,13 @@ public class MemberController {
     @Operation(summary = "회원정보 조회", description = "마이페이지 API 입니다.")
     public ApiResponse<MemberInfoResponse> myPage(@AuthMember Member member) {
         MemberInfoResponse memberInfoResponse = memberService.myPage(member);
+        return ApiResponse.success(memberInfoResponse, 200, "SUCCESS");
+    }
+
+    @PostMapping("/mypage")
+    @Operation(summary = "회원정보 수정", description = "회원 정보 수정하는 API 입니다.")
+    public ApiResponse<MemberInfoResponse> updateMyPage(@AuthMember Member member, @RequestBody MemberUpdateInfoRequest request) {
+        MemberInfoResponse memberInfoResponse = memberService.updateMyPage(member, request);
         return ApiResponse.success(memberInfoResponse, 200, "SUCCESS");
     }
 }

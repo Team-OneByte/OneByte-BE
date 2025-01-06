@@ -6,6 +6,7 @@ import classfit.example.classfit.mail.dto.request.EmailPurpose;
 import classfit.example.classfit.member.domain.Member;
 import classfit.example.classfit.member.dto.request.MemberPasswordRequest;
 import classfit.example.classfit.member.dto.request.MemberRequest;
+import classfit.example.classfit.member.dto.request.MemberUpdateInfoRequest;
 import classfit.example.classfit.member.dto.response.AcademyMemberResponse;
 import classfit.example.classfit.member.dto.response.MemberInfoResponse;
 import classfit.example.classfit.member.dto.response.MemberResponse;
@@ -76,6 +77,12 @@ public class MemberService {
 
     @Transactional(readOnly = true)
     public MemberInfoResponse myPage(Member member) {
+        return MemberInfoResponse.from(member);
+    }
+
+    @Transactional
+    public MemberInfoResponse updateMyPage(Member member, MemberUpdateInfoRequest request) {
+        member.updateInfo(request);
         return MemberInfoResponse.from(member);
     }
 

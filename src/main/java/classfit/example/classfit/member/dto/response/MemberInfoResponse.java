@@ -9,7 +9,7 @@ import java.time.LocalDate;
 public record MemberInfoResponse
     (
         String name,
-        
+
         String phoneNumber,
 
         LocalDate birth,
