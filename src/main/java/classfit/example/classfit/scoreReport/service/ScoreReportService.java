@@ -75,13 +75,11 @@ public class ScoreReportService {
         }
 
         List<StudentList> allStudents = new ArrayList<>();
-        ScoreReport report = null;
 
         for (ClassStudent classStudent : studentsInSubClass) {
             Student student = classStudent.getStudent();
-            allStudents.add(new StudentList(student.getId(), student.getName()));
 
-            report = ScoreReport.builder()
+            ScoreReport report = ScoreReport.builder()
                     .mainClass(mainClass)
                     .subClass(subClass)
                     .includeAverage(request.includeAverage())
@@ -93,20 +91,19 @@ public class ScoreReportService {
                     .build();
             scoreReportRepository.save(report);
 
+            allStudents.add(new StudentList(report.getId(), student.getId(), student.getName()));
+
             for (Long examId : request.examIdList()) {
                 StudentExamScore studentExamScore = studentExamScoreRepository.findByStudentAndExamId(
                                 student, examId)
                         .orElseThrow(() -> new ClassfitException("시험 점수를 찾을 수 없어요.",
                                 HttpStatus.NOT_FOUND));
-
                 studentExamScore.updateScoreReport(report);
                 studentExamScoreRepository.save(studentExamScore);
-
             }
         }
 
         return CreateReportResponse.builder()
-                .reportId(report.getId())
                 .mainClassId(mainClass.getId())
                 .subClassId(subClass.getId())
                 .studentList(allStudents)
@@ -160,6 +157,7 @@ public class ScoreReportService {
                 ))
                 .collect(Collectors.toList());
     }
+
     @Transactional(readOnly = true)
     public List<FindAllReportResponse> findAllReport(@AuthMember Member member, Long academyId) {
 

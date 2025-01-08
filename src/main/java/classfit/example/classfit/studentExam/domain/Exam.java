@@ -72,6 +72,7 @@ public class Exam extends BaseEntity {
     @Column(name = "average")
     private Long average;
 
+
     @OneToMany(mappedBy = "exam", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<StudentExamScore> studentExamScores = new ArrayList<>();
 
@@ -102,5 +103,8 @@ public class Exam extends BaseEntity {
         this.lowestScore = lowestScore;
         this.perfectScore = perfectScore;
         this.average = average;
+    }
+    public void updateHighestScore(Integer highestScore) {
+        this.highestScore = highestScore;
     }
 }
