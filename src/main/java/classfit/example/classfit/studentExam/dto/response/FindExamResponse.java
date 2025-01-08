@@ -2,12 +2,12 @@ package classfit.example.classfit.studentExam.dto.response;
 
 
 import classfit.example.classfit.studentExam.domain.Exam;
+import classfit.example.classfit.studentExam.domain.ExamPeriod;
 import classfit.example.classfit.studentExam.domain.Standard;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import org.springframework.format.annotation.DateTimeFormat;
-// TODO memberName과 examPeriod 나오도록 수정필요
-public record FindExamResponse(Long examId, Long memberId,String memberName, Standard standard, String mainClassName,
+public record FindExamResponse(Long examId, ExamPeriod examPeriod, Long memberId, String memberName, Standard standard, String mainClassName,
                                String subClassName, String examName, @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate createdAt
 
 ) {
@@ -15,6 +15,7 @@ public record FindExamResponse(Long examId, Long memberId,String memberName, Sta
     public static FindExamResponse from(Exam exam) {
         return new FindExamResponse(
                 exam.getId(),
+                exam.getExamPeriod(),
                 exam.getMainClass().getMember().getId(),
                 exam.getMainClass().getMember().getName(),
                 exam.getStandard(),

@@ -6,7 +6,7 @@ import java.util.List;
 import lombok.Builder;
 
 @Builder
-public record CreateReportResponse(Long reportId, boolean includeAverage ,Long mainClassId, Long subClassId,
+public record CreateReportResponse( boolean includeAverage ,Long mainClassId, Long subClassId,
                                    List<StudentList> studentList,
                                    String reportName, LocalDate startDate, LocalDate endDate,
                                    List<Long> examIdList, String overallOpinion) {
