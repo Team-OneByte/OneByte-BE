@@ -8,7 +8,9 @@ import classfit.example.classfit.member.domain.Member;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -34,5 +36,18 @@ public class DriveFolderController {
     ) {
         String fullPath = driveFolderService.createFolder(member, driveType, folderName, folderPath);
         return ApiResponse.success(fullPath, 200, "SUCCESS");
+    }
+
+    @GetMapping("/folders")
+    @Operation(summary = "폴더 조회", description = "폴더들을 조회하는 API입니다.")
+    public ApiResponse<List<String>> getFolders(
+        @AuthMember Member member,
+        @Parameter(description = "내 드라이브는 PERSONAL, 공용 드라이브는 SHARED 입니다.")
+        @RequestParam DriveType driveType,
+        @Parameter(description = "조회할 폴더 경로입니다. 비어 있으면 루트 폴더를 조회합니다.")
+        @RequestParam(required = false, defaultValue = "") String folderPath
+    ) {
+        List<String> folders = driveFolderService.getFolders(member, driveType, folderPath);
+        return ApiResponse.success(folders, 200, "폴더 목록 조회 성공");
     }
 }

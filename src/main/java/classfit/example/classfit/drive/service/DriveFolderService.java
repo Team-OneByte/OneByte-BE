@@ -17,6 +17,7 @@ import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -80,5 +81,32 @@ public class DriveFolderService {
             new Tag("uploadedAt", formattedDate)
         );
         amazonS3.setObjectTagging(new SetObjectTaggingRequest(bucketName, objectKey, new ObjectTagging(tags)));
+    }
+
+    public List<String> getFolders(Member member, DriveType driveType, String folderPath) {
+        ListObjectsV2Request request = new ListObjectsV2Request()
+            .withBucketName(bucketName)
+            .withDelimiter("/");
+
+        String prefix = buildPrefix(driveType, member, folderPath);
+        request.setPrefix(prefix);
+        ListObjectsV2Result result = amazonS3.listObjectsV2(request);
+
+        return result.getCommonPrefixes().stream()
+            .map(folder -> folder.substring(prefix.length()))
+            .collect(Collectors.toList());
+    }
+
+    private String buildPrefix(DriveType driveType, Member member, String folderPath) {
+        String basePrefix;
+
+        if (driveType == DriveType.PERSONAL) {
+            basePrefix = "personal/" + member.getId();
+        } else if (driveType == DriveType.SHARED) {
+            basePrefix = "shared/" + member.getAcademy().getId();
+        } else {
+            throw new IllegalArgumentException("지원하지 않는 드라이브 타입입니다.");
+        }
+        return folderPath.isEmpty() ? basePrefix + "/" : basePrefix + "/" + folderPath + "/";
     }
 }
