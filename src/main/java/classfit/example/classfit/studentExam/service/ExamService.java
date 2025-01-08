@@ -53,6 +53,13 @@ public class ExamService {
                 () -> new ClassfitException("메인 클래스를 찾을 수 없어요.", HttpStatus.NOT_FOUND));
 
         Exam newExam = request.toEntity(findSubClass, findMainClass);
+        if (request.standard() == Standard.PF) {
+            newExam.updateHighestScore(-1);
+
+        } else if (request.standard() == Standard.EVALUATION) {
+            newExam.updateHighestScore(-2);
+        }
+
         Exam savedExam = examRepository.save(newExam);
 
         int defaultScore;
@@ -67,7 +74,7 @@ public class ExamService {
         List<ClassStudent> classStudents = classStudentRepository.findBySubClass(findSubClass);
         List<StudentExamScore> studentExamScores = classStudents.stream().map(classStudent -> {
             Student student = classStudent.getStudent();
-            return new StudentExamScore(student, savedExam, defaultScore, null); // 초기 점수는 0
+            return new StudentExamScore(student, savedExam, defaultScore, null,null); // 초기 점수는 0
         }).collect(Collectors.toList());
         studentExamScoreRepository.saveAll(studentExamScores);
 
@@ -84,7 +91,7 @@ public class ExamService {
         return studentExamScores.stream().map(studentExamScore -> {
             Student student = studentExamScore.getStudent();
             return new ExamClassStudent(student.getId(), student.getName(),
-                    studentExamScore.getScore());
+                    studentExamScore.getScore(),studentExamScore.getEvaluationDetail());
         }).collect(Collectors.toList());
     }
 
@@ -134,7 +141,12 @@ public class ExamService {
                             .filter(scoreObj -> scoreObj.getStudent().getId().equals(student.getId()))
                             .map(StudentExamScore::getScore).findFirst().orElse(0);
 
-                    return new ExamClassStudent(student.getId(), student.getName(), score);
+                    String evaluationDetail = studentExamScoreRepository.findByExamAndStudentId(findExam,
+                                    student.getId())
+                            .map(StudentExamScore::getEvaluationDetail)
+                            .orElse(null);
+
+                    return new ExamClassStudent(student.getId(), student.getName(), score,evaluationDetail);
                 })
 
                 .collect(Collectors.toList());
@@ -195,8 +207,10 @@ public class ExamService {
                             HttpStatus.BAD_REQUEST);
                 }
             } else if (findExam.getHighestScore() == -2) { // Evaluation
-                studentExamScore.updateScore(-5);  // Evaluation -5 //TODO 정성평가 저장 column 만들어야함
+                studentExamScore.updateScore(-5);  // Evaluation -5
+                studentExamScore.updateEvaluationDetail(request.evaluationDetail());
             }
+            studentExamScoreRepository.save(studentExamScore);
         }
 
         studentExamScoreRepository.flush();
@@ -211,6 +225,10 @@ public class ExamService {
                             student.getId())
                     .map(StudentExamScore::getScore)
                     .orElse(0);
+            String evaluationDetail = studentExamScoreRepository.findByExamAndStudentId(findExam,
+                    student.getId())
+                    .map(StudentExamScore::getEvaluationDetail)
+                    .orElse(null);
 
             boolean checkedStudent = requests.stream()
                     .filter(request -> request.studentId().equals(student.getId()))
@@ -219,7 +237,7 @@ public class ExamService {
                     .orElse(false);
 
             return ExamStudent.of(student.getId(), student.getName(), score,
-                    findExam.getHighestScore(), checkedStudent);
+                    findExam.getHighestScore(),evaluationDetail ,checkedStudent);
         }).collect(Collectors.toList());
 
         return new UpdateStudentScoreResponse(standard, findExam.getHighestScore(), examStudents);

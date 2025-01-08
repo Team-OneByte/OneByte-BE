@@ -33,13 +33,18 @@ public class StudentExamScore {
     @JoinColumn(name = "report_id")
     private ScoreReport scoreReport;
 
+    @Column(name = "evaluation_detail")
+    private String evaluationDetail;
+
 
     @Builder
-    public StudentExamScore(Student student, Exam exam, Integer score, ScoreReport scoreReport) {
+    public StudentExamScore(Student student, Exam exam, Integer score, ScoreReport scoreReport,String evaluationDetail) {
+
         this.student = student;
         this.exam = exam;
         this.score = score;
         this.scoreReport = scoreReport;
+        this.evaluationDetail =evaluationDetail;
     }
 
     public void updateScore(Integer score) {
@@ -48,6 +53,9 @@ public class StudentExamScore {
                     HttpStatus.BAD_REQUEST);
         }
         this.score = score;
+    }
+    public  void updateEvaluationDetail(String evaluationDetail) {
+        this.evaluationDetail = evaluationDetail;
     }
 
     public void updateScoreReport(ScoreReport scoreReport) {
