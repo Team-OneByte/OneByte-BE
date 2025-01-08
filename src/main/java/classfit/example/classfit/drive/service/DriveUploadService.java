@@ -32,10 +32,10 @@ public class DriveUploadService {
     @Value("${cloud.aws.s3.bucket}")
     private String bucketName;
 
-    public List<String> uploadFiles(@AuthMember Member member, DriveType driveType, List<MultipartFile> files) {
+    public List<String> uploadFiles(@AuthMember Member member, DriveType driveType, List<MultipartFile> files, String folderPath) {
         return files.stream().map(file -> {
             try {
-                return uploadFileToS3(member, file, driveType);
+                return uploadFileToS3(member, file, driveType, folderPath);
             } catch (IOException e) {
                 throw new RuntimeException("파일 업로드 중 오류 발생: " + file.getOriginalFilename(), e);
             }
@@ -43,24 +43,25 @@ public class DriveUploadService {
         .collect(Collectors.toList());
     }
 
-    private String uploadFileToS3(Member member, MultipartFile file, DriveType driveType) throws IOException {
-        String objectKey = generateObjectKey(member, file, driveType);
+    private String uploadFileToS3(Member member, MultipartFile file, DriveType driveType, String folderPath) throws IOException {
+        String objectKey = generateObjectKey(member, file, driveType, folderPath);
 
         try (InputStream inputStream = file.getInputStream()) {
             uploadToS3(objectKey, inputStream, file);
         }
-        addTagsToS3Object(objectKey, member);
+        addTagsToS3Object(objectKey, member, folderPath);
         return amazonS3.getUrl(bucketName, objectKey).toString();
     }
 
-    private String generateObjectKey(Member member, MultipartFile file, DriveType driveType) {
+    private String generateObjectKey(Member member, MultipartFile file, DriveType driveType, String folderPath) {
         String uniqueFileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
+        String fullFolderPath = folderPath != null && !folderPath.trim().isEmpty() ? folderPath + "/" : "";
 
         if (driveType == PERSONAL) {
-            return String.format("personal/%d/%s", member.getId(), uniqueFileName);
+            return String.format("personal/%d/%s%s", member.getId(), fullFolderPath, uniqueFileName);
         } else if (driveType == SHARED) {
             Long academyId = member.getAcademy().getId();
-            return String.format("shared/%d/%s", academyId, uniqueFileName);
+            return String.format("shared/%d/%s%s", academyId, fullFolderPath, uniqueFileName);
         }
         throw new IllegalArgumentException("유효하지 않은 드라이브 타입");
     }
@@ -78,10 +79,13 @@ public class DriveUploadService {
         return metadata;
     }
 
-    private void addTagsToS3Object(String objectKey, Member member) {
+    private void addTagsToS3Object(String objectKey, Member member, String folderPath) {
         LocalDateTime now = LocalDateTime.now();
         String formattedDate = now.format(DateTimeFormatter.ISO_DATE_TIME);
+        String finalFodlerPath = folderPath != null && !folderPath.trim().isEmpty() ? folderPath + "/" : "";
+
         List<Tag> tags = List.of(
+            new Tag("folderPath", finalFodlerPath),
             new Tag("uploadedBy", member.getName()),
             new Tag("uploadedAt", formattedDate)
         );

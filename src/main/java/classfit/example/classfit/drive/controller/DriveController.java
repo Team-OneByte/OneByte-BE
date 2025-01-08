@@ -55,9 +55,11 @@ public class DriveController {
         @AuthMember Member member,
         @Parameter(description = "내 드라이브는 PERSONAL, 공용 드라이브는 SHARED 입니다.")
         @RequestParam DriveType driveType,
-        @RequestParam("multipartFiles") List<MultipartFile> multipartFiles
+        @RequestParam("multipartFiles") List<MultipartFile> multipartFiles,
+        @Parameter(description = "폴더 경로입니다. 비어 있으면 루트 폴더에 생성됩니다.")
+        @RequestParam(required = false, defaultValue = "") String folderPath
     ) {
-        List<String> fileUrls = driveUploadService.uploadFiles(member, driveType, multipartFiles);
+        List<String> fileUrls = driveUploadService.uploadFiles(member, driveType, multipartFiles, folderPath);
         return ApiResponse.success(fileUrls, 200, "SUCCESS");
     }
 
