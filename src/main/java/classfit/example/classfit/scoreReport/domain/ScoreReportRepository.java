@@ -1,5 +1,6 @@
 package classfit.example.classfit.scoreReport.domain;
 
+import classfit.example.classfit.academy.domain.Academy;
 import classfit.example.classfit.scoreReport.dto.process.ReportExam;
 import java.time.LocalDate;
 import java.util.List;
@@ -42,6 +43,10 @@ public interface ScoreReportRepository extends JpaRepository<ScoreReport, Long> 
 
     @Query("SELECT sr FROM ScoreReport sr WHERE sr.id = :studentReportId")
     Optional<ScoreReport> findById(@Param("studentReportId") Long studentReportId);
+
+    @Query("SELECT r FROM ScoreReport r " +
+            "WHERE r.mainClass.member.academy = :academy")
+    List<ScoreReport> findAllByAcademy(@Param("academy") Academy academy);
 
 }
 
