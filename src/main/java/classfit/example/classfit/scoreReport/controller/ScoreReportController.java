@@ -7,6 +7,7 @@ import classfit.example.classfit.scoreReport.dto.process.ReportExam;
 import classfit.example.classfit.scoreReport.dto.request.CreateReportRequest;
 import classfit.example.classfit.scoreReport.dto.request.SentStudentOpinionRequest;
 import classfit.example.classfit.scoreReport.dto.response.CreateReportResponse;
+import classfit.example.classfit.scoreReport.dto.response.FindAllReportResponse;
 import classfit.example.classfit.scoreReport.dto.response.FindClassStudent;
 import classfit.example.classfit.scoreReport.dto.response.FindReportResponse;
 import classfit.example.classfit.scoreReport.dto.response.SentStudentOpinionResponse;
@@ -56,11 +57,11 @@ public class ScoreReportController {
     }
 
     @GetMapping("/student-report")
-    @Operation(summary = "학생 학습리포트", description = "학습 리포트 검색,조회 API입니다. memberName,mainClass,subClass로 검색 가능.")
+    @Operation(summary = "학생 학습리포트 검색", description = "학습 리포트 검색,조회 API입니다. memberName,mainClass,subClass로 검색 가능.")
     public ApiResponse<List<FindReportResponse>> findReport(@AuthMember Member member,
-            @RequestParam(name = "mainClassId") Long mainClassId,
-            @RequestParam(name = "subClassId") Long subClassId,
-            @RequestParam(name = "memberName") String memberName) {
+            @RequestParam(name = "mainClassId", required = false) Long mainClassId,
+            @RequestParam(name = "subClassId", required = false) Long subClassId,
+            @RequestParam(name = "memberName", required = false) String memberName) {
         List<FindReportResponse> response = scoreReportService.findReport(member, mainClassId,
                 subClassId, memberName);
         return ApiResponse.success(response, 200, "FIND-STUDENT-REPORT");
@@ -83,18 +84,35 @@ public class ScoreReportController {
                 subClassId);
         return ApiResponse.success(response, 200, "FIND-CLASS-STUDENT");
     }
+
     @PatchMapping("/student-opinion")
     @Operation(summary = "학생리포트에 개인의견 전송", description = "학생에게 개인의견 전송 API입니다. 학습 리포트 생성 후에 사용가능.")
-    public ApiResponse<List<SentStudentOpinionResponse>> sentStudentOpinion(@AuthMember Member member,
+    public ApiResponse<List<SentStudentOpinionResponse>> sentStudentOpinion(
+            @AuthMember Member member,
             @RequestBody List<SentStudentOpinionRequest> requests) {
-        List<SentStudentOpinionResponse> response = scoreReportService.sentStudentOpinion(member,requests);
-        return ApiResponse.success(response,200,"SENT-STUDENT-OPINION");
+        List<SentStudentOpinionResponse> response = scoreReportService.sentStudentOpinion(member,
+                requests);
+        return ApiResponse.success(response, 200, "SENT-STUDENT-OPINION");
     }
+
     @GetMapping("/{student-report-id}")
     @Operation(summary = "학생 리포트 상세조회", description = "학생의 학습리포트 상세조회 API입니다.")
-    public ApiResponse<ShowStudentReportResponse> showStudentReport(@AuthMember Member member,@PathVariable(name = "student-report-id") Long reportId) {
+    public ApiResponse<ShowStudentReportResponse> showStudentReport(@AuthMember Member member,
+            @PathVariable(name = "student-report-id") Long reportId) {
         ShowStudentReportResponse response = scoreReportService.showStudentReport(member, reportId);
-        return ApiResponse.success(response,200,"SHOW-STUDENT-REPORT");
+        return ApiResponse.success(response, 200, "SHOW-STUDENT-REPORT");
     }
+
+    @GetMapping("/all-report")
+    @Operation(summary = "학습 리포트 전체조회", description = "학원 별 생성한 성적 리포트 전체조회 API입니다.")
+    public ApiResponse<List<FindAllReportResponse>> findAllReport(
+            @AuthMember Member member,
+            @RequestParam(name = "academyId") Long academyId) {
+
+        List<FindAllReportResponse> response = scoreReportService.findAllReport(member, academyId);
+
+        return ApiResponse.success(response, 200, "FIND-ALL-STUDENT-REPORTS");
+    }
+
 
 }

@@ -9,7 +9,7 @@ import org.springframework.cglib.core.Local;
 public record ShowStudentReportResponse(Long studentId, String studentName, String mainClassName,
                                         String subClassName, String reportName, LocalDate startDate,
                                         LocalDate endDate, List<AttendanceInfo> attendanceInfoList,
-                                        Integer totalAttendanceCount,
+                                        Integer totalAttendanceCount,boolean includeAverage,
                                         List<ExamHistory> examHistoryList, String overallOpinion,
                                         String studentOpinion
 ) {
