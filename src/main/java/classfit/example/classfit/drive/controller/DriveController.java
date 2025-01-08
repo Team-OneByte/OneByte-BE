@@ -79,4 +79,17 @@ public class DriveController {
 
         return ResponseEntity.ok().headers(headers).body(resource);
     }
+
+    @GetMapping("/search")
+    @Operation(summary = "파일명으로 검색", description = "파일명을 기준으로 파일을 검색하는 API입니다.")
+    public ApiResponse<List<FileInfo>> searchFilesByName(
+        @AuthMember Member member,
+        @Parameter(description = "내 드라이브는 PERSONAL, 공용 드라이브는 SHARED 입니다.")
+        @RequestParam DriveType driveType,
+        @Parameter(description = "검색할 파일명입니다. 빈 값이면 모든 파일이 조회됩니다.")
+        @RequestParam(required = false, defaultValue = "") String fileName
+    ) {
+        List<FileInfo> files = driveGetService.searchFilesByName(member, driveType, fileName);
+        return ApiResponse.success(files, 200, "SUCCESS");
+    }
 }
