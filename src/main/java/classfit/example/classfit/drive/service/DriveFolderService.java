@@ -1,7 +1,6 @@
 package classfit.example.classfit.drive.service;
 
 import static classfit.example.classfit.drive.domain.DriveType.PERSONAL;
-import static classfit.example.classfit.drive.domain.DriveType.SHARED;
 
 import classfit.example.classfit.drive.domain.DriveType;
 import classfit.example.classfit.member.domain.Member;
@@ -9,9 +8,15 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ListObjectsV2Request;
 import com.amazonaws.services.s3.model.ListObjectsV2Result;
 import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.model.ObjectTagging;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.amazonaws.services.s3.model.SetObjectTaggingRequest;
+import com.amazonaws.services.s3.model.Tag;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -34,19 +39,20 @@ public class DriveFolderService {
 
         InputStream emptyContent = new ByteArrayInputStream(new byte[0]);
         amazonS3.putObject(new PutObjectRequest(bucketName, fullFolderPath, emptyContent, metadata));
+        addTagsToS3Object(fullFolderPath, member);
         return fullFolderPath;
     }
 
     private String generateUniqueFolderName(Member member, DriveType driveType, String folderName, String folderPath) {
-        String baseKey = generateFolderKey(member, driveType, folderName, folderPath);
-        int counter = 1;
+        String baseName = folderName;
+        int count = 1;
 
-        while (doesFolderExist(baseKey)) {
-            folderName = String.format("%s(%d)", folderName, counter);
-            baseKey = generateFolderKey(member, driveType, folderName, folderPath);
-            counter++;
+        while (doesFolderExist(generateFolderKey(member, driveType, baseName, folderPath))) {
+            baseName = folderName + " (" + count + ")";
+            count++;
         }
-        return folderName;
+
+        return baseName;
     }
 
     private boolean doesFolderExist(String folderKey) {
@@ -64,5 +70,15 @@ public class DriveFolderService {
             : String.format("shared/%d/", member.getAcademy().getId());
 
         return basePath + (folderPath.isEmpty() ? "" : folderPath + "/") + folderName + "/";
+    }
+
+    private void addTagsToS3Object(String objectKey, Member member) {
+        LocalDateTime now = LocalDateTime.now();
+        String formattedDate = now.format(DateTimeFormatter.ISO_DATE_TIME);
+        List<Tag> tags = List.of(
+            new Tag("uploadedBy", member.getName()),
+            new Tag("uploadedAt", formattedDate)
+        );
+        amazonS3.setObjectTagging(new SetObjectTaggingRequest(bucketName, objectKey, new ObjectTagging(tags)));
     }
 }
