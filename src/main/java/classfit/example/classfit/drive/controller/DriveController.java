@@ -41,9 +41,11 @@ public class DriveController {
     public ApiResponse<List<FileInfo>> getFiles(
         @AuthMember Member member,
         @Parameter(description = "내 드라이브는 PERSONAL, 공용 드라이브는 SHARED 입니다.")
-        @RequestParam DriveType driveType
+        @RequestParam DriveType driveType,
+        @Parameter(description = "폴더 경로입니다. 비어 있으면 루트 폴더에 생성됩니다.")
+        @RequestParam(required = false, defaultValue = "") String folderPath
     ) {
-        List<FileInfo> fileUrls = driveGetService.getFilesFromS3(member, driveType);
+        List<FileInfo> fileUrls = driveGetService.getFilesFromS3(member, driveType, folderPath);
         return ApiResponse.success(fileUrls, 200, "SUCCESS");
     }
 

@@ -27,9 +27,10 @@ public class DriveGetService {
     @Value("${cloud.aws.s3.bucket}")
     private String bucketName;
 
-    public List<FileInfo> getFilesFromS3(Member member, DriveType driveType) {
+    public List<FileInfo> getFilesFromS3(Member member, DriveType driveType, String folderPath) {
         List<FileInfo> files = new ArrayList<>();
-        String prefix = getPrefixByDriveType(member, driveType);
+        String prefix = getPrefixByDriveType(member, driveType, folderPath);
+        System.out.println("prefix : " + prefix);
         List<S3ObjectSummary> objectSummaries = getS3ObjectList(prefix);
 
         for (S3ObjectSummary summary : objectSummaries) {
@@ -39,16 +40,24 @@ public class DriveGetService {
         return files;
     }
 
-    private String getPrefixByDriveType(Member member, DriveType driveType) {
+    private String getPrefixByDriveType(Member member, DriveType driveType, String folderPath) {
+        String basePrefix;
         switch (driveType) {
             case PERSONAL:
-            return "personal/" + member.getId() + "/";
+                basePrefix = "personal/" + member.getId() + "/";
+                break;
             case SHARED:
                 Long academyId = member.getAcademy().getId();
-                return "shared/" + academyId + "/";
+                basePrefix = "shared/" + academyId + "/";
+                break;
             default:
                 throw new IllegalArgumentException("유효하지 않은 드라이브 타입");
         }
+        if (folderPath == null || folderPath.trim().isEmpty()) {
+            return basePrefix;
+        }
+
+        return basePrefix + folderPath + "/";
     }
 
     private List<S3ObjectSummary> getS3ObjectList(String prefix) {
@@ -76,6 +85,9 @@ public class DriveGetService {
     }
 
     private LocalDateTime parseUploadedAt(String uploadedAtStr) {
+        if (uploadedAtStr == null || uploadedAtStr.trim().isEmpty()) {
+            return LocalDateTime.now();
+        }
         DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
         return LocalDateTime.parse(uploadedAtStr, formatter);
     }
