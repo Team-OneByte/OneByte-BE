@@ -3,6 +3,7 @@ package classfit.example.classfit.drive.controller;
 import classfit.example.classfit.auth.annotation.AuthMember;
 import classfit.example.classfit.common.ApiResponse;
 import classfit.example.classfit.drive.domain.DriveType;
+import classfit.example.classfit.drive.domain.FileType;
 import classfit.example.classfit.drive.dto.response.FileInfo;
 import classfit.example.classfit.drive.service.DriveDownloadService;
 import classfit.example.classfit.drive.service.DriveGetService;
@@ -91,5 +92,18 @@ public class DriveController {
     ) {
         List<FileInfo> files = driveGetService.searchFilesByName(member, driveType, fileName);
         return ApiResponse.success(files, 200, "SUCCESS");
+    }
+
+    @GetMapping("/filter")
+    @Operation(summary = "확장자 필터링", description = "파일 확장자로 필터링하여 파일을 조회하는 API입니다.")
+    public ApiResponse<List<FileInfo>> filterFilesByExtension(
+        @AuthMember Member member,
+        @Parameter(description = "내 드라이브는 PERSONAL, 공용 드라이브는 SHARED 입니다.")
+        @RequestParam DriveType driveType,
+        @Parameter(description = "파일 유형 필터입니다. 빈 값이면 모든 확장자가 조회됩니다.")
+        @RequestParam FileType fileType
+    ) {
+        List<FileInfo> files = driveGetService.classifyFilesByType(member, driveType, fileType);
+        return ApiResponse.success(files, 200, "확장자 필터링 성공");
     }
 }

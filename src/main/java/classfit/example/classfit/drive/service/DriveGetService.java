@@ -1,5 +1,6 @@
 package classfit.example.classfit.drive.service;
 
+import classfit.example.classfit.drive.domain.FileType;
 import java.text.Normalizer;
 import classfit.example.classfit.drive.domain.DriveType;
 import classfit.example.classfit.drive.dto.response.FileInfo;
@@ -129,5 +130,36 @@ public class DriveGetService {
 
     private String normalize(String input) {
         return Normalizer.normalize(input, Normalizer.Form.NFC).trim().toLowerCase();
+    }
+
+    public List<FileInfo> classifyFilesByType(Member member, DriveType driveType, FileType filterFileType) {
+        ListObjectsV2Request request = createListObjectsRequest(driveType, member, "");
+        ListObjectsV2Result result = amazonS3.listObjectsV2(request);
+
+        return result.getObjectSummaries().stream()
+            .map(this::buildFileInfo)
+            .filter(fileInfo -> !isFolder(fileInfo))  // 폴더는 제외
+            .filter(fileInfo -> {
+                FileType fileType = getFileType(fileInfo.fileName());
+                return fileType.equals(filterFileType);  // 필터링 조건 추가
+            })
+            .collect(Collectors.toList());
+    }
+
+    private boolean isFolder(FileInfo fileInfo) {
+        return fileInfo.fileName().endsWith("/");
+    }
+
+    private FileType getFileType(String fileName) {
+        String extension = getFileExtension(fileName);
+        return FileType.getFileTypeByExtension(extension);
+    }
+
+    private String getFileExtension(String fileName) {
+        int lastDotIndex = fileName.lastIndexOf('.');
+        if (lastDotIndex == -1) {
+            return "";
+        }
+        return fileName.substring(lastDotIndex + 1).toLowerCase();
     }
 }
