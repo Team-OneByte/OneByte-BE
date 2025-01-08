@@ -130,7 +130,8 @@ public class ScoreReportService {
                         report.examPeriod(),
                         report.mainClassName(),
                         report.subClassName(),
-                        report.examName()
+                        report.examName(),
+                        report.createAt()
                 ))
                 .collect(Collectors.toList());
 

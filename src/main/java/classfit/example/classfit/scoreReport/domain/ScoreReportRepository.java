@@ -14,7 +14,7 @@ import org.springframework.stereotype.Repository;
 public interface ScoreReportRepository extends JpaRepository<ScoreReport, Long> {
 
     @Query("SELECT new classfit.example.classfit.scoreReport.dto.process.ReportExam(" +
-            "e.id, e.examPeriod, e.mainClass.mainClassName, e.subClass.subClassName, e.examName) " +
+            "e.id, e.examPeriod, e.mainClass.mainClassName, e.subClass.subClassName, e.examName,e.createdAt) " +
             "FROM Exam e " +
             "WHERE FUNCTION('DATE', e.createdAt) BETWEEN :startDate AND :endDate " +
             "AND e.mainClass.id = :mainClassId " +
