@@ -30,7 +30,6 @@ public class DriveGetService {
     public List<FileInfo> getFilesFromS3(Member member, DriveType driveType, String folderPath) {
         List<FileInfo> files = new ArrayList<>();
         String prefix = getPrefixByDriveType(member, driveType, folderPath);
-        System.out.println("prefix : " + prefix);
         List<S3ObjectSummary> objectSummaries = getS3ObjectList(prefix);
 
         for (S3ObjectSummary summary : objectSummaries) {
@@ -73,9 +72,10 @@ public class DriveGetService {
         String fileUrl = amazonS3.getUrl(bucketName, fileName).toString();
 
         Map<String, String> tagMap = getTagsForS3Object(fileName);
+        String folderPath = tagMap.get("folderPath");
         String uploadedBy = tagMap.get("uploadedBy");
         LocalDateTime uploadedAt = parseUploadedAt(tagMap.get("uploadedAt"));
-        return new FileInfo(fileName, fileUrl, uploadedBy, uploadedAt);
+        return new FileInfo(fileName, fileUrl, folderPath, uploadedBy, uploadedAt);
     }
 
     private Map<String, String> getTagsForS3Object(String objectKey) {
