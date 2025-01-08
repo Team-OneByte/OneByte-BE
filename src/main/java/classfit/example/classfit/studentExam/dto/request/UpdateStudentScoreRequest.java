@@ -10,10 +10,6 @@ public record UpdateStudentScoreRequest(Long studentId, @NotNull(message = "점�
 
     public static UpdateStudentScoreRequest of(Long studentId, Integer score,
             Integer highestScore,String evaluationDetail,boolean checkedStudent) {
-        if (score != -3 && score != -4 && score != -5) {
-            throw new ClassfitException("점수는 -3, -4, -5만 허용됩니다. 그 외의 값은 유효하지 않습니다.",
-                    HttpStatus.BAD_REQUEST);
-        }
         if (score > highestScore) {
             throw new ClassfitException("점수는 최고 점수(" + highestScore + ")를 초과할 수 없습니다.",
                     HttpStatus.BAD_REQUEST);

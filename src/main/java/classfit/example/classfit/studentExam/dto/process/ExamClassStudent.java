@@ -2,17 +2,19 @@ package classfit.example.classfit.studentExam.dto.process;
 
 import classfit.example.classfit.common.exception.ClassfitException;
 import jakarta.validation.constraints.Min;
+import java.time.LocalDateTime;
 import org.springframework.http.HttpStatus;
 
 public record ExamClassStudent(Long studentId, String name,
-                               @Min(value = 0, message = "점수는 0 이상이어야 합니다.") Integer score,String evaluationDetail) {
+                               @Min(value = 0, message = "점수는 0 이상이어야 합니다.") Integer score, String evaluationDetail, boolean checkedStudent,
+                               LocalDateTime updateAt) {
 
     public static ExamClassStudent of(Long studentId, String name, Integer score,
-            Integer highestScore,String evaluationDetail) {
+            Integer highestScore,String evaluationDetail,boolean checkedStudent,LocalDateTime updateAt) {
         if (score > highestScore) {
             throw new ClassfitException("점수는 최고 점수(" + highestScore + ")를 초과할 수 없습니다.",
                     HttpStatus.BAD_REQUEST);
         }
-        return new ExamClassStudent(studentId, name, score,evaluationDetail);
+        return new ExamClassStudent(studentId, name, score,evaluationDetail,checkedStudent,updateAt);
     }
 }

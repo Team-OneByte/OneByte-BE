@@ -26,6 +26,7 @@ import classfit.example.classfit.studentExam.dto.response.FindExamResponse;
 import classfit.example.classfit.studentExam.dto.response.ShowExamDetailResponse;
 import classfit.example.classfit.studentExam.dto.response.UpdateExamResponse;
 import classfit.example.classfit.studentExam.dto.response.UpdateStudentScoreResponse;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 import org.springframework.transaction.annotation.Transactional;
@@ -90,10 +91,16 @@ public class ExamService {
 
         return studentExamScores.stream().map(studentExamScore -> {
             Student student = studentExamScore.getStudent();
-            return new ExamClassStudent(student.getId(), student.getName(),
-                    studentExamScore.getScore(),studentExamScore.getEvaluationDetail());
+            Integer score = studentExamScore.getScore();
+            String evaluationDetail = studentExamScore.getEvaluationDetail();
+            boolean checkedStudent = studentExamScore.isCheckedStudent();
+            LocalDateTime updateAt = studentExamScore.getUpdatedAt();
+
+            return ExamClassStudent.of(student.getId(), student.getName(), score,
+                    findExam.getHighestScore(), evaluationDetail, checkedStudent, updateAt);
         }).collect(Collectors.toList());
     }
+
 
     @Transactional(readOnly = true)
     public List<FindExamResponse> findExamList(@AuthMember Member findMember,
@@ -145,8 +152,21 @@ public class ExamService {
                                     student.getId())
                             .map(StudentExamScore::getEvaluationDetail)
                             .orElse(null);
+                    boolean checkedStudent = studentScores.stream()
+                            .filter(scoreObj -> scoreObj.getStudent().getId().equals(student.getId()))
+                            .map(StudentExamScore::isCheckedStudent)
+                            .findFirst()
+                            .orElse(false);
 
-                    return new ExamClassStudent(student.getId(), student.getName(), score,evaluationDetail);
+                    // Get updateAt from BaseEntity via StudentExamScore
+                    LocalDateTime updateAt = studentScores.stream()
+                            .filter(scoreObj -> scoreObj.getStudent().getId().equals(student.getId()))
+                            .map(StudentExamScore::getUpdatedAt)
+                            .findFirst()
+                            .orElse(LocalDateTime.now());
+
+
+                    return new ExamClassStudent(student.getId(), student.getName(), score,evaluationDetail,checkedStudent,updateAt);
                 })
 
                 .collect(Collectors.toList());
@@ -202,14 +222,12 @@ public class ExamService {
                     studentExamScore.updateScore(-3);
                 } else if (request.score() == -4) {  // F
                     studentExamScore.updateScore(-4);
-                } else {
-                    throw new ClassfitException("PF 상태에서 점수는 -3(P) 또는 -4(F)여야 합니다.",
-                            HttpStatus.BAD_REQUEST);
                 }
             } else if (findExam.getHighestScore() == -2) { // Evaluation
                 studentExamScore.updateScore(-5);  // Evaluation -5
                 studentExamScore.updateEvaluationDetail(request.evaluationDetail());
             }
+            studentExamScore.updateCheckedStudent(request.checkedStudent());
             studentExamScoreRepository.save(studentExamScore);
         }
 
