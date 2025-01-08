@@ -1,5 +1,7 @@
 package classfit.example.classfit.scoreReport.service;
 
+import classfit.example.classfit.academy.domain.Academy;
+import classfit.example.classfit.academy.repository.AcademyRepository;
 import classfit.example.classfit.attendance.domain.Attendance;
 import classfit.example.classfit.attendance.dto.process.AttendanceInfo;
 import classfit.example.classfit.auth.annotation.AuthMember;
@@ -17,6 +19,7 @@ import classfit.example.classfit.scoreReport.dto.process.ReportExam;
 import classfit.example.classfit.scoreReport.dto.request.CreateReportRequest;
 import classfit.example.classfit.scoreReport.dto.request.SentStudentOpinionRequest;
 import classfit.example.classfit.scoreReport.dto.response.CreateReportResponse;
+import classfit.example.classfit.scoreReport.dto.response.FindAllReportResponse;
 import classfit.example.classfit.scoreReport.dto.response.FindClassStudent;
 import classfit.example.classfit.scoreReport.dto.response.FindReportResponse;
 import classfit.example.classfit.scoreReport.dto.response.SentStudentOpinionResponse;
@@ -31,6 +34,7 @@ import classfit.example.classfit.studentExam.dto.process.ExamHistory;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -47,6 +51,7 @@ public class ScoreReportService {
     private final ExamRepository examRepository;
     private final ClassStudentRepository classStudentRepository;
     private final StudentExamScoreRepository studentExamScoreRepository;
+    private final AcademyRepository academyRepository;
 
     @Transactional
     public CreateReportResponse createReport(@AuthMember Member member,
@@ -79,6 +84,7 @@ public class ScoreReportService {
             report = ScoreReport.builder()
                     .mainClass(mainClass)
                     .subClass(subClass)
+                    .includeAverage(request.includeAverage())
                     .student(student)
                     .reportName(request.reportName())
                     .overallOpinion(request.overallOpinion())
@@ -124,7 +130,8 @@ public class ScoreReportService {
                         report.examPeriod(),
                         report.mainClassName(),
                         report.subClassName(),
-                        report.examName()
+                        report.examName(),
+                        report.createAt()
                 ))
                 .collect(Collectors.toList());
 
@@ -153,6 +160,30 @@ public class ScoreReportService {
                 ))
                 .collect(Collectors.toList());
     }
+    @Transactional(readOnly = true)
+    public List<FindAllReportResponse> findAllReport(@AuthMember Member member, Long academyId) {
+
+        Academy academy = academyRepository.findById(academyId)
+                .orElseThrow(() -> new ClassfitException("학원을 찾을 수 없어요.", HttpStatus.NOT_FOUND));
+
+        if (!Objects.equals(member.getAcademy().getId(), academyId)) {
+            throw new ClassfitException("해당 학원에 접근할 권한이 없습니다.", HttpStatus.FORBIDDEN);
+        }
+
+        List<ScoreReport> scoreReports = scoreReportRepository.findAllByAcademy(academy);
+
+        return scoreReports.stream()
+                .map(report -> new FindAllReportResponse(
+                        report.getId(),
+                        report.getStudent().getId(),
+                        report.getStudent().getName(),
+                        report.getReportName(),
+                        report.getMainClass().getMember().getName(),
+                        report.getCreatedAt().toLocalDate()
+                ))
+                .collect(Collectors.toList());
+    }
+
 
     @Transactional
     public void deleteReport(@AuthMember Member member, Long studentReportId) {
@@ -248,6 +279,7 @@ public class ScoreReportService {
                 scoreReport.getEndDate(),
                 attendanceInfoList,
                 totalAttendanceCount,
+                scoreReport.isIncludeAverage(),
                 examHistoryList,
                 scoreReport.getOverallOpinion(),
                 scoreReport.getStudentOpinion()

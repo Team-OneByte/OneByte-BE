@@ -58,11 +58,14 @@ public class ScoreReport extends BaseEntity {
     @Column(name = "student_opinion")
     private String studentOpinion;
 
+    @Column(name = "include_average")
+    private boolean includeAverage;
+
 
     @Builder
     public ScoreReport(SubClass subClass, MainClass mainClass, String reportName, Student student,
             String overallOpinion, LocalDate startDate,
-            LocalDate endDate) {
+            LocalDate endDate,boolean includeAverage) {
         this.subClass = subClass;
         this.mainClass = mainClass;
         this.reportName = reportName;
@@ -70,6 +73,7 @@ public class ScoreReport extends BaseEntity {
         this.overallOpinion = overallOpinion;
         this.startDate = startDate;
         this.endDate = endDate;
+        this.includeAverage = includeAverage;
     }
 
     public void updateStudentOpinion(String studentOpinion) {
