@@ -28,9 +28,11 @@ public class DriveFolderController {
         @Parameter(description = "내 드라이브는 PERSONAL, 공용 드라이브는 SHARED 입니다.")
         @RequestParam DriveType driveType,
         @Parameter(description = "생성할 폴더 이름입니다.")
-        @RequestParam String folderName
+        @RequestParam String folderName,
+        @Parameter(description = "폴더 경로입니다. 비어 있으면 루트 폴더에 생성됩니다.")
+        @RequestParam(required = false, defaultValue = "") String folderPath
     ) {
-        String folderPath = driveFolderService.createFolder(member, driveType, folderName);
-        return ApiResponse.success(folderPath, 200, "SUCCESS");
+        String fullPath = driveFolderService.createFolder(member, driveType, folderName, folderPath);
+        return ApiResponse.success(fullPath, 200, "SUCCESS");
     }
 }

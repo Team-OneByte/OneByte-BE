@@ -6,6 +6,8 @@ import static classfit.example.classfit.drive.domain.DriveType.SHARED;
 import classfit.example.classfit.drive.domain.DriveType;
 import classfit.example.classfit.member.domain.Member;
 import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.ListObjectsV2Request;
+import com.amazonaws.services.s3.model.ListObjectsV2Result;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import java.io.ByteArrayInputStream;
@@ -23,23 +25,44 @@ public class DriveFolderService {
     @Value("${cloud.aws.s3.bucket}")
     private String bucketName;
 
-    public String createFolder(Member member, DriveType driveType, String folderName) {
-        String folderKey = generateFolderKey(member, driveType, folderName);
+    public String createFolder(Member member, DriveType driveType, String folderName, String folderPath) {
+        String uniqueFolderName = generateUniqueFolderName(member, driveType, folderName, folderPath);
+        String fullFolderPath = generateFolderKey(member, driveType, uniqueFolderName, folderPath);
+
         ObjectMetadata metadata = new ObjectMetadata();
         metadata.setContentLength(0);
 
         InputStream emptyContent = new ByteArrayInputStream(new byte[0]);
-        amazonS3.putObject(new PutObjectRequest(bucketName, folderKey, emptyContent, metadata));
-        return folderKey;
+        amazonS3.putObject(new PutObjectRequest(bucketName, fullFolderPath, emptyContent, metadata));
+        return fullFolderPath;
     }
 
-    private String generateFolderKey(Member member, DriveType driveType, String folderName) {
-        if (driveType == PERSONAL) {
-            return String.format("personal/%d/%s/", member.getId(), folderName);
-        } else if (driveType == SHARED) {
-            Long academyId = member.getAcademy().getId();
-            return String.format("shared/%d/%s/", academyId, folderName);
+    private String generateUniqueFolderName(Member member, DriveType driveType, String folderName, String folderPath) {
+        String baseKey = generateFolderKey(member, driveType, folderName, folderPath);
+        int counter = 1;
+
+        while (doesFolderExist(baseKey)) {
+            folderName = String.format("%s(%d)", folderName, counter);
+            baseKey = generateFolderKey(member, driveType, folderName, folderPath);
+            counter++;
         }
-        throw new IllegalArgumentException("유효하지 않은 드라이브 타입");
+        return folderName;
+    }
+
+    private boolean doesFolderExist(String folderKey) {
+        ListObjectsV2Request request = new ListObjectsV2Request()
+            .withBucketName(bucketName)
+            .withPrefix(folderKey)
+            .withMaxKeys(1);
+        ListObjectsV2Result result = amazonS3.listObjectsV2(request);
+        return !result.getObjectSummaries().isEmpty();
+    }
+
+    private String generateFolderKey(Member member, DriveType driveType, String folderName, String folderPath) {
+        String basePath = driveType == PERSONAL
+            ? String.format("personal/%d/", member.getId())
+            : String.format("shared/%d/", member.getAcademy().getId());
+
+        return basePath + (folderPath.isEmpty() ? "" : folderPath + "/") + folderName + "/";
     }
 }
