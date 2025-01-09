@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 
 import static classfit.example.classfit.drive.domain.DriveType.PERSONAL;
@@ -29,16 +30,22 @@ public class DriveTrashService {
     @Value("${cloud.aws.s3.bucket}")
     private String bucketName;
 
-    public String moveToTrash(Member member, DriveType driveType, String folderPath, String fileName) {
-        String sourcePath = generateSourcePath(member, driveType, folderPath, fileName);
-        String trashPath = generateTrashPath(member, driveType, fileName);
+    public List<String> moveToTrash(Member member, DriveType driveType, String folderPath, List<String> fileNames) {
+        List<String> trashPaths = new ArrayList<>();
 
-        CopyObjectRequest copyRequest = new CopyObjectRequest(bucketName, sourcePath, bucketName, trashPath);
-        amazonS3.copyObject(copyRequest);
+        for (String fileName : fileNames) {
+            String sourcePath = generateSourcePath(member, driveType, folderPath, fileName);
+            String trashPath = generateTrashPath(member, driveType, fileName);
 
-        addDeleteTagsToS3Object(trashPath, folderPath, member);
-        amazonS3.deleteObject(bucketName, sourcePath);
-        return trashPath;
+            CopyObjectRequest copyRequest = new CopyObjectRequest(bucketName, sourcePath, bucketName, trashPath);
+            amazonS3.copyObject(copyRequest);
+
+            addDeleteTagsToS3Object(trashPath, folderPath, member);
+            amazonS3.deleteObject(bucketName, sourcePath);
+
+            trashPaths.add(trashPath);
+        }
+        return trashPaths;
     }
 
     private String generateSourcePath(Member member, DriveType driveType, String folderPath, String fileName) {

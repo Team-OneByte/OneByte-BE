@@ -26,17 +26,17 @@ public class DriveTrashController {
     private final DriveDeleteService driveDeleteService;
 
     @PostMapping("/trash")
-    public ApiResponse<String> moveToTrash(
+    public ApiResponse<List<String>> moveToTrash(
         @AuthMember Member member,
         @Parameter(description = "내 드라이브는 PERSONAL, 공용 드라이브는 SHARED 입니다.")
         @RequestParam DriveType driveType,
         @Parameter(description = "폴더 경로입니다. 비어 있으면 루트 폴더로 지정됩니다.")
         @RequestParam(required = false, defaultValue = "") String folderPath,
-        @Parameter(description = "파일이름")
-        @RequestParam String fileName
+        @Parameter(description = "파일 이름")
+        @RequestParam List<String> fileNames
     ) {
-        String trashPath = driveTrashService.moveToTrash(member, driveType, folderPath, fileName);
-        return ApiResponse.success(trashPath, 200, "휴지통 이동 완료");
+        List<String> trashPathList = driveTrashService.moveToTrash(member, driveType, folderPath, fileNames);
+        return ApiResponse.success(trashPathList, 200, "휴지통 이동 완료");
     }
 
     @PostMapping("/trash/restore")

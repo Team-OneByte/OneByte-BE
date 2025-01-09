@@ -19,7 +19,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -65,7 +64,7 @@ public class DriveController {
     @Operation(summary = "파일 다운로드", description = "파일 다운로드 API 입니다.")
     public ResponseEntity<InputStreamResource> downloadFile(
         @RequestParam("fileName") String fileName
-    ) throws UnsupportedEncodingException {
+    ) {
         InputStreamResource resource = driveDownloadService.downloadFile(fileName);
         String fileExtension = driveDownloadService.getFileExtension(fileName);
         String contentType = driveDownloadService.getContentType(fileExtension);
