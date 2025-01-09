@@ -79,7 +79,7 @@ public class DriveUploadService {
     private void addTagsToS3Object(String objectKey, Member member, String folderPath, DriveType driveType) {
         LocalDateTime now = LocalDateTime.now();
         String formattedDate = now.format(DateTimeFormatter.ISO_DATE_TIME);
-        String finalFolderPath = folderPath != null && !folderPath.trim().isEmpty() ? folderPath + "/" : "";
+        String finalFolderPath = folderPath != null && !folderPath.trim().isEmpty() ? folderPath : "";
 
         List<Tag> tags = List.of(
             new Tag("folderPath", finalFolderPath),

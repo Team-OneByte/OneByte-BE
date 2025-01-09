@@ -35,7 +35,7 @@ public class DriveRestoreService {
             .collect(Collectors.toMap(Tag::getKey, Tag::getValue));
 
         String folderPath = tagMap.getOrDefault("folderPath", "");
-        String restoredPath = generateOriginalPath(member, driveType, folderPath, fileName);
+        String restoredPath = generateSourcePath(member, driveType, folderPath, fileName);
 
         CopyObjectRequest copyRequest = new CopyObjectRequest(bucketName, trashPath, bucketName, restoredPath);
         amazonS3.copyObject(copyRequest);
@@ -54,8 +54,8 @@ public class DriveRestoreService {
         throw new ClassfitException("지원하지 않는 드라이브 타입입니다.", HttpStatus.NO_CONTENT);
     }
 
-    private String generateOriginalPath(Member member, DriveType driveType, String folderPath, String fileName) {
-        String fullFolderPath = folderPath != null && !folderPath.trim().isEmpty() ? folderPath : "";
+    private String generateSourcePath(Member member, DriveType driveType, String folderPath, String fileName) {
+        String fullFolderPath = folderPath != null && !folderPath.trim().isEmpty() ? folderPath + "/" : "";
         if (driveType == DriveType.PERSONAL) {
             return String.format("personal/%d/%s%s", member.getId(), fullFolderPath, fileName);
         } else if (driveType == DriveType.SHARED) {
