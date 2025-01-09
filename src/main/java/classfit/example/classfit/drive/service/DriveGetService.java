@@ -1,25 +1,22 @@
 package classfit.example.classfit.drive.service;
 
-import classfit.example.classfit.drive.domain.FileType;
-import java.text.Normalizer;
 import classfit.example.classfit.drive.domain.DriveType;
+import classfit.example.classfit.drive.domain.FileType;
 import classfit.example.classfit.drive.dto.response.FileInfo;
 import classfit.example.classfit.member.domain.Member;
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.GetObjectTaggingRequest;
-import com.amazonaws.services.s3.model.ListObjectsV2Request;
-import com.amazonaws.services.s3.model.ListObjectsV2Result;
-import com.amazonaws.services.s3.model.S3ObjectSummary;
-import com.amazonaws.services.s3.model.Tag;
+import com.amazonaws.services.s3.model.*;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
+import java.text.Normalizer;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
@@ -39,6 +36,16 @@ public class DriveGetService {
             files.add(fileInfo);
         }
         return files;
+    }
+
+    public List<FileInfo> searchFilesByName(Member member, DriveType driveType, String fileName) {
+        ListObjectsV2Request request = createListObjectsRequest(driveType, member, fileName);
+        ListObjectsV2Result result = amazonS3.listObjectsV2(request);
+
+        return result.getObjectSummaries().stream()
+            .map(this::buildFileInfo)
+            .filter(fileInfo -> normalize(fileInfo.fileName()).contains(normalize(fileName)))  // 정규화하여 필터링
+            .collect(Collectors.toList());
     }
 
     private String getPrefixByDriveType(Member member, DriveType driveType, String folderPath) {
@@ -92,16 +99,6 @@ public class DriveGetService {
         }
         DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
         return LocalDateTime.parse(uploadedAtStr, formatter);
-    }
-
-    public List<FileInfo> searchFilesByName(Member member, DriveType driveType, String fileName) {
-        ListObjectsV2Request request = createListObjectsRequest(driveType, member, fileName);
-        ListObjectsV2Result result = amazonS3.listObjectsV2(request);
-
-        return result.getObjectSummaries().stream()
-            .map(this::buildFileInfo)
-            .filter(fileInfo -> normalize(fileInfo.fileName()).contains(normalize(fileName)))  // 정규화하여 필터링
-            .collect(Collectors.toList());
     }
 
     private ListObjectsV2Request createListObjectsRequest(DriveType driveType, Member member, String folderPath) {

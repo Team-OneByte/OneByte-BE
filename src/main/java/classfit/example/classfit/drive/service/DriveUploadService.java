@@ -1,17 +1,15 @@
 package classfit.example.classfit.drive.service;
 
-import static classfit.example.classfit.drive.domain.DriveType.PERSONAL;
-import static classfit.example.classfit.drive.domain.DriveType.SHARED;
-
 import classfit.example.classfit.auth.annotation.AuthMember;
 import classfit.example.classfit.drive.domain.DriveType;
 import classfit.example.classfit.member.domain.Member;
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.amazonaws.services.s3.model.ObjectTagging;
-import com.amazonaws.services.s3.model.PutObjectRequest;
-import com.amazonaws.services.s3.model.SetObjectTaggingRequest;
-import com.amazonaws.services.s3.model.Tag;
+import com.amazonaws.services.s3.model.*;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDateTime;
@@ -19,10 +17,9 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
+
+import static classfit.example.classfit.drive.domain.DriveType.PERSONAL;
+import static classfit.example.classfit.drive.domain.DriveType.SHARED;
 
 @Service
 @RequiredArgsConstructor
@@ -34,13 +31,13 @@ public class DriveUploadService {
 
     public List<String> uploadFiles(@AuthMember Member member, DriveType driveType, List<MultipartFile> files, String folderPath) {
         return files.stream().map(file -> {
-            try {
-                return uploadFileToS3(member, file, driveType, folderPath);
-            } catch (IOException e) {
-                throw new RuntimeException("파일 업로드 중 오류 발생: " + file.getOriginalFilename(), e);
-            }
-        })
-        .collect(Collectors.toList());
+                try {
+                    return uploadFileToS3(member, file, driveType, folderPath);
+                } catch (IOException e) {
+                    throw new RuntimeException("파일 업로드 중 오류 발생: " + file.getOriginalFilename(), e);
+                }
+            })
+            .collect(Collectors.toList());
     }
 
     private String uploadFileToS3(Member member, MultipartFile file, DriveType driveType, String folderPath) throws IOException {
@@ -54,7 +51,7 @@ public class DriveUploadService {
     }
 
     private String generateObjectKey(Member member, MultipartFile file, DriveType driveType, String folderPath) {
-        String uniqueFileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
+        String uniqueFileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
         String fullFolderPath = folderPath != null && !folderPath.trim().isEmpty() ? folderPath + "/" : "";
 
         if (driveType == PERSONAL) {
