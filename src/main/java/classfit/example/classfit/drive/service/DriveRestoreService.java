@@ -4,16 +4,14 @@ import classfit.example.classfit.common.exception.ClassfitException;
 import classfit.example.classfit.drive.domain.DriveType;
 import classfit.example.classfit.member.domain.Member;
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.CopyObjectRequest;
-import com.amazonaws.services.s3.model.GetObjectTaggingRequest;
-import com.amazonaws.services.s3.model.GetObjectTaggingResult;
-import com.amazonaws.services.s3.model.Tag;
+import com.amazonaws.services.s3.model.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
@@ -25,23 +23,23 @@ public class DriveRestoreService {
     @Value("${cloud.aws.s3.bucket}")
     private String bucketName;
 
-    public String restoreFromTrash(Member member, DriveType driveType, String fileName) {
-        String trashPath = generateTrashPath(member, driveType, fileName);
+    public List<String> restoreFromTrash(Member member, DriveType driveType, List<String> fileNames) {
+        List<String> restoredPaths = new ArrayList<>();
 
-        GetObjectTaggingRequest taggingRequest = new GetObjectTaggingRequest(bucketName, trashPath);
-        GetObjectTaggingResult taggingResult = amazonS3.getObjectTagging(taggingRequest);
+        for (String fileName : fileNames) {
+            String trashPath = generateTrashPath(member, driveType, fileName);
+            List<Tag> filteredTags = getFilteredTags(trashPath);
+            String folderPath = extractTags(filteredTags);
 
-        Map<String, String> tagMap = taggingResult.getTagSet().stream()
-            .collect(Collectors.toMap(Tag::getKey, Tag::getValue));
+            String restoredPath = generateSourcePath(member, driveType, folderPath, fileName);
+            CopyObjectRequest copyRequest = new CopyObjectRequest(bucketName, trashPath, bucketName, restoredPath);
+            amazonS3.copyObject(copyRequest);
 
-        String folderPath = tagMap.getOrDefault("folderPath", "");
-        String restoredPath = generateSourcePath(member, driveType, folderPath, fileName);
+            amazonS3.deleteObject(bucketName, trashPath);
+            restoredPaths.add(restoredPath);
+        }
 
-        CopyObjectRequest copyRequest = new CopyObjectRequest(bucketName, trashPath, bucketName, restoredPath);
-        amazonS3.copyObject(copyRequest);
-
-        amazonS3.deleteObject(bucketName, trashPath);
-        return restoredPath;
+        return restoredPaths;
     }
 
     private String generateTrashPath(Member member, DriveType driveType, String fileName) {
@@ -63,5 +61,25 @@ public class DriveRestoreService {
             return String.format("shared/%d/%s%s", academyId, fullFolderPath, fileName);
         }
         throw new ClassfitException("지원하지 않는 드라이브 타입입니다.", HttpStatus.NO_CONTENT);
+    }
+
+    private List<Tag> getFilteredTags(String trashPath) {
+        GetObjectTaggingRequest taggingRequest = new GetObjectTaggingRequest(bucketName, trashPath);
+        GetObjectTaggingResult taggingResult = amazonS3.getObjectTagging(taggingRequest);
+
+        List<Tag> filteredTags = taggingResult.getTagSet().stream()
+            .filter(tag -> !tag.getKey().equals("deletedBy") && !tag.getKey().equals("deleteAt"))
+            .collect(Collectors.toList());
+
+        amazonS3.setObjectTagging(new SetObjectTaggingRequest(bucketName, trashPath, new ObjectTagging(filteredTags)));
+        return filteredTags;
+    }
+
+    private String extractTags(List<Tag> tags) {
+        return tags.stream()
+            .filter(tag -> tag.getKey().equals("folderPath"))
+            .map(Tag::getValue)
+            .findFirst()
+            .orElse("");
     }
 }

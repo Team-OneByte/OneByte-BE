@@ -1,5 +1,6 @@
 package classfit.example.classfit.drive.service;
 
+import classfit.example.classfit.common.exception.ClassfitException;
 import classfit.example.classfit.drive.domain.DriveType;
 import classfit.example.classfit.drive.domain.FileType;
 import classfit.example.classfit.drive.dto.response.FileInfo;
@@ -8,6 +9,7 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.text.Normalizer;
@@ -59,7 +61,7 @@ public class DriveGetService {
                 basePrefix = "shared/" + academyId + "/";
                 break;
             default:
-                throw new IllegalArgumentException("유효하지 않은 드라이브 타입");
+                throw new ClassfitException("지원하지 않는 드라이브 타입입니다.", HttpStatus.NO_CONTENT);
         }
         if (folderPath == null || folderPath.trim().isEmpty()) {
             return basePrefix;
@@ -120,7 +122,7 @@ public class DriveGetService {
         } else if (driveType == DriveType.SHARED) {
             basePrefix = "shared/" + member.getAcademy().getId();
         } else {
-            throw new IllegalArgumentException("지원하지 않는 드라이브 타입입니다.");
+            throw new ClassfitException("지원하지 않는 드라이브 타입입니다.", HttpStatus.NO_CONTENT);
         }
         return basePrefix + "/";
     }

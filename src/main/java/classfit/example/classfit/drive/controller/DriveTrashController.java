@@ -40,15 +40,15 @@ public class DriveTrashController {
     }
 
     @PostMapping("/trash/restore")
-    public ApiResponse<String> restoreFromTrash(
+    public ApiResponse<List<String>> restoreFromTrash(
         @AuthMember Member member,
         @Parameter(description = "내 드라이브는 PERSONAL, 공용 드라이브는 SHARED 입니다.")
         @RequestParam DriveType driveType,
         @Parameter(description = "파일 이름")
-        @RequestParam String fileName
+        @RequestParam List<String> fileNames
     ) {
-        String restoredPath = driveRestoreService.restoreFromTrash(member, driveType, fileName);
-        return ApiResponse.success(restoredPath, 200, "복원 성공");
+        List<String> restorePathList = driveRestoreService.restoreFromTrash(member, driveType, fileNames);
+        return ApiResponse.success(restorePathList, 200, "복원 성공");
     }
 
     @DeleteMapping("/trash")
