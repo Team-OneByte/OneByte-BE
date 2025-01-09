@@ -1,6 +1,7 @@
 package classfit.example.classfit.drive.service;
 
 import classfit.example.classfit.auth.annotation.AuthMember;
+import classfit.example.classfit.common.util.DriveUtil;
 import classfit.example.classfit.drive.domain.DriveType;
 import classfit.example.classfit.member.domain.Member;
 import com.amazonaws.services.s3.AmazonS3;
@@ -17,9 +18,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
-
-import static classfit.example.classfit.drive.domain.DriveType.PERSONAL;
-import static classfit.example.classfit.drive.domain.DriveType.SHARED;
 
 @Service
 @RequiredArgsConstructor
@@ -41,26 +39,14 @@ public class DriveUploadService {
     }
 
     private String uploadFileToS3(Member member, MultipartFile file, DriveType driveType, String folderPath) throws IOException {
-        String objectKey = generateObjectKey(member, file, driveType, folderPath);
+        String uniqueFileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
+        String objectKey = DriveUtil.generatedOriginPath(member, driveType, folderPath, uniqueFileName);
 
         try (InputStream inputStream = file.getInputStream()) {
             uploadToS3(objectKey, inputStream, file);
         }
         addTagsToS3Object(objectKey, member, folderPath, driveType);
         return amazonS3.getUrl(bucketName, objectKey).toString();
-    }
-
-    private String generateObjectKey(Member member, MultipartFile file, DriveType driveType, String folderPath) {
-        String uniqueFileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
-        String fullFolderPath = folderPath != null && !folderPath.trim().isEmpty() ? folderPath + "/" : "";
-
-        if (driveType == PERSONAL) {
-            return String.format("personal/%d/%s%s", member.getId(), fullFolderPath, uniqueFileName);
-        } else if (driveType == SHARED) {
-            Long academyId = member.getAcademy().getId();
-            return String.format("shared/%d/%s%s", academyId, fullFolderPath, uniqueFileName);
-        }
-        throw new IllegalArgumentException("유효하지 않은 드라이브 타입");
     }
 
     private void uploadToS3(String objectKey, InputStream inputStream, MultipartFile file) {
