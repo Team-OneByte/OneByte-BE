@@ -30,22 +30,19 @@ public class DriveTrashService {
     private String bucketName;
 
     public String moveToTrash(Member member, DriveType driveType, String folderPath, String fileName) {
-        String filePath = generateObjectKey(member, driveType, folderPath, fileName);
-        String trashPath = generateTrashPath(driveType, filePath);
-        return moveS3ToTrash(filePath, trashPath, member);
-    }
+        String sourcePath = generateSourcePath(member, driveType, folderPath, fileName);
+        String trashPath = generateTrashPath(member, driveType, fileName);
 
-    private String moveS3ToTrash(String sourcePath, String trashPath, Member member) {
         CopyObjectRequest copyRequest = new CopyObjectRequest(bucketName, sourcePath, bucketName, trashPath);
         amazonS3.copyObject(copyRequest);
-        addDeleteTagsToS3Object(trashPath, member);
 
+        addDeleteTagsToS3Object(trashPath, folderPath, member);
         amazonS3.deleteObject(bucketName, sourcePath);
         return trashPath;
     }
 
-    private String generateObjectKey(Member member, DriveType driveType, String folderPath, String fileName) {
-        String fullFolderPath = folderPath != null && !folderPath.trim().isEmpty() ? folderPath + "/" : "";
+    private String generateSourcePath(Member member, DriveType driveType, String folderPath, String fileName) {
+        String fullFolderPath = generateFolderPath(folderPath);
 
         if (driveType == PERSONAL) {
             return String.format("personal/%d/%s%s", member.getId(), fullFolderPath, fileName);
@@ -56,24 +53,29 @@ public class DriveTrashService {
         throw new ClassfitException("지원하지 않는 드라이브 타입입니다.", HttpStatus.NO_CONTENT);
     }
 
-    private String generateTrashPath(DriveType driveType, String filePath) {
+    private String generateTrashPath(Member member, DriveType driveType, String fileName) {
         if (driveType == DriveType.PERSONAL) {
-            return String.format("trash/%s", filePath);
+            return String.format("trash/personal/%d/%s", member.getId(), fileName);
         } else if (driveType == DriveType.SHARED) {
-            return String.format("trash/%s", filePath);
+            Long academyId = member.getAcademy().getId();
+            return String.format("trash/shared/%d/%s", academyId, fileName);
         }
         throw new ClassfitException("지원하지 않는 드라이브 타입입니다.", HttpStatus.NO_CONTENT);
     }
 
-    private void addDeleteTagsToS3Object(String objectKey, Member member) {
+    private String generateFolderPath(String folderPath) {
+        return folderPath != null && !folderPath.trim().isEmpty() ? folderPath + "/" : "";
+    }
+
+    private void addDeleteTagsToS3Object(String objectKey, String folderPath, Member member) {
         LocalDateTime now = LocalDateTime.now();
         String formattedDate = now.format(DateTimeFormatter.ISO_DATE_TIME);
 
         List<Tag> tags = List.of(
+            new Tag("folderPath", generateFolderPath(folderPath)),
             new Tag("deletedBy", member.getName()),
             new Tag("deleteAt", formattedDate)
         );
-
         amazonS3.setObjectTagging(new SetObjectTaggingRequest(bucketName, objectKey, new ObjectTagging(tags)));
     }
 }

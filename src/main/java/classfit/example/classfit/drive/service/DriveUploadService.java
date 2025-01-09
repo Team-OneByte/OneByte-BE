@@ -46,7 +46,7 @@ public class DriveUploadService {
         try (InputStream inputStream = file.getInputStream()) {
             uploadToS3(objectKey, inputStream, file);
         }
-        addTagsToS3Object(objectKey, member, folderPath);
+        addTagsToS3Object(objectKey, member, folderPath, driveType);
         return amazonS3.getUrl(bucketName, objectKey).toString();
     }
 
@@ -76,13 +76,14 @@ public class DriveUploadService {
         return metadata;
     }
 
-    private void addTagsToS3Object(String objectKey, Member member, String folderPath) {
+    private void addTagsToS3Object(String objectKey, Member member, String folderPath, DriveType driveType) {
         LocalDateTime now = LocalDateTime.now();
         String formattedDate = now.format(DateTimeFormatter.ISO_DATE_TIME);
-        String finalFodlerPath = folderPath != null && !folderPath.trim().isEmpty() ? folderPath + "/" : "";
+        String finalFolderPath = folderPath != null && !folderPath.trim().isEmpty() ? folderPath + "/" : "";
 
         List<Tag> tags = List.of(
-            new Tag("folderPath", finalFodlerPath),
+            new Tag("folderPath", finalFolderPath),
+            new Tag("driveType", driveType.toString().toLowerCase()),
             new Tag("uploadedBy", member.getName()),
             new Tag("uploadedAt", formattedDate)
         );
