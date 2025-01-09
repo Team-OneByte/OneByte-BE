@@ -26,10 +26,12 @@ public class DriveTrashController {
         @AuthMember Member member,
         @Parameter(description = "내 드라이브는 PERSONAL, 공용 드라이브는 SHARED 입니다.")
         @RequestParam DriveType driveType,
-        @Parameter(description = "파일이름 및 폴더(folder/), 폴더 입력 시 하위 목록까지 휴지통으로 이동합니다.")
+        @Parameter(description = "폴더 경로입니다. 비어 있으면 루트 폴더에 지정됩니다.")
+        @RequestParam(required = false, defaultValue = "") String folderPath,
+        @Parameter(description = "파일이름")
         @RequestParam String fileName
     ) {
-        String trashPath = driveTrashService.moveToTrash(member, driveType, fileName);
+        String trashPath = driveTrashService.moveToTrash(member, driveType, folderPath, fileName);
         return ApiResponse.success(trashPath, 200, "휴지통 이동 완료");
     }
 }

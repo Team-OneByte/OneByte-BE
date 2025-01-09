@@ -4,7 +4,10 @@ import classfit.example.classfit.common.exception.ClassfitException;
 import classfit.example.classfit.drive.domain.DriveType;
 import classfit.example.classfit.member.domain.Member;
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.*;
+import com.amazonaws.services.s3.model.CopyObjectRequest;
+import com.amazonaws.services.s3.model.ObjectTagging;
+import com.amazonaws.services.s3.model.SetObjectTaggingRequest;
+import com.amazonaws.services.s3.model.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -13,6 +16,9 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+
+import static classfit.example.classfit.drive.domain.DriveType.PERSONAL;
+import static classfit.example.classfit.drive.domain.DriveType.SHARED;
 
 @Service
 @RequiredArgsConstructor
@@ -23,61 +29,29 @@ public class DriveTrashService {
     @Value("${cloud.aws.s3.bucket}")
     private String bucketName;
 
-    public String moveToTrash(Member member, DriveType driveType, String path) {
-        return isFolderPath(path)
-            ? moveFolderToTrash(member, driveType, path)
-            : moveFileToTrash(member, driveType, path);
-    }
-
-    private boolean isFolderPath(String path) {
-        return path.endsWith("/");
-    }
-
-    private String moveFileToTrash(Member member, DriveType driveType, String fileName) {
-        String filePath = generateFullPath(member, driveType, fileName);
-        return moveS3ToTrash(filePath, generateTrashPath(driveType, filePath), member);
-    }
-
-    private String moveFolderToTrash(Member member, DriveType driveType, String folderPath) {
-        List<S3ObjectSummary> objectSummaries = listS3ByPrefix(generateFullPath(member, driveType, folderPath));
-
-        if (objectSummaries.isEmpty()) {
-            return moveS3ToTrash(folderPath, generateTrashPath(driveType, folderPath), member);
-        }
-
-        objectSummaries.forEach(summary -> {
-            String filePath = summary.getKey();
-            moveS3ToTrash(filePath, generateTrashPath(driveType, filePath), member);
-        });
-
-        return folderPath;
+    public String moveToTrash(Member member, DriveType driveType, String folderPath, String fileName) {
+        String filePath = generateObjectKey(member, driveType, folderPath, fileName);
+        String trashPath = generateTrashPath(driveType, filePath);
+        return moveS3ToTrash(filePath, trashPath, member);
     }
 
     private String moveS3ToTrash(String sourcePath, String trashPath, Member member) {
         CopyObjectRequest copyRequest = new CopyObjectRequest(bucketName, sourcePath, bucketName, trashPath);
         amazonS3.copyObject(copyRequest);
-
         addDeleteTagsToS3Object(trashPath, member);
 
         amazonS3.deleteObject(bucketName, sourcePath);
         return trashPath;
     }
 
-    private List<S3ObjectSummary> listS3ByPrefix(String prefix) {
-        ListObjectsV2Request request = new ListObjectsV2Request()
-            .withBucketName(bucketName)
-            .withPrefix(prefix);
+    private String generateObjectKey(Member member, DriveType driveType, String folderPath, String fileName) {
+        String fullFolderPath = folderPath != null && !folderPath.trim().isEmpty() ? folderPath + "/" : "";
 
-        ListObjectsV2Result result = amazonS3.listObjectsV2(request);
-        return result.getObjectSummaries();
-    }
-
-    private String generateFullPath(Member member, DriveType driveType, String fileName) {
-        if (driveType == DriveType.PERSONAL) {
-            return String.format("personal/%d/%s", member.getId(), fileName);
-        } else if (driveType == DriveType.SHARED) {
+        if (driveType == PERSONAL) {
+            return String.format("personal/%d/%s%s", member.getId(), fullFolderPath, fileName);
+        } else if (driveType == SHARED) {
             Long academyId = member.getAcademy().getId();
-            return String.format("shared/%d/%s", academyId, fileName);
+            return String.format("shared/%d/%s%s", academyId, fullFolderPath, fileName);
         }
         throw new ClassfitException("지원하지 않는 드라이브 타입입니다.", HttpStatus.NO_CONTENT);
     }
