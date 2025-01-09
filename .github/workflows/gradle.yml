@@ -62,11 +62,12 @@ jobs:
         run: |
           CONTAINER_IDS=$(sudo docker ps -aq --filter "name=classfit-blue") 
           if [ -n "$CONTAINER_IDS" ]; then
-            sudo docker stop $CONTAINER_IDS || true 
-            sudo docker rm $CONTAINER_IDS || true  
+            sudo docker stop $CONTAINER_IDS || true
+            sudo docker rm $CONTAINER_IDS || true
           else
             echo "No blue containers to stop or remove."
           fi
+          sudo docker ps -a  # (Optional) List all containers to ensure none are running
 
       - name: Run new blue container
         run: sudo docker run --name classfit-blue --rm -d -p 8080:8080 -v /home/ec2-user/app/logs:/log ${{ secrets.DOCKER_USERNAME }}/classfit-dev:blue
@@ -83,8 +84,8 @@ jobs:
         run: |
           CONTAINER_IDS=$(sudo docker ps -aq --filter "name=classfit-green") 
           if [ -n "$CONTAINER_IDS" ]; then
-            sudo docker stop $CONTAINER_IDS || true 
-            sudo docker rm $CONTAINER_IDS || true  
+            sudo docker stop $CONTAINER_IDS || true
+            sudo docker rm $CONTAINER_IDS || true
           else
             echo "No green containers to stop or remove."
           fi
