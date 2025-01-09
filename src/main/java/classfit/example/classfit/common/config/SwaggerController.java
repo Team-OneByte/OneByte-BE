@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class SwaggerController {
-    @GetMapping("https://classfit.duckdns.org/swagger-ui/index.html")
+    @GetMapping("/swagger-ui/index.html")
     public String swaggerUi() {
         return "<!-- HTML for static distribution bundle build -->\n" +
             "<!DOCTYPE html>\n" +
