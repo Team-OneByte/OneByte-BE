@@ -90,4 +90,4 @@ jobs:
           fi
 
       - name: Run new green container
-        run: sudo docker run --name classfit-green --rm -d -p
+        run: sudo docker run --name classfit-green --rm -d -p 8081:8080 -v /home/ec2-user/app/logs:/log ${{ secrets.DOCKER_USERNAME }}/classfit-dev:green
