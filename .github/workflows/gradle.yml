@@ -19,7 +19,6 @@ jobs:
           java-version: '22'
           distribution: 'temurin'
 
-      # 2. Gradle Wrapper에 실행 권한을 부여합니다.
       - name: Grant execute permission for Gradle Wrapper
         run: chmod +x gradlew
 
