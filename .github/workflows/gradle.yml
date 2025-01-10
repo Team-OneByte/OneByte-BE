@@ -22,50 +22,49 @@ jobs:
       - name: Grant execute permission for Gradle Wrapper
         run: chmod +x gradlew
 
-      
+      - name: create resources folder if not exists
+        run: mkdir -p src/main/resources
+
+      - name: set up application.properties
+        run: echo "${{ secrets.APPLICATION }}" > src/main/resources/application.properties
+
       - name: Build with Gradle
         uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
         with:
           arguments: clean bootJar
 
-     
       - name: Docker image build
-        run: docker build -t ${{ secrets.DOCKER_USERNAME }}/github-actions-demo .
+        run: docker build -t ${{ secrets.DOCKER_USERNAME }}/classfit-dev .
 
-      
       - name: Docker login
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      # 6. Docker Hub 이미지 푸시
       - name: Docker Hub push
-        run: docker push ${{ secrets.DOCKER_USERNAME }}/github-actions-demo
+        run: docker push ${{ secrets.DOCKER_USERNAME }}/classfit-dev
 
   run-docker-image-on-ec2:
     needs: build-docker-image
     runs-on: self-hosted
 
     steps:
-      # 1. 최신 이미지를 풀받습니다
       - name: Docker pull
+        run: sudo docker pull ${{ secrets.DOCKER_USERNAME }}/classfit-dev
 
-        run: sudo docker pull ${{ secrets.DOCKER_USERNAME }}/github-actions-demo
-
-      # 2. 기존 컨테이너를 중지 및 삭제
       - name: Stop and remove existing containers
         run: |
-          CONTAINER_IDS=$(sudo docker ps -q)
+          CONTAINER_IDS=$(sudo docker ps -aq) 
           if [ -n "$CONTAINER_IDS" ]; then
-            sudo docker stop $CONTAINER_IDS
-            sudo docker rm $CONTAINER_IDS
+            sudo docker stop $CONTAINER_IDS || true 
+            sudo docker rm $CONTAINER_IDS || true  
+          else
+            echo "No containers to stop or remove."
           fi
 
-      # 3. 최신 이미지를 컨테이너화하여 실행시킵니다
       - name: Run new container
-        run: sudo docker run --name github-actions-demo --rm -d -p 8080:8080 ${{ secrets.DOCKER_USERNAME }}/github-actions-demo
+        run: sudo docker run —name classfit-dev —rm -d -p 8080:8080 -v /home/ec2-user/app/logs:/log ${{ secrets.DOCKER_USERNAME }}/classfit-dev
 
-      # 4. 미사용 이미지를 정리합니다
       - name: Clean up old Docker images
         run: sudo docker system prune -f
