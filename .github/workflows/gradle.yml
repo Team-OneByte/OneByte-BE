@@ -28,7 +28,7 @@ jobs:
         with:
           arguments: clean bootJar
 
-      # 4. Docker 이미지 빌드
+     
       - name: Docker image build
         run: docker build -t ${{ secrets.DOCKER_USERNAME }}/github-actions-demo .
 
