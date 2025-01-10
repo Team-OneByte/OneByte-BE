@@ -64,7 +64,7 @@ jobs:
           fi
 
       - name: Run new container
-        run: sudo docker run —name classfit-dev —rm -d -p 8080:8080 -v /home/ec2-user/app/logs:/log ${{ secrets.DOCKER_USERNAME }}/classfit-dev
+        run: sudo docker run --name classfit-dev --rm -d -p 8080:8080 -v /home/ec2-user/app/logs:/log ${{ secrets.DOCKER_USERNAME }}/classfit-dev
 
       - name: Clean up old Docker images
         run: sudo docker system prune -f
