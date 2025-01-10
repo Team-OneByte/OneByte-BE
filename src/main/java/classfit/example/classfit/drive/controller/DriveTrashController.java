@@ -8,6 +8,7 @@ import classfit.example.classfit.drive.service.DriveDeleteService;
 import classfit.example.classfit.drive.service.DriveRestoreService;
 import classfit.example.classfit.drive.service.DriveTrashService;
 import classfit.example.classfit.member.domain.Member;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Nullable;
@@ -27,6 +28,7 @@ public class DriveTrashController {
     private final DriveDeleteService driveDeleteService;
 
     @GetMapping("/trash")
+    @Operation(summary = "휴지통 조회", description = "휴지통 조회 API 입니다.")
     public ApiResponse<List<FileResponse>> trashList(
         @AuthMember Member member,
         @Parameter(description = "내 드라이브는 PERSONAL, 공용 드라이브는 SHARED 입니다.")
@@ -37,6 +39,7 @@ public class DriveTrashController {
     }
 
     @PostMapping("/trash")
+    @Operation(summary = "휴지통 이동", description = "휴지통 이동 API 입니다.")
     public ApiResponse<List<String>> moveToTrash(
         @AuthMember Member member,
         @Parameter(description = "내 드라이브는 PERSONAL, 공용 드라이브는 SHARED 입니다.")
@@ -51,6 +54,7 @@ public class DriveTrashController {
     }
 
     @PostMapping("/trash/restore")
+    @Operation(summary = "휴지통 복원", description = "휴지통 복원 API 입니다.")
     public ApiResponse<List<String>> restoreFromTrash(
         @AuthMember Member member,
         @Parameter(description = "내 드라이브는 PERSONAL, 공용 드라이브는 SHARED 입니다.")
@@ -63,6 +67,7 @@ public class DriveTrashController {
     }
 
     @DeleteMapping("/trash")
+    @Operation(summary = "휴지통 영구삭제", description = "휴지통 영구삭제 API 입니다.")
     public ApiResponse<Nullable> deleteFromTrash(
         @AuthMember Member member,
         @Parameter(description = "내 드라이브는 PERSONAL, 공용 드라이브는 SHARED 입니다.")
