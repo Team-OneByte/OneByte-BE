@@ -28,7 +28,7 @@ public class DriveRestoreService {
         for (String fileName : fileNames) {
             String trashPath = DriveUtil.generateTrashPath(member, driveType, fileName);
             List<Tag> filteredTags = getFilteredTags(trashPath);
-            String folderPath = extractTags(filteredTags);
+            String folderPath = DriveUtil.extractTags(filteredTags, "folderPath");
 
             String restoredPath = DriveUtil.generatedOriginPath(member, driveType, folderPath, fileName);
             CopyObjectRequest copyRequest = new CopyObjectRequest(bucketName, trashPath, bucketName, restoredPath);
@@ -51,13 +51,5 @@ public class DriveRestoreService {
 
         amazonS3.setObjectTagging(new SetObjectTaggingRequest(bucketName, trashPath, new ObjectTagging(filteredTags)));
         return filteredTags;
-    }
-
-    private String extractTags(List<Tag> tags) {
-        return tags.stream()
-            .filter(tag -> tag.getKey().equals("folderPath"))
-            .map(Tag::getValue)
-            .findFirst()
-            .orElse("");
     }
 }

@@ -3,6 +3,7 @@ package classfit.example.classfit.drive.controller;
 import classfit.example.classfit.auth.annotation.AuthMember;
 import classfit.example.classfit.common.ApiResponse;
 import classfit.example.classfit.drive.domain.DriveType;
+import classfit.example.classfit.drive.dto.response.FileResponse;
 import classfit.example.classfit.drive.service.DriveDeleteService;
 import classfit.example.classfit.drive.service.DriveRestoreService;
 import classfit.example.classfit.drive.service.DriveTrashService;
@@ -24,6 +25,16 @@ public class DriveTrashController {
     private final DriveTrashService driveTrashService;
     private final DriveRestoreService driveRestoreService;
     private final DriveDeleteService driveDeleteService;
+
+    @GetMapping("/trash")
+    public ApiResponse<List<FileResponse>> trashList(
+        @AuthMember Member member,
+        @Parameter(description = "내 드라이브는 PERSONAL, 공용 드라이브는 SHARED 입니다.")
+        @RequestParam DriveType driveType
+    ) {
+        List<FileResponse> filesFromTrash = driveTrashService.getFilesFromTrash(member, driveType);
+        return ApiResponse.success(filesFromTrash, 200, "조회 성공");
+    }
 
     @PostMapping("/trash")
     public ApiResponse<List<String>> moveToTrash(

@@ -2,6 +2,8 @@ package classfit.example.classfit.drive.service;
 
 import classfit.example.classfit.common.util.DriveUtil;
 import classfit.example.classfit.drive.domain.DriveType;
+import classfit.example.classfit.drive.domain.FileType;
+import classfit.example.classfit.drive.dto.response.FileResponse;
 import classfit.example.classfit.member.domain.Member;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.*;
@@ -13,6 +15,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -24,6 +27,42 @@ public class DriveTrashService {
 
     @Value("${cloud.aws.s3.bucket}")
     private String bucketName;
+
+    public List<FileResponse> getFilesFromTrash(Member member, DriveType driveType) {
+        String prefix = DriveUtil.generateTrashPath(member, driveType, null);
+
+        ListObjectsV2Request listObjectsV2Request = new ListObjectsV2Request()
+            .withBucketName(bucketName)
+            .withPrefix(prefix);
+        List<S3ObjectSummary> objectSummaries = amazonS3.listObjectsV2(listObjectsV2Request).getObjectSummaries();
+
+        return objectSummaries.stream()
+            .map(this::buildFileTrashInfo)
+            .toList();
+    }
+
+    private FileResponse buildFileTrashInfo(S3ObjectSummary summary) {
+        String fileName = summary.getKey();
+        String fileUrl = amazonS3.getUrl(bucketName, fileName).toString();
+
+        Map<String, String> tagMap = amazonS3.getObjectTagging(new GetObjectTaggingRequest(bucketName, fileName))
+            .getTagSet().stream()
+            .collect(Collectors.toMap(Tag::getKey, Tag::getValue));
+
+        FileType fileType = DriveUtil.getFileType(fileName);
+        LocalDateTime uploadedAt = DriveUtil.parseUploadedAt(tagMap.get("uploadedAt"));
+        String fileSize = DriveUtil.formatFileSize(summary.getSize());
+
+        return new FileResponse(
+            fileType,
+            fileName,
+            fileSize,
+            fileUrl,
+            tagMap.getOrDefault("folderPath", ""),
+            tagMap.getOrDefault("uploadedBy", ""),
+            uploadedAt
+        );
+    }
 
     public List<String> moveToTrash(Member member, DriveType driveType, String folderPath, List<String> fileNames) {
         List<String> trashPaths = new ArrayList<>();
