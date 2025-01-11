@@ -1,26 +1,21 @@
 package classfit.example.classfit.drive.service;
 
-import static classfit.example.classfit.drive.domain.DriveType.PERSONAL;
-
 import classfit.example.classfit.drive.domain.DriveType;
 import classfit.example.classfit.member.domain.Member;
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.ListObjectsV2Request;
-import com.amazonaws.services.s3.model.ListObjectsV2Result;
-import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.amazonaws.services.s3.model.ObjectTagging;
-import com.amazonaws.services.s3.model.PutObjectRequest;
-import com.amazonaws.services.s3.model.SetObjectTaggingRequest;
-import com.amazonaws.services.s3.model.Tag;
+import com.amazonaws.services.s3.model.*;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
+
+import static classfit.example.classfit.drive.domain.DriveType.PERSONAL;
 
 @Service
 @RequiredArgsConstructor
@@ -40,7 +35,7 @@ public class DriveFolderService {
 
         InputStream emptyContent = new ByteArrayInputStream(new byte[0]);
         amazonS3.putObject(new PutObjectRequest(bucketName, fullFolderPath, emptyContent, metadata));
-        addTagsToS3Object(fullFolderPath, member);
+        addUploadTagsToS3Object(fullFolderPath, member);
         return fullFolderPath;
     }
 
@@ -73,7 +68,7 @@ public class DriveFolderService {
         return basePath + (folderPath.isEmpty() ? "" : folderPath + "/") + folderName + "/";
     }
 
-    private void addTagsToS3Object(String objectKey, Member member) {
+    private void addUploadTagsToS3Object(String objectKey, Member member) {
         LocalDateTime now = LocalDateTime.now();
         String formattedDate = now.format(DateTimeFormatter.ISO_DATE_TIME);
         List<Tag> tags = List.of(

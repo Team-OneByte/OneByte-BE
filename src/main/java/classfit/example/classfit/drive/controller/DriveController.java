@@ -12,27 +12,23 @@ import classfit.example.classfit.member.domain.Member;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/drive")
 @Tag(name = "드라이브 컨트롤러", description = "드라이브 관련 API입니다.")
 public class DriveController {
+
     private final DriveGetService driveGetService;
     private final DriveUploadService driveUploadService;
     private final DriveDownloadService driveDownloadService;
@@ -68,12 +64,12 @@ public class DriveController {
     @Operation(summary = "파일 다운로드", description = "파일 다운로드 API 입니다.")
     public ResponseEntity<InputStreamResource> downloadFile(
         @RequestParam("fileName") String fileName
-    ) throws UnsupportedEncodingException {
+    ) {
         InputStreamResource resource = driveDownloadService.downloadFile(fileName);
         String fileExtension = driveDownloadService.getFileExtension(fileName);
         String contentType = driveDownloadService.getContentType(fileExtension);
 
-        String encodedFileName = URLEncoder.encode(fileName, StandardCharsets.UTF_8.toString());
+        String encodedFileName = URLEncoder.encode(fileName, StandardCharsets.UTF_8);
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + encodedFileName + "\"");
         headers.add(HttpHeaders.CONTENT_TYPE, contentType);

@@ -9,7 +9,8 @@ public enum FileType {
     VIDEO("mp4", "avi", "mkv", "mov", "wmv", "flv"),
     AUDIO("mp3", "wav", "aac", "flac", "ogg"),
     ARCHIVE("zip", "tar", "gz", "rar", "7z"),
-    OTHER("other");
+    OTHER("other"),
+    UNKNOWN("");
 
     private final List<String> extensions;
 
