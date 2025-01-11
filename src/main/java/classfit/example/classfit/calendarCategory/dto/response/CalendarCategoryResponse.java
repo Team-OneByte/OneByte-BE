@@ -6,10 +6,10 @@ public record CalendarCategoryResponse
     (
         Long id,
         String name,
-        CategoryColor color
+        String color
     ){
 
     public static CalendarCategoryResponse of(final Long id, final String name, final CategoryColor color) {
-        return new CalendarCategoryResponse(id, name, color);
+        return new CalendarCategoryResponse(id, name, color.getHexCode());
     }
 }
