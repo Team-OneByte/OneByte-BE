@@ -1,6 +1,5 @@
 package classfit.example.classfit.event.service;
 
-import static classfit.example.classfit.common.exception.ClassfitException.CATEGORY_NOT_FOUND;
 import static classfit.example.classfit.common.exception.ClassfitException.EVENT_NOT_FOUND;
 
 import classfit.example.classfit.calendarCategory.domain.CalendarCategory;
@@ -15,6 +14,7 @@ import classfit.example.classfit.event.dto.response.EventResponse;
 import classfit.example.classfit.event.repository.EventRepository;
 import classfit.example.classfit.member.domain.Member;
 import classfit.example.classfit.member.service.MemberService;
+import classfit.example.classfit.memberCalendar.domain.CalendarType;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -110,19 +110,13 @@ public class EventService {
     }
 
     @Transactional(readOnly = true)
-    public List<EventMontylyResponse> getMonthlyEventsByCategory(long categoryId, int year, int month) {
+    public List<EventMontylyResponse> getMonthlyEventsByCalendarType(CalendarType calendarType, int year, int month) {
         LocalDateTime startOfMonth = LocalDateTime.of(year, month, 1, 0, 0, 0, 0);
         LocalDateTime endOfMonth = startOfMonth.plusMonths(1).minusSeconds(1);
 
-        CalendarCategory category = calendarCategoryService.getCategoryById(categoryId);
-        List<Event> events = getEventsByCategoryAndStartDate(category, startOfMonth, endOfMonth);
+        List<Event> events = eventRepository.findByCalendarTypeAndStartDateBetween(calendarType, startOfMonth, endOfMonth);
 
         return mapToEventCreateResponse(events);
-    }
-
-    private List<Event> getEventsByCategoryAndStartDate(CalendarCategory category, LocalDateTime startOfMonth, LocalDateTime endOfMonth) {
-        return eventRepository.findByCategoryAndStartDateBetween(category, startOfMonth, endOfMonth)
-            .orElseThrow(() -> new ClassfitException(CATEGORY_NOT_FOUND, HttpStatus.NOT_FOUND));
     }
 
     private List<EventMontylyResponse> mapToEventCreateResponse(List<Event> events) {
