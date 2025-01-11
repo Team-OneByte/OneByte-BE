@@ -1,6 +1,7 @@
 package classfit.example.classfit.event.controller;
 
 import classfit.example.classfit.auth.annotation.AuthMember;
+import classfit.example.classfit.event.dto.request.EventDragUpdate;
 import classfit.example.classfit.event.dto.request.EventModalRequest;
 import classfit.example.classfit.common.ApiResponse;
 import classfit.example.classfit.event.dto.request.EventCreateRequest;
@@ -91,5 +92,15 @@ public class EventController {
     ) {
         eventService.deleteEvent(eventId);
         return ApiResponse.success(null, 204, "DELETED");
+    }
+
+    @PatchMapping("/drag/{eventId}")
+    @Operation(summary = "드래그 앤 드롭 일정 날짜 수정", description = "드래그 앤 드롭으로 일정 날짜 수정하는 api 입니다.")
+    public ApiResponse<EventResponse> dragUpdateEventDate(
+        @PathVariable Long eventId,
+        @RequestBody EventDragUpdate eventDragUpdate
+    ) {
+        EventResponse updatedEvent = eventService.dragUpdateEvent(eventId, eventDragUpdate);
+        return ApiResponse.success(updatedEvent, 200, "UPDATED");
     }
 }

@@ -8,6 +8,7 @@ import classfit.example.classfit.common.exception.ClassfitException;
 import classfit.example.classfit.event.domain.Event;
 import classfit.example.classfit.event.domain.EventRepeatType;
 import classfit.example.classfit.event.dto.request.EventCreateRequest;
+import classfit.example.classfit.event.dto.request.EventDragUpdate;
 import classfit.example.classfit.event.dto.request.EventModalRequest;
 import classfit.example.classfit.event.dto.response.EventMontylyResponse;
 import classfit.example.classfit.event.dto.response.EventResponse;
@@ -219,5 +220,18 @@ public class EventService {
     public void deleteEvent(long eventId) {
         Event event = getEventById(eventId);
         eventRepository.delete(event);
+    }
+
+    @Transactional
+    public EventResponse dragUpdateEvent(Long eventId, EventDragUpdate request) {
+        Event event = getEventById(eventId);
+
+        event.dragUpdate(
+            request.startDate(),
+            request.endDate()
+        );
+
+        eventRepository.save(event);
+        return EventResponse.of(event.getId(), event.getName(), event.getEventType(), event.getStartDate(), event.getEndDate());
     }
 }
