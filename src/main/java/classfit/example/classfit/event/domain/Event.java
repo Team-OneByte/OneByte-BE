@@ -2,6 +2,7 @@ package classfit.example.classfit.event.domain;
 
 import classfit.example.classfit.calendarCategory.domain.CalendarCategory;
 import classfit.example.classfit.common.domain.BaseEntity;
+import classfit.example.classfit.event.dto.response.EventResponse;
 import classfit.example.classfit.eventMember.domain.EventMember;
 import classfit.example.classfit.member.domain.Member;
 import classfit.example.classfit.memberCalendar.domain.MemberCalendar;
@@ -128,5 +129,15 @@ public class Event extends BaseEntity {
     ) {
         this.startDate = startDate;
         this.endDate = endDate;
+    }
+
+    public static EventResponse buildEventResponse(Event event) {
+        return EventResponse.of(
+            event.getId(),
+            event.getName(),
+            event.getEventType(),
+            event.getStartDate(),
+            event.getEndDate()
+        );
     }
 }
