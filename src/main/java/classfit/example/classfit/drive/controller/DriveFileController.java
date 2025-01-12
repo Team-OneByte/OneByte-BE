@@ -45,24 +45,20 @@ public class DriveFileController {
     }
 
     @GetMapping("/download")
-    @Operation(summary = "파일 다운로드", description = "파일 다운로드 API 입니다.")
-    public ResponseEntity<InputStreamResource> downloadFile(
+    @Operation(summary = "파일 다운로드", description = "다중 파일을 압축하여 다운로드하는 API 입니다.")
+    public ResponseEntity<InputStreamResource> downloadMultipleFiles(
         @AuthMember Member member,
         @Parameter(description = "내 드라이브는 PERSONAL, 공용 드라이브는 SHARED 입니다.")
         @RequestParam DriveType driveType,
-        @Parameter(description = "폴더 경로입니다. 비어 있으면 루트 폴더로 지정됩니다.")
         @RequestParam(required = false, defaultValue = "") String folderPath,
-        @Parameter(description = "다운로드 할 파일 이름입니다.")
-        @RequestParam String fileName
+        @RequestParam List<String> fileNames
     ) {
-        InputStreamResource resource = driveDownloadService.downloadFile(member, driveType, folderPath, fileName);
-        String fileExtension = DriveUtil.getFileExtension(fileName);
-        String contentType = FileType.getContentType(fileExtension);
+        InputStreamResource resource = driveDownloadService.downloadMultipleFiles(member, driveType, folderPath, fileNames);
+        String zipFileName = "files.zip";
 
-        String encodedFileName = URLEncoder.encode(fileName, StandardCharsets.UTF_8);
         HttpHeaders headers = new HttpHeaders();
-        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + encodedFileName + "\"");
-        headers.add(HttpHeaders.CONTENT_TYPE, contentType);
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + zipFileName + "\"");
+        headers.add(HttpHeaders.CONTENT_TYPE, "application/zip");
 
         return ResponseEntity.ok().headers(headers).body(resource);
     }
