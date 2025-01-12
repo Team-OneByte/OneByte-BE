@@ -64,9 +64,15 @@ public class DriveController {
     @GetMapping("/download")
     @Operation(summary = "파일 다운로드", description = "파일 다운로드 API 입니다.")
     public ResponseEntity<InputStreamResource> downloadFile(
-        @RequestParam("fileName") String fileName
+        @AuthMember Member member,
+        @Parameter(description = "내 드라이브는 PERSONAL, 공용 드라이브는 SHARED 입니다.")
+        @RequestParam DriveType driveType,
+        @Parameter(description = "폴더 경로입니다. 비어 있으면 루트 폴더로 지정됩니다.")
+        @RequestParam(required = false, defaultValue = "") String folderPath,
+        @Parameter(description = "다운로드 할 파일 이름입니다.")
+        @RequestParam String fileName
     ) {
-        InputStreamResource resource = driveDownloadService.downloadFile(fileName);
+        InputStreamResource resource = driveDownloadService.downloadFile(member, driveType, folderPath, fileName);
         String fileExtension = DriveUtil.getFileExtension(fileName);
         String contentType = FileType.getContentType(fileExtension);
 
