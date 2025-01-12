@@ -3,8 +3,12 @@ package classfit.example.classfit.common.util;
 import classfit.example.classfit.common.exception.ClassfitException;
 import classfit.example.classfit.drive.domain.DriveType;
 import classfit.example.classfit.drive.domain.FileType;
+import classfit.example.classfit.drive.dto.response.FileResponse;
 import classfit.example.classfit.member.domain.Member;
+import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.amazonaws.services.s3.model.Tag;
+import java.util.Map;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.http.HttpStatus;
 
 import java.time.LocalDateTime;
@@ -44,40 +48,6 @@ public class DriveUtil {
         return (fileName != null && !fileName.trim().isEmpty()) ? basePath + fileName : basePath;
     }
 
-    public static String extractTags(List<Tag> tags, String tagKey) {
-        return tags.stream()
-            .filter(tag -> tag.getKey().equals(tagKey))
-            .map(Tag::getValue)
-            .findFirst()
-            .orElse("");
-    }
-
-    public static LocalDateTime parseUploadedAt(String uploadedAtStr) {
-        return (uploadedAtStr == null || uploadedAtStr.isBlank())
-            ? LocalDateTime.now()
-            : LocalDateTime.parse(uploadedAtStr, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
-    }
-
-    public static FileType getFileType(String fileName) {
-        int dotIndex = fileName.lastIndexOf(".");
-        if (dotIndex != -1 && dotIndex < fileName.length() - 1) {
-            String extension = fileName.substring(dotIndex + 1).toLowerCase();
-            return FileType.getFileTypeByExtension(extension);
-        }
-        return FileType.UNKNOWN;
-    }
-
-    public static String formatFileSize(long sizeInBytes) {
-        double sizeInKB = sizeInBytes / 1024.0;
-        if (sizeInKB >= 1024) {
-            // 1MB 이상이면 MB 단위로 표시
-            double sizeInMB = sizeInKB / 1024.0;
-            return String.format("%.1f MB", sizeInMB); // 소수점 한 자리까지 MB로 표시
-        }
-        // 1MB 미만이면 KB 단위로 표시
-        return String.format("%.1f KB", sizeInKB); // 소수점 한 자리까지 KB로 표시
-    }
-
     public static String buildPrefix(DriveType driveType, Member member, String folderPath) {
         String basePrefix;
 
@@ -93,5 +63,60 @@ public class DriveUtil {
         }
 
         return basePrefix + folderPath + "/";
+    }
+
+    public static String extractTags(List<Tag> tags, String tagKey) {
+        return tags.stream()
+            .filter(tag -> tag.getKey().equals(tagKey))
+            .map(Tag::getValue)
+            .findFirst()
+            .orElse("");
+    }
+
+    @NotNull
+    public static FileResponse getFileResponse(S3ObjectSummary summary, String fileName,
+        String fileUrl,
+        Map<String, String> tagMap) {
+        FileType fileType = getFileType(fileName);
+        String originalFileName = tagMap.getOrDefault("originalFileName", "");
+        LocalDateTime uploadedAt = parseUploadedAt(tagMap.get("uploadedAt"));
+        String fileSize = formatFileSize(summary.getSize());
+
+        return new FileResponse(
+            fileType,
+            originalFileName,
+            fileName,
+            fileSize,
+            fileUrl,
+            tagMap.getOrDefault("folderPath", ""),
+            tagMap.getOrDefault("uploadedBy", ""),
+            uploadedAt
+        );
+    }
+
+    private static FileType getFileType(String fileName) {
+        int dotIndex = fileName.lastIndexOf(".");
+        if (dotIndex != -1 && dotIndex < fileName.length() - 1) {
+            String extension = fileName.substring(dotIndex + 1).toLowerCase();
+            return FileType.getFileTypeByExtension(extension);
+        }
+        return FileType.UNKNOWN;
+    }
+
+    private static LocalDateTime parseUploadedAt(String uploadedAtStr) {
+        return (uploadedAtStr == null || uploadedAtStr.isBlank())
+            ? LocalDateTime.now()
+            : LocalDateTime.parse(uploadedAtStr, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+    }
+
+    private static String formatFileSize(long sizeInBytes) {
+        double sizeInKB = sizeInBytes / 1024.0;
+        if (sizeInKB >= 1024) {
+            // 1MB 이상이면 MB 단위로 표시
+            double sizeInMB = sizeInKB / 1024.0;
+            return String.format("%.1f MB", sizeInMB); // 소수점 한 자리까지 MB로 표시
+        }
+        // 1MB 미만이면 KB 단위로 표시
+        return String.format("%.1f KB", sizeInKB); // 소수점 한 자리까지 KB로 표시
     }
 }

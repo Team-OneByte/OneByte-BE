@@ -63,27 +63,7 @@ public class DriveGetService {
 
         Map<String, String> tagMap = getTagsForS3Object(fileName);
 
-        return getFileResponse(summary, fileName, fileUrl, tagMap);
-    }
-
-    @NotNull
-    static FileResponse getFileResponse(S3ObjectSummary summary, String fileName, String fileUrl,
-        Map<String, String> tagMap) {
-        FileType fileType = DriveUtil.getFileType(fileName);
-        String originalFileName = tagMap.getOrDefault("originalFileName", "");
-        LocalDateTime uploadedAt = DriveUtil.parseUploadedAt(tagMap.get("uploadedAt"));
-        String fileSize = DriveUtil.formatFileSize(summary.getSize());
-
-        return new FileResponse(
-            fileType,
-            originalFileName,
-            fileName,
-            fileSize,
-            fileUrl,
-            tagMap.getOrDefault("folderPath", ""),
-            tagMap.getOrDefault("uploadedBy", ""),
-            uploadedAt
-        );
+        return DriveUtil.getFileResponse(summary, fileName, fileUrl, tagMap);
     }
 
     private Map<String, String> getTagsForS3Object(String objectKey) {

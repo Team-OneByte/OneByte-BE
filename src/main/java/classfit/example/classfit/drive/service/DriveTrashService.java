@@ -1,7 +1,5 @@
 package classfit.example.classfit.drive.service;
 
-import static classfit.example.classfit.drive.service.DriveGetService.getFileResponse;
-
 import classfit.example.classfit.common.util.DriveUtil;
 import classfit.example.classfit.drive.domain.DriveType;
 import classfit.example.classfit.drive.dto.response.FileResponse;
@@ -50,7 +48,7 @@ public class DriveTrashService {
             .getTagSet().stream()
             .collect(Collectors.toMap(Tag::getKey, Tag::getValue));
 
-        return getFileResponse(summary, fileName, fileUrl, tagMap);
+        return DriveUtil.getFileResponse(summary, fileName, fileUrl, tagMap);
     }
 
     public List<String> moveToTrash(Member member, DriveType driveType, String folderPath, List<String> fileNames) {
