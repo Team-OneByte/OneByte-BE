@@ -114,4 +114,12 @@ public class Event extends BaseEntity {
         this.endDate = endDate;
         this.isAllDay = isAllDay;
     }
+
+    public void dragUpdate(
+        LocalDateTime startDate,
+        LocalDateTime endDate
+    ) {
+        this.startDate = startDate;
+        this.endDate = endDate;
+    }
 }

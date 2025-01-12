@@ -1,6 +1,7 @@
 package classfit.example.classfit.event.controller;
 
 import classfit.example.classfit.auth.annotation.AuthMember;
+import classfit.example.classfit.event.dto.request.EventDragUpdate;
 import classfit.example.classfit.event.dto.request.EventModalRequest;
 import classfit.example.classfit.common.ApiResponse;
 import classfit.example.classfit.event.dto.request.EventCreateRequest;
@@ -10,6 +11,7 @@ import classfit.example.classfit.event.service.EventService;
 import classfit.example.classfit.member.domain.Member;
 import classfit.example.classfit.member.dto.response.AcademyMemberResponse;
 import classfit.example.classfit.member.service.MemberService;
+import classfit.example.classfit.memberCalendar.domain.CalendarType;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
@@ -49,11 +51,11 @@ public class EventController {
     @GetMapping("/monthly")
     @Operation(summary = "월별 일정 조회", description = "월별 일정들을 조회하는 api 입니다.")
     public ApiResponse<List<EventMontylyResponse>> getMonthlyEvents(
-        @RequestParam long categoryId,
+        @RequestParam CalendarType calendarType,
         @RequestParam int year,
         @RequestParam int month
     ) {
-        List<EventMontylyResponse> events = eventService.getMonthlyEventsByCategory(categoryId, year, month);
+        List<EventMontylyResponse> events = eventService.getMonthlyEventsByCalendarType(calendarType, year, month);
         return ApiResponse.success(events, 200, "SUCCESS");
     }
 
@@ -90,5 +92,15 @@ public class EventController {
     ) {
         eventService.deleteEvent(eventId);
         return ApiResponse.success(null, 204, "DELETED");
+    }
+
+    @PatchMapping("/drag/{eventId}")
+    @Operation(summary = "드래그 앤 드롭 일정 날짜 수정", description = "드래그 앤 드롭으로 일정 날짜 수정하는 api 입니다.")
+    public ApiResponse<EventResponse> dragUpdateEventDate(
+        @PathVariable Long eventId,
+        @RequestBody EventDragUpdate eventDragUpdate
+    ) {
+        EventResponse updatedEvent = eventService.dragUpdateEvent(eventId, eventDragUpdate);
+        return ApiResponse.success(updatedEvent, 200, "UPDATED");
     }
 }
