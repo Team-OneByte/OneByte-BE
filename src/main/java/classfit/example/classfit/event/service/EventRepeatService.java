@@ -50,7 +50,13 @@ public class EventRepeatService {
             currentEndDate = getNextRepeatDate(currentEndDate, eventRepeatType);
         }
     }
-        private Event buildEventWithUpdatedDates(Member member, EventCreateRequest request, LocalDateTime currentStartDate, LocalDateTime currentEndDate) {
+
+    private Event buildEventWithUpdatedDates(
+        Member member,
+        EventCreateRequest request,
+        LocalDateTime currentStartDate,
+        LocalDateTime currentEndDate
+    ) {
         CalendarCategory category = calendarCategoryRepository.findById(request.categoryId());
         MemberCalendar memberCalendar = memberCalendarRepository.findByMemberAndType(member, request.calendarType());
 
@@ -101,7 +107,12 @@ public class EventRepeatService {
         }
     }
 
-    private Event buildModalEventWithUpdatedDates(Member member, EventModalRequest request, LocalDateTime currentStartDate, LocalDateTime currentEndDate) {
+    private Event buildModalEventWithUpdatedDates(
+        Member member,
+        EventModalRequest request,
+        LocalDateTime currentStartDate,
+        LocalDateTime currentEndDate
+    ) {
         CalendarCategory category = calendarCategoryRepository.findById(request.categoryId());
         MemberCalendar memberCalendar = memberCalendarRepository.findByMemberAndType(member, request.calendarType());
 
