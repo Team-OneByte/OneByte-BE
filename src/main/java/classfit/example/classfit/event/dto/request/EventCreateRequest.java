@@ -3,6 +3,7 @@ package classfit.example.classfit.event.dto.request;
 import classfit.example.classfit.event.domain.Event;
 import classfit.example.classfit.event.domain.EventRepeatType;
 import classfit.example.classfit.event.domain.EventType;
+import classfit.example.classfit.memberCalendar.domain.CalendarType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -13,8 +14,10 @@ public record EventCreateRequest(
     String name,
     @Schema(description = "이벤트 유형", required = true)
     EventType eventType,
-    @Schema(description = "카테고리 ID", required = true)
-    Long categoryId,
+    @Schema(description = "캘린더 유형", required = true)
+    CalendarType calendarType,
+    @Schema(description = "카테고리 ID", required = false)
+    Optional<Long> categoryId,
     @Schema(description = "이벤트 시작 날짜", required = true)
     LocalDateTime startDate,
     @Schema(description = "이벤트 종료 날짜", required = true)
