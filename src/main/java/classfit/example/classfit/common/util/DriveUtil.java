@@ -79,13 +79,14 @@ public class DriveUtil {
         Map<String, String> tagMap) {
         FileType fileType = getFileType(fileName);
         String originalFileName = tagMap.getOrDefault("originalFileName", "");
+        String fileNameWithoutPrefix = getFileNameWithoutPrefix(fileName);
         LocalDateTime uploadedAt = parseUploadedAt(tagMap.get("uploadedAt"));
         String fileSize = formatFileSize(summary.getSize());
 
         return new FileResponse(
             fileType,
             originalFileName,
-            fileName,
+            fileNameWithoutPrefix,
             fileSize,
             fileUrl,
             tagMap.getOrDefault("folderPath", ""),
@@ -125,5 +126,11 @@ public class DriveUtil {
         }
         // 1MB 미만이면 KB 단위로 표시
         return String.format("%.1f KB", sizeInKB); // 소수점 한 자리까지 KB로 표시
+    }
+
+    private static String getFileNameWithoutPrefix(String objectKey) {
+        String fileNameWithoutPrefix = objectKey.replaceFirst("^personal/\\d+/|^shared/\\d+/", "");
+        fileNameWithoutPrefix = fileNameWithoutPrefix.replaceAll("[^a-zA-Z0-9-_./]", "").trim();
+        return fileNameWithoutPrefix;
     }
 }
