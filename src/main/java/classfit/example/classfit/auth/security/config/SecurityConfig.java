@@ -32,7 +32,6 @@ public class SecurityConfig {
     private final RedisUtil redisUtil;
     private final JWTUtil jwtUtil;
 
-
     @Bean
     public BCryptPasswordEncoder bCryptPasswordEncoder() {
         return new BCryptPasswordEncoder();
@@ -50,6 +49,10 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity security) throws Exception {
+
+        CustomLoginFilter customLoginFilter = new CustomLoginFilter(authenticationManager(authenticationConfiguration), jwtUtil, redisUtil);
+        customLoginFilter.setFilterProcessesUrl("/api/v1/signin");
+
         security
             .csrf(AbstractHttpConfigurer::disable)
             .formLogin(AbstractHttpConfigurer::disable)
@@ -70,7 +73,7 @@ public class SecurityConfig {
 
         security
             .addFilterBefore(new JWTFilter(customUserDetailService, jwtUtil), CustomLoginFilter.class)
-            .addFilterAt(new CustomLoginFilter(authenticationManager(authenticationConfiguration), jwtUtil, redisUtil), UsernamePasswordAuthenticationFilter.class)
+            .addFilterAt(customLoginFilter, UsernamePasswordAuthenticationFilter.class)
             .exceptionHandling(exception -> exception.authenticationEntryPoint(customAuthenticationEntryPoint));
 
         return security.build();

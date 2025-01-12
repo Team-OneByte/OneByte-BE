@@ -25,10 +25,6 @@ import java.util.Iterator;
 @RequiredArgsConstructor
 public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
 
-    {
-        setFilterProcessesUrl("/api/v1/signin");
-    }
-
     private final AuthenticationManager authenticationManager;
     private final JWTUtil jwtUtil;
     private final RedisUtil redisUtil;
