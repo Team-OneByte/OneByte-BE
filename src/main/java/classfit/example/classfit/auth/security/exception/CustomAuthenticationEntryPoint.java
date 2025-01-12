@@ -1,9 +1,7 @@
 package classfit.example.classfit.auth.security.exception;
 
-import classfit.example.classfit.common.exception.ClassfitException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
@@ -11,26 +9,24 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 
 @Component
-@Slf4j
 public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException {
-        // 요청에 저장된 예외 확인
-        Throwable exception = (Throwable) request.getAttribute("exception");
+        Throwable exception = (Throwable) request.getAttribute("AuthException");
 
-        if (exception instanceof ClassfitException classfitException) {
-            log.error("ClassfitException 확인: {}", classfitException.getMessage());
-            response.setStatus(classfitException.getHttpStatus().value());
-            response.setContentType("application/json");
-            response.setCharacterEncoding("UTF-8");
-            response.getWriter().write("{\"message\": \"" + classfitException.getMessage() + "\", \"status\": " + classfitException.getHttpStatus().value() + "}");
-        } else {
-            log.error("기타 예외 처리: {}", authException.getMessage());
-            response.setContentType("application/json");
-            response.setCharacterEncoding("UTF-8");
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().write("{\"message\": \"로그인 후 이용 가능합니다. 토큰을 입력해 주세요\", \"status\": 401}");
+        if (exception instanceof ClassfitAuthException classfitAuthException) {
+            writeErrorResponse(response, classfitAuthException.getMessage(), classfitAuthException.getHttpStatusCode());
+            return;
         }
+        writeErrorResponse(response, "아이디 또는 비밀번호가 잘못 되었습니다.", HttpServletResponse.SC_UNAUTHORIZED);
+    }
+
+    private void writeErrorResponse(HttpServletResponse response, String message, int status) throws IOException {
+        response.setStatus(status);
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        String jsonResponse = String.format("{\"message\": \"%s\", \"status\": %d}", message, status);
+        response.getWriter().write(jsonResponse);
     }
 }

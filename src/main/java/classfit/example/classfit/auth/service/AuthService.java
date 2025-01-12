@@ -61,7 +61,7 @@ public class AuthService {
         addRefreshEntity(email, newRefresh, 1000 * 60 * 60 * 24 * 7L);
 
         response.setHeader("Authorization", "Bearer " + newAccess);
-        CookieUtil.addCookie(response, "refresh", refresh, 7 * 24 * 60 * 60);
+        CookieUtil.setCookie(response, "refresh", refresh, 7 * 24 * 60 * 60);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
