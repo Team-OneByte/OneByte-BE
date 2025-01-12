@@ -80,15 +80,21 @@ public class EventService {
 
         LocalDateTime currentStartDate = request.startDate();
         LocalDateTime currentEndDate = request.endDate();
+
+        if (request.isAllDay()) {
+            currentStartDate = currentStartDate.toLocalDate().atStartOfDay();
+            currentEndDate = currentEndDate.toLocalDate().atTime(23, 59, 59);
+        }
+
         EventRepeatType eventRepeatType = request.eventRepeatType();
         LocalDateTime repeatEndDate = request.repeatEndDate().orElse(null);
-
         if (repeatEndDate == null) {
             repeatEndDate = currentStartDate.plusMonths(6);
         }
 
         while (shouldCreateEvent(currentEndDate, repeatEndDate)) {
             Event repeatedEvent = buildEventWithUpdatedDates(member, request, currentStartDate, currentEndDate);
+
             eventRepository.save(repeatedEvent);
 
             currentStartDate = getNextRepeatDate(currentStartDate, eventRepeatType);
@@ -186,6 +192,11 @@ public class EventService {
         LocalDateTime currentEndDate = request.endDate();
         EventRepeatType eventRepeatType = request.eventRepeatType();
         LocalDateTime repeatEndDate = request.repeatEndDate().orElse(null);
+
+        if (request.isAllDay()) {
+            currentStartDate = currentStartDate.toLocalDate().atStartOfDay();
+            currentEndDate = currentEndDate.toLocalDate().atTime(23, 59, 59);
+        }
 
         if (repeatEndDate == null) {
             repeatEndDate = currentStartDate.plusMonths(6);
