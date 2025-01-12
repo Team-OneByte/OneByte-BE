@@ -3,7 +3,7 @@ package classfit.example.classfit.event.service;
 import static classfit.example.classfit.common.exception.ClassfitException.EVENT_NOT_FOUND;
 
 import classfit.example.classfit.calendarCategory.domain.CalendarCategory;
-import classfit.example.classfit.calendarCategory.service.CalendarCategoryService;
+import classfit.example.classfit.calendarCategory.repository.CalendarCategoryRepository;
 import classfit.example.classfit.common.exception.ClassfitException;
 import classfit.example.classfit.event.domain.Event;
 import classfit.example.classfit.event.domain.EventRepeatType;
@@ -16,6 +16,8 @@ import classfit.example.classfit.event.repository.EventRepository;
 import classfit.example.classfit.member.domain.Member;
 import classfit.example.classfit.member.service.MemberService;
 import classfit.example.classfit.memberCalendar.domain.CalendarType;
+import classfit.example.classfit.memberCalendar.domain.MemberCalendar;
+import classfit.example.classfit.memberCalendar.repository.MemberCalendarRepository;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -29,31 +31,40 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class EventService {
     private final EventRepository eventRepository;
-    private final CalendarCategoryService calendarCategoryService;
+    private final CalendarCategoryRepository calendarCategoryRepository;
+    private final MemberCalendarRepository memberCalendarRepository;
     private final MemberService memberService;
 
     @Transactional
-    public EventResponse createEvent(EventCreateRequest request) {
-        Event event = buildEvent(request);
+    public EventResponse createEvent(Member member, EventCreateRequest request) {
+        Event event = buildEvent(member, request);
         Event savedEvent = eventRepository.save(event);
 
-        addRepeatedEvents(request);
-
+        addRepeatedEvents(member, request);
         addAttendeesToEvent(savedEvent, request.memberIds());
-        return EventResponse.of(savedEvent.getId(), savedEvent.getName(), savedEvent.getEventType(), savedEvent.getStartDate(), savedEvent.getEndDate());
+
+        return EventResponse.of(
+            savedEvent.getId(),
+            savedEvent.getName(),
+            savedEvent.getEventType(),
+            savedEvent.getStartDate(),
+            savedEvent.getEndDate()
+        );
     }
 
-    private Event buildEvent(EventCreateRequest request) {
-        CalendarCategory category = calendarCategoryService.getCategoryById(request.categoryId());
+    private Event buildEvent(Member member, EventCreateRequest request) {
+        CalendarCategory category = calendarCategoryRepository.findById(request.categoryId());
+        MemberCalendar memberCalendar = memberCalendarRepository.findByMemberAndType(member, request.calendarType());
 
         Event event = Event.builder()
             .name(request.name())
             .eventType(request.eventType())
             .category(category)
+            .memberCalendar(memberCalendar)
             .startDate(request.startDate())
             .endDate(request.getEndDate())
             .isAllDay(request.isAllDay())
-            .eventRepeatType(request.eventRepeatType().orElse(EventRepeatType.NONE))
+            .eventRepeatType(request.eventRepeatType())
             .repeatEndDate(request.repeatEndDate().orElse(null))
             .location(request.location().orElse(null))
             .memo(request.memo().orElse(null))
@@ -62,18 +73,28 @@ public class EventService {
         return event;
     }
 
-    private void addRepeatedEvents(EventCreateRequest request) {
-        if (request.eventRepeatType().orElse(EventRepeatType.NONE) == EventRepeatType.NONE) {
+    private void addRepeatedEvents(Member member, EventCreateRequest request) {
+        if (request.eventRepeatType() == EventRepeatType.NONE) {
             return;
         }
 
         LocalDateTime currentStartDate = request.startDate();
         LocalDateTime currentEndDate = request.endDate();
-        EventRepeatType eventRepeatType = request.eventRepeatType().orElse(EventRepeatType.NONE);
+
+        if (request.isAllDay()) {
+            currentStartDate = currentStartDate.toLocalDate().atStartOfDay();
+            currentEndDate = currentEndDate.toLocalDate().atTime(23, 59, 59);
+        }
+
+        EventRepeatType eventRepeatType = request.eventRepeatType();
         LocalDateTime repeatEndDate = request.repeatEndDate().orElse(null);
+        if (repeatEndDate == null) {
+            repeatEndDate = currentStartDate.plusMonths(6);
+        }
 
         while (shouldCreateEvent(currentEndDate, repeatEndDate)) {
-            Event repeatedEvent = buildEventWithUpdatedDates(request, currentStartDate, currentEndDate);
+            Event repeatedEvent = buildEventWithUpdatedDates(member, request, currentStartDate, currentEndDate);
+
             eventRepository.save(repeatedEvent);
 
             currentStartDate = getNextRepeatDate(currentStartDate, eventRepeatType);
@@ -85,8 +106,8 @@ public class EventService {
         return currentEndDate.isBefore(repeatEndDate) || currentEndDate.isEqual(repeatEndDate);
     }
 
-    private Event buildEventWithUpdatedDates(EventCreateRequest request, LocalDateTime currentStartDate, LocalDateTime currentEndDate) {
-        Event event = buildEvent(request);
+    private Event buildEventWithUpdatedDates(Member member, EventCreateRequest request, LocalDateTime currentStartDate, LocalDateTime currentEndDate) {
+        Event event = buildEvent(member, request);
         return event.toBuilder()
             .startDate(currentStartDate)
             .endDate(currentEndDate)
@@ -134,44 +155,55 @@ public class EventService {
     }
 
     @Transactional
-    public EventResponse createModalEvent(EventModalRequest request) {
-        Event event = buildModalEvent(request);
+    public EventResponse createModalEvent(Member member, EventModalRequest request) {
+        Event event = buildModalEvent(member, request);
         Event savedEvent = eventRepository.save(event);
 
-        addRepeatedModalEvents(request);
+        addRepeatedModalEvents(member, request);
 
         return EventResponse.of(savedEvent.getId(), savedEvent.getName(), savedEvent.getEventType(), savedEvent.getStartDate(), savedEvent.getEndDate());
     }
 
-    private Event buildModalEvent(EventModalRequest request) {
-        CalendarCategory category = calendarCategoryService.getCategoryById(request.categoryId());
+    private Event buildModalEvent(Member member, EventModalRequest request) {
+        CalendarCategory category = calendarCategoryRepository.findById(request.categoryId());
+        MemberCalendar memberCalendar = memberCalendarRepository.findByMemberAndType(member, request.calendarType());
 
         Event event = Event.builder()
             .name(request.name())
             .category(category)
+            .memberCalendar(memberCalendar)
             .eventType(request.eventType())
             .startDate(request.startDate())
             .endDate(request.getEndDate())
             .isAllDay(request.isAllDay())
-            .eventRepeatType(request.eventRepeatType().orElse(EventRepeatType.NONE))
+            .eventRepeatType(request.eventRepeatType())
             .repeatEndDate(request.repeatEndDate().orElse(null))
             .build();
         event.setDates(request.isAllDay(), request.startDate(), request.getEndDate());
         return event;
     }
 
-    private void addRepeatedModalEvents(EventModalRequest request) {
-        if (request.eventRepeatType().orElse(EventRepeatType.NONE) == EventRepeatType.NONE) {
+    private void addRepeatedModalEvents(Member member, EventModalRequest request) {
+        if (request.eventRepeatType() == EventRepeatType.NONE) {
             return;
         }
 
         LocalDateTime currentStartDate = request.startDate();
         LocalDateTime currentEndDate = request.endDate();
-        EventRepeatType eventRepeatType = request.eventRepeatType().orElse(EventRepeatType.NONE);
+        EventRepeatType eventRepeatType = request.eventRepeatType();
         LocalDateTime repeatEndDate = request.repeatEndDate().orElse(null);
 
+        if (request.isAllDay()) {
+            currentStartDate = currentStartDate.toLocalDate().atStartOfDay();
+            currentEndDate = currentEndDate.toLocalDate().atTime(23, 59, 59);
+        }
+
+        if (repeatEndDate == null) {
+            repeatEndDate = currentStartDate.plusMonths(6);
+        }
+
         while (shouldCreateEvent(currentEndDate, repeatEndDate)) {
-            Event repeatedEvent = buildModalEventWithUpdatedDates(request, currentStartDate, currentEndDate);
+            Event repeatedEvent = buildModalEventWithUpdatedDates(member, request, currentStartDate, currentEndDate);
             eventRepository.save(repeatedEvent);
 
             currentStartDate = getNextRepeatDate(currentStartDate, eventRepeatType);
@@ -179,8 +211,8 @@ public class EventService {
         }
     }
 
-    private Event buildModalEventWithUpdatedDates(EventModalRequest request, LocalDateTime currentStartDate, LocalDateTime currentEndDate) {
-        Event event = buildModalEvent(request);
+    private Event buildModalEventWithUpdatedDates(Member member, EventModalRequest request, LocalDateTime currentStartDate, LocalDateTime currentEndDate) {
+        Event event = buildModalEvent(member, request);
         return event.toBuilder()
             .startDate(currentStartDate)
             .endDate(currentEndDate)
@@ -199,9 +231,10 @@ public class EventService {
     }
 
     @Transactional
-    public EventResponse updateEvent(long eventId, EventModalRequest request) {
+    public EventResponse updateEvent(Member member, long eventId, EventModalRequest request) {
         Event event = getEventById(eventId);
-        CalendarCategory category = calendarCategoryService.getCategoryById(request.categoryId());
+        CalendarCategory category = calendarCategoryRepository.findById(request.categoryId());
+        MemberCalendar memberCalendar = memberCalendarRepository.findByMemberAndType(member, request.calendarType());
 
         event.update(
             request.name(),
@@ -209,10 +242,13 @@ public class EventService {
             request.eventType(),
             request.startDate(),
             request.getEndDate(),
-            request.isAllDay()
+            request.isAllDay(),
+            memberCalendar
         );
 
         eventRepository.save(event);
+        addRepeatedModalEvents(member, request);
+
         return EventResponse.of(event.getId(), event.getName(), event.getEventType(), event.getStartDate(), event.getEndDate());
     }
 

@@ -59,7 +59,7 @@ public class ScoreReport extends BaseEntity {
     private String studentOpinion;
 
     @Column(name = "include_average")
-    private boolean includeAverage;
+    private Boolean includeAverage;
 
 
     @Builder

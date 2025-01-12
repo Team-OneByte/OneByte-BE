@@ -277,7 +277,7 @@ public class ScoreReportService {
                 scoreReport.getEndDate(),
                 attendanceInfoList,
                 totalAttendanceCount,
-                scoreReport.isIncludeAverage(),
+                scoreReport.getIncludeAverage(),
                 examHistoryList,
                 scoreReport.getOverallOpinion(),
                 scoreReport.getStudentOpinion()

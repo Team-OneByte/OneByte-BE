@@ -4,6 +4,7 @@ import classfit.example.classfit.calendarCategory.domain.CalendarCategory;
 import classfit.example.classfit.common.domain.BaseEntity;
 import classfit.example.classfit.eventMember.domain.EventMember;
 import classfit.example.classfit.member.domain.Member;
+import classfit.example.classfit.memberCalendar.domain.MemberCalendar;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -67,6 +68,10 @@ public class Event extends BaseEntity {
     @Column(length = 100)
     private String memo;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_calendar_id")
+    private MemberCalendar memberCalendar;
+
     public static LocalDateTime getEndDate(
         EventType eventType,
         LocalDateTime startDate,
@@ -105,7 +110,8 @@ public class Event extends BaseEntity {
         EventType eventType,
         LocalDateTime startDate,
         LocalDateTime endDate,
-        boolean isAllDay
+        boolean isAllDay,
+        MemberCalendar memberCalendar
     ) {
         this.name = name;
         this.category = category;
@@ -113,6 +119,7 @@ public class Event extends BaseEntity {
         this.startDate = startDate;
         this.endDate = endDate;
         this.isAllDay = isAllDay;
+        this.memberCalendar = memberCalendar;
     }
 
     public void dragUpdate(

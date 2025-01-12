@@ -12,7 +12,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface EventRepository extends JpaRepository<Event, Long> {
-    @Query("SELECT e FROM Event e WHERE e.category.memberCalendar.type = :calendarType " +
+    @Query("SELECT e FROM Event e WHERE e.memberCalendar.type = :calendarType " +
         "AND e.startDate BETWEEN :startOfMonth AND :endOfMonth")
     List<Event> findByCalendarTypeAndStartDateBetween(
         @Param("calendarType") CalendarType calendarType,
