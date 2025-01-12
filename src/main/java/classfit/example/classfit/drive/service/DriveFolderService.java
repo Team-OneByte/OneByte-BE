@@ -36,7 +36,7 @@ public class DriveFolderService {
 
         InputStream emptyContent = new ByteArrayInputStream(new byte[0]);
         amazonS3.putObject(new PutObjectRequest(bucketName, fullFolderPath, emptyContent, metadata));
-        addUploadTagsToS3Object(fullFolderPath, member);
+        addUploadTagsToS3Object(fullFolderPath, member, uniqueFolderName);
         return fullFolderPath;
     }
 
@@ -45,7 +45,7 @@ public class DriveFolderService {
         int count = 1;
 
         while (doesFolderExist(generateFolderKey(member, driveType, baseName, folderPath))) {
-            baseName = folderName + " (" + count + ")";
+            baseName = folderName + count;
             count++;
         }
 
@@ -69,14 +69,23 @@ public class DriveFolderService {
         return basePath + (folderPath.isEmpty() ? "" : folderPath + "/") + folderName + "/";
     }
 
-    private void addUploadTagsToS3Object(String objectKey, Member member) {
+    private void addUploadTagsToS3Object(String objectKey, Member member, String uniqueFolderName) {
+        String folderPathWithoutPrefix = getFolderPathWithoutPrefix(objectKey);
         LocalDateTime now = LocalDateTime.now();
         String formattedDate = now.format(DateTimeFormatter.ISO_DATE_TIME);
         List<Tag> tags = List.of(
+            new Tag("folderPath", folderPathWithoutPrefix),
+            new Tag("originalFileName", uniqueFolderName),
             new Tag("uploadedBy", member.getName()),
             new Tag("uploadedAt", formattedDate)
         );
         amazonS3.setObjectTagging(new SetObjectTaggingRequest(bucketName, objectKey, new ObjectTagging(tags)));
+    }
+
+    private String getFolderPathWithoutPrefix(String objectKey) {
+        String folderPathWithoutPrefix = objectKey.replaceFirst("^personal/\\d+/|^shared/\\d+/", "");
+        folderPathWithoutPrefix = folderPathWithoutPrefix.replaceAll("[^a-zA-Z0-9-_./]", "").trim();
+        return folderPathWithoutPrefix;
     }
 
     public List<String> getFolders(Member member, DriveType driveType, String folderPath) {
