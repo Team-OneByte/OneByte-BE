@@ -136,7 +136,7 @@ public class DriveGetService {
         } else {
             throw new ClassfitException("지원하지 않는 드라이브 타입입니다.", HttpStatus.NO_CONTENT);
         }
-        return basePrefix + "/";
+        return basePrefix + "/" + folderPath;
     }
 
     private String normalize(String input) {
