@@ -1,8 +1,9 @@
-package classfit.example.classfit.auth.security.config;
+package classfit.example.classfit.common.config;
 
+import classfit.example.classfit.auth.exception.CustomAccessDeniedHandler;
+import classfit.example.classfit.auth.exception.CustomAuthenticationEntryPoint;
 import classfit.example.classfit.auth.security.custom.CustomAuthenticationProvider;
 import classfit.example.classfit.auth.security.custom.CustomUserDetailService;
-import classfit.example.classfit.auth.security.exception.CustomAuthenticationEntryPoint;
 import classfit.example.classfit.auth.security.filter.CustomLoginFilter;
 import classfit.example.classfit.auth.security.jwt.JWTFilter;
 import classfit.example.classfit.auth.security.jwt.JWTUtil;
@@ -28,7 +29,6 @@ public class SecurityConfig {
 
     private final AuthenticationConfiguration authenticationConfiguration;
     private final CustomUserDetailService customUserDetailService;
-    private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
     private final RedisUtil redisUtil;
     private final JWTUtil jwtUtil;
 
@@ -74,7 +74,10 @@ public class SecurityConfig {
         security
             .addFilterBefore(new JWTFilter(customUserDetailService, jwtUtil), CustomLoginFilter.class)
             .addFilterAt(customLoginFilter, UsernamePasswordAuthenticationFilter.class)
-            .exceptionHandling(exception -> exception.authenticationEntryPoint(customAuthenticationEntryPoint));
+            .exceptionHandling(exception -> exception
+                .authenticationEntryPoint(new CustomAuthenticationEntryPoint()) // 인증되지 않은 사용자 처리
+                .accessDeniedHandler(new CustomAccessDeniedHandler()) // 인증
+            );
 
         return security.build();
     }

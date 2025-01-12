@@ -1,6 +1,6 @@
 package classfit.example.classfit.auth.security.custom;
 
-import classfit.example.classfit.auth.security.exception.ClassfitAuthException;
+import classfit.example.classfit.common.exception.ClassfitAuthException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.core.Authentication;
@@ -30,7 +30,6 @@ public class CustomAuthenticationProvider extends DaoAuthenticationProvider {
             authentication.getCredentials().toString(),
             result.getAuthorities()
         );
-
     }
 
     @Override

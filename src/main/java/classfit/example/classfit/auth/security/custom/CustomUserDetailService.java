@@ -1,6 +1,6 @@
 package classfit.example.classfit.auth.security.custom;
 
-import classfit.example.classfit.auth.security.exception.ClassfitAuthException;
+import classfit.example.classfit.common.exception.ClassfitAuthException;
 import classfit.example.classfit.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
