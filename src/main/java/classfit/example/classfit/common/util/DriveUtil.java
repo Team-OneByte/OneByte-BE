@@ -95,6 +95,9 @@ public class DriveUtil {
     }
 
     public static FileType getFileType(String fileName) {
+        if (fileName.endsWith("/")) {
+            return FileType.FOLDER;
+        }
         String extension = getFileExtension(fileName);
         return FileType.getFileTypeByExtension(extension);
     }
