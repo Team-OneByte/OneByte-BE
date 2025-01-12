@@ -94,13 +94,17 @@ public class DriveUtil {
         );
     }
 
-    private static FileType getFileType(String fileName) {
-        int dotIndex = fileName.lastIndexOf(".");
-        if (dotIndex != -1 && dotIndex < fileName.length() - 1) {
-            String extension = fileName.substring(dotIndex + 1).toLowerCase();
-            return FileType.getFileTypeByExtension(extension);
+    public static FileType getFileType(String fileName) {
+        String extension = getFileExtension(fileName);
+        return FileType.getFileTypeByExtension(extension);
+    }
+
+    private static String getFileExtension(String fileName) {
+        int lastDotIndex = fileName.lastIndexOf('.');
+        if (lastDotIndex == -1) {
+            return "";
         }
-        return FileType.UNKNOWN;
+        return fileName.substring(lastDotIndex + 1).toLowerCase();
     }
 
     private static LocalDateTime parseUploadedAt(String uploadedAtStr) {

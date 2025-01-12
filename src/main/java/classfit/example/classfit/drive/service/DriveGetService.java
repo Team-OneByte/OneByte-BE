@@ -8,12 +8,10 @@ import classfit.example.classfit.member.domain.Member;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.*;
 import lombok.RequiredArgsConstructor;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.text.Normalizer;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -94,7 +92,7 @@ public class DriveGetService {
             .map(this::buildFileInfo)
             .filter(fileInfo -> !isFolder(fileInfo))     // 폴더는 제외
             .filter(fileInfo -> {
-                FileType fileType = getFileType(fileInfo.fileName());
+                FileType fileType = DriveUtil.getFileType(fileInfo.fileName());
                 return fileType.equals(filterFileType);  // 필터링 조건 추가
             })
             .collect(Collectors.toList());
@@ -102,18 +100,5 @@ public class DriveGetService {
 
     private boolean isFolder(FileResponse fileInfo) {
         return fileInfo.fileName().endsWith("/");
-    }
-
-    private FileType getFileType(String fileName) {
-        String extension = getFileExtension(fileName);
-        return FileType.getFileTypeByExtension(extension);
-    }
-
-    private String getFileExtension(String fileName) {
-        int lastDotIndex = fileName.lastIndexOf('.');
-        if (lastDotIndex == -1) {
-            return "";
-        }
-        return fileName.substring(lastDotIndex + 1).toLowerCase();
     }
 }

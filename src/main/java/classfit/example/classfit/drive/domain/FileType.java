@@ -28,6 +28,6 @@ public enum FileType {
                 return type;
             }
         }
-        return OTHER;
+        return UNKNOWN;
     }
 }
