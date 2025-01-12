@@ -247,6 +247,8 @@ public class EventService {
         );
 
         eventRepository.save(event);
+        addRepeatedModalEvents(member, request);
+
         return EventResponse.of(event.getId(), event.getName(), event.getEventType(), event.getStartDate(), event.getEndDate());
     }
 
