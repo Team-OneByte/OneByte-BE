@@ -30,11 +30,12 @@ public interface ClassStudentRepository extends JpaRepository<ClassStudent, Long
 
     List<ClassStudent> findBySubClass(SubClass subClass);
 
-    @Query("SELECT cs.student.id " +
+    @Query("SELECT new classfit.example.classfit.scoreReport.dto.response.FindClassStudent(cs.student.id, cs.student.name) " +
             "FROM ClassStudent cs " +
             "WHERE cs.subClass.id = :subClassId " +
             "AND cs.subClass.mainClass.id = :mainClassId")
     List<FindClassStudent> findStudentIdsByMainClassIdAndSubClassId(
             @Param("mainClassId") Long mainClassId,
             @Param("subClassId") Long subClassId);
+
 }
