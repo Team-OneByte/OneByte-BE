@@ -102,7 +102,7 @@ public class DriveUtil {
         return FileType.getFileTypeByExtension(extension);
     }
 
-    private static String getFileExtension(String fileName) {
+    public static String getFileExtension(String fileName) {
         int lastDotIndex = fileName.lastIndexOf('.');
         if (lastDotIndex == -1) {
             return "";

@@ -25,28 +25,4 @@ public class DriveDownloadService {
         InputStream inputStream = s3Object.getObjectContent();
         return new InputStreamResource(inputStream);
     }
-
-    public String getFileExtension(String fileName) {
-        int lastDotIndex = fileName.lastIndexOf('.');
-        if (lastDotIndex == -1) {
-            return "";
-        }
-        return fileName.substring(lastDotIndex + 1).toLowerCase();
-    }
-
-    public String getContentType(String extension) {
-        Map<String, String> mimeTypes = new HashMap<>();
-        mimeTypes.put("jpg", "image/jpeg");
-        mimeTypes.put("jpeg", "image/jpeg");
-        mimeTypes.put("png", "image/png");
-        mimeTypes.put("gif", "image/gif");
-        mimeTypes.put("pdf", "application/pdf");
-        mimeTypes.put("txt", "text/plain");
-        mimeTypes.put("html", "text/html");
-        mimeTypes.put("css", "text/css");
-        mimeTypes.put("js", "application/javascript");
-        mimeTypes.put("json", "application/json");
-
-        return mimeTypes.getOrDefault(extension, MediaType.APPLICATION_OCTET_STREAM_VALUE); // 기본값은 "application/octet-stream"
-    }
 }

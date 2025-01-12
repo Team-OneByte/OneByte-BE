@@ -2,6 +2,7 @@ package classfit.example.classfit.drive.controller;
 
 import classfit.example.classfit.auth.annotation.AuthMember;
 import classfit.example.classfit.common.ApiResponse;
+import classfit.example.classfit.common.util.DriveUtil;
 import classfit.example.classfit.drive.domain.DriveType;
 import classfit.example.classfit.drive.domain.FileType;
 import classfit.example.classfit.drive.dto.response.FileResponse;
@@ -66,8 +67,8 @@ public class DriveController {
         @RequestParam("fileName") String fileName
     ) {
         InputStreamResource resource = driveDownloadService.downloadFile(fileName);
-        String fileExtension = driveDownloadService.getFileExtension(fileName);
-        String contentType = driveDownloadService.getContentType(fileExtension);
+        String fileExtension = DriveUtil.getFileExtension(fileName);
+        String contentType = FileType.getContentType(fileExtension);
 
         String encodedFileName = URLEncoder.encode(fileName, StandardCharsets.UTF_8);
         HttpHeaders headers = new HttpHeaders();
