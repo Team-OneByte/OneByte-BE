@@ -11,7 +11,6 @@ import classfit.example.classfit.member.domain.Member;
 import classfit.example.classfit.member.service.MemberService;
 import classfit.example.classfit.memberCalendar.domain.MemberCalendar;
 import classfit.example.classfit.memberCalendar.repository.MemberCalendarRepository;
-import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -33,14 +32,7 @@ public class EventCreateService {
 
         addAttendeesToEvent(savedEvent, request.memberIds());
         eventRepeatService.addRepeatedEvents(member, request);
-
-        return EventResponse.of(
-            savedEvent.getId(),
-            savedEvent.getName(),
-            savedEvent.getEventType(),
-            savedEvent.getStartDate(),
-            savedEvent.getEndDate()
-        );
+        return Event.buildEventResponse(savedEvent);
     }
 
     private Event buildEvent(Member member, EventCreateRequest request) {
@@ -77,14 +69,7 @@ public class EventCreateService {
         Event savedEvent = eventRepository.save(event);
 
         eventRepeatService.addRepeatedModalEvents(member, request);
-
-        return EventResponse.of(
-            savedEvent.getId(),
-            savedEvent.getName(),
-            savedEvent.getEventType(),
-            savedEvent.getStartDate(),
-            savedEvent.getEndDate()
-        );
+        return Event.buildEventResponse(savedEvent);
     }
 
     private Event buildModalEvent(Member member, EventModalRequest request) {

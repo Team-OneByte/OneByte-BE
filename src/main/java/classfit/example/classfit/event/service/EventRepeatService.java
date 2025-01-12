@@ -28,13 +28,19 @@ public class EventRepeatService {
 
         LocalDateTime currentStartDate = request.startDate();
         LocalDateTime currentEndDate = request.endDate();
+        LocalDateTime repeatEndDate = request.repeatEndDate().orElse(currentStartDate.plusMonths(6));
 
+        generateRepeatedEvents(member, request, currentStartDate, currentEndDate, repeatEndDate);
+    }
+
+    private void generateRepeatedEvents(
+        Member member,
+        EventCreateRequest request,
+        LocalDateTime currentStartDate,
+        LocalDateTime currentEndDate,
+        LocalDateTime repeatEndDate
+    ) {
         EventRepeatType eventRepeatType = request.eventRepeatType();
-        LocalDateTime repeatEndDate = request.repeatEndDate().orElse(null);
-
-        if (repeatEndDate == null) {
-            repeatEndDate = currentStartDate.plusMonths(6);
-        }
 
         while (shouldCreateEvent(currentEndDate, repeatEndDate)) {
             Event repeatedEvent = buildEventWithUpdatedDates(member, request, currentStartDate, currentEndDate);
@@ -44,8 +50,7 @@ public class EventRepeatService {
             currentEndDate = getNextRepeatDate(currentEndDate, eventRepeatType);
         }
     }
-
-    private Event buildEventWithUpdatedDates(Member member, EventCreateRequest request, LocalDateTime currentStartDate, LocalDateTime currentEndDate) {
+        private Event buildEventWithUpdatedDates(Member member, EventCreateRequest request, LocalDateTime currentStartDate, LocalDateTime currentEndDate) {
         CalendarCategory category = calendarCategoryRepository.findById(request.categoryId());
         MemberCalendar memberCalendar = memberCalendarRepository.findByMemberAndType(member, request.calendarType());
 
@@ -73,14 +78,19 @@ public class EventRepeatService {
 
         LocalDateTime currentStartDate = request.startDate();
         LocalDateTime currentEndDate = request.endDate();
+        LocalDateTime repeatEndDate = request.repeatEndDate().orElse(currentStartDate.plusMonths(6));
 
+        generateRepeatedModalEvents(member, request, currentStartDate, currentEndDate, repeatEndDate);
+    }
 
+    private void generateRepeatedModalEvents(
+        Member member,
+        EventModalRequest request,
+        LocalDateTime currentStartDate,
+        LocalDateTime currentEndDate,
+        LocalDateTime repeatEndDate
+    ) {
         EventRepeatType eventRepeatType = request.eventRepeatType();
-        LocalDateTime repeatEndDate = request.repeatEndDate().orElse(null);
-
-        if (repeatEndDate == null) {
-            repeatEndDate = currentStartDate.plusMonths(6);
-        }
 
         while (shouldCreateEvent(currentEndDate, repeatEndDate)) {
             Event repeatedEvent = buildModalEventWithUpdatedDates(member, request, currentStartDate, currentEndDate);

@@ -44,14 +44,7 @@ public class EventUpdateService {
 
         eventRepository.save(event);
         eventRepeatService.addRepeatedModalEvents(member, request);
-
-        return EventResponse.of(
-            event.getId(),
-            event.getName(),
-            event.getEventType(),
-            event.getStartDate(),
-            event.getEndDate()
-        );
+        return Event.buildEventResponse(event);
     }
 
     @Transactional
@@ -64,13 +57,7 @@ public class EventUpdateService {
         );
 
         eventRepository.save(event);
-        return EventResponse.of(
-            event.getId(),
-            event.getName(),
-            event.getEventType(),
-            event.getStartDate(),
-            event.getEndDate()
-        );
+        return Event.buildEventResponse(event);
     }
 
     private Event getEventById(long eventId) {

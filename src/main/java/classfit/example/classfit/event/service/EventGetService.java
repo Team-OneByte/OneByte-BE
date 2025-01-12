@@ -25,13 +25,7 @@ public class EventGetService {
     @Transactional(readOnly = true)
     public EventResponse getEvent(long eventId) {
         Event event = getEventById(eventId);
-        return EventResponse.of(
-            event.getId(),
-            event.getName(),
-            event.getEventType(),
-            event.getStartDate(),
-            event.getEndDate()
-        );
+        return Event.buildEventResponse(event);
     }
 
     private Event getEventById(long eventId) {
