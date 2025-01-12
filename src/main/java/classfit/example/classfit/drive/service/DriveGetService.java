@@ -1,6 +1,5 @@
 package classfit.example.classfit.drive.service;
 
-import classfit.example.classfit.common.exception.ClassfitException;
 import classfit.example.classfit.common.util.DriveUtil;
 import classfit.example.classfit.drive.domain.DriveType;
 import classfit.example.classfit.drive.domain.FileType;
@@ -11,7 +10,6 @@ import com.amazonaws.services.s3.model.*;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.text.Normalizer;
@@ -31,7 +29,7 @@ public class DriveGetService {
 
     public List<FileResponse> getFilesFromS3(Member member, DriveType driveType, String folderPath) {
         List<FileResponse> files = new ArrayList<>();
-        String prefix = getPrefixByDriveType(member, driveType, folderPath);
+        String prefix = DriveUtil.buildPrefix(driveType, member, folderPath);
         List<S3ObjectSummary> objectSummaries = getS3ObjectList(prefix);
 
         for (S3ObjectSummary summary : objectSummaries) {
@@ -49,26 +47,6 @@ public class DriveGetService {
             .map(this::buildFileInfo)
             .filter(fileInfo -> normalize(fileInfo.fileName()).contains(normalize(fileName)))  // 정규화하여 필터링
             .collect(Collectors.toList());
-    }
-
-    private String getPrefixByDriveType(Member member, DriveType driveType, String folderPath) {
-        String basePrefix;
-        switch (driveType) {
-            case PERSONAL:
-                basePrefix = "personal/" + member.getId() + "/";
-                break;
-            case SHARED:
-                Long academyId = member.getAcademy().getId();
-                basePrefix = "shared/" + academyId + "/";
-                break;
-            default:
-                throw new ClassfitException("지원하지 않는 드라이브 타입입니다.", HttpStatus.NO_CONTENT);
-        }
-        if (folderPath == null || folderPath.trim().isEmpty()) {
-            return basePrefix;
-        }
-
-        return basePrefix + folderPath + "/";
     }
 
     private List<S3ObjectSummary> getS3ObjectList(String prefix) {
@@ -114,29 +92,14 @@ public class DriveGetService {
             .collect(Collectors.toMap(Tag::getKey, Tag::getValue));
     }
 
-
     private ListObjectsV2Request createListObjectsRequest(DriveType driveType, Member member, String folderPath) {
         ListObjectsV2Request request = new ListObjectsV2Request()
             .withBucketName(bucketName)
             .withDelimiter("/");
 
-        String prefix = buildPrefix(driveType, member, folderPath);
+        String prefix = DriveUtil.buildPrefix(driveType, member, folderPath);
         request.setPrefix(prefix);
-
         return request;
-    }
-
-    private String buildPrefix(DriveType driveType, Member member, String folderPath) {
-        String basePrefix;
-
-        if (driveType == DriveType.PERSONAL) {
-            basePrefix = "personal/" + member.getId();
-        } else if (driveType == DriveType.SHARED) {
-            basePrefix = "shared/" + member.getAcademy().getId();
-        } else {
-            throw new ClassfitException("지원하지 않는 드라이브 타입입니다.", HttpStatus.NO_CONTENT);
-        }
-        return basePrefix + "/" + folderPath;
     }
 
     private String normalize(String input) {

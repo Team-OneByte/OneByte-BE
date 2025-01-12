@@ -1,5 +1,6 @@
 package classfit.example.classfit.drive.service;
 
+import classfit.example.classfit.common.util.DriveUtil;
 import classfit.example.classfit.drive.domain.DriveType;
 import classfit.example.classfit.member.domain.Member;
 import com.amazonaws.services.s3.AmazonS3;
@@ -83,25 +84,12 @@ public class DriveFolderService {
             .withBucketName(bucketName)
             .withDelimiter("/");
 
-        String prefix = buildPrefix(driveType, member, folderPath);
+        String prefix = DriveUtil.buildPrefix(driveType, member, folderPath);
         request.setPrefix(prefix);
         ListObjectsV2Result result = amazonS3.listObjectsV2(request);
 
         return result.getCommonPrefixes().stream()
             .map(folder -> folder.substring(prefix.length()))
             .collect(Collectors.toList());
-    }
-
-    private String buildPrefix(DriveType driveType, Member member, String folderPath) {
-        String basePrefix;
-
-        if (driveType == DriveType.PERSONAL) {
-            basePrefix = "personal/" + member.getId();
-        } else if (driveType == DriveType.SHARED) {
-            basePrefix = "shared/" + member.getAcademy().getId();
-        } else {
-            throw new IllegalArgumentException("지원하지 않는 드라이브 타입입니다.");
-        }
-        return folderPath.isEmpty() ? basePrefix + "/" : basePrefix + "/" + folderPath + "/";
     }
 }

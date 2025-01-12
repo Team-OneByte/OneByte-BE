@@ -77,4 +77,21 @@ public class DriveUtil {
         // 1MB 미만이면 KB 단위로 표시
         return String.format("%.1f KB", sizeInKB); // 소수점 한 자리까지 KB로 표시
     }
+
+    public static String buildPrefix(DriveType driveType, Member member, String folderPath) {
+        String basePrefix;
+
+        if (driveType == DriveType.PERSONAL) {
+            basePrefix = "personal/" + member.getId() + "/";
+        } else if (driveType == DriveType.SHARED) {
+            basePrefix = "shared/" + member.getAcademy().getId() + "/";
+        } else {
+            throw new IllegalArgumentException("지원하지 않는 드라이브 타입입니다.");
+        }
+        if (folderPath == null || folderPath.trim().isEmpty()) {
+            return basePrefix;
+        }
+
+        return basePrefix + folderPath + "/";
+    }
 }
