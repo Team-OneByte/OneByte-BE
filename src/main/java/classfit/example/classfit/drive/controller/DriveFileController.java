@@ -2,9 +2,7 @@ package classfit.example.classfit.drive.controller;
 
 import classfit.example.classfit.auth.annotation.AuthMember;
 import classfit.example.classfit.common.ApiResponse;
-import classfit.example.classfit.common.util.DriveUtil;
 import classfit.example.classfit.drive.domain.DriveType;
-import classfit.example.classfit.drive.domain.FileType;
 import classfit.example.classfit.drive.service.DriveDownloadService;
 import classfit.example.classfit.drive.service.DriveUploadService;
 import classfit.example.classfit.member.domain.Member;
@@ -17,9 +15,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 @RestController
