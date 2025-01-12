@@ -1,5 +1,6 @@
 package classfit.example.classfit.drive.service;
 
+import classfit.example.classfit.common.util.DriveUtil;
 import classfit.example.classfit.drive.domain.DriveType;
 import classfit.example.classfit.member.domain.Member;
 import com.amazonaws.services.s3.AmazonS3;
@@ -35,7 +36,7 @@ public class DriveFolderService {
 
         InputStream emptyContent = new ByteArrayInputStream(new byte[0]);
         amazonS3.putObject(new PutObjectRequest(bucketName, fullFolderPath, emptyContent, metadata));
-        addUploadTagsToS3Object(fullFolderPath, member);
+        addUploadTagsToS3Object(fullFolderPath, member, uniqueFolderName);
         return fullFolderPath;
     }
 
@@ -44,7 +45,7 @@ public class DriveFolderService {
         int count = 1;
 
         while (doesFolderExist(generateFolderKey(member, driveType, baseName, folderPath))) {
-            baseName = folderName + " (" + count + ")";
+            baseName = folderName + count;
             count++;
         }
 
@@ -68,14 +69,23 @@ public class DriveFolderService {
         return basePath + (folderPath.isEmpty() ? "" : folderPath + "/") + folderName + "/";
     }
 
-    private void addUploadTagsToS3Object(String objectKey, Member member) {
+    private void addUploadTagsToS3Object(String objectKey, Member member, String uniqueFolderName) {
+        String folderPathWithoutPrefix = getFolderPathWithoutPrefix(objectKey);
         LocalDateTime now = LocalDateTime.now();
         String formattedDate = now.format(DateTimeFormatter.ISO_DATE_TIME);
         List<Tag> tags = List.of(
+            new Tag("folderPath", folderPathWithoutPrefix),
+            new Tag("originalFileName", uniqueFolderName),
             new Tag("uploadedBy", member.getName()),
             new Tag("uploadedAt", formattedDate)
         );
         amazonS3.setObjectTagging(new SetObjectTaggingRequest(bucketName, objectKey, new ObjectTagging(tags)));
+    }
+
+    private String getFolderPathWithoutPrefix(String objectKey) {
+        String folderPathWithoutPrefix = objectKey.replaceFirst("^personal/\\d+/|^shared/\\d+/", "");
+        folderPathWithoutPrefix = folderPathWithoutPrefix.replaceAll("[^a-zA-Z0-9-_./]", "").trim();
+        return folderPathWithoutPrefix;
     }
 
     public List<String> getFolders(Member member, DriveType driveType, String folderPath) {
@@ -83,25 +93,12 @@ public class DriveFolderService {
             .withBucketName(bucketName)
             .withDelimiter("/");
 
-        String prefix = buildPrefix(driveType, member, folderPath);
+        String prefix = DriveUtil.buildPrefix(driveType, member, folderPath);
         request.setPrefix(prefix);
         ListObjectsV2Result result = amazonS3.listObjectsV2(request);
 
         return result.getCommonPrefixes().stream()
             .map(folder -> folder.substring(prefix.length()))
             .collect(Collectors.toList());
-    }
-
-    private String buildPrefix(DriveType driveType, Member member, String folderPath) {
-        String basePrefix;
-
-        if (driveType == DriveType.PERSONAL) {
-            basePrefix = "personal/" + member.getId();
-        } else if (driveType == DriveType.SHARED) {
-            basePrefix = "shared/" + member.getAcademy().getId();
-        } else {
-            throw new IllegalArgumentException("지원하지 않는 드라이브 타입입니다.");
-        }
-        return folderPath.isEmpty() ? basePrefix + "/" : basePrefix + "/" + folderPath + "/";
     }
 }

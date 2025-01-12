@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 public record FileResponse
     (
         FileType fileType,
+        String originalFileName,
         String fileName,
         String fileSize,
         String fileUrl,
