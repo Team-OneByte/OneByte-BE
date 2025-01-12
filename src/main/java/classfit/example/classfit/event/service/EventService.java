@@ -64,7 +64,7 @@ public class EventService {
             .startDate(request.startDate())
             .endDate(request.getEndDate())
             .isAllDay(request.isAllDay())
-            .eventRepeatType(request.eventRepeatType().orElse(EventRepeatType.NONE))
+            .eventRepeatType(request.eventRepeatType())
             .repeatEndDate(request.repeatEndDate().orElse(null))
             .location(request.location().orElse(null))
             .memo(request.memo().orElse(null))
@@ -74,14 +74,18 @@ public class EventService {
     }
 
     private void addRepeatedEvents(Member member, EventCreateRequest request) {
-        if (request.eventRepeatType().orElse(EventRepeatType.NONE) == EventRepeatType.NONE) {
+        if (request.eventRepeatType() == EventRepeatType.NONE) {
             return;
         }
 
         LocalDateTime currentStartDate = request.startDate();
         LocalDateTime currentEndDate = request.endDate();
-        EventRepeatType eventRepeatType = request.eventRepeatType().orElse(EventRepeatType.NONE);
+        EventRepeatType eventRepeatType = request.eventRepeatType();
         LocalDateTime repeatEndDate = request.repeatEndDate().orElse(null);
+
+        if (repeatEndDate == null) {
+            repeatEndDate = currentStartDate.plusMonths(6);
+        }
 
         while (shouldCreateEvent(currentEndDate, repeatEndDate)) {
             Event repeatedEvent = buildEventWithUpdatedDates(member, request, currentStartDate, currentEndDate);
@@ -166,7 +170,7 @@ public class EventService {
             .startDate(request.startDate())
             .endDate(request.getEndDate())
             .isAllDay(request.isAllDay())
-            .eventRepeatType(request.eventRepeatType().orElse(EventRepeatType.NONE))
+            .eventRepeatType(request.eventRepeatType())
             .repeatEndDate(request.repeatEndDate().orElse(null))
             .build();
         event.setDates(request.isAllDay(), request.startDate(), request.getEndDate());
@@ -174,14 +178,18 @@ public class EventService {
     }
 
     private void addRepeatedModalEvents(Member member, EventModalRequest request) {
-        if (request.eventRepeatType().orElse(EventRepeatType.NONE) == EventRepeatType.NONE) {
+        if (request.eventRepeatType() == EventRepeatType.NONE) {
             return;
         }
 
         LocalDateTime currentStartDate = request.startDate();
         LocalDateTime currentEndDate = request.endDate();
-        EventRepeatType eventRepeatType = request.eventRepeatType().orElse(EventRepeatType.NONE);
+        EventRepeatType eventRepeatType = request.eventRepeatType();
         LocalDateTime repeatEndDate = request.repeatEndDate().orElse(null);
+
+        if (repeatEndDate == null) {
+            repeatEndDate = currentStartDate.plusMonths(6);
+        }
 
         while (shouldCreateEvent(currentEndDate, repeatEndDate)) {
             Event repeatedEvent = buildModalEventWithUpdatedDates(member, request, currentStartDate, currentEndDate);

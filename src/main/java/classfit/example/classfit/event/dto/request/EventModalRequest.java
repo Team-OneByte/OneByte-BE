@@ -23,8 +23,8 @@ public record EventModalRequest(
     LocalDateTime endDate,
     @Schema(description = "종일 이벤트 여부", required = true)
     boolean isAllDay,
-    @Schema(description = "이벤트 반복 유형", required = false)
-    Optional<EventRepeatType> eventRepeatType,
+    @Schema(description = "이벤트 반복 유형", required = true)
+    EventRepeatType eventRepeatType,
     @Schema(description = "반복 종료 날짜", required = false)
     Optional<LocalDateTime> repeatEndDate
 ) {
