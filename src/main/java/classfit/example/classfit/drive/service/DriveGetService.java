@@ -37,8 +37,8 @@ public class DriveGetService {
         return files;
     }
 
-    public List<FileResponse> searchFilesByName(Member member, DriveType driveType, String fileName) {
-        ListObjectsV2Request request = createListObjectsRequest(driveType, member, fileName);
+    public List<FileResponse> searchFilesByName(Member member, DriveType driveType, String fileName, String folderPath) {
+        ListObjectsV2Request request = createListObjectsRequest(driveType, member, folderPath);
         ListObjectsV2Result result = amazonS3.listObjectsV2(request);
 
         return result.getObjectSummaries().stream()

@@ -85,9 +85,11 @@ public class DriveController {
         @Parameter(description = "내 드라이브는 PERSONAL, 공용 드라이브는 SHARED 입니다.")
         @RequestParam DriveType driveType,
         @Parameter(description = "검색할 파일명입니다. 빈 값이면 모든 파일이 조회됩니다.")
-        @RequestParam(required = false, defaultValue = "") String fileName
+        @RequestParam(required = false, defaultValue = "") String fileName,
+        @Parameter(description = "폴더 경로입니다. 비어 있으면 루트 폴더로 검색됩니다.")
+        @RequestParam(required = false, defaultValue = "") String folderPath
     ) {
-        List<FileResponse> files = driveGetService.searchFilesByName(member, driveType, fileName);
+        List<FileResponse> files = driveGetService.searchFilesByName(member, driveType, fileName, folderPath);
         return ApiResponse.success(files, 200, "SUCCESS");
     }
 
