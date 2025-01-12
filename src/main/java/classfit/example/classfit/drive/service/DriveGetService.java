@@ -92,11 +92,13 @@ public class DriveGetService {
     static FileResponse getFileResponse(S3ObjectSummary summary, String fileName, String fileUrl,
         Map<String, String> tagMap) {
         FileType fileType = DriveUtil.getFileType(fileName);
+        String originalFileName = tagMap.getOrDefault("originalFileName", "");
         LocalDateTime uploadedAt = DriveUtil.parseUploadedAt(tagMap.get("uploadedAt"));
         String fileSize = DriveUtil.formatFileSize(summary.getSize());
 
         return new FileResponse(
             fileType,
+            originalFileName,
             fileName,
             fileSize,
             fileUrl,

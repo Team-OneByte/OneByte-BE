@@ -39,13 +39,14 @@ public class DriveUploadService {
     }
 
     private String uploadFileToS3(Member member, MultipartFile file, DriveType driveType, String folderPath) throws IOException {
-        String uniqueFileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
+        String originalFileName = file.getOriginalFilename();
+        String uniqueFileName = UUID.randomUUID() + "_" + originalFileName;
         String objectKey = DriveUtil.generatedOriginPath(member, driveType, folderPath, uniqueFileName);
 
         try (InputStream inputStream = file.getInputStream()) {
             uploadToS3(objectKey, inputStream, file);
         }
-        addTagsToS3Object(objectKey, member, folderPath, driveType);
+        addTagsToS3Object(objectKey, member, folderPath, driveType, originalFileName);
         return amazonS3.getUrl(bucketName, objectKey).toString();
     }
 
@@ -62,7 +63,7 @@ public class DriveUploadService {
         return metadata;
     }
 
-    private void addTagsToS3Object(String objectKey, Member member, String folderPath, DriveType driveType) {
+    private void addTagsToS3Object(String objectKey, Member member, String folderPath, DriveType driveType, String originalFileName) {
         LocalDateTime now = LocalDateTime.now();
         String formattedDate = now.format(DateTimeFormatter.ISO_DATE_TIME);
         String finalFolderPath = folderPath != null && !folderPath.trim().isEmpty() ? folderPath : "";
@@ -70,6 +71,7 @@ public class DriveUploadService {
         List<Tag> tags = List.of(
             new Tag("folderPath", finalFolderPath),
             new Tag("driveType", driveType.toString().toLowerCase()),
+            new Tag("originalFileName", originalFileName),
             new Tag("uploadedBy", member.getName()),
             new Tag("uploadedAt", formattedDate)
         );
