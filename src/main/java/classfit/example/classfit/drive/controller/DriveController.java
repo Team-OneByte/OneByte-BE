@@ -98,9 +98,12 @@ public class DriveController {
         @Parameter(description = "내 드라이브는 PERSONAL, 공용 드라이브는 SHARED 입니다.")
         @RequestParam DriveType driveType,
         @Parameter(description = "파일 유형 필터입니다. 빈 값이면 모든 확장자가 조회됩니다.")
-        @RequestParam FileType fileType
+        @RequestParam FileType fileType,
+        @Parameter(description = "폴더 경로입니다. 비어 있으면 루트 폴더로 검색됩니다.")
+        @RequestParam(required = false, defaultValue = "") String folderPath
+
     ) {
-        List<FileResponse> files = driveGetService.classifyFilesByType(member, driveType, fileType);
+        List<FileResponse> files = driveGetService.classifyFilesByType(member, driveType, fileType, folderPath);
         return ApiResponse.success(files, 200, "확장자 필터링 성공");
     }
 }

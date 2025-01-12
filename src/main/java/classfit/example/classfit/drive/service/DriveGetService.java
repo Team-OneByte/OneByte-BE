@@ -84,21 +84,17 @@ public class DriveGetService {
         return Normalizer.normalize(input, Normalizer.Form.NFC).trim().toLowerCase();
     }
 
-    public List<FileResponse> classifyFilesByType(Member member, DriveType driveType, FileType filterFileType) {
-        ListObjectsV2Request request = createListObjectsRequest(driveType, member, "");
+    public List<FileResponse> classifyFilesByType(Member member, DriveType driveType, FileType filterFileType, String folderPath) {
+        ListObjectsV2Request request = createListObjectsRequest(driveType, member, folderPath);
         ListObjectsV2Result result = amazonS3.listObjectsV2(request);
 
         return result.getObjectSummaries().stream()
             .map(this::buildFileInfo)
-            .filter(fileInfo -> !isFolder(fileInfo))     // 폴더는 제외
             .filter(fileInfo -> {
                 FileType fileType = DriveUtil.getFileType(fileInfo.fileName());
-                return fileType.equals(filterFileType);  // 필터링 조건 추가
+                return fileType.equals(filterFileType);
             })
             .collect(Collectors.toList());
     }
 
-    private boolean isFolder(FileResponse fileInfo) {
-        return fileInfo.fileName().endsWith("/");
-    }
 }
