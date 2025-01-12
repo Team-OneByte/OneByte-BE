@@ -2,9 +2,10 @@ package classfit.example.classfit.drive.controller;
 
 import classfit.example.classfit.auth.annotation.AuthMember;
 import classfit.example.classfit.common.ApiResponse;
+import classfit.example.classfit.common.util.DriveUtil;
 import classfit.example.classfit.drive.domain.DriveType;
 import classfit.example.classfit.drive.domain.FileType;
-import classfit.example.classfit.drive.dto.response.FileInfo;
+import classfit.example.classfit.drive.dto.response.FileResponse;
 import classfit.example.classfit.drive.service.DriveDownloadService;
 import classfit.example.classfit.drive.service.DriveGetService;
 import classfit.example.classfit.drive.service.DriveUploadService;
@@ -35,14 +36,14 @@ public class DriveController {
 
     @GetMapping("/files")
     @Operation(summary = "파일 목록 조회", description = "S3에 업로드된 파일들을 조회하는 API입니다.")
-    public ApiResponse<List<FileInfo>> getFiles(
+    public ApiResponse<List<FileResponse>> getFiles(
         @AuthMember Member member,
         @Parameter(description = "내 드라이브는 PERSONAL, 공용 드라이브는 SHARED 입니다.")
         @RequestParam DriveType driveType,
         @Parameter(description = "폴더 경로입니다. 비어 있으면 루트 폴더에 생성됩니다.")
         @RequestParam(required = false, defaultValue = "") String folderPath
     ) {
-        List<FileInfo> fileUrls = driveGetService.getFilesFromS3(member, driveType, folderPath);
+        List<FileResponse> fileUrls = driveGetService.getFilesFromS3(member, driveType, folderPath);
         return ApiResponse.success(fileUrls, 200, "SUCCESS");
     }
 
@@ -63,11 +64,17 @@ public class DriveController {
     @GetMapping("/download")
     @Operation(summary = "파일 다운로드", description = "파일 다운로드 API 입니다.")
     public ResponseEntity<InputStreamResource> downloadFile(
-        @RequestParam("fileName") String fileName
+        @AuthMember Member member,
+        @Parameter(description = "내 드라이브는 PERSONAL, 공용 드라이브는 SHARED 입니다.")
+        @RequestParam DriveType driveType,
+        @Parameter(description = "폴더 경로입니다. 비어 있으면 루트 폴더로 지정됩니다.")
+        @RequestParam(required = false, defaultValue = "") String folderPath,
+        @Parameter(description = "다운로드 할 파일 이름입니다.")
+        @RequestParam String fileName
     ) {
-        InputStreamResource resource = driveDownloadService.downloadFile(fileName);
-        String fileExtension = driveDownloadService.getFileExtension(fileName);
-        String contentType = driveDownloadService.getContentType(fileExtension);
+        InputStreamResource resource = driveDownloadService.downloadFile(member, driveType, folderPath, fileName);
+        String fileExtension = DriveUtil.getFileExtension(fileName);
+        String contentType = FileType.getContentType(fileExtension);
 
         String encodedFileName = URLEncoder.encode(fileName, StandardCharsets.UTF_8);
         HttpHeaders headers = new HttpHeaders();
@@ -79,27 +86,32 @@ public class DriveController {
 
     @GetMapping("/search")
     @Operation(summary = "파일명으로 검색", description = "파일명을 기준으로 파일을 검색하는 API입니다.")
-    public ApiResponse<List<FileInfo>> searchFilesByName(
+    public ApiResponse<List<FileResponse>> searchFilesByName(
         @AuthMember Member member,
         @Parameter(description = "내 드라이브는 PERSONAL, 공용 드라이브는 SHARED 입니다.")
         @RequestParam DriveType driveType,
         @Parameter(description = "검색할 파일명입니다. 빈 값이면 모든 파일이 조회됩니다.")
-        @RequestParam(required = false, defaultValue = "") String fileName
+        @RequestParam(required = false, defaultValue = "") String fileName,
+        @Parameter(description = "폴더 경로입니다. 비어 있으면 루트 폴더로 검색됩니다.")
+        @RequestParam(required = false, defaultValue = "") String folderPath
     ) {
-        List<FileInfo> files = driveGetService.searchFilesByName(member, driveType, fileName);
+        List<FileResponse> files = driveGetService.searchFilesByName(member, driveType, fileName, folderPath);
         return ApiResponse.success(files, 200, "SUCCESS");
     }
 
     @GetMapping("/filter")
     @Operation(summary = "확장자 필터링", description = "파일 확장자로 필터링하여 파일을 조회하는 API입니다.")
-    public ApiResponse<List<FileInfo>> filterFilesByExtension(
+    public ApiResponse<List<FileResponse>> filterFilesByExtension(
         @AuthMember Member member,
         @Parameter(description = "내 드라이브는 PERSONAL, 공용 드라이브는 SHARED 입니다.")
         @RequestParam DriveType driveType,
         @Parameter(description = "파일 유형 필터입니다. 빈 값이면 모든 확장자가 조회됩니다.")
-        @RequestParam FileType fileType
+        @RequestParam FileType fileType,
+        @Parameter(description = "폴더 경로입니다. 비어 있으면 루트 폴더로 검색됩니다.")
+        @RequestParam(required = false, defaultValue = "") String folderPath
+
     ) {
-        List<FileInfo> files = driveGetService.classifyFilesByType(member, driveType, fileType);
+        List<FileResponse> files = driveGetService.classifyFilesByType(member, driveType, fileType, folderPath);
         return ApiResponse.success(files, 200, "확장자 필터링 성공");
     }
 }

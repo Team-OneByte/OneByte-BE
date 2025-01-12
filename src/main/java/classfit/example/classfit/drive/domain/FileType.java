@@ -1,6 +1,9 @@
 package classfit.example.classfit.drive.domain;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import org.springframework.http.MediaType;
 
 public enum FileType {
     FOLDER("folder"),
@@ -28,6 +31,22 @@ public enum FileType {
                 return type;
             }
         }
-        return OTHER;
+        return UNKNOWN;
+    }
+
+    public static String getContentType(String extension) {
+        Map<String, String> mimeTypes = new HashMap<>();
+        mimeTypes.put("jpg", "image/jpeg");
+        mimeTypes.put("jpeg", "image/jpeg");
+        mimeTypes.put("png", "image/png");
+        mimeTypes.put("gif", "image/gif");
+        mimeTypes.put("pdf", "application/pdf");
+        mimeTypes.put("txt", "text/plain");
+        mimeTypes.put("html", "text/html");
+        mimeTypes.put("css", "text/css");
+        mimeTypes.put("js", "application/javascript");
+        mimeTypes.put("json", "application/json");
+
+        return mimeTypes.getOrDefault(extension, MediaType.APPLICATION_OCTET_STREAM_VALUE);
     }
 }

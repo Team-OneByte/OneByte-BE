@@ -2,7 +2,6 @@ package classfit.example.classfit.drive.service;
 
 import classfit.example.classfit.common.util.DriveUtil;
 import classfit.example.classfit.drive.domain.DriveType;
-import classfit.example.classfit.drive.domain.FileType;
 import classfit.example.classfit.drive.dto.response.FileResponse;
 import classfit.example.classfit.member.domain.Member;
 import com.amazonaws.services.s3.AmazonS3;
@@ -49,19 +48,7 @@ public class DriveTrashService {
             .getTagSet().stream()
             .collect(Collectors.toMap(Tag::getKey, Tag::getValue));
 
-        FileType fileType = DriveUtil.getFileType(fileName);
-        LocalDateTime uploadedAt = DriveUtil.parseUploadedAt(tagMap.get("uploadedAt"));
-        String fileSize = DriveUtil.formatFileSize(summary.getSize());
-
-        return new FileResponse(
-            fileType,
-            fileName,
-            fileSize,
-            fileUrl,
-            tagMap.getOrDefault("folderPath", ""),
-            tagMap.getOrDefault("uploadedBy", ""),
-            uploadedAt
-        );
+        return DriveUtil.getFileResponse(summary, fileName, fileUrl, tagMap);
     }
 
     public List<String> moveToTrash(Member member, DriveType driveType, String folderPath, List<String> fileNames) {
