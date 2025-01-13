@@ -26,7 +26,7 @@ public class EventRepeatService {
             return;
         }
 
-        LocalDateTime currentStartDate = request.startDate();
+        LocalDateTime currentStartDate = request.startDate().plusDays(1);
         LocalDateTime currentEndDate = request.endDate();
         LocalDateTime repeatEndDate = request.repeatEndDate().orElse(currentStartDate.plusMonths(6));
 
@@ -82,7 +82,7 @@ public class EventRepeatService {
             return;
         }
 
-        LocalDateTime currentStartDate = request.startDate();
+        LocalDateTime currentStartDate = request.startDate().plusDays(1);
         LocalDateTime currentEndDate = request.endDate();
         LocalDateTime repeatEndDate = request.repeatEndDate().orElse(currentStartDate.plusMonths(6));
 
