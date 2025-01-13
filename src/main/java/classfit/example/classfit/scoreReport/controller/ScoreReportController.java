@@ -106,10 +106,9 @@ public class ScoreReportController {
     @GetMapping("/all-report")
     @Operation(summary = "학습 리포트 전체조회", description = "학원 별 생성한 성적 리포트 전체조회 API입니다.")
     public ApiResponse<List<FindAllReportResponse>> findAllReport(
-            @AuthMember Member member,
-            @RequestParam(name = "academyId") Long academyId) {
+            @AuthMember Member member) {
 
-        List<FindAllReportResponse> response = scoreReportService.findAllReport(member, academyId);
+        List<FindAllReportResponse> response = scoreReportService.findAllReport(member);
 
         return ApiResponse.success(response, 200, "FIND-ALL-STUDENT-REPORTS");
     }
