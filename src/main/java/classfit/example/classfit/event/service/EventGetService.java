@@ -49,6 +49,7 @@ public class EventGetService {
             .map(event -> EventMontylyResponse.of(
                 String.valueOf(event.getId()),
                 event.getName(),
+                event.getCategory() != null ? String.valueOf(event.getCategory().getColor().getHexCode()) : "000000",
                 event.getEventType().toString(),
                 event.getStartDate().format(formatter),
                 event.getEndDate().format(formatter)))
