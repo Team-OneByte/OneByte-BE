@@ -10,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -66,7 +68,18 @@ public class DriveTrashService {
 
             trashPaths.add(trashPath);
         }
+
+        createPlaceHolder(member, driveType, folderPath);
         return trashPaths;
+    }
+
+    private void createPlaceHolder(Member member, DriveType driveType, String folderPath) {
+        ObjectMetadata metadata = new ObjectMetadata();
+        metadata.setContentLength(0);
+
+        String fullFolderPath = DriveUtil.generatedOriginPath(member, driveType, folderPath, "");
+        InputStream emptyContent = new ByteArrayInputStream(new byte[0]);
+        amazonS3.putObject(new PutObjectRequest(bucketName, fullFolderPath, emptyContent, metadata));
     }
 
     private void addDeleteTagsToS3Object(String objectKey, Member member) {

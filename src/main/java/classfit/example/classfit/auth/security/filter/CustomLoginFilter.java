@@ -5,6 +5,7 @@ import classfit.example.classfit.auth.security.custom.CustomAuthenticationToken;
 import classfit.example.classfit.auth.security.jwt.JWTUtil;
 import classfit.example.classfit.common.ApiResponse;
 import classfit.example.classfit.common.exception.ClassfitAuthException;
+import classfit.example.classfit.common.exception.ClassfitException;
 import classfit.example.classfit.common.util.CookieUtil;
 import classfit.example.classfit.common.util.RedisUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -72,7 +73,7 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
             ObjectMapper objectMapper = new ObjectMapper();
             return objectMapper.readValue(request.getInputStream(), UserRequest.class);
         } catch (IOException e) {
-            throw new ClassfitAuthException("입력 형식이 잘못되었습니다.", HttpStatus.BAD_REQUEST);
+            throw new ClassfitException("입력 형식이 잘못되었습니다.", HttpStatus.BAD_REQUEST);
         }
     }
 
