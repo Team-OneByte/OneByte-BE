@@ -18,8 +18,9 @@ import java.util.Date;
 @Component
 public class JWTUtil {
 
+    private static final String CREDENTIAL = "Authorization";
+    private static final String SECURITY_SCHEMA_TYPE = "Bearer ";
     private final SecretKey secretKey;
-    public static final String AUTHORIZATION_HEADER = "Authorization";
 
     public JWTUtil(@Value("${spring.jwt.secret}") String secretKey) {
         this.secretKey = new SecretKeySpec(secretKey.getBytes(StandardCharsets.UTF_8), Jwts.SIG.HS256.key().build().getAlgorithm());
@@ -41,15 +42,14 @@ public class JWTUtil {
         try {
             return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().getExpiration().before(new Date());
         } catch (ExpiredJwtException e) {
-            return true; // 만료된 경우 true 반환
+            return true;
         }
     }
 
-    public String resolveToken(HttpServletRequest request) {
+    public String extractToken(HttpServletRequest request) {
+        String bearerToken = request.getHeader(CREDENTIAL);
 
-        String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
-
-        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
+        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(SECURITY_SCHEMA_TYPE)) {
             return bearerToken.substring(7);
         }
 
