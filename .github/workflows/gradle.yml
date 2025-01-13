@@ -1,6 +1,5 @@
 name: Java CI with Gradle
 
-
 on:
   push:
     branches: [ "master" ]
@@ -20,35 +19,28 @@ jobs:
           java-version: '22'
           distribution: 'temurin'
 
-      
       - name: Grant execute permission for Gradle Wrapper
         run: chmod +x gradlew
 
-      
       - name: create resources folder if not exists
         run: mkdir -p src/main/resources
 
       - name: set up application.properties
         run: echo "${{ secrets.APPLICATION }}" > src/main/resources/application.properties
 
-      
       - name: Build with Gradle
         uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
         with:
           arguments: clean bootJar
-
-      
       - name: Docker image build
         run: docker build -t ${{ secrets.DOCKER_USERNAME }}/github-actions-demo .
 
-      
       - name: Docker login
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-    
       - name: Docker Hub push
         run: docker push ${{ secrets.DOCKER_USERNAME }}/github-actions-demo
 
@@ -57,23 +49,19 @@ jobs:
     runs-on: self-hosted
 
     steps:
-      
       - name: Docker pull
         run: sudo docker pull ${{ secrets.DOCKER_USERNAME }}/github-actions-demo
 
-      
       - name: Stop and remove existing containers
         run: |
-          CONTAINER_IDS=$(sudo docker ps -q)
+          CONTAINER_IDS=$(sudo docker ps -aq)
           if [ -n "$CONTAINER_IDS" ]; then
             sudo docker stop $CONTAINER_IDS
             sudo docker rm $CONTAINER_IDS
           fi
 
-      
       - name: Run new container
         run: sudo docker run --name github-actions-demo --rm -d -p 8080:8080 ${{ secrets.DOCKER_USERNAME }}/github-actions-demo
 
-      
       - name: Clean up old Docker images
         run: sudo docker system prune -f
