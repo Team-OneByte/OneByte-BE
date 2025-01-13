@@ -45,10 +45,9 @@ public class DriveFileController {
         @AuthMember Member member,
         @Parameter(description = "내 드라이브는 PERSONAL, 공용 드라이브는 SHARED 입니다.")
         @RequestParam DriveType driveType,
-        @RequestParam(required = false, defaultValue = "") String folderPath,
         @RequestParam List<String> fileNames
     ) {
-        InputStreamResource resource = driveDownloadService.downloadMultipleFiles(member, driveType, folderPath, fileNames);
+        InputStreamResource resource = driveDownloadService.downloadMultipleFiles(member, driveType, fileNames);
         String zipFileName = "files.zip";
 
         HttpHeaders headers = new HttpHeaders();
