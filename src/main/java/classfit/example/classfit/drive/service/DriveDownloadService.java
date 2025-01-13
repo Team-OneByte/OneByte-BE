@@ -30,12 +30,12 @@ public class DriveDownloadService {
     @Value("${cloud.aws.s3.bucket}")
     private String bucketName;
 
-    public InputStreamResource downloadMultipleFiles(Member member, DriveType driveType, String folderPath, List<String> fileNames) {
+    public InputStreamResource downloadMultipleFiles(Member member, DriveType driveType, List<String> fileNames) {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 
         try (ZipOutputStream zipOutputStream = new ZipOutputStream(byteArrayOutputStream)) {
             for (String fileName : fileNames) {
-                addFileToZip(member, driveType, folderPath, fileName, zipOutputStream);
+                addFileToZip(member, driveType, fileName, zipOutputStream);
             }
         } catch (IOException e) {
             throw new RuntimeException("파일 다운로드 중 오류가 발생했습니다.", e);
@@ -45,8 +45,8 @@ public class DriveDownloadService {
         return new InputStreamResource(byteArrayInputStream);
     }
 
-    private void addFileToZip(Member member, DriveType driveType, String folderPath, String fileName, ZipOutputStream zipOutputStream) throws IOException {
-        String originPath = DriveUtil.generatedOriginPath(member, driveType, folderPath, fileName);
+    private void addFileToZip(Member member, DriveType driveType, String fileName, ZipOutputStream zipOutputStream) throws IOException {
+        String originPath = DriveUtil.generatedOriginPath(member, driveType, "", fileName);
         S3Object s3Object = amazonS3.getObject(new GetObjectRequest(bucketName, originPath));
         InputStream inputStream = s3Object.getObjectContent();
 
