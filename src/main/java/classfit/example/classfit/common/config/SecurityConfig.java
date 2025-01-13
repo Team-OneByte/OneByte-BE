@@ -1,8 +1,9 @@
-package classfit.example.classfit.auth.security.config;
+package classfit.example.classfit.common.config;
 
+import classfit.example.classfit.auth.exception.CustomAccessDeniedHandler;
+import classfit.example.classfit.auth.exception.CustomAuthenticationEntryPoint;
 import classfit.example.classfit.auth.security.custom.CustomAuthenticationProvider;
 import classfit.example.classfit.auth.security.custom.CustomUserDetailService;
-import classfit.example.classfit.auth.security.exception.CustomAuthenticationEntryPoint;
 import classfit.example.classfit.auth.security.filter.CustomLoginFilter;
 import classfit.example.classfit.auth.security.jwt.JWTFilter;
 import classfit.example.classfit.auth.security.jwt.JWTUtil;
@@ -13,6 +14,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -23,15 +25,14 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
 
     private final AuthenticationConfiguration authenticationConfiguration;
     private final CustomUserDetailService customUserDetailService;
-    private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
     private final RedisUtil redisUtil;
     private final JWTUtil jwtUtil;
-
 
     @Bean
     public BCryptPasswordEncoder bCryptPasswordEncoder() {
@@ -50,6 +51,10 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity security) throws Exception {
+
+        CustomLoginFilter customLoginFilter = new CustomLoginFilter(authenticationManager(authenticationConfiguration), jwtUtil, redisUtil);
+        customLoginFilter.setFilterProcessesUrl("/api/v1/signin");
+
         security
             .csrf(AbstractHttpConfigurer::disable)
             .formLogin(AbstractHttpConfigurer::disable)
@@ -70,8 +75,11 @@ public class SecurityConfig {
 
         security
             .addFilterBefore(new JWTFilter(customUserDetailService, jwtUtil), CustomLoginFilter.class)
-            .addFilterAt(new CustomLoginFilter(authenticationManager(authenticationConfiguration), jwtUtil, redisUtil), UsernamePasswordAuthenticationFilter.class)
-            .exceptionHandling(exception -> exception.authenticationEntryPoint(customAuthenticationEntryPoint));
+            .addFilterAt(customLoginFilter, UsernamePasswordAuthenticationFilter.class)
+            .exceptionHandling(exception -> exception
+                .authenticationEntryPoint(new CustomAuthenticationEntryPoint()) // 인증되지 않은 사용자 처리
+                .accessDeniedHandler(new CustomAccessDeniedHandler()) // 인증
+            );
 
         return security.build();
     }

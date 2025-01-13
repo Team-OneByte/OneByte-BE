@@ -6,7 +6,7 @@ import org.springframework.http.ResponseCookie;
 
 public class CookieUtil {
 
-    public static void addCookie(HttpServletResponse response, String name, String value, long maxAge) {
+    public static void setCookie(HttpServletResponse response, String name, String value, long maxAge) {
         ResponseCookie cookie = ResponseCookie.from(name, value)
             .path("/")
             .sameSite("None")
