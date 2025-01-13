@@ -5,12 +5,16 @@ import classfit.example.classfit.drive.domain.DriveType;
 import classfit.example.classfit.member.domain.Member;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.GetObjectRequest;
+import com.amazonaws.services.s3.model.GetObjectTaggingRequest;
 import com.amazonaws.services.s3.model.S3Object;
+import com.amazonaws.services.s3.model.Tag;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 import lombok.RequiredArgsConstructor;
@@ -46,7 +50,8 @@ public class DriveDownloadService {
         S3Object s3Object = amazonS3.getObject(new GetObjectRequest(bucketName, originPath));
         InputStream inputStream = s3Object.getObjectContent();
 
-        ZipEntry zipEntry = new ZipEntry(fileName);
+        String originalFileName = getOriginalFileName(originPath, fileName);
+        ZipEntry zipEntry = new ZipEntry(originalFileName);
         zipOutputStream.putNextEntry(zipEntry);
 
         byte[] buffer = new byte[1024];
@@ -57,5 +62,13 @@ public class DriveDownloadService {
 
         zipOutputStream.closeEntry();
         inputStream.close();
+    }
+
+    private String getOriginalFileName(String objectKey, String fileName) {
+        Map<String, String> tagMap = amazonS3.getObjectTagging(new GetObjectTaggingRequest(bucketName, objectKey))
+            .getTagSet().stream()
+            .collect(Collectors.toMap(Tag::getKey, Tag::getValue));
+
+        return tagMap.getOrDefault("originalFileName", fileName);
     }
 }
