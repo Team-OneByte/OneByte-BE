@@ -12,7 +12,8 @@ import java.util.List;
 public interface MainClassRepository extends JpaRepository<MainClass, Long> {
     List<MainClass> findAllByOrderByMainClassNameAsc();
 
-    List<MainClass> findByMemberAcademy(Academy academy);
+    List<MainClass> findByAcademy(Academy academy);
 
-    boolean existsByMember_AcademyAndMainClassName(Academy academy, String mainClassName);
+    boolean existsByAcademyAndMainClassName(Academy academy, String mainClassName);
 }
+
