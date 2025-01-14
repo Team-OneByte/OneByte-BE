@@ -9,7 +9,6 @@ import classfit.example.classfit.category.dto.response.MainClassResponse;
 import classfit.example.classfit.category.repository.MainClassRepository;
 import classfit.example.classfit.common.exception.ClassfitException;
 import classfit.example.classfit.member.domain.Member;
-import classfit.example.classfit.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -23,8 +22,6 @@ import java.util.Objects;
 public class MainClassService {
 
     private final MainClassRepository mainClassRepository;
-    private final MemberRepository memberRepository;
-
 
     // 메인 클래스 추가
     @Transactional
@@ -33,7 +30,7 @@ public class MainClassService {
         Academy academy = findMember.getAcademy();
 
         boolean exists = mainClassRepository.existsByAcademyAndMainClassName(academy,
-                req.mainClassName());
+            req.mainClassName());
         if (exists) {
             throw new ClassfitException("이미 같은 이름의 메인 클래스가 있어요.", HttpStatus.CONFLICT);
         }
@@ -46,22 +43,22 @@ public class MainClassService {
 
     // 메인 클래스 전체 조회
     @Transactional(readOnly = true)
-    public List<AllMainClassResponse> showMainClass(@AuthMember Member findMember) {
+    public List<AllMainClassResponse> showMainClass(Member findMember) {
 
         Academy academy = findMember.getAcademy();
 
         List<MainClass> mainClasses = mainClassRepository.findByAcademy(academy);
 
         return mainClasses.stream().map(mainClass -> new AllMainClassResponse(mainClass.getId(),
-                mainClass.getMainClassName())).toList();
+            mainClass.getMainClassName())).toList();
     }
 
     // 메인 클래스 삭제
     @Transactional
-    public void deleteMainClass(@AuthMember Member findMember, Long mainClassId) {
+    public void deleteMainClass(Member findMember, Long mainClassId) {
 
         MainClass mainClass = mainClassRepository.findById(mainClassId).orElseThrow(
-                () -> new ClassfitException("해당 메인 클래스를 찾을 수 없습니다.", HttpStatus.NOT_FOUND));
+            () -> new ClassfitException("해당 메인 클래스를 찾을 수 없습니다.", HttpStatus.NOT_FOUND));
 
         if (!Objects.equals(findMember.getAcademy(), mainClass.getAcademy())) {
             throw new ClassfitException("사용자가 속한 학원 내의 클래스가 아닙니다.", HttpStatus.FORBIDDEN);
@@ -69,5 +66,18 @@ public class MainClassService {
 
         mainClassRepository.delete(mainClass);
 
+    }
+
+    @Transactional
+    public MainClassResponse updateMainClass(Member findMember, Long mainClassId, MainClassRequest request) {
+
+        MainClass mainClass = mainClassRepository.findById(mainClassId).orElseThrow(
+            () -> new ClassfitException("해당 메인 클래스를 찾을 수 없습니다.", HttpStatus.NOT_FOUND));
+
+        if (!Objects.equals(findMember.getAcademy(), mainClass.getAcademy())) {
+            throw new ClassfitException("사용자가 속한 학원 내의 클래스가 아닙니다.", HttpStatus.FORBIDDEN);
+        }
+        mainClass.updateMainClassName(request.mainClassName());
+        return new MainClassResponse(mainClass.getId(), mainClass.getMainClassName());
     }
 }
