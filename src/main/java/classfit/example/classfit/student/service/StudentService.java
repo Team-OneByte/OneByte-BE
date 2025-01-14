@@ -1,5 +1,6 @@
 package classfit.example.classfit.student.service;
 
+import classfit.example.classfit.academy.domain.Academy;
 import classfit.example.classfit.attendance.domain.Attendance;
 import classfit.example.classfit.attendance.domain.AttendanceStatus;
 import classfit.example.classfit.attendance.repository.AttendanceRepository;
@@ -8,6 +9,7 @@ import classfit.example.classfit.category.repository.SubClassRepository;
 import classfit.example.classfit.classStudent.domain.ClassStudent;
 import classfit.example.classfit.classStudent.repository.ClassStudentRepository;
 import classfit.example.classfit.common.exception.ClassfitException;
+import classfit.example.classfit.member.domain.Member;
 import classfit.example.classfit.student.domain.Gender;
 import classfit.example.classfit.student.domain.Student;
 import classfit.example.classfit.student.dto.request.StudentRequest;
@@ -37,12 +39,11 @@ public class StudentService {
     private final AttendanceRepository attendanceRepository;
 
     @Transactional
-    public StudentResponse registerStudent(StudentRequest req) {
-
-        Student student = req.toEntity(true);
+    public StudentResponse registerStudent(StudentRequest request) {
+        Student student = request.toEntity(true);
         studentRepository.save(student);
 
-        req.subClassList().forEach(subClassId -> {
+        request.subClassList().forEach(subClassId -> {
             SubClass subClass = subClassRepository.findById(subClassId).orElseThrow(
                 () -> new ClassfitException("존재하지 않는 SubClass ID입니다.", HttpStatus.NOT_FOUND));
             ClassStudent classStudent = new ClassStudent();
@@ -56,31 +57,8 @@ public class StudentService {
         return StudentResponse.from(student);
     }
 
-    private void createAttendanceForThreeWeeks(Student student) {
-        LocalDate currentDate = LocalDate.now();
-        LocalDate weekStart = currentDate.with(DayOfWeek.MONDAY);
-        ClassStudent classStudent = classStudentRepository.findByStudent(student);
-
-        // 3주간의 출결 생성 (현재 주 + 향후 2주)
-        for (int i = 0; i < 3; i++) {
-            LocalDate weekDate = weekStart.plusWeeks(i);
-            for (int j = 0; j < 7; j++) {
-                LocalDate attendanceDate = weekDate.plusDays(j);
-                Attendance attendance = Attendance.builder()
-                    .date(attendanceDate)
-                    .week(j)
-                    .status(AttendanceStatus.PRESENT)
-                    .student(student)
-                    .classStudent(classStudent)
-                    .build();
-                attendanceRepository.save(attendance);
-            }
-        }
-    }
-
     @Transactional
     public void deleteStudent(List<Long> studentIds) {
-
         studentIds.stream()
             .map(studentId -> studentRepository.findById(studentId).orElseThrow(()
                 -> new ClassfitException("해당하는 학생 정보를 찾을 수 없습니다", HttpStatus.NOT_FOUND)))
@@ -91,8 +69,9 @@ public class StudentService {
     }
 
     @Transactional(readOnly = true)
-    public List<StudentResponse> studentInfoAll() {
-        List<Student> studentAll = studentRepository.findAll();
+    public List<StudentResponse> studentInfoAll(Member member) {
+        Academy academy = member.getAcademy();
+        List<Student> studentAll = studentRepository.findStudentsByAcademyId(academy.getId());
 
         return studentAll.stream()
             .map(StudentResponse::from)
@@ -125,8 +104,8 @@ public class StudentService {
         Student student = studentRepository.findById(studentId).orElseThrow(
             () -> new ClassfitException("해당하는 학생 정보가 존재하지 않습니다.", HttpStatus.NOT_FOUND));
 
-        updateFields(student, req); // 필드 업데이트
-        updateSubClasses(student, req.subClassList()); // 서브 클래스 업데이트
+        updateFields(student, req);
+        updateSubClasses(student, req.subClassList());
     }
 
     private void updateFields(Student student, StudentUpdateRequest req) {
@@ -175,5 +154,27 @@ public class StudentService {
             classStudent.addSubClass(subClass);
             classStudentRepository.save(classStudent);
         });
+    }
+
+    private void createAttendanceForThreeWeeks(Student student) {
+        LocalDate currentDate = LocalDate.now();
+        LocalDate weekStart = currentDate.with(DayOfWeek.MONDAY);
+        ClassStudent classStudent = classStudentRepository.findByStudent(student);
+
+        // 3주간의 출결 생성 (현재 주 + 향후 2주)
+        for (int i = 0; i < 3; i++) {
+            LocalDate weekDate = weekStart.plusWeeks(i);
+            for (int j = 0; j < 7; j++) {
+                LocalDate attendanceDate = weekDate.plusDays(j);
+                Attendance attendance = Attendance.builder()
+                    .date(attendanceDate)
+                    .week(j)
+                    .status(AttendanceStatus.PRESENT)
+                    .student(student)
+                    .classStudent(classStudent)
+                    .build();
+                attendanceRepository.save(attendance);
+            }
+        }
     }
 }

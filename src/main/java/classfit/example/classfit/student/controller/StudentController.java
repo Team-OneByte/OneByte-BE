@@ -1,6 +1,8 @@
 package classfit.example.classfit.student.controller;
 
+import classfit.example.classfit.auth.annotation.AuthMember;
 import classfit.example.classfit.common.ApiResponse;
+import classfit.example.classfit.member.domain.Member;
 import classfit.example.classfit.student.dto.request.StudentRequest;
 import classfit.example.classfit.student.dto.request.StudentUpdateRequest;
 import classfit.example.classfit.student.dto.response.StudentInfoResponse;
@@ -18,7 +20,7 @@ import java.util.List;
 @RequestMapping("/api/v1/student")
 @RequiredArgsConstructor
 @Tag(name = "학생 컨트롤러", description = "학생 관련 API")
-public class StudentControllerImpl {
+public class StudentController {
 
     private final StudentService studentService;
 
@@ -32,9 +34,9 @@ public class StudentControllerImpl {
 
     @GetMapping("/")
     @Operation(summary = "학생 정보 조회", description = "전체 학생 정보 조회하는 API 입니다. ")
-    public ApiResponse<List<StudentResponse>> studentInfoAll() {
+    public ApiResponse<List<StudentResponse>> studentInfoAll(@AuthMember Member member) {
 
-        List<StudentResponse> studentList = studentService.studentInfoAll();
+        List<StudentResponse> studentList = studentService.studentInfoAll(member);
         return ApiResponse.success(studentList, 200, "FIND STUDENTS");
     }
 

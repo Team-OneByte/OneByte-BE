@@ -1,14 +1,12 @@
 package classfit.example.classfit.member.domain;
 
 import classfit.example.classfit.academy.domain.Academy;
-import classfit.example.classfit.category.domain.MainClass;
 import classfit.example.classfit.common.domain.BaseEntity;
 import classfit.example.classfit.member.dto.request.MemberUpdateInfoRequest;
 import jakarta.persistence.*;
-import java.time.LocalDate;
 import lombok.*;
 
-import java.util.List;
+import java.time.LocalDate;
 
 @Entity
 @Getter
@@ -41,10 +39,10 @@ public class Member extends BaseEntity {
     @Column(columnDefinition = "VARCHAR(20)", nullable = false)
     private MemberStatus status;
 
-    @Column(nullable = false)
+    @Column(length = 20)
     private LocalDate birthDate;
 
-    @Column(nullable = false)
+    @Column(length = 20)
     private String subject;
 
     @ManyToOne(fetch = FetchType.LAZY)
