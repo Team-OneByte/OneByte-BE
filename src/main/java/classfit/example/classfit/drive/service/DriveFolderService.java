@@ -28,6 +28,9 @@ public class DriveFolderService {
     private String bucketName;
 
     public String createFolder(Member member, DriveType driveType, String folderName, String folderPath) {
+        if (folderName == null || folderName.trim().isEmpty()) {
+            throw new IllegalArgumentException("폴더 이름은 비어 있을 수 없습니다.");
+        }
         String uniqueFolderName = generateUniqueFolderName(member, driveType, folderName, folderPath);
         String fullFolderPath = generateFolderKey(member, driveType, uniqueFolderName, folderPath);
 
