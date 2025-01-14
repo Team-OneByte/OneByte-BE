@@ -32,14 +32,15 @@ public class DriveFolderService {
             throw new IllegalArgumentException("폴더 이름은 비어 있을 수 없습니다.");
         }
         String uniqueFolderName = generateUniqueFolderName(member, driveType, folderName, folderPath);
-        String fullFolderPath = generateFolderKey(member, driveType, uniqueFolderName, folderPath);
+        String folderKey = generateFolderKey(member, driveType, uniqueFolderName, folderPath);
+        String fullFolderPath = folderPath.isEmpty() ? "" : folderPath + "/";
 
         ObjectMetadata metadata = new ObjectMetadata();
         metadata.setContentLength(0);
 
         InputStream emptyContent = new ByteArrayInputStream(new byte[0]);
-        amazonS3.putObject(new PutObjectRequest(bucketName, fullFolderPath, emptyContent, metadata));
-        addUploadTagsToS3Object(fullFolderPath, member, uniqueFolderName);
+        amazonS3.putObject(new PutObjectRequest(bucketName, folderKey, emptyContent, metadata));
+        addUploadTagsToS3Object(folderKey, member, uniqueFolderName, fullFolderPath);
         return fullFolderPath;
     }
 
@@ -72,23 +73,16 @@ public class DriveFolderService {
         return basePath + (folderPath.isEmpty() ? "" : folderPath + "/") + folderName + "/";
     }
 
-    private void addUploadTagsToS3Object(String objectKey, Member member, String uniqueFolderName) {
-        String folderPathWithoutPrefix = getFolderPathWithoutPrefix(objectKey);
+    private void addUploadTagsToS3Object(String objectKey, Member member, String uniqueFolderName, String fullFolderPath) {
         LocalDateTime now = LocalDateTime.now();
         String formattedDate = now.format(DateTimeFormatter.ISO_DATE_TIME);
         List<Tag> tags = List.of(
-            new Tag("folderPath", folderPathWithoutPrefix),
+            new Tag("folderPath", fullFolderPath),
             new Tag("originalFileName", uniqueFolderName),
             new Tag("uploadedBy", member.getName()),
             new Tag("uploadedAt", formattedDate)
         );
         amazonS3.setObjectTagging(new SetObjectTaggingRequest(bucketName, objectKey, new ObjectTagging(tags)));
-    }
-
-    private String getFolderPathWithoutPrefix(String objectKey) {
-        String folderPathWithoutPrefix = objectKey.replaceFirst("^personal/\\d+/|^shared/\\d+/", "");
-        folderPathWithoutPrefix = folderPathWithoutPrefix.replaceAll("[^a-zA-Z0-9-_./]", "").trim();
-        return folderPathWithoutPrefix;
     }
 
     public List<String> getFolders(Member member, DriveType driveType, String folderPath) {
