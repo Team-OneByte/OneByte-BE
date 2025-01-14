@@ -25,11 +25,6 @@ public class MainClassService {
     private final MainClassRepository mainClassRepository;
     private final MemberRepository memberRepository;
 
-    private static void checkMemberRelationMainClass(Member findMember, MainClass findMainClass) {
-        if (!Objects.equals(findMember.getId(), findMainClass.getAcademy().getId())) {
-            throw new ClassfitException("사용자와 클래스가 일치하지 않습니다.", HttpStatus.FORBIDDEN);
-        }
-    }
 
     // 메인 클래스 추가
     @Transactional
