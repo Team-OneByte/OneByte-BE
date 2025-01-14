@@ -27,25 +27,20 @@ public interface ScoreReportRepository extends JpaRepository<ScoreReport, Long> 
             @Param("subClassId") Long subClassId);
 
     @Query("""
-                SELECT sr
-                FROM ScoreReport sr
-                WHERE sr.mainClass.id = :mainClassId
-                  AND sr.subClass.id = :subClassId
-                  AND sr.id IN (
-                      SELECT MIN(sr2.id)
-                      FROM ScoreReport sr2
-                      WHERE sr2.student.id = sr.student.id
-                      GROUP BY sr2.student.id
-                  )
-            """)
-    List<ScoreReport> findFirstReportByStudent(@Param("mainClassId") Long mainClassId,
+            SELECT sr
+            FROM ScoreReport sr
+            WHERE sr.mainClass.id = :mainClassId
+              AND sr.subClass.id = :subClassId
+""")
+    List<ScoreReport> findAllReportsByMainClassAndSubClass(@Param("mainClassId") Long mainClassId,
             @Param("subClassId") Long subClassId);
 
+
     @Query("SELECT sr FROM ScoreReport sr WHERE sr.id = :studentReportId")
-    Optional<ScoreReport> findById(@Param("studentReportId") Long studentReportId);
+    Optional<ScoreReport> findByStudentReportId(@Param("studentReportId") Long studentReportId);
 
     @Query("SELECT r FROM ScoreReport r " +
-            "WHERE r.mainClass.member.academy = :academy")
+            "WHERE r.mainClass.academy = :academy")
     List<ScoreReport> findAllByAcademy(@Param("academy") Academy academy);
 
 }

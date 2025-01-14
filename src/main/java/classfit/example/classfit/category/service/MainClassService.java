@@ -26,7 +26,7 @@ public class MainClassService {
     private final MemberRepository memberRepository;
 
     private static void checkMemberRelationMainClass(Member findMember, MainClass findMainClass) {
-        if (!Objects.equals(findMember.getId(), findMainClass.getMember().getId())) {
+        if (!Objects.equals(findMember.getId(), findMainClass.getAcademy().getId())) {
             throw new ClassfitException("사용자와 클래스가 일치하지 않습니다.", HttpStatus.FORBIDDEN);
         }
     }
@@ -37,13 +37,13 @@ public class MainClassService {
 
         Academy academy = findMember.getAcademy();
 
-        boolean exists = mainClassRepository.existsByMember_AcademyAndMainClassName(academy,
+        boolean exists = mainClassRepository.existsByAcademyAndMainClassName(academy,
                 req.mainClassName());
         if (exists) {
             throw new ClassfitException("이미 같은 이름의 메인 클래스가 있어요.", HttpStatus.CONFLICT);
         }
 
-        MainClass mainClass = new MainClass(req.mainClassName(), findMember);
+        MainClass mainClass = new MainClass(req.mainClassName(), academy);
         mainClassRepository.save(mainClass);
 
         return new MainClassResponse(mainClass.getId(), mainClass.getMainClassName());
@@ -55,7 +55,7 @@ public class MainClassService {
 
         Academy academy = findMember.getAcademy();
 
-        List<MainClass> mainClasses = mainClassRepository.findByMemberAcademy(academy);
+        List<MainClass> mainClasses = mainClassRepository.findByAcademy(academy);
 
         return mainClasses.stream().map(mainClass -> new AllMainClassResponse(mainClass.getId(),
                 mainClass.getMainClassName())).toList();
@@ -68,7 +68,7 @@ public class MainClassService {
         MainClass mainClass = mainClassRepository.findById(mainClassId).orElseThrow(
                 () -> new ClassfitException("해당 메인 클래스를 찾을 수 없습니다.", HttpStatus.NOT_FOUND));
 
-        if (!Objects.equals(findMember.getAcademy(), mainClass.getMember().getAcademy())) {
+        if (!Objects.equals(findMember.getAcademy(), mainClass.getAcademy())) {
             throw new ClassfitException("사용자가 속한 학원 내의 클래스가 아닙니다.", HttpStatus.FORBIDDEN);
         }
 

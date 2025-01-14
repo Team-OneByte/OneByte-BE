@@ -3,11 +3,9 @@ package classfit.example.classfit.member.domain;
 import classfit.example.classfit.academy.domain.Academy;
 import classfit.example.classfit.category.domain.MainClass;
 import classfit.example.classfit.common.domain.BaseEntity;
-import classfit.example.classfit.member.dto.request.MemberUpdateInfoRequest;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @Entity
@@ -41,15 +39,6 @@ public class Member extends BaseEntity {
     @Column(columnDefinition = "VARCHAR(20)", nullable = false)
     private MemberStatus status;
 
-    @Column(length = 30)
-    private LocalDate birthDate;
-
-    @Column(length = 30)
-    private String subject;
-
-    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<MainClass> mainClasses;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "academy_id")
     private Academy academy;
@@ -64,10 +53,5 @@ public class Member extends BaseEntity {
 
     public void updatePassword(String password) {
         this.password = password;
-    }
-
-    public void updateInfo(MemberUpdateInfoRequest request) {
-        this.birthDate = request.birth();
-        this.subject = request.subject();
     }
 }

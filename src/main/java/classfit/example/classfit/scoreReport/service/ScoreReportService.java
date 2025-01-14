@@ -118,8 +118,9 @@ public class ScoreReportService {
 
 
     @Transactional(readOnly = true)
-    public List<ReportExam> showReportExam(LocalDate startDate, LocalDate endDate, Long mainClassId,
+    public List<ReportExam> showReportExam(@AuthMember Member member, LocalDate startDate, LocalDate endDate, Long mainClassId,
             Long subClassId) {
+        validateAcademy(member,member.getAcademy().getId());
         List<ReportExam> reports = scoreReportRepository.findExamsByCreatedAtBetween(startDate,
                 endDate, mainClassId, subClassId);
         return reports.stream()
@@ -144,8 +145,8 @@ public class ScoreReportService {
         SubClass subClass = subClassRepository.findById(subClassId)
                 .orElseThrow(
                         () -> new ClassfitException("서브 클래스를 찾을 수 없어요.", HttpStatus.NOT_FOUND));
-        validateAcademy(member, mainClass.getMember().getAcademy().getId());
-        List<ScoreReport> studentReports = scoreReportRepository.findFirstReportByStudent(
+        validateAcademy(member,mainClass.getAcademy().getId());
+        List<ScoreReport> studentReports = scoreReportRepository.findAllReportsByMainClassAndSubClass(
                 mainClassId, subClassId);
 
         return studentReports.stream()
@@ -176,7 +177,7 @@ public class ScoreReportService {
                         report.getStudent().getId(),
                         report.getStudent().getName(),
                         report.getReportName(),
-                        report.getMainClass().getMember().getName(),
+                        report.getMainClass().getAcademy().getMembers().getFirst().getName(),
                         report.getCreatedAt().toLocalDate()
                 ))
                 .collect(Collectors.toList());
@@ -185,6 +186,7 @@ public class ScoreReportService {
 
     @Transactional
     public void deleteReport(@AuthMember Member member, Long studentReportId) {
+        validateAcademy(member,member.getAcademy().getId());
         scoreReportRepository.deleteById(studentReportId);
     }
 
@@ -198,7 +200,7 @@ public class ScoreReportService {
         SubClass subClass = subClassRepository.findById(subClassId)
                 .orElseThrow(
                         () -> new ClassfitException("서브 클래스를 찾을 수 없어요.", HttpStatus.NOT_FOUND));
-        validateAcademy(member, mainClass.getMember().getAcademy().getId());
+        validateAcademy(member, member.getAcademy().getId());
 
         List<FindClassStudent> classStudents = classStudentRepository.findStudentIdsByMainClassIdAndSubClassId(
                 mainClassId, subClassId);
@@ -218,7 +220,7 @@ public class ScoreReportService {
             ScoreReport scoreReport = scoreReportRepository.findById(request.reportId())
                     .orElseThrow(
                             () -> new ClassfitException("학습리포트를 찾을 수 없어요.", HttpStatus.NOT_FOUND));
-            validateAcademy(member, scoreReport.getMainClass().getMember().getAcademy().getId());
+            validateAcademy(member, scoreReport.getMainClass().getAcademy().getId());
 
             scoreReport.updateStudentOpinion(request.studentOpinion());
 
@@ -239,7 +241,7 @@ public class ScoreReportService {
                 .orElseThrow(
                         () -> new ClassfitException("학습리포트를 찾을 수 없어요.", HttpStatus.NOT_FOUND));
 
-        validateAcademy(member, scoreReport.getMainClass().getMember().getAcademy().getId());
+        validateAcademy(member, scoreReport.getMainClass().getAcademy().getId());
         List<AttendanceInfo> attendanceInfoList = scoreReport.getStudent().getAttendances().stream()
                 .collect(Collectors.groupingBy(
                         Attendance::getStatus,
