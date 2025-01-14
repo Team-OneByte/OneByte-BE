@@ -2,6 +2,7 @@ package classfit.example.classfit.event.domain;
 
 import classfit.example.classfit.calendarCategory.domain.CalendarCategory;
 import classfit.example.classfit.common.domain.BaseEntity;
+import classfit.example.classfit.event.dto.response.EventModalResponse;
 import classfit.example.classfit.event.dto.response.EventResponse;
 import classfit.example.classfit.eventMember.domain.EventMember;
 import classfit.example.classfit.member.domain.Member;
@@ -138,6 +139,22 @@ public class Event extends BaseEntity {
             event.getEventType(),
             event.getStartDate(),
             event.getEndDate()
+        );
+    }
+
+    public static EventModalResponse buildModalEventResponse(Event event) {
+        Long categoryId = (event.getCategory() != null) ? event.getCategory().getId() : null;
+
+        return EventModalResponse.of(
+            event.getId(),
+            event.getName(),
+            event.getEventType(),
+            event.getStartDate(),
+            event.getEndDate(),
+            categoryId,
+            event.getEventRepeatType(),
+            event.getRepeatEndDate(),
+            event.isAllDay()
         );
     }
 }
