@@ -4,6 +4,7 @@ import static classfit.example.classfit.common.exception.ClassfitException.EVENT
 
 import classfit.example.classfit.common.exception.ClassfitException;
 import classfit.example.classfit.event.domain.Event;
+import classfit.example.classfit.event.dto.response.EventModalResponse;
 import classfit.example.classfit.event.dto.response.EventMontylyResponse;
 import classfit.example.classfit.event.dto.response.EventResponse;
 import classfit.example.classfit.event.repository.EventRepository;
@@ -23,9 +24,9 @@ public class EventGetService {
     private final EventRepository eventRepository;
 
     @Transactional(readOnly = true)
-    public EventResponse getEvent(long eventId) {
+    public EventModalResponse getEvent(long eventId) {
         Event event = getEventById(eventId);
-        return Event.buildEventResponse(event);
+        return Event.buildModalEventResponse(event);
     }
 
     private Event getEventById(long eventId) {

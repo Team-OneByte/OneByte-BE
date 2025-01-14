@@ -7,6 +7,7 @@ import classfit.example.classfit.event.domain.Event;
 import classfit.example.classfit.event.dto.request.EventCreateRequest;
 import classfit.example.classfit.event.dto.request.EventDragUpdate;
 import classfit.example.classfit.event.dto.request.EventModalRequest;
+import classfit.example.classfit.event.dto.response.EventModalResponse;
 import classfit.example.classfit.event.dto.response.EventMontylyResponse;
 import classfit.example.classfit.event.dto.response.EventResponse;
 import classfit.example.classfit.event.repository.EventRepository;
@@ -38,7 +39,7 @@ public class EventService {
         return eventUpdateService.updateEvent(member, eventId, request);
     }
 
-    public EventResponse getEvent(long eventId) {
+    public EventModalResponse getEvent(long eventId) {
         return eventGetService.getEvent(eventId);
     }
 
