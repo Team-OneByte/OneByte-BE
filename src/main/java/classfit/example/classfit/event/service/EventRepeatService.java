@@ -127,7 +127,7 @@ public class EventRepeatService {
             .eventRepeatType(request.eventRepeatType())
             .repeatEndDate(request.repeatEndDate().orElse(null))
             .build();
-        event.setDates(request.isAllDay(), request.startDate(), request.getEndDate());
+        event.setDates(request.isAllDay(), currentStartDate, currentEndDate);
         return event;
     }
 

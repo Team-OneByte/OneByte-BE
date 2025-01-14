@@ -6,7 +6,7 @@ import classfit.example.classfit.event.dto.request.EventModalRequest;
 import classfit.example.classfit.common.ApiResponse;
 import classfit.example.classfit.event.dto.request.EventCreateRequest;
 import classfit.example.classfit.event.dto.response.EventModalResponse;
-import classfit.example.classfit.event.dto.response.EventMontylyResponse;
+import classfit.example.classfit.event.dto.response.EventMonthlyResponse;
 import classfit.example.classfit.event.dto.response.EventResponse;
 import classfit.example.classfit.event.service.EventService;
 import classfit.example.classfit.member.domain.Member;
@@ -54,12 +54,12 @@ public class EventController {
 
     @GetMapping("/monthly")
     @Operation(summary = "월별 일정 조회", description = "월별 일정들을 조회하는 api 입니다.")
-    public ApiResponse<List<EventMontylyResponse>> getMonthlyEvents(
+    public ApiResponse<List<EventMonthlyResponse>> getMonthlyEvents(
         @RequestParam CalendarType calendarType,
         @RequestParam int year,
         @RequestParam int month
     ) {
-        List<EventMontylyResponse> events = eventService.getMonthlyEventsByCalendarType(calendarType, year, month);
+        List<EventMonthlyResponse> events = eventService.getMonthlyEventsByCalendarType(calendarType, year, month);
         return ApiResponse.success(events, 200, "SUCCESS");
     }
 
