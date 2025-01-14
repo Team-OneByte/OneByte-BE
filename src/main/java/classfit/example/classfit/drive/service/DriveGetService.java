@@ -80,8 +80,7 @@ public class DriveGetService {
 
     private ListObjectsV2Request createListObjectsRequest(DriveType driveType, Member member, String folderPath) {
         ListObjectsV2Request request = new ListObjectsV2Request()
-            .withBucketName(bucketName)
-            .withDelimiter("/");
+            .withBucketName(bucketName);
 
         String prefix = DriveUtil.buildPrefix(driveType, member, folderPath);
         request.setPrefix(prefix);
