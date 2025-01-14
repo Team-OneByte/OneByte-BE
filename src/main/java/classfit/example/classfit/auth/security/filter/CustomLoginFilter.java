@@ -52,7 +52,7 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
         CustomAuthenticationToken customAuth = (CustomAuthenticationToken) authResult;
         String role = customAuth.getAuthorities().iterator().next().getAuthority();
 
-        String accessToken = jwtUtil.createJwt(ACCESS_TOKEN_CATEGORY, customAuth.getEmail(), role, 1000 * 60 * 5L);
+        String accessToken = jwtUtil.createJwt(ACCESS_TOKEN_CATEGORY, customAuth.getEmail(), role, 1000 * 60 * 60 * 24 * 5L);
         String refreshToken = jwtUtil.createJwt(REFRESH_TOKEN_CATEGORY, customAuth.getEmail(), role, 1000 * 60 * 60 * 24 * 7L);
 
         redisUtil.setDataExpire(REFRESH_TOKEN_CATEGORY + ":" + customAuth.getEmail(), refreshToken, 60 * 60 * 24 * 7L);
