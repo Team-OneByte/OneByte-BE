@@ -8,7 +8,7 @@ import classfit.example.classfit.event.dto.request.EventCreateRequest;
 import classfit.example.classfit.event.dto.request.EventDragUpdate;
 import classfit.example.classfit.event.dto.request.EventModalRequest;
 import classfit.example.classfit.event.dto.response.EventModalResponse;
-import classfit.example.classfit.event.dto.response.EventMontylyResponse;
+import classfit.example.classfit.event.dto.response.EventMonthlyResponse;
 import classfit.example.classfit.event.dto.response.EventResponse;
 import classfit.example.classfit.event.repository.EventRepository;
 import classfit.example.classfit.member.domain.Member;
@@ -43,7 +43,7 @@ public class EventService {
         return eventGetService.getEvent(eventId);
     }
 
-    public List<EventMontylyResponse> getMonthlyEventsByCalendarType(
+    public List<EventMonthlyResponse> getMonthlyEventsByCalendarType(
         CalendarType calendarType,
         int year,
         int month
