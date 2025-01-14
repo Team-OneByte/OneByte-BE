@@ -67,6 +67,7 @@ public class DriveUploadService {
         LocalDateTime now = LocalDateTime.now();
         String formattedDate = now.format(DateTimeFormatter.ISO_DATE_TIME);
         String finalFolderPath = folderPath != null && !folderPath.trim().isEmpty() ? folderPath : "";
+        finalFolderPath = finalFolderPath + "/";
 
         List<Tag> tags = List.of(
             new Tag("folderPath", finalFolderPath),
