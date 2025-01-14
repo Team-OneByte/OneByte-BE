@@ -48,7 +48,7 @@ public class MainClassController {
     }
 
     @DeleteMapping("/main-category/{mainClassId}")
-    @Operation(summary = "메인 클래스 삭제", description = "메인 클래스 삭제하는 api 입니다.")
+    @Operation(summary = "메인 클래스 삭제", description = "메인 클래스 삭제하는 api 입니다. 서브클래스 먼저 삭제 후 삭제 가능")
     public ApiResponse<?> deleteMainClass(@AuthMember Member findMember,
             @PathVariable(name = "mainClassId") Long mainClassId) {
         mainClassService.deleteMainClass(findMember, mainClassId);
