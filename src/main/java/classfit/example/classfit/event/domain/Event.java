@@ -148,6 +148,7 @@ public class Event extends BaseEntity {
         return EventModalResponse.of(
             event.getId(),
             event.getName(),
+            event.getMemberCalendar().getType(),
             event.getEventType(),
             event.getStartDate(),
             event.getEndDate(),
