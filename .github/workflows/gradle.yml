@@ -32,9 +32,8 @@ jobs:
         uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
         with:
           arguments: clean bootJar
-
       - name: Docker image build
-        run: docker build -t ${{ secrets.DOCKER_USERNAME }}/classfit-dev .
+        run: docker build -t ${{ secrets.DOCKER_USERNAME }}/github-actions-demo .
 
       - name: Docker login
         uses: docker/login-action@v2
@@ -43,7 +42,7 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Docker Hub push
-        run: docker push ${{ secrets.DOCKER_USERNAME }}/classfit-dev
+        run: docker push ${{ secrets.DOCKER_USERNAME }}/github-actions-demo
 
   run-docker-image-on-ec2:
     needs: build-docker-image
@@ -51,21 +50,18 @@ jobs:
 
     steps:
       - name: Docker pull
-        run: sudo docker pull ${{ secrets.DOCKER_USERNAME }}/classfit-dev
+        run: sudo docker pull ${{ secrets.DOCKER_USERNAME }}/github-actions-demo
 
       - name: Stop and remove existing containers
         run: |
-          CONTAINER_IDS=$(sudo docker ps -aq) 
+          CONTAINER_IDS=$(sudo docker ps -aq)
           if [ -n "$CONTAINER_IDS" ]; then
-            sudo docker stop $CONTAINER_IDS || true 
-            sudo docker rm $CONTAINER_IDS || true  
-          else
-            echo "No containers to stop or remove."
+            sudo docker stop $CONTAINER_IDS
+            sudo docker rm $CONTAINER_IDS
           fi
 
-
       - name: Run new container
-        run: sudo docker run --name classfit-dev --rm -d -p 8080:8080 ${{ secrets.DOCKER_USERNAME }}/classfit-dev
+        run: sudo docker run --name github-actions-demo --rm -d -p 8080:8080 ${{ secrets.DOCKER_USERNAME }}/github-actions-demo
 
       - name: Clean up old Docker images
         run: sudo docker system prune -f

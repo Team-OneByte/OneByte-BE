@@ -6,19 +6,30 @@ import classfit.example.classfit.mail.dto.request.EmailPurpose;
 import classfit.example.classfit.member.domain.Member;
 import classfit.example.classfit.member.dto.request.MemberPasswordRequest;
 import classfit.example.classfit.member.dto.request.MemberRequest;
+import classfit.example.classfit.member.dto.request.MemberUpdateInfoRequest;
+import classfit.example.classfit.member.dto.response.AcademyMemberResponse;
+import classfit.example.classfit.member.dto.response.MemberInfoResponse;
 import classfit.example.classfit.member.dto.response.MemberResponse;
 import classfit.example.classfit.member.repository.MemberRepository;
-import jakarta.transaction.Transactional;
+import classfit.example.classfit.memberCalendar.service.MemberCalendarService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static classfit.example.classfit.common.exception.ClassfitException.*;
 
 @RequiredArgsConstructor
 @Service
 public class MemberService {
 
     private final MemberRepository memberRepository;
+    private final MemberCalendarService memberCalendarService;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final RedisUtil redisUtil;
 
@@ -41,7 +52,9 @@ public class MemberService {
 
         Member member = request.toEntity(bCryptPasswordEncoder);
 
-        memberRepository.save(member);
+        Member savedMember = memberRepository.save(member);
+        createDefaultCalendars(savedMember);
+
         return MemberResponse.from(member);
     }
 
@@ -61,4 +74,54 @@ public class MemberService {
             .orElseThrow(() -> new ClassfitException("존재하지 않는 계정입니다.", HttpStatus.NOT_FOUND));
         findMember.updatePassword(bCryptPasswordEncoder.encode(request.password()));
     }
+
+    @Transactional(readOnly = true)
+    public MemberInfoResponse myPage(Member member) {
+        return MemberInfoResponse.from(member);
+    }
+
+    @Transactional
+    public MemberInfoResponse updateMyPage(Member member, MemberUpdateInfoRequest request) {
+        member.updateInfo(request);
+        return MemberInfoResponse.from(member);
+    }
+
+    public List<AcademyMemberResponse> getMembersByLoggedInMemberAcademy(Member loggedInMember) {
+        if (hasAcademy(loggedInMember)) {
+            Long academyId = loggedInMember.getAcademy().getId();
+            List<Member> academyMembers = getAcademyMembers(academyId);
+            return mapToMemberResponse(academyMembers);
+        }
+        return new ArrayList<>();
+    }
+
+    private void createDefaultCalendars(Member member) {
+        memberCalendarService.createPersonalCalendar(member);
+        memberCalendarService.createSharedCalendar(member);
+    }
+
+    private boolean hasAcademy(Member loggedInMember) {
+        if (loggedInMember.getAcademy() == null) {
+            throw new IllegalArgumentException(INVALID_MEMBER_ACADEMY);
+        }
+        return true;
+    }
+
+    private List<Member> getAcademyMembers(Long academyId) {
+        return memberRepository.findByAcademyId(academyId)
+            .orElseThrow(() -> new ClassfitException(ACADEMY_MEMBERS_NOT_FOUND, HttpStatus.NOT_FOUND));
+    }
+
+    private List<AcademyMemberResponse> mapToMemberResponse(List<Member> members) {
+        return members.stream()
+            .map(AcademyMemberResponse::from)
+            .collect(Collectors.toList());
+    }
+
+    public Member getMembers(Long memberId) {
+        return memberRepository.findById(memberId)
+            .orElseThrow(() -> new ClassfitException(MEMBER_NOT_FOUND, HttpStatus.NOT_FOUND));
+    }
+
+
 }
