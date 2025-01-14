@@ -27,7 +27,7 @@ public class SubClassService {
     private final MemberRepository memberRepository;
 
     private static void checkMemberRelationMainClass(Member findMember, MainClass findMainClass) {
-        if (!Objects.equals(findMember.getId(), findMainClass.getAcademy().getId())) {
+        if (!Objects.equals(findMember.getAcademy().getId(), findMainClass.getAcademy().getId())) {
             throw new ClassfitException("사용자와 클래스가 일치하지 않습니다.", HttpStatus.FORBIDDEN);
         }
     }

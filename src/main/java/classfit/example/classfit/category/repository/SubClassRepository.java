@@ -6,6 +6,7 @@ import classfit.example.classfit.category.domain.SubClass;
 import classfit.example.classfit.member.domain.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -16,6 +17,8 @@ public interface SubClassRepository extends JpaRepository<SubClass, Long> {
             "AND s.mainClass.academy = :academy " +
             "AND :member MEMBER OF s.mainClass.academy.members")
     boolean existsByMemberAndSubClassNameAndAcademyAndMainClass(
-            Member member, Academy academy, String subClassName, MainClass mainClass);
+            @Param("member") Member member,
+            @Param("academy") Academy academy,
+            @Param("subClassName") String subClassName,
+            @Param("mainClass") MainClass mainClass);
 }
-
