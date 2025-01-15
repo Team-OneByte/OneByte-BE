@@ -142,16 +142,7 @@ public class ExamService {
         }
 
         return exams.stream()
-                .map(exam -> {
-                    if (exam.getMainClass() == null ||
-                            exam.getMainClass().getAcademy() == null ||
-                            !isMemberInAcademy(findMember, exam.getMainClass().getAcademy())) {
-                        throw new ClassfitException("회원과 관련된 학원이 일치하지 않거나 필요한 정보가 없습니다.",
-                                HttpStatus.FORBIDDEN);
-                    }
-
-                    return FindExamResponse.from(exam, findMember);
-                })
+                .map(exam -> FindExamResponse.from(exam, findMember))
                 .collect(Collectors.toList());
     }
 
@@ -192,7 +183,6 @@ public class ExamService {
                             .findFirst()
                             .orElse(false);
 
-                    // Get updateAt from BaseEntity via StudentExamScore
                     LocalDateTime updateAt = studentScores.stream()
                             .filter(scoreObj -> scoreObj.getStudent().getId().equals(student.getId()))
                             .map(StudentExamScore::getUpdatedAt)
