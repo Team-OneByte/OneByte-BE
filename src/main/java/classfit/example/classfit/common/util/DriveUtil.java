@@ -129,13 +129,6 @@ public class DriveUtil {
     }
 
     private static String getFileNameWithoutPrefix(String objectKey) {
-        String fileNameWithoutPrefix = objectKey.replaceFirst("^personal/\\d+/|^shared/\\d+/", "");
-
-        int lastSlashIndex = fileNameWithoutPrefix.lastIndexOf("/");
-        if (lastSlashIndex != -1) {
-            fileNameWithoutPrefix = fileNameWithoutPrefix.substring(lastSlashIndex + 1);
-        }
-
-        return fileNameWithoutPrefix.trim();
+        return objectKey.replaceFirst("^personal/\\d+/|^shared/\\d+/", "");
     }
 }
