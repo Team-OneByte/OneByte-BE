@@ -23,11 +23,10 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
 
     Optional<List<Student>> findAllByName(String studentName);
 
-    @Query("SELECT s FROM Student s " +
-        "JOIN FETCH ClassStudent cs ON s.id = cs.student.id " +
-        "JOIN FETCH SubClass sc ON cs.subClass.id = sc.id " +
-        "JOIN FETCH MainClass mc ON sc.mainClass.id = mc.id " +
-        "JOIN FETCH Academy a ON mc.academy.id = a.id " +
-        "WHERE a.id = :academyId")
+    @Query("SELECT DISTINCT s FROM Student s " +
+        "JOIN ClassStudent cs ON s.id = cs.student.id " +
+        "JOIN SubClass sc ON cs.subClass.id = sc.id " +
+        "JOIN MainClass mc ON sc.mainClass.id = mc.id " +
+        "WHERE mc.academy.id = :academyId")
     List<Student> findStudentsByAcademyId(Long academyId);
 }

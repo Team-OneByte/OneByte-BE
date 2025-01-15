@@ -57,6 +57,29 @@ public class StudentService {
         return StudentResponse.from(student);
     }
 
+    private void createAttendanceForThreeWeeks(Student student) {
+        LocalDate currentDate = LocalDate.now();
+        LocalDate weekStart = currentDate.with(DayOfWeek.MONDAY);
+        List<ClassStudent> classStudents = classStudentRepository.findByStudent(student);
+
+        classStudents.forEach(classStudent -> {
+            for (int i = 0; i < 3; i++) {
+                LocalDate weekDate = weekStart.plusWeeks(i);
+                for (int j = 0; j < 7; j++) {
+                    LocalDate attendanceDate = weekDate.plusDays(j);
+                    Attendance attendance = Attendance.builder()
+                        .date(attendanceDate)
+                        .week(j)
+                        .status(AttendanceStatus.PRESENT)
+                        .student(student)
+                        .classStudent(classStudent)
+                        .build();
+                    attendanceRepository.save(attendance);
+                }
+            }
+        });
+    }
+
     @Transactional
     public void deleteStudent(List<Long> studentIds) {
         studentIds.stream()
@@ -154,27 +177,5 @@ public class StudentService {
             classStudent.addSubClass(subClass);
             classStudentRepository.save(classStudent);
         });
-    }
-
-    private void createAttendanceForThreeWeeks(Student student) {
-        LocalDate currentDate = LocalDate.now();
-        LocalDate weekStart = currentDate.with(DayOfWeek.MONDAY);
-        ClassStudent classStudent = classStudentRepository.findByStudent(student);
-
-        // 3주간의 출결 생성 (현재 주 + 향후 2주)
-        for (int i = 0; i < 3; i++) {
-            LocalDate weekDate = weekStart.plusWeeks(i);
-            for (int j = 0; j < 7; j++) {
-                LocalDate attendanceDate = weekDate.plusDays(j);
-                Attendance attendance = Attendance.builder()
-                    .date(attendanceDate)
-                    .week(j)
-                    .status(AttendanceStatus.PRESENT)
-                    .student(student)
-                    .classStudent(classStudent)
-                    .build();
-                attendanceRepository.save(attendance);
-            }
-        }
     }
 }
