@@ -33,7 +33,10 @@ public class DriveGetService {
         String folderPathWithSlash = folderPath.isEmpty() ? folderPath : folderPath + "/";
         for (S3ObjectSummary summary : objectSummaries) {
             FileResponse fileInfo = buildFileInfo(summary);
-            if (!fileInfo.fileName().equals(folderPathWithSlash)) {
+
+            boolean isNotFolderItself = !fileInfo.fileName().equals(folderPathWithSlash);
+            boolean isInTargetFolder = fileInfo.folderPath().equals(folderPathWithSlash);
+            if (isNotFolderItself && isInTargetFolder) {
                 files.add(fileInfo);
             }
         }
@@ -48,9 +51,10 @@ public class DriveGetService {
         return result.getObjectSummaries().stream()
             .map(this::buildFileInfo)
             .filter(fileInfo -> {
-                boolean isFolder = fileInfo.fileName().equals(folderPathWithSlash);
+                boolean isNotFolderItself = !fileInfo.fileName().equals(folderPathWithSlash);
                 boolean matchesFileName = fileName.isEmpty() || normalize(fileInfo.fileName()).contains(normalize(fileName));
-                return !isFolder && matchesFileName;
+                boolean isInTargetFolder = fileInfo.folderPath().equals(folderPathWithSlash);
+                return isNotFolderItself && matchesFileName && isInTargetFolder;
             })
             .collect(Collectors.toList());
     }
@@ -99,11 +103,11 @@ public class DriveGetService {
         return result.getObjectSummaries().stream()
             .map(this::buildFileInfo)
             .filter(fileInfo -> {
-                boolean isFolder = fileInfo.fileName().equals(folderPathWithSlash);
+                boolean isNotFolderItself = !fileInfo.fileName().equals(folderPathWithSlash);
                 boolean matchesFileType = DriveUtil.getFileType(fileInfo.fileName()).equals(filterFileType);
-                return !isFolder && matchesFileType;
+                boolean isInTargetFolder = fileInfo.folderPath().equals(folderPathWithSlash);
+                return isNotFolderItself && matchesFileType && isInTargetFolder;
             })
             .collect(Collectors.toList());
     }
-
 }
