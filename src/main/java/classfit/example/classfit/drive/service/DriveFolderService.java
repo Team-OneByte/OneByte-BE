@@ -2,6 +2,7 @@ package classfit.example.classfit.drive.service;
 
 import classfit.example.classfit.common.util.DriveUtil;
 import classfit.example.classfit.drive.domain.DriveType;
+import classfit.example.classfit.drive.dto.response.FileResponse;
 import classfit.example.classfit.member.domain.Member;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.*;
@@ -23,6 +24,8 @@ import static classfit.example.classfit.drive.domain.DriveType.PERSONAL;
 public class DriveFolderService {
 
     private final AmazonS3 amazonS3;
+    private final DriveGetService driveGetService;
+    private final DriveTrashService driveTrashService;
 
     @Value("${cloud.aws.s3.bucket}")
     private String bucketName;
@@ -97,5 +100,17 @@ public class DriveFolderService {
         return result.getCommonPrefixes().stream()
             .map(folder -> folder.substring(prefix.length()))
             .collect(Collectors.toList());
+    }
+
+    public void deleteFolder(Member member, DriveType driveType, String folderName) {
+        List<FileResponse> filesFromS3 = driveGetService.getFilesFromS3(member, driveType, folderName);
+        List<String> strings = filesFromS3.stream()
+            .map(FileResponse::fileName)
+            .collect(Collectors.toList());
+
+        driveTrashService.moveToTrash(member, driveType, folderName, strings);
+
+        String prefix = DriveUtil.buildPrefix(driveType, member, folderName);
+        amazonS3.deleteObject(new DeleteObjectRequest(bucketName, prefix));
     }
 }

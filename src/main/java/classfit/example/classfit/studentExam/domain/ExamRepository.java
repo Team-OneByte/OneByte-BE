@@ -9,11 +9,19 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ExamRepository extends JpaRepository<Exam, Long> {
 
-    List<Exam> findByMainClassMemberName(String name);
+    @Query("SELECT e FROM Exam e " +
+            "JOIN e.mainClass mc " +
+            "JOIN mc.academy a " +
+            "JOIN a.members m " +
+            "WHERE a.name = :academyName " +
+            "AND m.name = :memberName")
+    List<Exam> findByAcademyAndMemberName(@Param("academyName") String academyName,
+            @Param("memberName") String memberName);
+
 
     List<Exam> findByExamName(String examName);
 
-    @Query("SELECT e FROM Exam e WHERE e.mainClass.member.academy.id = :academyId ORDER BY e.id ASC")
+    @Query("SELECT e FROM Exam e WHERE e.mainClass.academy.id = :academyId ORDER BY e.id ASC")
     List<Exam> findAllByAcademyId(@Param("academyId") Long academyId);
 
 

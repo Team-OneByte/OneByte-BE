@@ -1,18 +1,12 @@
 package classfit.example.classfit.category.dto.request;
 
-import classfit.example.classfit.common.exception.ClassfitException;
-import org.springframework.http.HttpStatus;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
-public record MainClassRequest(String mainClassName) {
-
-    public MainClassRequest {
-        if (mainClassName == null || mainClassName.isBlank()) {
-            throw new ClassfitException("메인 클래스 이름은 비어 있을 수 없습니다.",
-                HttpStatus.UNPROCESSABLE_ENTITY);
-        }
-        if (mainClassName.length() > 20) {
-            throw new ClassfitException("메인 클래스 이름은 20자를 초과할 수 없습니다.",
-                HttpStatus.UNPROCESSABLE_ENTITY);
-        }
-    }
+public record MainClassRequest
+    (
+        @NotBlank(message = "메인 클래스 이름은 비어 있을 수 없습니다.")
+        @Size(max = 10, message = "메인 클래스 이름은 10자를 초과할 수 없습니다.")
+        String mainClassName
+    ) {
 }

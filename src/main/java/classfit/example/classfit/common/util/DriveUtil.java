@@ -7,13 +7,13 @@ import classfit.example.classfit.drive.dto.response.FileResponse;
 import classfit.example.classfit.member.domain.Member;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.amazonaws.services.s3.model.Tag;
-import java.util.Map;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.http.HttpStatus;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Map;
 
 import static classfit.example.classfit.drive.domain.DriveType.PERSONAL;
 import static classfit.example.classfit.drive.domain.DriveType.SHARED;
@@ -75,8 +75,8 @@ public class DriveUtil {
 
     @NotNull
     public static FileResponse getFileResponse(S3ObjectSummary summary, String fileName,
-        String fileUrl,
-        Map<String, String> tagMap) {
+                                               String fileUrl,
+                                               Map<String, String> tagMap) {
         FileType fileType = getFileType(fileName);
         String originalFileName = tagMap.getOrDefault("originalFileName", "");
         String fileNameWithoutPrefix = getFileNameWithoutPrefix(fileName);
@@ -129,6 +129,13 @@ public class DriveUtil {
     }
 
     private static String getFileNameWithoutPrefix(String objectKey) {
-        return objectKey.replaceFirst("^personal/\\d+/|^shared/\\d+/", "");
+        String fileNameWithoutPrefix = objectKey.replaceFirst("^personal/\\d+/|^shared/\\d+/", "");
+
+        int lastSlashIndex = fileNameWithoutPrefix.lastIndexOf("/");
+        if (lastSlashIndex != -1) {
+            fileNameWithoutPrefix = fileNameWithoutPrefix.substring(lastSlashIndex + 1);
+        }
+
+        return fileNameWithoutPrefix.trim();
     }
 }
