@@ -23,8 +23,8 @@ public class ClassInfoService {
     @Transactional
     public List<ClassInfoResponse> getClasses(Member member) {
         Academy academy = member.getAcademy();
+        List<MainClass> mainClasses = mainClassRepository.findAllByAcademyOrderByMainClassNameAsc(academy);
 
-        List<MainClass> mainClasses = mainClassRepository.findAllByMemberAcademy(academy);
         return mainClasses.stream()
             .map(this::mapToClassInfoResponse)
             .collect(Collectors.toList());

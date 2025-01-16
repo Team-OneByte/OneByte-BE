@@ -1,14 +1,12 @@
 package classfit.example.classfit.member.domain;
 
 import classfit.example.classfit.academy.domain.Academy;
-import classfit.example.classfit.category.domain.MainClass;
 import classfit.example.classfit.common.domain.BaseEntity;
 import classfit.example.classfit.member.dto.request.MemberUpdateInfoRequest;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
-import java.util.List;
 
 @Entity
 @Getter
@@ -41,14 +39,11 @@ public class Member extends BaseEntity {
     @Column(columnDefinition = "VARCHAR(20)", nullable = false)
     private MemberStatus status;
 
-    @Column(length = 30)
+    @Column(length = 20)
     private LocalDate birthDate;
 
-    @Column(length = 30)
+    @Column(length = 20)
     private String subject;
-
-    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<MainClass> mainClasses;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "academy_id")
@@ -62,12 +57,12 @@ public class Member extends BaseEntity {
         this.role = admin;
     }
 
-    public void updatePassword(String password) {
-        this.password = password;
-    }
-
     public void updateInfo(MemberUpdateInfoRequest request) {
         this.birthDate = request.birth();
         this.subject = request.subject();
+    }
+
+    public void updatePassword(String password) {
+        this.password = password;
     }
 }

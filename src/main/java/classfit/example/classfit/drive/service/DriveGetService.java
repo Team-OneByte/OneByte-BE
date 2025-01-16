@@ -30,9 +30,15 @@ public class DriveGetService {
         String prefix = DriveUtil.buildPrefix(driveType, member, folderPath);
         List<S3ObjectSummary> objectSummaries = getS3ObjectList(prefix);
 
+        String folderPathWithSlash = folderPath.isEmpty() ? folderPath : folderPath + "/";
         for (S3ObjectSummary summary : objectSummaries) {
             FileResponse fileInfo = buildFileInfo(summary);
-            files.add(fileInfo);
+
+            boolean isNotFolderItself = !fileInfo.fileName().equals(folderPathWithSlash);
+            boolean isInTargetFolder = fileInfo.folderPath().equals(folderPathWithSlash);
+            if (isNotFolderItself && isInTargetFolder) {
+                files.add(fileInfo);
+            }
         }
         return files;
     }
@@ -41,9 +47,15 @@ public class DriveGetService {
         ListObjectsV2Request request = createListObjectsRequest(driveType, member, folderPath);
         ListObjectsV2Result result = amazonS3.listObjectsV2(request);
 
+        String folderPathWithSlash = folderPath.isEmpty() ? folderPath : folderPath + "/";
         return result.getObjectSummaries().stream()
             .map(this::buildFileInfo)
-            .filter(fileInfo -> normalize(fileInfo.fileName()).contains(normalize(fileName)))  // 정규화하여 필터링
+            .filter(fileInfo -> {
+                boolean isNotFolderItself = !fileInfo.fileName().equals(folderPathWithSlash);
+                boolean matchesFileName = fileName.isEmpty() || normalize(fileInfo.fileName()).contains(normalize(fileName));
+                boolean isInTargetFolder = fileInfo.folderPath().equals(folderPathWithSlash);
+                return isNotFolderItself && matchesFileName && isInTargetFolder;
+            })
             .collect(Collectors.toList());
     }
 
@@ -72,8 +84,7 @@ public class DriveGetService {
 
     private ListObjectsV2Request createListObjectsRequest(DriveType driveType, Member member, String folderPath) {
         ListObjectsV2Request request = new ListObjectsV2Request()
-            .withBucketName(bucketName)
-            .withDelimiter("/");
+            .withBucketName(bucketName);
 
         String prefix = DriveUtil.buildPrefix(driveType, member, folderPath);
         request.setPrefix(prefix);
@@ -88,13 +99,15 @@ public class DriveGetService {
         ListObjectsV2Request request = createListObjectsRequest(driveType, member, folderPath);
         ListObjectsV2Result result = amazonS3.listObjectsV2(request);
 
+        String folderPathWithSlash = folderPath.isEmpty() ? folderPath : folderPath + "/";
         return result.getObjectSummaries().stream()
             .map(this::buildFileInfo)
             .filter(fileInfo -> {
-                FileType fileType = DriveUtil.getFileType(fileInfo.fileName());
-                return fileType.equals(filterFileType);
+                boolean isNotFolderItself = !fileInfo.fileName().equals(folderPathWithSlash);
+                boolean matchesFileType = DriveUtil.getFileType(fileInfo.fileName()).equals(filterFileType);
+                boolean isInTargetFolder = fileInfo.folderPath().equals(folderPathWithSlash);
+                return isNotFolderItself && matchesFileType && isInTargetFolder;
             })
             .collect(Collectors.toList());
     }
-
 }

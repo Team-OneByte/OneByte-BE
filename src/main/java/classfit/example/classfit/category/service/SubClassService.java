@@ -1,5 +1,6 @@
 package classfit.example.classfit.category.service;
 
+import classfit.example.classfit.academy.domain.Academy;
 import classfit.example.classfit.auth.annotation.AuthMember;
 import classfit.example.classfit.category.domain.MainClass;
 import classfit.example.classfit.category.domain.SubClass;
@@ -26,34 +27,41 @@ public class SubClassService {
     private final MemberRepository memberRepository;
 
     private static void checkMemberRelationMainClass(Member findMember, MainClass findMainClass) {
-        if (!Objects.equals(findMember.getId(), findMainClass.getMember().getId())) {
+        if (!Objects.equals(findMember.getAcademy().getId(), findMainClass.getAcademy().getId())) {
             throw new ClassfitException("사용자와 클래스가 일치하지 않습니다.", HttpStatus.FORBIDDEN);
         }
     }
 
     private static void checkMemberRelationSubClass(Member findMember, SubClass findSubClass) {
-        if (!Objects.equals(findMember.getId(), findSubClass.getMember().getId())) {
-            throw new ClassfitException("사용자와 클래스가 일치하지 않습니다.", HttpStatus.FORBIDDEN);
+        Academy academy = findSubClass.getMainClass().getAcademy();
+
+        boolean isMemberInAcademy = academy.getMembers().stream()
+                .anyMatch(member -> member.getId().equals(findMember.getId()));
+
+        if (!isMemberInAcademy) {
+            throw new ClassfitException("사용자가 해당 학원에 속해 있지 않습니다.", HttpStatus.FORBIDDEN);
         }
     }
+
 
     @Transactional
 // 서브클래스 추가
     public SubClassResponse addSubClass(@AuthMember Member findMember, SubClassRequest req) {
+        Academy findAcademy = findMember.getAcademy();
 
         MainClass findMainClass = mainClassRepository.findById(req.mainClassId())
             .orElseThrow(
                 () -> new ClassfitException("메인 클래스를 찾을 수 없어요.", HttpStatus.NOT_FOUND));
 
-        boolean exists = subClassRepository.existsByMemberAndSubClassNameAndMainClass(
-            findMember, req.subClassName(), findMainClass);
+        boolean exists = subClassRepository.existsByMemberAndSubClassNameAndAcademyAndMainClass(
+                findMember, findAcademy, req.subClassName(), findMainClass);
         if (exists) {
             throw new ClassfitException("해당 메인 클래스 내에 이미 같은 이름의 서브 클래스가 있어요.", HttpStatus.CONFLICT);
         }
 
         checkMemberRelationMainClass(findMember, findMainClass);
 
-        SubClass subClass = new SubClass(req.subClassName(), findMember, findMainClass);
+        SubClass subClass = new SubClass(req.subClassName(), findMainClass);
 
         subClassRepository.save(subClass);
 

@@ -28,6 +28,7 @@ import classfit.example.classfit.student.domain.Student;
 import classfit.example.classfit.student.dto.StudentList;
 import classfit.example.classfit.studentExam.domain.Exam;
 import classfit.example.classfit.studentExam.domain.ExamRepository;
+import classfit.example.classfit.studentExam.domain.Standard;
 import classfit.example.classfit.studentExam.domain.StudentExamScore;
 import classfit.example.classfit.studentExam.domain.StudentExamScoreRepository;
 import classfit.example.classfit.studentExam.dto.process.ExamHistory;
@@ -62,6 +63,7 @@ public class ScoreReportService {
         SubClass subClass = subClassRepository.findById(request.subClassId())
                 .orElseThrow(
                         () -> new ClassfitException("서브 클래스를 찾을 수 없어요.", HttpStatus.NOT_FOUND));
+        validateAcademy(member, member.getAcademy().getId());
 
         List<Exam> exams = examRepository.findAllById(request.examIdList());
         if (exams.isEmpty()) {
@@ -117,8 +119,10 @@ public class ScoreReportService {
 
 
     @Transactional(readOnly = true)
-    public List<ReportExam> showReportExam(LocalDate startDate, LocalDate endDate, Long mainClassId,
+    public List<ReportExam> showReportExam(@AuthMember Member member, LocalDate startDate,
+            LocalDate endDate, Long mainClassId,
             Long subClassId) {
+        validateAcademy(member, member.getAcademy().getId());
         List<ReportExam> reports = scoreReportRepository.findExamsByCreatedAtBetween(startDate,
                 endDate, mainClassId, subClassId);
         return reports.stream()
@@ -143,7 +147,8 @@ public class ScoreReportService {
         SubClass subClass = subClassRepository.findById(subClassId)
                 .orElseThrow(
                         () -> new ClassfitException("서브 클래스를 찾을 수 없어요.", HttpStatus.NOT_FOUND));
-        List<ScoreReport> studentReports = scoreReportRepository.findFirstReportByStudent(
+        validateAcademy(member, mainClass.getAcademy().getId());
+        List<ScoreReport> studentReports = scoreReportRepository.findAllReportsByMainClassAndSubClass(
                 mainClassId, subClassId);
 
         return studentReports.stream()
@@ -159,14 +164,12 @@ public class ScoreReportService {
     }
 
     @Transactional(readOnly = true)
-    public List<FindAllReportResponse> findAllReport(@AuthMember Member member, Long academyId) {
+    public List<FindAllReportResponse> findAllReport(@AuthMember Member member) {
+
+        Long academyId = member.getAcademy().getId();
 
         Academy academy = academyRepository.findById(academyId)
                 .orElseThrow(() -> new ClassfitException("학원을 찾을 수 없어요.", HttpStatus.NOT_FOUND));
-
-        if (!Objects.equals(member.getAcademy().getId(), academyId)) {
-            throw new ClassfitException("해당 학원에 접근할 권한이 없습니다.", HttpStatus.FORBIDDEN);
-        }
 
         List<ScoreReport> scoreReports = scoreReportRepository.findAllByAcademy(academy);
 
@@ -176,7 +179,7 @@ public class ScoreReportService {
                         report.getStudent().getId(),
                         report.getStudent().getName(),
                         report.getReportName(),
-                        report.getMainClass().getMember().getName(),
+                        report.getMainClass().getAcademy().getMembers().getFirst().getName(),
                         report.getCreatedAt().toLocalDate()
                 ))
                 .collect(Collectors.toList());
@@ -185,18 +188,22 @@ public class ScoreReportService {
 
     @Transactional
     public void deleteReport(@AuthMember Member member, Long studentReportId) {
+        validateAcademy(member, member.getAcademy().getId());
         scoreReportRepository.deleteById(studentReportId);
     }
 
     @Transactional(readOnly = true)
     public List<FindClassStudent> findClassStudents(@AuthMember Member member, Long mainClassId,
             Long subClassId) {
+
         MainClass mainClass = mainClassRepository.findById(mainClassId)
                 .orElseThrow(
                         () -> new ClassfitException("메인 클래스를 찾을 수 없어요.", HttpStatus.NOT_FOUND));
         SubClass subClass = subClassRepository.findById(subClassId)
                 .orElseThrow(
                         () -> new ClassfitException("서브 클래스를 찾을 수 없어요.", HttpStatus.NOT_FOUND));
+        validateAcademy(member, member.getAcademy().getId());
+
         List<FindClassStudent> classStudents = classStudentRepository.findStudentIdsByMainClassIdAndSubClassId(
                 mainClassId, subClassId);
         return classStudents.stream()
@@ -208,12 +215,14 @@ public class ScoreReportService {
     @Transactional
     public List<SentStudentOpinionResponse> sentStudentOpinion(@AuthMember Member member,
             List<SentStudentOpinionRequest> requests) {
+
         List<SentStudentOpinionResponse> responses = new ArrayList<>();
 
         for (SentStudentOpinionRequest request : requests) {
             ScoreReport scoreReport = scoreReportRepository.findById(request.reportId())
                     .orElseThrow(
                             () -> new ClassfitException("학습리포트를 찾을 수 없어요.", HttpStatus.NOT_FOUND));
+            validateAcademy(member, scoreReport.getMainClass().getAcademy().getId());
 
             scoreReport.updateStudentOpinion(request.studentOpinion());
 
@@ -231,8 +240,9 @@ public class ScoreReportService {
     @Transactional(readOnly = true)
     public ShowStudentReportResponse showStudentReport(@AuthMember Member member, Long reportId) {
         ScoreReport scoreReport = scoreReportRepository.findById(reportId)
-                .orElseThrow(
-                        () -> new ClassfitException("학습리포트를 찾을 수 없어요.", HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new ClassfitException("학습리포트를 찾을 수 없어요.", HttpStatus.NOT_FOUND));
+
+        validateAcademy(member, scoreReport.getMainClass().getAcademy().getId());
 
         List<AttendanceInfo> attendanceInfoList = scoreReport.getStudent().getAttendances().stream()
                 .collect(Collectors.groupingBy(
@@ -246,9 +256,11 @@ public class ScoreReportService {
                         entry.getValue()
                 ))
                 .toList();
+
         Integer totalAttendanceCount = attendanceInfoList.stream()
                 .mapToInt(AttendanceInfo::attendanceCount)
                 .sum();
+
         List<StudentExamScore> studentExamScores = studentExamScoreRepository.findByScoreReport(
                 scoreReport);
 
@@ -257,6 +269,41 @@ public class ScoreReportService {
                         .equals(scoreReport.getId()))
                 .map(studentExamScore -> {
                     Exam exam = studentExamScore.getExam();
+
+                    if (exam.getStandard() == Standard.PF) {
+                        long pCount = studentExamScoreRepository.countByExamAndScore(exam, -3);
+                        long fCount = studentExamScoreRepository.countByExamAndScore(exam, -4);
+
+                        exam.updateAverage(pCount > fCount ? 100 : 0);
+
+                        // PF 일때
+                        return new ExamHistory(
+                                exam.getId(),
+                                exam.getExamName(),
+                                exam.getStandard(),
+                                exam.getAverage(),
+                                studentExamScore.getScore()
+                        );
+                    }
+                    if (exam.getStandard() == Standard.QUESTION) {
+
+                        double maxScore = exam.getHighestScore();
+
+                        double convertedScore =
+                                (double) studentExamScore.getScore() / maxScore * 100.0;
+
+                        double convertedAverage = (double) exam.getAverage() / maxScore * 100.0;
+
+                        return new ExamHistory(
+                                exam.getId(),
+                                exam.getExamName(),
+                                exam.getStandard(),
+                                Math.round(convertedAverage),
+                                (int) Math.round(convertedScore)
+                        );
+                    }
+
+                    // score 일때
                     return new ExamHistory(
                             exam.getId(),
                             exam.getExamName(),
@@ -265,7 +312,7 @@ public class ScoreReportService {
                             studentExamScore.getScore()
                     );
                 })
-                .collect(Collectors.toList());
+                .toList();
 
         return new ShowStudentReportResponse(
                 scoreReport.getStudent().getId(),
@@ -282,7 +329,16 @@ public class ScoreReportService {
                 scoreReport.getOverallOpinion(),
                 scoreReport.getStudentOpinion()
         );
-
     }
+
+
+    private void validateAcademy(Member member, Long academyId) {
+        Academy academy = academyRepository.findById(academyId)
+                .orElseThrow(() -> new ClassfitException("학원을 찾을 수 없어요.", HttpStatus.NOT_FOUND));
+        if (!Objects.equals(member.getAcademy().getId(), academyId)) {
+            throw new ClassfitException("해당 학원에 접근할 권한이 없습니다.", HttpStatus.FORBIDDEN);
+        }
+    }
+
 
 }

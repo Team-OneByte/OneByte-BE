@@ -1,7 +1,7 @@
 package classfit.example.classfit.category.domain;
 
+import classfit.example.classfit.academy.domain.Academy;
 import classfit.example.classfit.common.domain.BaseEntity;
-import classfit.example.classfit.member.domain.Member;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -27,13 +27,13 @@ public class MainClass extends BaseEntity {
     private List<SubClass> subClasses = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id", nullable = false)
-    private Member member;
+    @JoinColumn(name = "academy_id", nullable = false)
+    private Academy academy;
 
 
-    public MainClass(String mainClassName, Member member) {
+    public MainClass(String mainClassName, Academy academy) {
         this.mainClassName = mainClassName;
-        this.member = member;
+        this.academy = academy;
     }
 
     // 업데이트 관련 메서드

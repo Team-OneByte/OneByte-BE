@@ -29,16 +29,12 @@ public class SubClass extends BaseEntity {
     @JoinColumn(name = "main_class_id", nullable = false)
     private MainClass mainClass;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id", nullable = false)
-    private Member member;
 
     @OneToMany(mappedBy = "subClass", cascade = CascadeType.ALL, orphanRemoval = true)
     private final List<ClassStudent> classStudents = new ArrayList<>();
 
-    public SubClass(String subClassName, Member member, MainClass mainClass) {
+    public SubClass(String subClassName, MainClass mainClass) {
         this.subClassName = subClassName;
-        this.member = member;
         this.mainClass = mainClass;
     }
 

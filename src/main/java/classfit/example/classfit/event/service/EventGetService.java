@@ -4,8 +4,8 @@ import static classfit.example.classfit.common.exception.ClassfitException.EVENT
 
 import classfit.example.classfit.common.exception.ClassfitException;
 import classfit.example.classfit.event.domain.Event;
-import classfit.example.classfit.event.dto.response.EventMontylyResponse;
-import classfit.example.classfit.event.dto.response.EventResponse;
+import classfit.example.classfit.event.dto.response.EventModalResponse;
+import classfit.example.classfit.event.dto.response.EventMonthlyResponse;
 import classfit.example.classfit.event.repository.EventRepository;
 import classfit.example.classfit.memberCalendar.domain.CalendarType;
 import java.time.LocalDateTime;
@@ -23,9 +23,9 @@ public class EventGetService {
     private final EventRepository eventRepository;
 
     @Transactional(readOnly = true)
-    public EventResponse getEvent(long eventId) {
+    public EventModalResponse getEvent(long eventId) {
         Event event = getEventById(eventId);
-        return Event.buildEventResponse(event);
+        return Event.buildModalEventResponse(event);
     }
 
     private Event getEventById(long eventId) {
@@ -34,7 +34,7 @@ public class EventGetService {
     }
 
     @Transactional(readOnly = true)
-    public List<EventMontylyResponse> getMonthlyEventsByCalendarType(CalendarType calendarType, int year, int month) {
+    public List<EventMonthlyResponse> getMonthlyEventsByCalendarType(CalendarType calendarType, int year, int month) {
         LocalDateTime startOfMonth = LocalDateTime.of(year, month, 1, 0, 0, 0, 0);
         LocalDateTime endOfMonth = startOfMonth.plusMonths(1).minusSeconds(1);
 
@@ -42,13 +42,14 @@ public class EventGetService {
         return mapToEventCreateResponse(events);
     }
 
-    private List<EventMontylyResponse> mapToEventCreateResponse(List<Event> events) {
+    private List<EventMonthlyResponse> mapToEventCreateResponse(List<Event> events) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
         return events.stream()
-            .map(event -> EventMontylyResponse.of(
+            .map(event -> EventMonthlyResponse.of(
                 String.valueOf(event.getId()),
                 event.getName(),
+                event.getCategory() != null ? String.valueOf(event.getCategory().getColor().getHexCode()) : "000000",
                 event.getEventType().toString(),
                 event.getStartDate().format(formatter),
                 event.getEndDate().format(formatter)))

@@ -47,11 +47,12 @@ public class ScoreReportController {
     @GetMapping("/exam-list")
     @Operation(summary = "기간 내 시험지 조회", description = "학습 리포트 생성 시 기간 내 시험지 조회 API 입니다.")
     public ApiResponse<List<ReportExam>> findExamList(
+            @AuthMember Member member,
             @RequestParam("startDate") LocalDate startDate,
             @RequestParam("endDate") LocalDate endDate,
             @RequestParam("mainClassId") Long mainClassId,
             @RequestParam("subClassId") Long subClassId) {
-        List<ReportExam> exams = scoreReportService.showReportExam(startDate, endDate, mainClassId,
+        List<ReportExam> exams = scoreReportService.showReportExam(member,startDate, endDate, mainClassId,
                 subClassId);
         return ApiResponse.success(exams, 200, "FIND-REPORT-EXAM");
     }
@@ -106,10 +107,9 @@ public class ScoreReportController {
     @GetMapping("/all-report")
     @Operation(summary = "학습 리포트 전체조회", description = "학원 별 생성한 성적 리포트 전체조회 API입니다.")
     public ApiResponse<List<FindAllReportResponse>> findAllReport(
-            @AuthMember Member member,
-            @RequestParam(name = "academyId") Long academyId) {
+            @AuthMember Member member) {
 
-        List<FindAllReportResponse> response = scoreReportService.findAllReport(member, academyId);
+        List<FindAllReportResponse> response = scoreReportService.findAllReport(member);
 
         return ApiResponse.success(response, 200, "FIND-ALL-STUDENT-REPORTS");
     }

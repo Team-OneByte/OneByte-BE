@@ -40,7 +40,7 @@ public class DriveTrashController {
 
     @PostMapping("/trash")
     @Operation(summary = "휴지통 이동", description = "휴지통 이동 API 입니다.")
-    public ApiResponse<List<String>> moveToTrash(
+    public ApiResponse<List<String>> storeTrash(
         @AuthMember Member member,
         @Parameter(description = "내 드라이브는 PERSONAL, 공용 드라이브는 SHARED 입니다.")
         @RequestParam DriveType driveType,
@@ -49,20 +49,20 @@ public class DriveTrashController {
         @Parameter(description = "파일 이름")
         @RequestParam List<String> fileNames
     ) {
-        List<String> trashPathList = driveTrashService.moveToTrash(member, driveType, folderPath, fileNames);
+        List<String> trashPathList = driveTrashService.storeTrash(member, driveType, folderPath, fileNames);
         return ApiResponse.success(trashPathList, 200, "휴지통 이동 완료");
     }
 
     @PostMapping("/trash/restore")
     @Operation(summary = "휴지통 복원", description = "휴지통 복원 API 입니다.")
-    public ApiResponse<List<String>> restoreFromTrash(
+    public ApiResponse<List<String>> restoreTrash(
         @AuthMember Member member,
         @Parameter(description = "내 드라이브는 PERSONAL, 공용 드라이브는 SHARED 입니다.")
         @RequestParam DriveType driveType,
         @Parameter(description = "파일 이름")
         @RequestParam List<String> fileNames
     ) {
-        List<String> restorePathList = driveRestoreService.restoreFromTrash(member, driveType, fileNames);
+        List<String> restorePathList = driveRestoreService.restoreTrash(member, driveType, fileNames);
         return ApiResponse.success(restorePathList, 200, "복원 성공");
     }
 
@@ -72,10 +72,13 @@ public class DriveTrashController {
         @AuthMember Member member,
         @Parameter(description = "내 드라이브는 PERSONAL, 공용 드라이브는 SHARED 입니다.")
         @RequestParam DriveType driveType,
+        @Parameter(description = "폴더 경로입니다. 비어 있으면 루트 폴더로 지정됩니다.")
+        @RequestParam(required = false, defaultValue = "") String folderPath,
         @Parameter(description = "파일 이름")
-        @RequestParam List<String> fileName
+        @RequestParam List<String> fileNames
+
     ) {
-        driveDeleteService.deleteFromTrash(member, driveType, fileName);
+        driveDeleteService.deleteFromTrash(member, driveType, folderPath, fileNames);
         return ApiResponse.success(null, 200, "삭제 성공");
     }
 }
