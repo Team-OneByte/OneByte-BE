@@ -33,16 +33,39 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
         @Param("academyId") Long academyId,
         @Param("month") int month);
 
-    @Query("SELECT a FROM Attendance a JOIN a.classStudent cs WHERE cs.subClass.id = :subClassId AND a.date BETWEEN :startDate AND :endDate")
-    List<Attendance> findByDateBetweenAndSubClassId(LocalDate startDate, LocalDate endDate,
-        Long subClassId);
+    @Query("SELECT a FROM Attendance a JOIN a.classStudent cs " +
+        "WHERE cs.subClass.id = :subClassId " +
+        "AND cs.subClass.member.academy.id = :academyId " +
+        "AND a.date BETWEEN :startDate AND :endDate")
+    List<Attendance> findByDateBetweenAndSubClassIdAndAcademyId(
+        @Param("startDate") LocalDate startDate,
+        @Param("endDate") LocalDate endDate,
+        @Param("subClassId") Long subClassId,
+        @Param("academyId") Long academyId);
 
-    @Query("SELECT a FROM Attendance a JOIN a.classStudent cs WHERE cs.subClass.id = :subClassId AND a.date = :date AND a.status = :status")
-    List<Attendance> findByDateAndSubClassIdAndStatus(LocalDate date, Long subClassId, AttendanceStatus status);
+
+    @Query("SELECT a FROM Attendance a JOIN a.classStudent cs " +
+        "WHERE cs.subClass.id = :subClassId " +
+        "AND cs.subClass.member.academy.id = :academyId " +
+        "AND a.date = :date " +
+        "AND a.status = :status")
+    List<Attendance> findByDateAndSubClassIdAndStatusAndAcademyId(
+        @Param("date") LocalDate date,
+        @Param("subClassId") Long subClassId,
+        @Param("status") AttendanceStatus status,
+        @Param("academyId") Long academyId);
 
     List<Attendance> findByStudentIdAndDateBetween(Long studentId, LocalDate startDate,
         LocalDate endDate);
 
-    @Query("SELECT a FROM Attendance a WHERE a.student.id = :studentId AND FUNCTION('MONTH', a.date) = :month AND a.status = :status")
-    List<Attendance> findByStudentIdAndMonthAndStatus(Long studentId, int month, AttendanceStatus status);
+    @Query("SELECT a FROM Attendance a JOIN a.classStudent cs " +
+        "WHERE a.student.id = :studentId " +
+        "AND FUNCTION('MONTH', a.date) = :month " +
+        "AND a.status = :status " +
+        "AND cs.subClass.member.academy.id = :academyId ")
+    List<Attendance> findByAcademyIdAndStudentIdAndMonthAndStatus(
+        @Param("studentId") Long studentId,
+        @Param("month") int month,
+        @Param("status") AttendanceStatus status,
+        @Param("academyId") Long academyId);
 }
