@@ -285,6 +285,24 @@ public class ScoreReportService {
                                 studentExamScore.getScore()
                         );
                     }
+                    if (exam.getStandard() == Standard.QUESTION) {
+
+                        double maxScore = exam.getHighestScore();
+
+                        double convertedScore =
+                                (double) studentExamScore.getScore() / maxScore * 100.0;
+
+                        double convertedAverage = (double) exam.getAverage() / maxScore * 100.0;
+
+                        return new ExamHistory(
+                                exam.getId(),
+                                exam.getExamName(),
+                                exam.getStandard(),
+                                Math.round(convertedAverage),
+                                (int) Math.round(convertedScore)
+                        );
+                    }
+
                     // score 일때
                     return new ExamHistory(
                             exam.getId(),
