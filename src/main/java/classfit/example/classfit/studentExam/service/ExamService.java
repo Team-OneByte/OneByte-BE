@@ -49,11 +49,6 @@ public class ExamService {
     private final StudentExamScoreRepository studentExamScoreRepository;
     private final AcademyRepository academyRepository;
 
-    // academy에서 적절한 member찾는 메소드
-    private boolean isMemberInAcademy(Member member, Academy academy) {
-        return academy.getMembers().stream()
-                .anyMatch(academyMember -> academyMember.getId().equals(member.getId()));
-    }
 
     private void validateAcademy(Member member, Long academyId) {
         Academy academy = academyRepository.findById(academyId)
