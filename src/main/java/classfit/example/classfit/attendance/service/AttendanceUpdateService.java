@@ -7,6 +7,7 @@ import classfit.example.classfit.attendance.dto.response.AttendanceResponse;
 import classfit.example.classfit.attendance.dto.response.StudentAttendanceResponse;
 import classfit.example.classfit.attendance.repository.AttendanceRepository;
 import classfit.example.classfit.common.exception.ClassfitException;
+import classfit.example.classfit.member.domain.Member;
 import classfit.example.classfit.student.domain.Student;
 import classfit.example.classfit.student.repository.StudentRepository;
 import lombok.RequiredArgsConstructor;
@@ -27,14 +28,22 @@ public class AttendanceUpdateService {
     private final StudentRepository studentRepository;
 
     @Transactional
-    public List<StudentAttendanceResponse> updateStudentAttendances(List<StudentAttendanceUpdateRequest> students) {
+    public List<StudentAttendanceResponse> updateStudentAttendances(
+        List<StudentAttendanceUpdateRequest> students,
+        Member member
+    ) {
+        Long academyId = member.getAcademy().getId();
+
         return students.stream()
-            .map(this::updateStudentAttendance)
+            .map(studentRequest -> updateStudentAttendance(studentRequest, academyId))
             .toList();
     }
 
-    private StudentAttendanceResponse updateStudentAttendance(StudentAttendanceUpdateRequest studentRequest) {
-        Student student = findStudentById(studentRequest.studentId());
+    private StudentAttendanceResponse updateStudentAttendance(
+        StudentAttendanceUpdateRequest studentRequest,
+        Long academyId
+    ) {
+        Student student = findStudentByIdAndAcademy(studentRequest.studentId(), academyId);
         List<AttendanceResponse> attendanceResponses = studentRequest.attendance().stream()
             .map(this::updateAttendanceStatus)
             .toList();
@@ -49,8 +58,8 @@ public class AttendanceUpdateService {
         return AttendanceResponse.of(attendance.getId(), attendance.getDate(), attendance.getWeek(), attendance.getStatus().name());
     }
 
-    private Student findStudentById(Long studentId) {
-        return studentRepository.findById(studentId)
+    private Student findStudentByIdAndAcademy(Long studentId, Long academyId) {
+        return studentRepository.findByIdAndAcademyId(studentId, academyId)
             .orElseThrow(() -> new ClassfitException(STUDENT_NOT_FOUND, HttpStatus.NOT_FOUND));
     }
 
