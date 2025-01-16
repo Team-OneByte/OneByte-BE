@@ -29,6 +29,14 @@ jobs:
       - name: set up application.properties
         run: echo "${{ secrets.APPLICATION }}" > src/main/resources/application.properties
 
+      - name: Cache Gradle dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-      
+
       - name: Build with Gradle
         uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
         with:
@@ -57,8 +65,8 @@ jobs:
         run: |
           CONTAINER_IDS=$(sudo docker ps -aq --filter "name=github-actions-demo")
           if [ -n "$CONTAINER_IDS" ]; then
-            sudo docker stop $CONTAINER_IDS
-            sudo docker rm $CONTAINER_IDS
+            sudo docker stop $CONTAINER_IDS || true
+            sudo docker rm -f $CONTAINER_IDS || true
           fi
 
       - name: Run new container
