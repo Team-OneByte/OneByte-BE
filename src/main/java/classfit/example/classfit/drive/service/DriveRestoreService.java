@@ -3,53 +3,72 @@ package classfit.example.classfit.drive.service;
 import classfit.example.classfit.common.util.DriveUtil;
 import classfit.example.classfit.drive.domain.DriveType;
 import classfit.example.classfit.member.domain.Member;
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class DriveRestoreService {
 
-    private final AmazonS3 amazonS3;
+    private final S3Client s3Client;
 
     @Value("${cloud.aws.s3.bucket}")
     private String bucketName;
 
-    public List<String> restoreFromTrash(Member member, DriveType driveType, List<String> fileNames) {
+    public List<String> restoreTrash(Member member, DriveType driveType, List<String> fileNames) {
         List<String> restoredPaths = new ArrayList<>();
 
         for (String fileName : fileNames) {
-            String trashPath = DriveUtil.generateTrashPath(member, driveType, fileName);
-            List<Tag> filteredTags = getFilteredTags(trashPath);
-            String folderPath = DriveUtil.extractTags(filteredTags, "folderPath");
+            String prefix = DriveUtil.generatedOriginPath(member, driveType, "", fileName);
+            List<ObjectVersion> deleteMarkers = listDeleteMarkers(prefix);
 
-            String restoredPath = DriveUtil.generatedOriginPath(member, driveType, folderPath, fileName);
-            CopyObjectRequest copyRequest = new CopyObjectRequest(bucketName, trashPath, bucketName, restoredPath);
-            amazonS3.copyObject(copyRequest);
+            for (ObjectVersion deleteMarker : deleteMarkers) {
+                DeleteObjectRequest deleteRequest = DeleteObjectRequest.builder()
+                    .bucket(bucketName)
+                    .key(deleteMarker.key())
+                    .versionId(deleteMarker.versionId())
+                    .build();
 
-            amazonS3.deleteObject(bucketName, trashPath);
-            restoredPaths.add(restoredPath);
+                s3Client.deleteObject(deleteRequest);
+                restoredPaths.add(deleteMarker.key());
+            }
         }
-
         return restoredPaths;
     }
 
-    private List<Tag> getFilteredTags(String trashPath) {
-        GetObjectTaggingRequest taggingRequest = new GetObjectTaggingRequest(bucketName, trashPath);
-        GetObjectTaggingResult taggingResult = amazonS3.getObjectTagging(taggingRequest);
 
-        List<Tag> filteredTags = taggingResult.getTagSet().stream()
-            .filter(tag -> !tag.getKey().equals("deletedBy") && !tag.getKey().equals("deleteAt"))
-            .collect(Collectors.toList());
+    private List<ObjectVersion> listDeleteMarkers(String prefix) {
+        List<ObjectVersion> deleteMarkers = new ArrayList<>();
 
-        amazonS3.setObjectTagging(new SetObjectTaggingRequest(bucketName, trashPath, new ObjectTagging(filteredTags)));
-        return filteredTags;
+        ListObjectVersionsRequest request = ListObjectVersionsRequest.builder()
+            .bucket(bucketName)
+            .prefix(prefix)
+            .build();
+
+        ListObjectVersionsResponse response;
+        do {
+            response = s3Client.listObjectVersions(request);
+
+            for (DeleteMarkerEntry deleteMarkerEntry : response.deleteMarkers()) {
+                deleteMarkers.add(
+                    ObjectVersion.builder()
+                        .key(deleteMarkerEntry.key())
+                        .versionId(deleteMarkerEntry.versionId())
+                        .build()
+                );
+            }
+
+            request = request.toBuilder()
+                .keyMarker(response.nextKeyMarker())
+                .versionIdMarker(response.nextVersionIdMarker())
+                .build();
+        } while (response.isTruncated());
+        return deleteMarkers;
     }
 }

@@ -41,6 +41,7 @@ dependencies {
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0' // swagger
     implementation 'net.nurigo:sdk:4.3.0'
 
+
     //jwt
     implementation 'io.jsonwebtoken:jjwt-api:0.12.3'
     implementation 'io.jsonwebtoken:jjwt-impl:0.12.3'
@@ -48,6 +49,8 @@ dependencies {
 
     //s3
     implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
+    implementation 'software.amazon.awssdk:s3:2.20.56'
+
 }
 
 tasks.named('test') {
