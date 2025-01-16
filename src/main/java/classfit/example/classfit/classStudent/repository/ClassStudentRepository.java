@@ -16,8 +16,16 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ClassStudentRepository extends JpaRepository<ClassStudent, Long> {
 
-    Page<ClassStudent> findBySubClass_MainClass_IdAndSubClass_Id(Long mainClassId, Long subClassId,
-            Pageable pageable);
+    @Query("SELECT cs FROM ClassStudent cs " +
+        "JOIN FETCH cs.student s " +
+        "JOIN cs.subClass sc " +
+        "JOIN sc.mainClass mc " +
+        "WHERE mc.id = :mainClassId AND sc.id = :subClassId AND mc.member.academy.id = :academyId")
+    Page<ClassStudent> findAllByMainClassAndSubClass(
+        @Param("mainClassId") Long mainClassId,
+        @Param("subClassId") Long subClassId,
+        @Param("academyId") Long academyId,
+        Pageable pageable);
 
     @Modifying
     @Query("DELETE FROM ClassStudent cs WHERE cs.student.id = :studentId")
@@ -37,5 +45,4 @@ public interface ClassStudentRepository extends JpaRepository<ClassStudent, Long
     List<FindClassStudent> findStudentIdsByMainClassIdAndSubClassId(
             @Param("mainClassId") Long mainClassId,
             @Param("subClassId") Long subClassId);
-
 }

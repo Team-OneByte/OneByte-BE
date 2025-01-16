@@ -21,5 +21,18 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
         "WHERE s.id = :studentId")
     List<String> findSubClassesByStudentId(@Param("studentId") Long studentId);
 
+    @Query("SELECT s FROM Student s " +
+        "JOIN s.classStudents cs " +
+        "JOIN cs.subClass sc " +
+        "WHERE s.id = :studentId " +
+        "AND sc.mainClass.member.academy.id = :academyId ")
+    Optional<Student> findByIdAndAcademyId(Long studentId, Long academyId);
+
     Optional<List<Student>> findAllByName(String studentName);
+
+    @Query("SELECT s FROM Student s " +
+        "JOIN s.classStudents cs " +
+        "JOIN cs.subClass sc " +
+        "WHERE sc.mainClass.member.academy.id = :academyId")
+    Page<Student> findAllByAcademyId(@Param("academyId") Long academyId, Pageable pageable);
 }
