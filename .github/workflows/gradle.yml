@@ -54,11 +54,7 @@ jobs:
 
       - name: Stop and remove existing containers
         run: |
-          CONTAINER_IDS=$(sudo docker ps -aq)
-          if [ -n "$CONTAINER_IDS" ]; then
-            sudo docker stop $CONTAINER_IDS
-            sudo docker rm $CONTAINER_IDS
-          fi
+          sudo docker ps -aq | xargs -r sudo docker stop | xargs -r sudo docker rm
 
       - name: Run new container
         run: sudo docker run --name github-actions-demo --rm -d -p 8080:8080 ${{ secrets.DOCKER_USERNAME }}/github-actions-demo
