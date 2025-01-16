@@ -28,9 +28,10 @@ public class DriveTrashService {
     @Value("${cloud.aws.s3.bucket}")
     private String bucketName;
 
-    public List<FileResponse> getFilesFromTrash(Member member, DriveType driveType, String folderPath) {
+    public List<FileResponse> getFilesFromTrash(Member member, DriveType driveType) {
+        Set<String> excludedPaths = new HashSet<>();
         List<FileResponse> deletedFiles = new ArrayList<>();
-        String prefix = DriveUtil.buildPrefix(driveType, member, folderPath);
+        String prefix = DriveUtil.buildPrefix(driveType, member, "");
 
         ListObjectVersionsRequest request = ListObjectVersionsRequest.builder()
             .bucket(bucketName)
@@ -44,14 +45,18 @@ public class DriveTrashService {
             ListObjectVersionsResponse finalResponse = response;
             response.deleteMarkers().forEach(deleteMarker -> {
                 String key = deleteMarker.key();
-                String deleteMarkerVersionId = deleteMarker.versionId();
 
-                String relativePath = key.substring(prefix.length());
-
-                if (relativePath.contains("/") && relativePath.indexOf("/") != relativePath.length() - 1) {
-                    return;
+                for (String excludedPath : excludedPaths) {
+                    if (key.startsWith(excludedPath)) {
+                        return;
+                    }
                 }
 
+                if (key.endsWith("/")) {
+                    excludedPaths.add(key);
+                }
+
+                String deleteMarkerVersionId = deleteMarker.versionId();
                 Optional<ObjectVersion> previousVersionOpt = finalResponse.versions().stream()
                     .filter(version -> version.key().equals(key))
                     .filter(version -> !version.versionId().equals(deleteMarkerVersionId))
@@ -91,10 +96,6 @@ public class DriveTrashService {
                 .build();
 
         } while (response.isTruncated());
-
-        if (!folderPath.isEmpty()) {
-            deletedFiles.removeFirst();
-        }
 
         return deletedFiles;
     }

@@ -68,6 +68,10 @@ public class DriveUploadService {
         String formattedDate = now.format(DateTimeFormatter.ISO_DATE_TIME);
         String finalFolderPath = folderPath != null && !folderPath.trim().isEmpty() ? folderPath : "";
 
+        if (!finalFolderPath.isEmpty()) {
+            finalFolderPath = finalFolderPath + "/";
+        }
+
         List<Tag> tags = List.of(
             new Tag("folderPath", finalFolderPath),
             new Tag("driveType", driveType.toString().toLowerCase()),

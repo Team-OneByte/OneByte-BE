@@ -32,11 +32,9 @@ public class DriveTrashController {
     public ApiResponse<List<FileResponse>> trashList(
         @AuthMember Member member,
         @Parameter(description = "내 드라이브는 PERSONAL, 공용 드라이브는 SHARED 입니다.")
-        @RequestParam DriveType driveType,
-        @Parameter(description = "폴더 경로입니다. 비어 있으면 루트 폴더로 지정됩니다.")
-        @RequestParam(required = false, defaultValue = "") String folderPath
+        @RequestParam DriveType driveType
     ) {
-        List<FileResponse> filesFromTrash = driveTrashService.getFilesFromTrash(member, driveType, folderPath);
+        List<FileResponse> filesFromTrash = driveTrashService.getFilesFromTrash(member, driveType);
         return ApiResponse.success(filesFromTrash, 200, "조회 성공");
     }
 
