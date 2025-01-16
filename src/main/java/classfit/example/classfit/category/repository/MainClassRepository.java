@@ -13,9 +13,6 @@ import java.util.List;
 public interface MainClassRepository extends JpaRepository<MainClass, Long> {
 
     List<MainClass> findAllByAcademyOrderByMainClassNameAsc(Academy academy);
-  
-    @Query("SELECT mc FROM MainClass mc WHERE mc.member.academy = :academy ORDER BY mc.mainClassName ASC")
-    List<MainClass> findAllByMemberAcademy(@Param("academy") Academy academy);
 
     List<MainClass> findByAcademy(Academy academy);
 

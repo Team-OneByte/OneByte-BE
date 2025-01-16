@@ -25,7 +25,7 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
         "JOIN s.classStudents cs " +
         "JOIN cs.subClass sc " +
         "WHERE s.id = :studentId " +
-        "AND sc.mainClass.member.academy.id = :academyId ")
+        "AND sc.mainClass.academy.id = :academyId ")
     Optional<Student> findByIdAndAcademyId(Long studentId, Long academyId);
 
     Optional<List<Student>> findAllByName(String studentName);
@@ -34,7 +34,7 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
     @Query("SELECT s FROM Student s " +
         "JOIN s.classStudents cs " +
         "JOIN cs.subClass sc " +
-        "WHERE sc.mainClass.member.academy.id = :academyId")
+        "WHERE sc.mainClass.academy.id = :academyId")
     Page<Student> findAllByAcademyId(@Param("academyId") Long academyId, Pageable pageable);
 
     @Query("SELECT DISTINCT s FROM Student s " +
