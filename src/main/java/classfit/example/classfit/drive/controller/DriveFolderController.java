@@ -8,7 +8,6 @@ import classfit.example.classfit.member.domain.Member;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -48,18 +47,5 @@ public class DriveFolderController {
     ) {
         List<String> folders = driveFolderService.getFolders(member, driveType, folderPath);
         return ApiResponse.success(folders, 200, "폴더 목록 조회 성공");
-    }
-
-    @DeleteMapping("/folder")
-    @Operation(summary = "폴더 삭제", description = "폴더를 삭제하는 API입니다.")
-    public ApiResponse<Nullable> deleteFolder(
-        @AuthMember Member member,
-        @Parameter(description = "내 드라이브는 PERSONAL, 공용 드라이브는 SHARED 입니다.")
-        @RequestParam DriveType driveType,
-        @Parameter(description = "삭제할 폴더 이름입니다.")
-        @RequestParam String folderName
-    ) {
-        driveFolderService.deleteFolder(member, driveType, folderName);
-        return ApiResponse.success(null, 200, "SUCCESS");
     }
 }
