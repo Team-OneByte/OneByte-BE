@@ -8,7 +8,6 @@ import classfit.example.classfit.category.dto.response.SubClassResponse;
 import classfit.example.classfit.category.repository.MainClassRepository;
 import classfit.example.classfit.member.domain.Member;
 import jakarta.transaction.Transactional;
-import java.util.Comparator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -23,8 +22,8 @@ public class ClassInfoService {
     @Transactional
     public List<ClassInfoResponse> getClasses(Member member) {
         Academy academy = member.getAcademy();
-        List<MainClass> mainClasses = mainClassRepository.findAllByAcademyOrderByMainClassNameAsc(academy);
 
+        List<MainClass> mainClasses = mainClassRepository.findAllByAcademyOrderByMainClassNameAsc(academy);
         return mainClasses.stream()
             .map(this::mapToClassInfoResponse)
             .collect(Collectors.toList());
@@ -32,7 +31,7 @@ public class ClassInfoService {
 
     private ClassInfoResponse mapToClassInfoResponse(MainClass mainClass) {
         List<SubClassResponse> subClassResponses = mainClass.getSubClasses().stream()
-            .sorted(Comparator.comparing(SubClass::getSubClassName))
+            .sorted((subClass1, subClass2) -> subClass1.getSubClassName().compareTo(subClass2.getSubClassName()))
             .map(subClass -> mapToSubClassResponse(mainClass.getId(), subClass))
             .collect(Collectors.toList());
         return new ClassInfoResponse(mainClass.getId(), mainClass.getMainClassName(), subClassResponses);

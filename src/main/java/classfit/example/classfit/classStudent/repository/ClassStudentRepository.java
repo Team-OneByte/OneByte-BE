@@ -16,7 +16,6 @@ import java.util.List;
 
 @Repository
 public interface ClassStudentRepository extends JpaRepository<ClassStudent, Long> {
-
     @Query("SELECT cs FROM ClassStudent cs " +
         "JOIN FETCH cs.student s " +
         "JOIN cs.subClass sc " +

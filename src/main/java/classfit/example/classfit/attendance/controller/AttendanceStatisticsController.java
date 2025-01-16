@@ -4,9 +4,7 @@ import classfit.example.classfit.attendance.domain.AttendanceStatus;
 import classfit.example.classfit.attendance.dto.response.StatisticsDateResponse;
 import classfit.example.classfit.attendance.dto.response.StatisticsMemberResponse;
 import classfit.example.classfit.attendance.service.AttendanceStatisticsService;
-import classfit.example.classfit.auth.annotation.AuthMember;
 import classfit.example.classfit.common.ApiResponse;
-import classfit.example.classfit.member.domain.Member;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -26,22 +24,20 @@ public class AttendanceStatisticsController {
     @GetMapping("/date")
     @Operation(summary = "클래스 날짜별 통계", description = "날짜별 출결 통계 조회 시 사용되는 api 입니다.")
     public ApiResponse<List<StatisticsDateResponse>> getAttendanceStaticsByDate(
-        @AuthMember Member member,
         @Parameter(description = "조회 시작 기간")
         @RequestParam(value = "startDate") LocalDate startDate,
         @Parameter(description = "조회 끝 기간")
         @RequestParam(value = "endDate") LocalDate endDate,
         @Parameter(description = "조회하려는 서브 클래스 ID")
-        @RequestParam(value = "subClassId") Long subClassId
-    ) {
-        List<StatisticsDateResponse> statisticsDate = attendanceStatisticsService.getAttendanceStatisticsByDate(startDate, endDate, subClassId, member);
+        @RequestParam(value = "subClassId") Long subClassId) {
+
+        List<StatisticsDateResponse> statisticsDate = attendanceStatisticsService.getAttendanceStatisticsByDate(startDate, endDate, subClassId);
         return ApiResponse.success(statisticsDate, 200, "SUCCESS");
     }
 
     @GetMapping("/date/details")
     @Operation(summary = "클래스 날짜별 통계 세부 조회", description = "날짜별 출결 통계에서 세부 정보 조회 시 사용되는 api 입니다.")
     public ApiResponse<List<String>> getAttendanceDetailsByDateAndStatus(
-        @AuthMember Member member,
         @Parameter(description = "조회 날짜")
         @RequestParam(value = "date") LocalDate date,
         @Parameter(description = "조회하려는 서브 클래스 ID")
@@ -49,27 +45,25 @@ public class AttendanceStatisticsController {
         @Parameter(description = "조회하려는 출결 상태")
         @RequestParam(value = "status") AttendanceStatus status
     ) {
-        List<String> studentDetails = attendanceStatisticsService.getAttendanceDetailsByDateAndStatus(date, subClassId, status, member);
+        List<String> studentDetails = attendanceStatisticsService.getAttendanceDetailsByDateAndStatus(date, subClassId, status);
         return ApiResponse.success(studentDetails, 200, "SUCCESS");
     }
 
     @GetMapping("/member")
     @Operation(summary = "클래스 구성원별 통계", description = "구성원별 출결 통계 조회 시 사용되는 api 입니다.")
     public ApiResponse getAttendanceStaticsByMember(
-        @AuthMember Member member,
         @Parameter(description = "조회 시작 기간")
         @RequestParam(value = "startDate") LocalDate startDate,
         @Parameter(description = "조회 끝 기간")
-        @RequestParam(value = "endDate") LocalDate endDate
-    ) {
-        List<StatisticsMemberResponse> statisticsDate = attendanceStatisticsService.getAttendanceStatisticsByMember(startDate, endDate, member);
+        @RequestParam(value = "endDate") LocalDate endDate) {
+
+        List<StatisticsMemberResponse> statisticsDate = attendanceStatisticsService.getAttendanceStatisticsByMember(startDate, endDate);
         return ApiResponse.success(statisticsDate, 200, "SUCCESS");
     }
 
     @GetMapping("/member/details")
     @Operation(summary = "클래스 구성원별 통계 세부 조회", description = "구성원별 출결 통계에서 세부 정보 조회 시 사용되는 api 입니다.")
     public ApiResponse<List<String>> getAttendanceDetailsByMemberAndStatus(
-        @AuthMember Member member,
         @Parameter(description = "조회 학생")
         @RequestParam(value = "studentId") Long studentId,
         @Parameter(description = "조회하려는 달")
@@ -77,7 +71,7 @@ public class AttendanceStatisticsController {
         @Parameter(description = "조회하려는 출결 상태")
         @RequestParam(value = "status") AttendanceStatus status
     ) {
-        List<String> studentDetails = attendanceStatisticsService.getAttendanceDetailsByMemberAndStatus(studentId, month, status, member);
+        List<String> studentDetails = attendanceStatisticsService.getAttendanceDetailsByMemberAndStatus(studentId, month, status);
         return ApiResponse.success(studentDetails, 200, "SUCCESS");
     }
 }
