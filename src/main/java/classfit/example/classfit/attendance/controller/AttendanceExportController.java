@@ -2,7 +2,9 @@ package classfit.example.classfit.attendance.controller;
 
 import classfit.example.classfit.attendance.dto.response.StudentAttendanceResponse;
 import classfit.example.classfit.attendance.service.AttendanceExportService;
+import classfit.example.classfit.auth.annotation.AuthMember;
 import classfit.example.classfit.common.ApiResponse;
+import classfit.example.classfit.member.domain.Member;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -23,11 +25,12 @@ public class AttendanceExportController {
     @GetMapping("/excel/download")
     @Operation(summary = "엑셀 다운로드", description = "월별 출결 데이터 엑셀 다운로드 api 입니다.")
     public ApiResponse<List<StudentAttendanceResponse>> exportAttendance(
+            @AuthMember Member member,
             @Parameter(description = "다운로드 받을 달 (1~12 사이의 값)")
             @RequestParam("month") int month,
             @Parameter(description = "서브 클래스 아이디 (필수 아님)")
             @RequestParam(required = false) Long subClassId) {
-        List<StudentAttendanceResponse> attendanceData = attendanceExportService.getAttendanceData(month, subClassId);
+        List<StudentAttendanceResponse> attendanceData = attendanceExportService.getAttendanceData(month, subClassId, member);
         return ApiResponse.success(attendanceData, 200, "SUCCESS");
     }
 }
