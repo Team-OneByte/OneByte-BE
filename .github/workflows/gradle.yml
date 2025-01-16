@@ -70,7 +70,7 @@ jobs:
           fi
 
       - name: Run new container
-        run: sudo docker run --name github-actions-demo --rm -d -p 8080:8080 ${{ secrets.DOCKER_USERNAME }}/github-actions-demo
+        run: sudo docker run --name github-actions-demo -d -p 8080:8080 ${{ secrets.DOCKER_USERNAME }}/github-actions-demo
 
       - name: Clean up old Docker images
         run: sudo docker system prune -f
