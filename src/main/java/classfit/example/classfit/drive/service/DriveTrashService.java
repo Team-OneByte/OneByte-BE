@@ -5,99 +5,163 @@ import classfit.example.classfit.drive.domain.DriveType;
 import classfit.example.classfit.drive.dto.response.FileResponse;
 import classfit.example.classfit.member.domain.Member;
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.*;
+import com.amazonaws.services.s3.model.DeleteObjectsRequest;
+import com.amazonaws.services.s3.model.ListObjectsV2Request;
+import com.amazonaws.services.s3.model.ListObjectsV2Result;
+import com.amazonaws.services.s3.model.S3ObjectSummary;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.*;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
 public class DriveTrashService {
 
     private final AmazonS3 amazonS3;
+    private final S3Client s3Client;
 
     @Value("${cloud.aws.s3.bucket}")
     private String bucketName;
 
-    public List<FileResponse> getFilesFromTrash(Member member, DriveType driveType) {
-        String prefix = DriveUtil.generateTrashPath(member, driveType, null);
+    public List<FileResponse> getFilesFromTrash(Member member, DriveType driveType, String folderPath) {
+        List<FileResponse> deletedFiles = new ArrayList<>();
+        String prefix = DriveUtil.buildPrefix(driveType, member, folderPath);
 
-        ListObjectsV2Request listObjectsV2Request = new ListObjectsV2Request()
-            .withBucketName(bucketName)
-            .withPrefix(prefix);
-        List<S3ObjectSummary> objectSummaries = amazonS3.listObjectsV2(listObjectsV2Request).getObjectSummaries();
+        ListObjectVersionsRequest request = ListObjectVersionsRequest.builder()
+            .bucket(bucketName)
+            .prefix(prefix)
+            .build();
 
-        return objectSummaries.stream()
-            .map(this::buildFileTrashInfo)
-            .toList();
+        ListObjectVersionsResponse response;
+        do {
+            response = s3Client.listObjectVersions(request);
+
+            ListObjectVersionsResponse finalResponse = response;
+            response.deleteMarkers().forEach(deleteMarker -> {
+                String key = deleteMarker.key();
+                String deleteMarkerVersionId = deleteMarker.versionId();
+
+                String relativePath = key.substring(prefix.length());
+
+                if (relativePath.contains("/") && relativePath.indexOf("/") != relativePath.length() - 1) {
+                    return;
+                }
+
+                Optional<ObjectVersion> previousVersionOpt = finalResponse.versions().stream()
+                    .filter(version -> version.key().equals(key))
+                    .filter(version -> !version.versionId().equals(deleteMarkerVersionId))
+                    .findFirst();
+
+                Map<String, String> tagMap = new HashMap<>();
+                long fileSize = 0;
+                if (previousVersionOpt.isPresent()) {
+                    ObjectVersion previousVersion = previousVersionOpt.get();
+                    fileSize = previousVersion.size();
+
+                    GetObjectTaggingRequest taggingRequest = GetObjectTaggingRequest.builder()
+                        .bucket(bucketName)
+                        .key(key)
+                        .versionId(previousVersion.versionId())
+                        .build();
+
+                    GetObjectTaggingResponse taggingResponse = s3Client.getObjectTagging(taggingRequest);
+                    tagMap = taggingResponse.tagSet().stream()
+                        .collect(Collectors.toMap(Tag::key, Tag::value));
+                }
+
+                S3ObjectSummary summary = new S3ObjectSummary();
+                summary.setKey(key);
+                summary.setSize(fileSize);
+
+                String fileUrl = s3Client.utilities().getUrl(builder ->
+                    builder.bucket(bucketName).key(key)).toExternalForm();
+
+                FileResponse fileResponse = DriveUtil.getFileResponse(summary, key, fileUrl, tagMap);
+                deletedFiles.add(fileResponse);
+            });
+
+            request = request.toBuilder()
+                .keyMarker(response.nextKeyMarker())
+                .versionIdMarker(response.nextVersionIdMarker())
+                .build();
+
+        } while (response.isTruncated());
+
+        if (!folderPath.isEmpty()) {
+            deletedFiles.removeFirst();
+        }
+
+        return deletedFiles;
     }
 
-    private FileResponse buildFileTrashInfo(S3ObjectSummary summary) {
-        String fileName = summary.getKey();
-        String fileUrl = amazonS3.getUrl(bucketName, fileName).toString();
 
-        Map<String, String> tagMap = amazonS3.getObjectTagging(new GetObjectTaggingRequest(bucketName, fileName))
-            .getTagSet().stream()
-            .collect(Collectors.toMap(Tag::getKey, Tag::getValue));
-
-        return DriveUtil.getFileResponse(summary, fileName, fileUrl, tagMap);
-    }
-
-    public List<String> moveToTrash(Member member, DriveType driveType, String folderPath, List<String> fileNames) {
+    public List<String> storeTrash(Member member, DriveType driveType, String folderPath, List<String> fileNames) {
         List<String> trashPaths = new ArrayList<>();
 
         for (String fileName : fileNames) {
-            String originPath = DriveUtil.generatedOriginPath(member, driveType, folderPath, fileName);
-            String trashPath = DriveUtil.generateTrashPath(member, driveType, fileName);
-
-            CopyObjectRequest copyRequest = new CopyObjectRequest(bucketName, originPath, bucketName, trashPath);
-            amazonS3.copyObject(copyRequest);
-
-            addDeleteTagsToS3Object(trashPath, member);
-            amazonS3.deleteObject(bucketName, originPath);
-
-            trashPaths.add(trashPath);
+            if (fileName.endsWith("/")) {
+                List<String> objectsToDelete = fileInFolder(member, driveType, fileName);
+                deleteObjects(objectsToDelete);
+                trashPaths.addAll(objectsToDelete);
+            } else {
+                String originPath = cleanPath(DriveUtil.generatedOriginPath(member, driveType, folderPath, fileName));
+                amazonS3.deleteObject(bucketName, originPath);
+                trashPaths.add(originPath);
+            }
         }
 
-        createPlaceHolder(member, driveType, folderPath);
         return trashPaths;
     }
 
-    private void createPlaceHolder(Member member, DriveType driveType, String folderPath) {
-        ObjectMetadata metadata = new ObjectMetadata();
-        metadata.setContentLength(0);
+    private List<String> fileInFolder(Member member, DriveType driveType, String folderPath) {
+        List<String> files = new ArrayList<>();
 
-        String fullFolderPath = DriveUtil.generatedOriginPath(member, driveType, folderPath, "");
-        InputStream emptyContent = new ByteArrayInputStream(new byte[0]);
-        amazonS3.putObject(new PutObjectRequest(bucketName, fullFolderPath, emptyContent, metadata));
+        String prefix = cleanPath(DriveUtil.generatedOriginPath(member, driveType, folderPath, ""));
+        if (!prefix.endsWith("/")) {
+            prefix += "/";
+        }
+
+        ListObjectsV2Request request = new ListObjectsV2Request()
+            .withBucketName(bucketName)
+            .withPrefix(prefix);
+
+        ListObjectsV2Result result;
+        do {
+            result = amazonS3.listObjectsV2(request);
+            for (S3ObjectSummary objectSummary : result.getObjectSummaries()) {
+                String key = objectSummary.getKey();
+                files.add(key);
+            }
+            request.setContinuationToken(result.getNextContinuationToken());
+        } while (result.isTruncated());
+
+        return files;
     }
 
-    private void addDeleteTagsToS3Object(String objectKey, Member member) {
-        GetObjectTaggingRequest getTaggingRequest = new GetObjectTaggingRequest(bucketName, objectKey);
-        GetObjectTaggingResult taggingResult = amazonS3.getObjectTagging(getTaggingRequest);
+    private void deleteObjects(List<String> objectKeys) {
+        if (objectKeys.isEmpty()) {
+            return;
+        }
 
-        List<Tag> existingTags = taggingResult.getTagSet();
-        LocalDateTime now = LocalDateTime.now();
-        String formattedDate = now.format(DateTimeFormatter.ISO_DATE_TIME);
+        List<DeleteObjectsRequest.KeyVersion> keysToDelete = objectKeys.stream()
+            .map(DeleteObjectsRequest.KeyVersion::new)
+            .collect(Collectors.toList());
 
-        List<Tag> updatedTags = Stream.concat(
-            existingTags.stream(),
-            Stream.of(
-                new Tag("deletedBy", member.getName()),
-                new Tag("deleteAt", formattedDate)
-            )
-        ).collect(Collectors.toList());
+        DeleteObjectsRequest deleteRequest = new DeleteObjectsRequest(bucketName)
+            .withKeys(keysToDelete);
 
-        amazonS3.setObjectTagging(new SetObjectTaggingRequest(bucketName, objectKey, new ObjectTagging(updatedTags)));
+        amazonS3.deleteObjects(deleteRequest);
+    }
+
+    private String cleanPath(String path) {
+        if (path == null) {
+            return "";
+        }
+        return path.replaceAll("/+", "/");
     }
 }
