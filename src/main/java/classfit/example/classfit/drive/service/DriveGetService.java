@@ -73,7 +73,7 @@ public class DriveGetService {
 
         Map<String, String> tagMap = getTagsForS3Object(fileName);
 
-        return DriveUtil.getFileResponse(amazonS3, bucketName, summary, fileName, fileUrl, tagMap);
+        return DriveUtil.getFileResponse(summary, fileName, fileUrl, tagMap);
     }
 
     private Map<String, String> getTagsForS3Object(String objectKey) {

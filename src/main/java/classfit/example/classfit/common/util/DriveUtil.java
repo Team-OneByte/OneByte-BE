@@ -5,9 +5,6 @@ import classfit.example.classfit.drive.domain.DriveType;
 import classfit.example.classfit.drive.domain.FileType;
 import classfit.example.classfit.drive.dto.response.FileResponse;
 import classfit.example.classfit.member.domain.Member;
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.ListObjectsV2Request;
-import com.amazonaws.services.s3.model.ListObjectsV2Result;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 import org.springframework.http.HttpStatus;
 
@@ -49,51 +46,25 @@ public class DriveUtil {
         return basePrefix + folderPath + "/";
     }
 
-    public static FileResponse getFileResponse(
-        AmazonS3 amazonS3,
-        String bucketName,
-        S3ObjectSummary summary,
-        String fileName,
-        String fileUrl,
-        Map<String, String> tagMap
-    ) {
+    public static FileResponse getFileResponse(S3ObjectSummary summary, String fileName,
+                                               String fileUrl,
+                                               Map<String, String> tagMap) {
         FileType fileType = getFileType(fileName);
         String originalFileName = tagMap.getOrDefault("originalFileName", "");
         String fileNameWithoutPrefix = getFileNameWithoutPrefix(fileName);
         LocalDateTime uploadedAt = parseUploadedAt(tagMap.get("uploadedAt"));
+        String fileSize = formatFileSize(summary.getSize());
 
-        long fileSize = summary.getSize();
-        if (fileType == FileType.FOLDER) {
-            fileSize = calculateFolderSize(amazonS3, bucketName, fileName);
-        }
-        String formattedFileSize = formatFileSize(fileSize);
         return new FileResponse(
             fileType,
             originalFileName,
             fileNameWithoutPrefix,
-            formattedFileSize,
+            fileSize,
             fileUrl,
             tagMap.getOrDefault("folderPath", ""),
             tagMap.getOrDefault("uploadedBy", ""),
             uploadedAt
         );
-    }
-    private static long calculateFolderSize(AmazonS3 amazonS3, String bucketName, String folderPath) {
-        long totalSize = 0;
-
-        ListObjectsV2Request listObjectsRequest = new ListObjectsV2Request()
-            .withBucketName(bucketName)
-            .withPrefix(folderPath)
-            .withDelimiter("/");
-
-        ListObjectsV2Result listObjectsResponse = amazonS3.listObjectsV2(listObjectsRequest);
-        for (S3ObjectSummary summary : listObjectsResponse.getObjectSummaries()) {
-            totalSize += summary.getSize();
-        }
-        for (String commonPrefix : listObjectsResponse.getCommonPrefixes()) {
-            totalSize += calculateFolderSize(amazonS3, bucketName, commonPrefix);
-        }
-        return totalSize;
     }
 
     public static FileType getFileType(String fileName) {

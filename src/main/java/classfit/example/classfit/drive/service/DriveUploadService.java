@@ -6,8 +6,6 @@ import classfit.example.classfit.drive.domain.DriveType;
 import classfit.example.classfit.member.domain.Member;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.*;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -66,8 +64,8 @@ public class DriveUploadService {
     }
 
     private void addTagsToS3Object(String objectKey, Member member, String folderPath, DriveType driveType, String originalFileName) {
-        ZonedDateTime nowKST = ZonedDateTime.now(ZoneId.of("Asia/Seoul"));
-        String formattedDate = nowKST.format(DateTimeFormatter.ISO_DATE_TIME);
+        LocalDateTime now = LocalDateTime.now();
+        String formattedDate = now.format(DateTimeFormatter.ISO_DATE_TIME);
         String finalFolderPath = folderPath != null && !folderPath.trim().isEmpty() ? folderPath : "";
 
         if (!finalFolderPath.isEmpty()) {
