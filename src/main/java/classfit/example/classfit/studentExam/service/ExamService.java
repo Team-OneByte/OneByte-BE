@@ -164,8 +164,9 @@ public class ExamService {
                 .orElse(findExam.getHighestScore());
         Integer lowestScore = studentScores.stream().mapToInt(StudentExamScore::getScore).min()
                 .orElse(0);
-        Long average = (long) studentScores.stream().mapToInt(StudentExamScore::getScore).average()
-                .orElse((perfectScore + lowestScore) / 2);
+        Double average = (Double) studentScores.stream().mapToInt(StudentExamScore::getScore).average()
+                .orElse((perfectScore + lowestScore) / 2.0);
+        String formattedAverage = String.format("%.1f", average);
         findExam.updateScores(lowestScore, perfectScore, average);
 
         examRepository.save(findExam);
@@ -202,7 +203,7 @@ public class ExamService {
         List<String> examRangeList = Arrays.asList(findExam.getExamRange().split(","));
         return new ShowExamDetailResponse(findExam.getExamPeriod(), findExam.getExamName(),
                 findExam.getExamDate(), findExam.getMainClass().getMainClassName(),
-                findExam.getSubClass().getSubClassName(), lowestScore, perfectScore, average,
+                findExam.getSubClass().getSubClassName(), lowestScore, perfectScore, formattedAverage,
                 findExam.getHighestScore(),
                 examRangeList, findExam.getStandard(), examClassStudents);
     }
