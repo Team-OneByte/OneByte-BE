@@ -14,4 +14,6 @@ public interface InvitationRepository extends JpaRepository<Invitation, Long> {
     List<Invitation> findByAcademy(Academy academy);
 
     Optional<Invitation> findByAcademyIdAndEmail(Long id, String email);
+
+    boolean existsByAcademyIdAndEmail(Long id, String email);
 }

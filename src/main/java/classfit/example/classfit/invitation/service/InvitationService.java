@@ -7,7 +7,6 @@ import classfit.example.classfit.invitation.dto.request.InvitationRequest;
 import classfit.example.classfit.invitation.dto.response.InvitationResponse;
 import classfit.example.classfit.invitation.repository.InvitationRepository;
 import classfit.example.classfit.mail.dto.request.EmailPurpose;
-import classfit.example.classfit.mail.handler.InvitationHandler;
 import classfit.example.classfit.mail.service.EmailService;
 import classfit.example.classfit.member.domain.Member;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +23,6 @@ public class InvitationService {
 
     private final InvitationRepository invitationRepository;
     private final EmailService emailService;
-    private final InvitationHandler invitationHandler;
 
     @Transactional
     public String findAcademyCode(Member member) {
@@ -39,10 +37,21 @@ public class InvitationService {
 
     @Transactional
     public void inviteStaffByEmail(Member member, InvitationRequest request) {
-        emailService.sendEmail(request.email(), EmailPurpose.INVITATION);
-        Invitation invitation = request.toEntity(member.getAcademy());
 
-        invitationRepository.save(invitation);
+        boolean exists = invitationRepository.existsByAcademyIdAndEmail(
+            member.getAcademy().getId(),
+            request.email()
+        );
+        System.out.println("Academy ID: " + member.getAcademy().getId());
+        System.out.println("Request Email: " + request.email());
+        System.out.println(exists + " exists");
+
+        if (!exists) {
+            Invitation invitation = request.toEntity(member.getAcademy());
+            invitationRepository.save(invitation);
+        }
+
+        emailService.sendEmail(request.email(), EmailPurpose.INVITATION);
     }
 
     @Transactional(readOnly = true)
