@@ -16,20 +16,9 @@ import java.util.List;
 
 @Repository
 public interface ClassStudentRepository extends JpaRepository<ClassStudent, Long> {
-    @Query("SELECT cs FROM ClassStudent cs " +
-        "JOIN FETCH cs.student s " +
-        "JOIN cs.subClass sc " +
-        "JOIN sc.mainClass mc " +
-        "WHERE mc.id = :mainClassId AND sc.id = :subClassId AND mc.academy.id = :academyId")
-    Page<ClassStudent> findAllByMainClassAndSubClass(
-        @Param("mainClassId") Long mainClassId,
-        @Param("subClassId") Long subClassId,
-        @Param("academyId") Long academyId,
-        Pageable pageable);
 
-    @Query("SELECT cs FROM ClassStudent cs " +
-        "WHERE cs.subClass.mainClass.academy.id = :academyId")
-    List<ClassStudent> findByAcademyId(Long academyId);
+    Page<ClassStudent> findBySubClass_MainClass_IdAndSubClass_Id(Long mainClassId, Long subClassId,
+                                                                 Pageable pageable);
 
     @Modifying
     @Query("DELETE FROM ClassStudent cs WHERE cs.student.id = :studentId")
@@ -47,6 +36,7 @@ public interface ClassStudentRepository extends JpaRepository<ClassStudent, Long
         "WHERE cs.subClass.id = :subClassId " +
         "AND cs.subClass.mainClass.id = :mainClassId")
     List<FindClassStudent> findStudentIdsByMainClassIdAndSubClassId(
-            @Param("mainClassId") Long mainClassId,
-            @Param("subClassId") Long subClassId);
+        @Param("mainClassId") Long mainClassId,
+        @Param("subClassId") Long subClassId);
+
 }
