@@ -73,6 +73,7 @@ public class ExamService {
         validateAcademy(findMember, findMainClass.getAcademy().getId());
 
         Exam newExam = request.toEntity(findSubClass, findMainClass);
+        newExam.updateCreatedBy(findMember.getId());
         if (request.standard() == Standard.PF) {
             newExam.updateHighestScore(-1);
 
