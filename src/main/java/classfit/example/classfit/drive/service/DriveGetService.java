@@ -82,21 +82,6 @@ public class DriveGetService {
             .collect(Collectors.toMap(Tag::getKey, Tag::getValue));
     }
 
-    private long calculateFolderSize(String folderPath) {
-        long totalSize = 0;
-
-        ListObjectsV2Request listObjectsRequest = new ListObjectsV2Request()
-            .withBucketName(bucketName)
-            .withPrefix(folderPath)
-            .withDelimiter("/");
-
-        ListObjectsV2Result listObjectsResponse = amazonS3.listObjectsV2(listObjectsRequest);
-        for (S3ObjectSummary summary : listObjectsResponse.getObjectSummaries()) {
-            totalSize += summary.getSize();
-        }
-        return totalSize;
-    }
-
     private ListObjectsV2Request createListObjectsRequest(DriveType driveType, Member member, String folderPath) {
         ListObjectsV2Request request = new ListObjectsV2Request()
             .withBucketName(bucketName);
