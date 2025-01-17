@@ -9,6 +9,8 @@ import com.amazonaws.services.s3.model.S3ObjectSummary;
 import org.springframework.http.HttpStatus;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
@@ -85,10 +87,13 @@ public class DriveUtil {
 
     private static LocalDateTime parseUploadedAt(String uploadedAtStr) {
         if (uploadedAtStr == null || uploadedAtStr.isBlank()) {
-            return LocalDateTime.now();
+            return LocalDateTime.now(ZoneId.of("Asia/Seoul")); // KST 현재 시간
         }
 
-        return LocalDateTime.parse(uploadedAtStr, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+        ZonedDateTime utcTime = ZonedDateTime.parse(uploadedAtStr, DateTimeFormatter.ISO_DATE_TIME);
+        ZonedDateTime kstTime = utcTime.withZoneSameInstant(ZoneId.of("Asia/Seoul"));
+
+        return kstTime.toLocalDateTime();
     }
 
     private static String formatFileSize(long sizeInBytes) {
