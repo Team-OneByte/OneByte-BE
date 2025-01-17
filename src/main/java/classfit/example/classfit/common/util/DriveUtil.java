@@ -84,9 +84,11 @@ public class DriveUtil {
     }
 
     private static LocalDateTime parseUploadedAt(String uploadedAtStr) {
-        return (uploadedAtStr == null || uploadedAtStr.isBlank())
-            ? LocalDateTime.now()
-            : LocalDateTime.parse(uploadedAtStr, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+        if (uploadedAtStr == null || uploadedAtStr.isBlank()) {
+            return LocalDateTime.now();
+        }
+
+        return LocalDateTime.parse(uploadedAtStr, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
     }
 
     private static String formatFileSize(long sizeInBytes) {
