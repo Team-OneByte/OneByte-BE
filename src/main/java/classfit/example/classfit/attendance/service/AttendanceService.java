@@ -5,6 +5,7 @@ import classfit.example.classfit.attendance.dto.response.StudentAttendanceRespon
 import classfit.example.classfit.classStudent.domain.ClassStudent;
 import classfit.example.classfit.classStudent.repository.ClassStudentRepository;
 import classfit.example.classfit.common.util.DateRangeUtil;
+import classfit.example.classfit.member.domain.Member;
 import classfit.example.classfit.student.domain.Student;
 import classfit.example.classfit.student.repository.StudentRepository;
 import lombok.RequiredArgsConstructor;
@@ -28,14 +29,17 @@ public class AttendanceService {
     private final StudentRepository studentRepository;
     private final ClassStudentRepository classStudentRepository;
 
-    public Page<Student> getAllStudents(int page) {
+    public Page<Student> getAllStudents(int page, Member loggedInMember) {
+        Long academyId = loggedInMember.getAcademy().getId();
         Pageable pageable = PageRequest.of(page, 50);
-        return studentRepository.findAll(pageable);
+        return studentRepository.findAllByAcademyId(academyId, pageable);
     }
 
-    public Page<ClassStudent> getClassStudentsByMainClassAndSubClass(Long mainClassId, Long subClassId, int page) {
+    public Page<ClassStudent> getClassStudentsByMainClassAndSubClass(Long mainClassId, Long subClassId, int page, Member loggedInMember) {
+        Long academyId = loggedInMember.getAcademy().getId();
         Pageable pageable = PageRequest.of(page, 50);
-        return classStudentRepository.findBySubClass_MainClass_IdAndSubClass_Id(mainClassId, subClassId, pageable);
+        return classStudentRepository.findAllByMainClassAndSubClass(
+            mainClassId, subClassId, academyId, pageable);
     }
 
     public List<StudentAttendanceResponse> getStudentAttendance(List<?> students, List<LocalDate> weekRange) {
