@@ -83,16 +83,7 @@ public class ScoreReportService {
         for (ClassStudent classStudent : studentsInSubClass) {
             Student student = classStudent.getStudent();
 
-            ScoreReport report = ScoreReport.builder()
-                    .mainClass(mainClass)
-                    .subClass(subClass)
-                    .includeAverage(request.includeAverage())
-                    .student(student)
-                    .reportName(request.reportName())
-                    .overallOpinion(request.overallOpinion())
-                    .startDate(request.startDate())
-                    .endDate(request.endDate())
-                    .build();
+            ScoreReport report = request.toEntity(subClass, mainClass, student, member);
             scoreReportRepository.save(report);
 
             allStudents.add(new StudentList(report.getId(), student.getId(), student.getName()));
@@ -126,7 +117,7 @@ public class ScoreReportService {
             Long subClassId) {
         validateAcademy(member, member.getAcademy().getId());
         List<ReportExam> reports = scoreReportRepository.findExamsByCreatedAtBetween(startDate,
-                endDate, mainClassId, subClassId);
+                endDate, mainClassId, subClassId,member.getAcademy().getId());
         return reports.stream()
                 .map(report -> new ReportExam(
                         report.examId(),
@@ -151,7 +142,7 @@ public class ScoreReportService {
                         () -> new ClassfitException("서브 클래스를 찾을 수 없어요.", HttpStatus.NOT_FOUND));
         validateAcademy(member, mainClass.getAcademy().getId());
         List<ScoreReport> studentReports = scoreReportRepository.findAllReportsByMainClassAndSubClass(
-                mainClassId, subClassId);
+                mainClassId, subClassId,member.getAcademy().getId());
 
         return studentReports.stream()
                 .map(report -> new FindReportResponse(
@@ -167,13 +158,12 @@ public class ScoreReportService {
 
     @Transactional(readOnly = true)
     public List<FindAllReportResponse> findAllReport(@AuthMember Member member) {
-
         Long academyId = member.getAcademy().getId();
 
         Academy academy = academyRepository.findById(academyId)
                 .orElseThrow(() -> new ClassfitException("학원을 찾을 수 없어요.", HttpStatus.NOT_FOUND));
 
-        List<ScoreReport> scoreReports = scoreReportRepository.findAllByAcademy(academy);
+        List<ScoreReport> scoreReports = scoreReportRepository.findAllByAcademy(academyId);
 
         return scoreReports.stream()
                 .map(report -> new FindAllReportResponse(
@@ -181,11 +171,12 @@ public class ScoreReportService {
                         report.getStudent().getId(),
                         report.getStudent().getName(),
                         report.getReportName(),
-                        report.getMainClass().getAcademy().getMembers().getFirst().getName(),
+                        report.getReportCreatedBy(),
                         report.getCreatedAt().toLocalDate()
                 ))
                 .collect(Collectors.toList());
     }
+
 
 
     @Transactional
