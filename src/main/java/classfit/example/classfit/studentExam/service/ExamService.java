@@ -201,14 +201,26 @@ public class ExamService {
     }
 
     @Transactional
-    public UpdateExamResponse updateExam(@AuthMember Member findMember, Long examId,
-            UpdateExamRequest request) {
+    public UpdateExamResponse updateExam(@AuthMember Member findMember, Long examId, UpdateExamRequest request) {
         Exam findExam = examRepository.findById(examId).orElseThrow(
                 () -> new ClassfitException("해당 시험지를 찾을 수 없어요.", HttpStatus.NOT_FOUND));
         validateAcademy(findMember, findExam.getMainClass().getAcademy().getId());
-        List<String> examRangeList = request.examRange();
 
-        findExam.updateExam(request.examDate(), request.standard(), request.highestScore(),
+        Integer newHighestScore = request.highestScore();
+
+        List<StudentExamScore> studentExamScores = studentExamScoreRepository.findAllByExam(findExam);
+
+        if (newHighestScore != null && newHighestScore > 0) {
+            for (StudentExamScore studentExamScore : studentExamScores) {
+                if (studentExamScore.getScore() > newHighestScore) {
+                    studentExamScore.updateScore(0);
+                    studentExamScoreRepository.save(studentExamScore);
+                }
+            }
+        }
+
+        List<String> examRangeList = request.examRange();
+        findExam.updateExam(request.examDate(), request.standard(), newHighestScore,
                 request.examPeriod(), request.examName(), examRangeList);
         examRepository.save(findExam);
 
@@ -217,6 +229,7 @@ public class ExamService {
                 findExam.getStandard(), findExam.getHighestScore(), findExam.getExamPeriod(),
                 findExam.getExamName(), examRangeList);
     }
+
 
 
     @Transactional
