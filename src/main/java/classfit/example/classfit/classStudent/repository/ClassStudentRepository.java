@@ -27,6 +27,10 @@ public interface ClassStudentRepository extends JpaRepository<ClassStudent, Long
         @Param("academyId") Long academyId,
         Pageable pageable);
 
+    @Query("SELECT cs FROM ClassStudent cs " +
+        "WHERE cs.subClass.mainClass.academy.id = :academyId")
+    List<ClassStudent> findByAcademyId(Long academyId);
+
     @Modifying
     @Query("DELETE FROM ClassStudent cs WHERE cs.student.id = :studentId")
     void deleteAllByStudentId(@Param("studentId") Long studentId);
