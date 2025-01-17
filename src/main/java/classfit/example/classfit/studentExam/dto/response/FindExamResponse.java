@@ -17,7 +17,7 @@ public record FindExamResponse(
         String mainClassName,
         String subClassName,
         String examName,
-        @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate createdAt
+        @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate examDate
 ) {
 
     public static FindExamResponse from(Exam exam, Member member) {
@@ -30,11 +30,8 @@ public record FindExamResponse(
                 exam.getMainClass().getMainClassName(),
                 exam.getSubClass().getSubClassName(),
                 exam.getExamName(),
-                convertToLocalDate(exam.getCreatedAt())
+                exam.getExamDate()
         );
     }
 
-    private static LocalDate convertToLocalDate(LocalDateTime dateTime) {
-        return dateTime.toLocalDate();
-    }
 }

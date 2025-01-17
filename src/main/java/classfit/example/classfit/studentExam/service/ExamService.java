@@ -82,6 +82,7 @@ public class ExamService {
 
         Exam savedExam = examRepository.save(newExam);
 
+
         int defaultScore;
         if (request.standard() == Standard.PF) {
             defaultScore = -3; // PF : -3(P) / -4(F)
