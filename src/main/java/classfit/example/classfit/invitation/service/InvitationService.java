@@ -37,10 +37,21 @@ public class InvitationService {
 
     @Transactional
     public void inviteStaffByEmail(Member member, InvitationRequest request) {
-        emailService.sendEmail(request.email(), EmailPurpose.INVITATION);
-        Invitation invitation = request.toEntity(member.getAcademy());
 
-        invitationRepository.save(invitation);
+        boolean exists = invitationRepository.existsByAcademyIdAndEmail(
+            member.getAcademy().getId(),
+            request.email()
+        );
+        System.out.println("Academy ID: " + member.getAcademy().getId());
+        System.out.println("Request Email: " + request.email());
+        System.out.println(exists + " exists");
+
+        if (!exists) {
+            Invitation invitation = request.toEntity(member.getAcademy());
+            invitationRepository.save(invitation);
+        }
+
+        emailService.sendEmail(request.email(), EmailPurpose.INVITATION);
     }
 
     @Transactional(readOnly = true)

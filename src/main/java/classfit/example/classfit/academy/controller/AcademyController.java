@@ -4,9 +4,7 @@ import classfit.example.classfit.academy.dto.request.AcademyCreateRequest;
 import classfit.example.classfit.academy.dto.request.AcademyJoinRequest;
 import classfit.example.classfit.academy.dto.response.AcademyResponse;
 import classfit.example.classfit.academy.service.AcademyService;
-import classfit.example.classfit.auth.annotation.AuthMember;
 import classfit.example.classfit.common.ApiResponse;
-import classfit.example.classfit.member.domain.Member;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Nullable;
@@ -37,8 +35,8 @@ public class AcademyController {
 
     @PostMapping("/invite")
     @Operation(summary = "학원 가입", description = "학원 코드로 등록된 학원에 가입하는 API 입니다.")
-    public ApiResponse<Nullable> joinAcademy(@AuthMember Member member, @RequestBody AcademyJoinRequest request) {
-        academyService.joinAcademy(member, request);
+    public ApiResponse<Nullable> joinAcademy(@RequestBody AcademyJoinRequest request) {
+        academyService.joinAcademy(request);
         return ApiResponse.success(null, 200, "학원 가입을 성공했습니다.");
     }
 }
