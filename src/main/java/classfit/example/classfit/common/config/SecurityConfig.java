@@ -68,7 +68,7 @@ public class SecurityConfig {
             .authorizeHttpRequests((auth) -> auth
                 .requestMatchers("/", "/swagger-ui/**", "/v3/api-docs/**").permitAll()  // 스웨거 관련 엔드포인트 허용
                 .requestMatchers("/api/v1/signin", "/api/v1/signup", "/api/v1/reissue", "/api/v1/mail/send", "/api/v1/mail/verify").permitAll()
-                .requestMatchers("/api/v1/academy/code", "/api/v1/academy/register", "/api/v1/academy/create").permitAll()
+                .requestMatchers("/api/v1/academy/code", "/api/v1/academy/register", "/api/v1/academy/create", "/api/v1/academy/invite").permitAll()
                 .requestMatchers("/api/v1/**").hasAnyRole("MEMBER", "ADMIN")
                 .requestMatchers("/admin/**").hasRole("ADMIN")
                 .anyRequest().authenticated());
