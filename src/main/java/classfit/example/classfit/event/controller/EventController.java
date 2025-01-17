@@ -55,11 +55,12 @@ public class EventController {
     @GetMapping("/monthly")
     @Operation(summary = "월별 일정 조회", description = "월별 일정들을 조회하는 api 입니다.")
     public ApiResponse<List<EventMonthlyResponse>> getMonthlyEvents(
+        @AuthMember Member member,
         @RequestParam CalendarType calendarType,
         @RequestParam int year,
         @RequestParam int month
     ) {
-        List<EventMonthlyResponse> events = eventService.getMonthlyEventsByCalendarType(calendarType, year, month);
+        List<EventMonthlyResponse> events = eventService.getMonthlyEventsByCalendarType(calendarType, year, month, member);
         return ApiResponse.success(events, 200, "SUCCESS");
     }
 
