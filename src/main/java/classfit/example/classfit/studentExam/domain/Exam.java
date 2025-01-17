@@ -35,6 +35,9 @@ public class Exam extends BaseEntity {
     @Column(name = "exam_id")
     private Long id;
 
+    @Column(name = "created_by")
+    private Long createdBy;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sub_class_id", nullable = false)
     private SubClass subClass;
@@ -112,6 +115,6 @@ public class Exam extends BaseEntity {
     public void updateAverage(Integer newAverage) {
         this.average = newAverage.doubleValue();
     }
-
+    public void updateCreatedBy(Long createdBy) {this.createdBy = createdBy;}
 
 }

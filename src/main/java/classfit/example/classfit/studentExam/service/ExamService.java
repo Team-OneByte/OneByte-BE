@@ -73,6 +73,7 @@ public class ExamService {
         validateAcademy(findMember, findMainClass.getAcademy().getId());
 
         Exam newExam = request.toEntity(findSubClass, findMainClass);
+        newExam.updateCreatedBy(findMember.getId());
         if (request.standard() == Standard.PF) {
             newExam.updateHighestScore(-1);
 
@@ -81,6 +82,7 @@ public class ExamService {
         }
 
         Exam savedExam = examRepository.save(newExam);
+
 
         int defaultScore;
         if (request.standard() == Standard.PF) {
@@ -91,7 +93,7 @@ public class ExamService {
             defaultScore = 0; // 기본값은 0
         }
 
-        List<ClassStudent> classStudents = classStudentRepository.findBySubClass(findSubClass);
+        List<ClassStudent> classStudents = classStudentRepository.findByAcademyIdAndSubClass(findMember.getAcademy().getId(),findSubClass);
         List<StudentExamScore> studentExamScores = classStudents.stream().map(classStudent -> {
             Student student = classStudent.getStudent();
             return new StudentExamScore(student, savedExam, defaultScore, null, null); // 초기 점수는 0
@@ -107,7 +109,7 @@ public class ExamService {
                 .orElseThrow(() -> new ClassfitException("시험지를 찾을 수 없어요.", HttpStatus.NOT_FOUND));
         validateAcademy(findMember, findMember.getAcademy().getId());
 
-        List<StudentExamScore> studentExamScores = studentExamScoreRepository.findByExam(findExam);
+        List<StudentExamScore> studentExamScores = studentExamScoreRepository.findByAcademyIdAndExam(findMember.getAcademy().getId(),findExam);
 
         return studentExamScores.stream().map(studentExamScore -> {
             Student student = studentExamScore.getStudent();
@@ -132,15 +134,15 @@ public class ExamService {
 
         if (request.memberName() == null && request.examName() == null
                 && request.mainClassId() == null && request.subClassId() == null) {
-            exams = examRepository.findAll();
+            exams = examRepository.findAllByAcademyId(findMember.getAcademy().getId());
         } else if (request.mainClassId() != null && request.subClassId() != null) {
-            exams = examRepository.findByMainClassIdAndSubClassId(request.mainClassId(),
+            exams = examRepository.findByAcademyIdAndMainClassIdAndSubClassId(findMember.getAcademy().getId(),request.mainClassId(),
                     request.subClassId());
         } else if (request.memberName() != null && request.examName() == null) {
-            exams = examRepository.findByAcademyAndMemberName(findMember.getAcademy().getName(),
+            exams = examRepository.findByAcademyIdAndMemberName(findMember.getAcademy().getId(),
                     request.memberName());
         } else if (request.memberName() == null && request.examName() != null) {
-            exams = examRepository.findByExamName(request.examName());
+            exams = examRepository.findByAcademyIdAndExamName(findMember.getAcademy().getId(),request.examName());
         } else {
             throw new ClassfitException("검색을 할 수 없습니다.", HttpStatus.BAD_REQUEST);
         }
@@ -163,7 +165,7 @@ public class ExamService {
 
         SubClass subClass = findExam.getSubClass();
         List<StudentExamScore> studentScores = findExam.getStudentExamScores();
-        List<ClassStudent> classStudents = classStudentRepository.findBySubClass(subClass);
+        List<ClassStudent> classStudents = classStudentRepository.findByAcademyIdAndSubClass(findMember.getAcademy().getId(),subClass);
         Integer perfectScore = studentScores.stream().mapToInt(StudentExamScore::getScore).max()
                 .orElse(findExam.getHighestScore());
         Integer lowestScore = studentScores.stream().mapToInt(StudentExamScore::getScore).min()
@@ -183,7 +185,7 @@ public class ExamService {
                             .filter(scoreObj -> scoreObj.getStudent().getId().equals(student.getId()))
                             .map(StudentExamScore::getScore).findFirst().orElse(0);
 
-                    String evaluationDetail = studentExamScoreRepository.findByExamAndStudentId(findExam,
+                    String evaluationDetail = studentExamScoreRepository.findByExamAndStudentIdAndAcademyId(findMember.getAcademy().getId(),findExam,
                                     student.getId())
                             .map(StudentExamScore::getEvaluationDetail)
                             .orElse(null);
@@ -223,7 +225,7 @@ public class ExamService {
 
         Integer newHighestScore = request.highestScore();
 
-        List<StudentExamScore> studentExamScores = studentExamScoreRepository.findAllByExam(
+        List<StudentExamScore> studentExamScores = studentExamScoreRepository.findAllByAcademyIdAndExam(findMember.getAcademy().getId(),
                 findExam);
 
         if (newHighestScore != null && newHighestScore > 0) {
@@ -263,7 +265,7 @@ public class ExamService {
         validateAcademy(findMember, findExam.getMainClass().getAcademy().getId());
 
         for (UpdateStudentScoreRequest request : requests) {
-            StudentExamScore studentExamScore = studentExamScoreRepository.findByExamAndStudentId(
+            StudentExamScore studentExamScore = studentExamScoreRepository.findByExamAndStudentIdAndAcademyId(findMember.getAcademy().getId(),
                     findExam, request.studentId()).orElseGet(() -> {
                 Student student = studentRepository.findById(request.studentId()).orElseThrow(
                         () -> new ClassfitException("해당 학생을 찾을 수 없어요.", HttpStatus.NOT_FOUND));
@@ -293,16 +295,16 @@ public class ExamService {
         studentExamScoreRepository.flush();
         Standard standard = findExam.getStandard();
 
-        List<ClassStudent> classStudents = classStudentRepository.findBySubClass(
+        List<ClassStudent> classStudents = classStudentRepository.findByAcademyIdAndSubClass(findMember.getAcademy().getId(),
                 findExam.getSubClass());
 
         List<ExamStudent> examStudents = classStudents.stream().map(classStudent -> {
             Student student = classStudent.getStudent();
-            Integer score = studentExamScoreRepository.findByExamAndStudentId(findExam,
+            Integer score = studentExamScoreRepository.findByExamAndStudentIdAndAcademyId(findMember.getAcademy().getId(),findExam,
                             student.getId())
                     .map(StudentExamScore::getScore)
                     .orElse(0);
-            String evaluationDetail = studentExamScoreRepository.findByExamAndStudentId(findExam,
+            String evaluationDetail = studentExamScoreRepository.findByExamAndStudentIdAndAcademyId(findMember.getAcademy().getId(),findExam,
                             student.getId())
                     .map(StudentExamScore::getEvaluationDetail)
                     .orElse(null);

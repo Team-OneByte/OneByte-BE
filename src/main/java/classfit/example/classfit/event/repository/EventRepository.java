@@ -17,11 +17,23 @@ public interface EventRepository extends JpaRepository<Event, Long> {
         "WHERE e.memberCalendar.type = :calendarType " +
         "AND e.memberCalendar.member = :member " +
         "AND e.startDate BETWEEN :startOfMonth AND :endOfMonth")
-    List<Event> findByCalendarTypeAndStartDateBetween(
+    List<Event> findByPersonalCalendarTypeAndStartDateBetween(
         @Param("calendarType") CalendarType calendarType,
         @Param("startOfMonth") LocalDateTime startOfMonth,
         @Param("endOfMonth") LocalDateTime endOfMonth,
         @Param("member")Member member
     );
+
+    @Query("SELECT e FROM Event e " +
+        "WHERE e.memberCalendar.type = :calendarType " +
+        "AND e.memberCalendar.member.academy.id = :academyId " +
+        "AND e.startDate BETWEEN :startOfMonth AND :endOfMonth")
+    List<Event> findBySharedCalendarAndStartDateBetween(
+        @Param("calendarType") CalendarType calendarType,
+        @Param("startOfMonth") LocalDateTime startOfMonth,
+        @Param("endOfMonth") LocalDateTime endOfMonth,
+        @Param("academyId") Long academyId
+    );
+
     Optional<Event> findById(long eventId);
 }
