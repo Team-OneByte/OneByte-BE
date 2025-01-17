@@ -53,10 +53,12 @@ public class ExamService {
 
 
     private void validateAcademy(Member member, Long academyId) {
-        //TODO academyId 끼리 비교!
         Academy academy = academyRepository.findById(academyId)
                 .orElseThrow(() -> new ClassfitException("학원을 찾을 수 없어요.", HttpStatus.NOT_FOUND));
         if (!Objects.equals(member.getAcademy().getId(), academyId)) {
+            throw new ClassfitException("해당 학원에 접근할 권한이 없습니다.", HttpStatus.FORBIDDEN);
+        }
+        if (!Objects.equals(academy.getId(), academyId)) {
             throw new ClassfitException("해당 학원에 접근할 권한이 없습니다.", HttpStatus.FORBIDDEN);
         }
     }

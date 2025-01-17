@@ -340,6 +340,9 @@ public class ScoreReportService {
         if (!Objects.equals(member.getAcademy().getId(), academyId)) {
             throw new ClassfitException("해당 학원에 접근할 권한이 없습니다.", HttpStatus.FORBIDDEN);
         }
+        if (!Objects.equals(academy.getId(), academyId)) {
+            throw new ClassfitException("해당 학원에 접근할 권한이 없습니다.", HttpStatus.FORBIDDEN);
+        }
     }
 
 }
