@@ -15,6 +15,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDate;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,6 +24,8 @@ import lombok.NoArgsConstructor;
 @Table(name = "score_report")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
+@Builder
+@AllArgsConstructor
 public class ScoreReport extends BaseEntity {
 
     @Id
@@ -61,21 +64,11 @@ public class ScoreReport extends BaseEntity {
     @Column(name = "include_average")
     private Boolean includeAverage;
 
+    @Column(name = "report_created_by")
+    private String reportCreatedBy;
 
 
-    @Builder
-    public ScoreReport(SubClass subClass, MainClass mainClass, String reportName, Student student,
-            String overallOpinion, LocalDate startDate,
-            LocalDate endDate,boolean includeAverage) {
-        this.subClass = subClass;
-        this.mainClass = mainClass;
-        this.reportName = reportName;
-        this.student = student;
-        this.overallOpinion = overallOpinion;
-        this.startDate = startDate;
-        this.endDate = endDate;
-        this.includeAverage = includeAverage;
-    }
+
 
     public void updateStudentOpinion(String studentOpinion) {
         this.studentOpinion = studentOpinion;
