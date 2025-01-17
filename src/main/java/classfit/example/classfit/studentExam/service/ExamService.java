@@ -128,23 +128,25 @@ public class ExamService {
 
         validateAcademy(findMember, findMember.getAcademy().getId());
 
-        List<Exam> exams;
+        List<Exam> exams = null;
+
         if (request.memberName() == null && request.examName() == null
                 && request.mainClassId() == null && request.subClassId() == null) {
             exams = examRepository.findAll();
+        } else if (request.mainClassId() != null && request.subClassId() != null) {
+            exams = examRepository.findByMainClassIdAndSubClassId(request.mainClassId(),
+                    request.subClassId());
+        } else if (request.memberName() != null && request.examName() == null) {
+            exams = examRepository.findByAcademyAndMemberName(findMember.getAcademy().getName(),
+                    request.memberName());
+        } else if (request.memberName() == null && request.examName() != null) {
+            exams = examRepository.findByExamName(request.examName());
+        } else {
+            throw new ClassfitException("검색을 할 수 없습니다.", HttpStatus.BAD_REQUEST);
         }
 
-        if (request.mainClassId() != null && request.subClassId() != null) {
-            if (request.memberName() != null && request.examName() == null) {
-                exams = examRepository.findByAcademyAndMemberName(findMember.getAcademy().getName(),
-                        request.memberName());
-            } else if (request.memberName() == null && request.examName() != null) {
-                exams = examRepository.findByExamName(request.examName());
-            } else {
-                throw new ClassfitException("검색을 할 수 없습니다.", HttpStatus.BAD_REQUEST);
-            }
-        } else {
-            throw new ClassfitException("mainClassId와 subClassId는 필수입니다.", HttpStatus.BAD_REQUEST);
+        if (exams == null || exams.isEmpty()) {
+            throw new ClassfitException("해당하는 시험이 없습니다.", HttpStatus.NOT_FOUND);
         }
 
         return exams.stream()
@@ -166,7 +168,8 @@ public class ExamService {
                 .orElse(findExam.getHighestScore());
         Integer lowestScore = studentScores.stream().mapToInt(StudentExamScore::getScore).min()
                 .orElse(0);
-        Double average = (Double) studentScores.stream().mapToInt(StudentExamScore::getScore).average()
+        Double average = (Double) studentScores.stream().mapToInt(StudentExamScore::getScore)
+                .average()
                 .orElse((perfectScore + lowestScore) / 2.0);
         String formattedAverage = String.format("%.1f", average);
         findExam.updateScores(lowestScore, perfectScore, average);
@@ -205,7 +208,8 @@ public class ExamService {
         List<String> examRangeList = Arrays.asList(findExam.getExamRange().split(","));
         return new ShowExamDetailResponse(findExam.getExamPeriod(), findExam.getExamName(),
                 findExam.getExamDate(), findExam.getMainClass().getMainClassName(),
-                findExam.getSubClass().getSubClassName(), lowestScore, perfectScore, formattedAverage,
+                findExam.getSubClass().getSubClassName(), lowestScore, perfectScore,
+                formattedAverage,
                 findExam.getHighestScore(),
                 examRangeList, findExam.getStandard(), examClassStudents);
     }
