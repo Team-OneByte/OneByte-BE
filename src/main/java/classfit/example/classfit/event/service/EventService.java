@@ -46,9 +46,10 @@ public class EventService {
     public List<EventMonthlyResponse> getMonthlyEventsByCalendarType(
         CalendarType calendarType,
         int year,
-        int month
+        int month,
+        Member member
     ) {
-        return eventGetService.getMonthlyEventsByCalendarType(calendarType, year, month);
+        return eventGetService.getMonthlyEventsByCalendarType(calendarType, year, month, member);
     }
 
     @Transactional
