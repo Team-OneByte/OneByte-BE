@@ -9,6 +9,6 @@ import lombok.Builder;
 public record CreateReportResponse( boolean includeAverage ,Long mainClassId, Long subClassId,
                                    List<StudentList> studentList,
                                    String reportName, LocalDate startDate, LocalDate endDate,
-                                   List<Long> examIdList, String overallOpinion) {
+                                   List<Long> examIdList, String overallOpinion,String reportCreatedBy) {
 
 }
