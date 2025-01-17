@@ -73,13 +73,28 @@ public class DriveGetService {
 
         Map<String, String> tagMap = getTagsForS3Object(fileName);
 
-        return DriveUtil.getFileResponse(summary, fileName, fileUrl, tagMap);
+        return DriveUtil.getFileResponse(amazonS3, bucketName, summary, fileName, fileUrl, tagMap);
     }
 
     private Map<String, String> getTagsForS3Object(String objectKey) {
         List<Tag> tags = amazonS3.getObjectTagging(new GetObjectTaggingRequest(bucketName, objectKey)).getTagSet();
         return tags.stream()
             .collect(Collectors.toMap(Tag::getKey, Tag::getValue));
+    }
+
+    private long calculateFolderSize(String folderPath) {
+        long totalSize = 0;
+
+        ListObjectsV2Request listObjectsRequest = new ListObjectsV2Request()
+            .withBucketName(bucketName)
+            .withPrefix(folderPath)
+            .withDelimiter("/");
+
+        ListObjectsV2Result listObjectsResponse = amazonS3.listObjectsV2(listObjectsRequest);
+        for (S3ObjectSummary summary : listObjectsResponse.getObjectSummaries()) {
+            totalSize += summary.getSize();
+        }
+        return totalSize;
     }
 
     private ListObjectsV2Request createListObjectsRequest(DriveType driveType, Member member, String folderPath) {
