@@ -7,6 +7,7 @@ import classfit.example.classfit.attendance.dto.response.StatisticsMemberRespons
 import classfit.example.classfit.attendance.repository.AttendanceRepository;
 import classfit.example.classfit.classStudent.domain.ClassStudent;
 import classfit.example.classfit.classStudent.repository.ClassStudentRepository;
+import classfit.example.classfit.member.domain.Member;
 import classfit.example.classfit.student.domain.Student;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -26,8 +27,13 @@ public class AttendanceStatisticsService {
     private final AttendanceRepository attendanceRepository;
     private final ClassStudentRepository classStudentRepository;
 
-    public List<StatisticsDateResponse> getAttendanceStatisticsByDate(LocalDate startDate, LocalDate endDate, Long subClassId) {
-        List<Attendance> attendances = attendanceRepository.findByDateBetweenAndSubClassId(startDate, endDate, subClassId);
+    public List<StatisticsDateResponse> getAttendanceStatisticsByDate(
+        LocalDate startDate,
+        LocalDate endDate,
+        Long subClassId,
+        Member member) {
+        Long academyId = member.getAcademy().getId();
+        List<Attendance> attendances = attendanceRepository.findByDateBetweenAndSubClassIdAndAcademyId(startDate, endDate, subClassId, academyId);
 
         return attendances.stream()
             .collect(Collectors.groupingBy(Attendance::getDate)) // 날짜별로 그룹화
@@ -38,8 +44,9 @@ public class AttendanceStatisticsService {
             .collect(Collectors.toList());
     }
 
-    public List<String> getAttendanceDetailsByDateAndStatus(LocalDate date, Long subClassId, AttendanceStatus status) {
-        List<Attendance> attendances = attendanceRepository.findByDateAndSubClassIdAndStatus(date, subClassId, status);
+    public List<String> getAttendanceDetailsByDateAndStatus(LocalDate date, Long subClassId, AttendanceStatus status, Member member) {
+        Long academyId = member.getAcademy().getId();
+        List<Attendance> attendances = attendanceRepository.findByDateAndSubClassIdAndStatusAndAcademyId(date, subClassId, status, academyId);
 
         return attendances.stream()
             .map(attendance -> attendance.getStudent().getName())
@@ -58,8 +65,12 @@ public class AttendanceStatisticsService {
         );
     }
 
-    public List<StatisticsMemberResponse> getAttendanceStatisticsByMember(LocalDate startDate, LocalDate endDate) {
-        List<ClassStudent> allClassStudents = classStudentRepository.findAll();
+    public List<StatisticsMemberResponse> getAttendanceStatisticsByMember(
+        LocalDate startDate,
+        LocalDate endDate,
+        Member member) {
+        Long academyId = member.getAcademy().getId();
+        List<ClassStudent> allClassStudents = classStudentRepository.findByAcademyId(academyId);
 
         return allClassStudents.stream()
             .map(classStudent -> createStatisticsMemberResponse(classStudent, startDate, endDate))
@@ -67,15 +78,22 @@ public class AttendanceStatisticsService {
             .collect(Collectors.toList());
     }
 
-    public List<String> getAttendanceDetailsByMemberAndStatus(Long studentId, int month, AttendanceStatus status) {
-        List<Attendance> studentAttendances = attendanceRepository.findByStudentIdAndMonthAndStatus(studentId, month, status);
+    public List<String> getAttendanceDetailsByMemberAndStatus(
+        Long studentId, int month,
+        AttendanceStatus status,
+        Member member) {
+        Long academyId = member.getAcademy().getId();
+        List<Attendance> studentAttendances = attendanceRepository.findByAcademyIdAndStudentIdAndMonthAndStatus(studentId, month, status, academyId);
 
         return studentAttendances.stream()
             .map(attendance -> createFormattedDate(attendance.getDate()))
             .collect(Collectors.toList());
     }
 
-    private StatisticsMemberResponse createStatisticsMemberResponse(ClassStudent classStudent, LocalDate startDate, LocalDate endDate) {
+    private StatisticsMemberResponse createStatisticsMemberResponse(
+        ClassStudent classStudent,
+        LocalDate startDate,
+        LocalDate endDate) {
         Student student = classStudent.getStudent();
         List<Attendance> studentAttendances = attendanceRepository.findByStudentIdAndDateBetween(student.getId(), startDate, endDate);
 
@@ -93,7 +111,7 @@ public class AttendanceStatisticsService {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd");
         String formattedDate = date.format(formatter);
         DayOfWeek dayOfWeek = date.getDayOfWeek();
-        String dayOfWeekName = dayOfWeek.getDisplayName(java.time.format.TextStyle.SHORT, java.util.Locale.KOREAN); // "수"
+        String dayOfWeekName = dayOfWeek.getDisplayName(java.time.format.TextStyle.SHORT, java.util.Locale.KOREAN);
 
         return formattedDate + " (" + dayOfWeekName + ")";
     }

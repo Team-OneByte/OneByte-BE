@@ -5,36 +5,37 @@ import classfit.example.classfit.studentExam.domain.ExamPeriod;
 import classfit.example.classfit.studentExam.domain.Standard;
 import classfit.example.classfit.member.domain.Member;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import org.springframework.format.annotation.DateTimeFormat;
 
 public record FindExamResponse(
         Long examId,
         ExamPeriod examPeriod,
         Long memberId,
-        String memberName,
         Standard standard,
         String mainClassName,
         String subClassName,
         String examName,
-        @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate createdAt
-) {
+        @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate examDate,
+        String createdByName
+        ) {
 
-    public static FindExamResponse from(Exam exam, Member member) {
+
+    public static FindExamResponse from(Exam exam, Member findMember) {
+        Member createdByMember = findMember.getAcademy().getMembers().stream()
+                .filter(member -> member.getId().equals(exam.getCreatedBy()))
+                .findFirst()
+                .orElse(null);
+
         return new FindExamResponse(
                 exam.getId(),
                 exam.getExamPeriod(),
-                member.getId(),
-                member.getName(),
+                findMember.getId(),
                 exam.getStandard(),
                 exam.getMainClass().getMainClassName(),
                 exam.getSubClass().getSubClassName(),
                 exam.getExamName(),
-                convertToLocalDate(exam.getCreatedAt())
+                exam.getExamDate(),
+                createdByMember != null ? createdByMember.getName() : "선생님"
         );
-    }
-
-    private static LocalDate convertToLocalDate(LocalDateTime dateTime) {
-        return dateTime.toLocalDate();
     }
 }

@@ -28,6 +28,10 @@ public class AcademyService {
     @Transactional
     public AcademyResponse createAcademy(AcademyCreateRequest request) {
 
+        if (academyRepository.existsByCode(request.code())) {
+            throw new ClassfitException("이미 등록된 코드가 존재합니다. 다시 시도해 주세요.", HttpStatus.NOT_IMPLEMENTED);
+        }
+
         if (academyRepository.existsByName(request.name())) {
             throw new ClassfitException("이미 등록된 학원명이 존재합니다. 다시 시도해 주세요.", HttpStatus.NOT_IMPLEMENTED);
         }
@@ -45,13 +49,16 @@ public class AcademyService {
     }
 
     @Transactional
-    public void joinAcademy(Member member, AcademyJoinRequest request) {
+    public void joinAcademy(AcademyJoinRequest request) {
 
         Academy academy = academyRepository.findByCode(request.code())
             .orElseThrow(() -> new ClassfitException("유효하지 않은 코드입니다.", HttpStatus.NOT_FOUND));
 
         Invitation invitation = invitationRepository.findByAcademyIdAndEmail(academy.getId(), request.email())
             .orElseThrow(() -> new ClassfitException("학원으로부터 초대받지 않은 계정입니다.", HttpStatus.NOT_FOUND));
+
+        Member member = memberRepository.findByEmail(request.email())
+            .orElseThrow(() -> new ClassfitException("존재하지 않는 계정입니다.", HttpStatus.NOT_FOUND));
 
         invitation.updateStatus(InvitationStatus.COMPLETED);
         member.updateRole("MEMBER");

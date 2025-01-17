@@ -16,9 +16,20 @@ import java.util.List;
 
 @Repository
 public interface ClassStudentRepository extends JpaRepository<ClassStudent, Long> {
+    @Query("SELECT cs FROM ClassStudent cs " +
+        "JOIN FETCH cs.student s " +
+        "JOIN cs.subClass sc " +
+        "JOIN sc.mainClass mc " +
+        "WHERE mc.id = :mainClassId AND sc.id = :subClassId AND mc.academy.id = :academyId")
+    Page<ClassStudent> findAllByMainClassAndSubClass(
+        @Param("mainClassId") Long mainClassId,
+        @Param("subClassId") Long subClassId,
+        @Param("academyId") Long academyId,
+        Pageable pageable);
 
-    Page<ClassStudent> findBySubClass_MainClass_IdAndSubClass_Id(Long mainClassId, Long subClassId,
-                                                                 Pageable pageable);
+    @Query("SELECT cs FROM ClassStudent cs " +
+        "WHERE cs.subClass.mainClass.academy.id = :academyId")
+    List<ClassStudent> findByAcademyId(Long academyId);
 
     @Modifying
     @Query("DELETE FROM ClassStudent cs WHERE cs.student.id = :studentId")
@@ -29,7 +40,16 @@ public interface ClassStudentRepository extends JpaRepository<ClassStudent, Long
 
     List<ClassStudent> findByStudent(Student student);
 
-    List<ClassStudent> findBySubClass(SubClass subClass);
+    @Query("SELECT cs FROM ClassStudent cs " +
+            "JOIN cs.subClass sc " +
+            "JOIN sc.mainClass mc " +
+            "JOIN mc.academy a " +
+            "WHERE a.id = :academyId " +
+            "AND sc = :subClass")
+    List<ClassStudent> findByAcademyIdAndSubClass(@Param("academyId") Long academyId,
+            @Param("subClass") SubClass subClass);
+
+
 
     @Query("SELECT new classfit.example.classfit.scoreReport.dto.response.FindClassStudent(cs.student.id, cs.student.name) " +
         "FROM ClassStudent cs " +
@@ -38,5 +58,4 @@ public interface ClassStudentRepository extends JpaRepository<ClassStudent, Long
     List<FindClassStudent> findStudentIdsByMainClassIdAndSubClassId(
         @Param("mainClassId") Long mainClassId,
         @Param("subClassId") Long subClassId);
-
 }
