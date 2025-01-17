@@ -53,9 +53,10 @@ public class ExamService {
 
 
     private void validateAcademy(Member member, Long academyId) {
+        //TODO academyId 끼리 비교!
         Academy academy = academyRepository.findById(academyId)
                 .orElseThrow(() -> new ClassfitException("학원을 찾을 수 없어요.", HttpStatus.NOT_FOUND));
-        if (!Objects.equals(member.getAcademy().getId(), academyId)) { // 아카데미 id끼리 비교해야해
+        if (!Objects.equals(member.getAcademy().getId(), academyId)) {
             throw new ClassfitException("해당 학원에 접근할 권한이 없습니다.", HttpStatus.FORBIDDEN);
         }
     }
@@ -126,16 +127,22 @@ public class ExamService {
         validateAcademy(findMember, findMember.getAcademy().getId());
 
         List<Exam> exams;
-
-        if (request.memberName() == null && request.examName() == null) {
+        if (request.memberName() == null && request.examName() == null
+                && request.mainClassId() == null && request.subClassId() == null) {
             exams = examRepository.findAll();
-        } else if (request.memberName() != null && request.examName() == null) {
-            exams = examRepository.findByAcademyAndMemberName(findMember.getAcademy().getName(),
-                    request.memberName());
-        } else if (request.memberName() == null && request.examName() != null) {
-            exams = examRepository.findByExamName(request.examName());
+        }
+
+        if (request.mainClassId() != null && request.subClassId() != null) {
+            if (request.memberName() != null && request.examName() == null) {
+                exams = examRepository.findByAcademyAndMemberName(findMember.getAcademy().getName(),
+                        request.memberName());
+            } else if (request.memberName() == null && request.examName() != null) {
+                exams = examRepository.findByExamName(request.examName());
+            } else {
+                throw new ClassfitException("검색을 할 수 없습니다.", HttpStatus.BAD_REQUEST);
+            }
         } else {
-            throw new ClassfitException("검색을 할 수 없습니다.", HttpStatus.BAD_REQUEST);
+            throw new ClassfitException("mainClassId와 subClassId는 필수입니다.", HttpStatus.BAD_REQUEST);
         }
 
         return exams.stream()
@@ -201,14 +208,16 @@ public class ExamService {
     }
 
     @Transactional
-    public UpdateExamResponse updateExam(@AuthMember Member findMember, Long examId, UpdateExamRequest request) {
+    public UpdateExamResponse updateExam(@AuthMember Member findMember, Long examId,
+            UpdateExamRequest request) {
         Exam findExam = examRepository.findById(examId).orElseThrow(
                 () -> new ClassfitException("해당 시험지를 찾을 수 없어요.", HttpStatus.NOT_FOUND));
         validateAcademy(findMember, findExam.getMainClass().getAcademy().getId());
 
         Integer newHighestScore = request.highestScore();
 
-        List<StudentExamScore> studentExamScores = studentExamScoreRepository.findAllByExam(findExam);
+        List<StudentExamScore> studentExamScores = studentExamScoreRepository.findAllByExam(
+                findExam);
 
         if (newHighestScore != null && newHighestScore > 0) {
             for (StudentExamScore studentExamScore : studentExamScores) {
@@ -231,7 +240,6 @@ public class ExamService {
     }
 
 
-
     @Transactional
     public void deleteExam(@AuthMember Member findMember, Long examId) {
         Exam findExam = examRepository.findById(examId).orElseThrow(
@@ -252,7 +260,8 @@ public class ExamService {
                     findExam, request.studentId()).orElseGet(() -> {
                 Student student = studentRepository.findById(request.studentId()).orElseThrow(
                         () -> new ClassfitException("해당 학생을 찾을 수 없어요.", HttpStatus.NOT_FOUND));
-                StudentExamScore newScore = StudentExamScore.create(findExam, student, request.score());
+                StudentExamScore newScore = StudentExamScore.create(findExam, student,
+                        request.score());
                 return studentExamScoreRepository.save(newScore);
             });
 
