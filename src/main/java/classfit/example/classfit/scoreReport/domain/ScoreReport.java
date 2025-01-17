@@ -62,6 +62,7 @@ public class ScoreReport extends BaseEntity {
     private Boolean includeAverage;
 
 
+
     @Builder
     public ScoreReport(SubClass subClass, MainClass mainClass, String reportName, Student student,
             String overallOpinion, LocalDate startDate,
