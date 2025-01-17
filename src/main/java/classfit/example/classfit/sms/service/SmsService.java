@@ -25,11 +25,11 @@ public class SmsService {
     private final MemberRepository memberRepository;
 
     public SmsService(
-        @Value("${coolsms.api-key}") String apiKey,
-        @Value("${coolsms.api-secret}") String apiSecretKey,
-        @Value("${coolsms.api-base-url}") String apiBaseUrl,
-        StudentRepository studentRepository,
-        MemberRepository memberRepository
+            @Value("${coolsms.api-key}") String apiKey,
+            @Value("${coolsms.api-secret}") String apiSecretKey,
+            @Value("${coolsms.api-base-url}") String apiBaseUrl,
+            StudentRepository studentRepository,
+            MemberRepository memberRepository
     ) {
         this.messageService = new DefaultMessageService(apiKey, apiSecretKey, apiBaseUrl);
         this.studentRepository = studentRepository;
@@ -37,18 +37,19 @@ public class SmsService {
     }
 
     public MultipleDetailMessageSentResponse sendMessages(List<SendRequest> requestList,
-                                                          Long memberId) {
-        Member member = memberRepository.findById(memberId)
-            .orElseThrow(() -> new ClassfitException("회원이 존재하지 않습니다.", HttpStatus.NOT_FOUND));
+            Long memberId) {
 
-        String senderPhoneNumber = member.getPhoneNumber();
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new ClassfitException("회원이 존재하지 않습니다.", HttpStatus.NOT_FOUND));
+
+        String senderPhoneNumber = "01049259272";
 
         ArrayList<Message> messageList = new ArrayList<>();
 
         for (SendRequest request : requestList) {
             Student student = studentRepository.findById(Long.valueOf(request.studentId()))
-                .orElseThrow(
-                    () -> new ClassfitException("학생을 찾을 수 없어요.", HttpStatus.NOT_FOUND));
+                    .orElseThrow(
+                            () -> new ClassfitException("학생을 찾을 수 없어요.", HttpStatus.NOT_FOUND));
 
             Message message = new Message();
             message.setFrom(senderPhoneNumber);
@@ -69,4 +70,3 @@ public class SmsService {
         return null;
     }
 }
-
