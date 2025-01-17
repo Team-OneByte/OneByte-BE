@@ -70,7 +70,7 @@ public class Exam extends BaseEntity {
     private Integer lowestScore;
 
     @Column(name = "average")
-    private Long average;
+    private Double average;
 
 
     @OneToMany(mappedBy = "exam", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -99,7 +99,7 @@ public class Exam extends BaseEntity {
         this.examRange = String.join(",", examRange);
     }
 
-    public void updateScores(Integer lowestScore, Integer perfectScore, Long average) {
+    public void updateScores(Integer lowestScore, Integer perfectScore, Double average) {
         this.lowestScore = lowestScore;
         this.perfectScore = perfectScore;
         this.average = average;
@@ -110,7 +110,7 @@ public class Exam extends BaseEntity {
     }
 
     public void updateAverage(Integer newAverage) {
-        this.average = newAverage.longValue();
+        this.average = newAverage.doubleValue();
     }
 
 

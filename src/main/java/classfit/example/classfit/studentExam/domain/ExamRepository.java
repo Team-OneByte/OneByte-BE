@@ -24,5 +24,5 @@ public interface ExamRepository extends JpaRepository<Exam, Long> {
     @Query("SELECT e FROM Exam e WHERE e.mainClass.academy.id = :academyId ORDER BY e.id ASC")
     List<Exam> findAllByAcademyId(@Param("academyId") Long academyId);
 
-
+    List<Exam> findByMainClassIdAndSubClassId(Long mainClassId, Long subClassId);
 }
