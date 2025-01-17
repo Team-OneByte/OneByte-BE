@@ -12,6 +12,7 @@ import classfit.example.classfit.classStudent.repository.ClassStudentRepository;
 import classfit.example.classfit.common.exception.ClassfitException;
 import classfit.example.classfit.member.domain.Member;
 import classfit.example.classfit.student.domain.Student;
+import classfit.example.classfit.student.repository.StudentRepository;
 import classfit.example.classfit.studentExam.domain.Exam;
 import classfit.example.classfit.studentExam.domain.ExamRepository;
 import classfit.example.classfit.studentExam.domain.Standard;
@@ -48,12 +49,13 @@ public class ExamService {
     private final ClassStudentRepository classStudentRepository;
     private final StudentExamScoreRepository studentExamScoreRepository;
     private final AcademyRepository academyRepository;
+    private final StudentRepository studentRepository;
 
 
     private void validateAcademy(Member member, Long academyId) {
         Academy academy = academyRepository.findById(academyId)
                 .orElseThrow(() -> new ClassfitException("학원을 찾을 수 없어요.", HttpStatus.NOT_FOUND));
-        if (!Objects.equals(member.getAcademy().getId(), academyId)) {
+        if (!Objects.equals(member.getAcademy().getId(), academyId)) { // 아카데미 id끼리 비교해야해
             throw new ClassfitException("해당 학원에 접근할 권한이 없습니다.", HttpStatus.FORBIDDEN);
         }
     }
@@ -231,12 +233,16 @@ public class ExamService {
         Exam findExam = examRepository.findById(examId).orElseThrow(
                 () -> new ClassfitException("해당 시험지를 찾을 수 없어요.", HttpStatus.NOT_FOUND));
         validateAcademy(findMember, findExam.getMainClass().getAcademy().getId());
-        StudentExamScore studentExamScore = null;
 
         for (UpdateStudentScoreRequest request : requests) {
-            studentExamScore = studentExamScoreRepository.findByExamAndStudentId(
-                    findExam, request.studentId()).orElseThrow(
-                    () -> new ClassfitException("해당 학생의 점수를 찾을 수 없어요.", HttpStatus.NOT_FOUND));
+            StudentExamScore studentExamScore = studentExamScoreRepository.findByExamAndStudentId(
+                    findExam, request.studentId()).orElseGet(() -> {
+                Student student = studentRepository.findById(request.studentId()).orElseThrow(
+                        () -> new ClassfitException("해당 학생을 찾을 수 없어요.", HttpStatus.NOT_FOUND));
+                StudentExamScore newScore = StudentExamScore.create(findExam, student, request.score());
+                return studentExamScoreRepository.save(newScore);
+            });
+
             studentExamScore.updateScore(request.score());
 
             if (findExam.getHighestScore() == -1) { // PF
@@ -249,6 +255,8 @@ public class ExamService {
                 studentExamScore.updateScore(-5);  // Evaluation -5
                 studentExamScore.updateEvaluationDetail(request.evaluationDetail());
             }
+
+            // 체크 상태 업데이트
             studentExamScore.updateCheckedStudent(request.checkedStudent());
             studentExamScoreRepository.save(studentExamScore);
         }
