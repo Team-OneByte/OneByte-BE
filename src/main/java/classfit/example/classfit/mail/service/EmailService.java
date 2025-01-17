@@ -52,7 +52,6 @@ public class EmailService {
         }
 
         return EmailResponse.of(email);
-
     }
 
     @Transactional

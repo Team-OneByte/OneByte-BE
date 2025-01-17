@@ -1,7 +1,13 @@
 package classfit.example.classfit.mail.handler;
 
+import classfit.example.classfit.academy.domain.Academy;
+import classfit.example.classfit.common.exception.ClassfitException;
+import classfit.example.classfit.common.util.SecurityUtil;
 import classfit.example.classfit.mail.dto.request.EmailPurpose;
+import classfit.example.classfit.member.domain.Member;
+import classfit.example.classfit.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
@@ -10,6 +16,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class InvitationHandler implements EmailHandler {
 
+    private final MemberRepository memberRepository;
 
     @Override
     public boolean supports(EmailPurpose purpose) {
@@ -33,6 +40,14 @@ public class InvitationHandler implements EmailHandler {
 
     @Override
     public Map<String, Object> getTemplateVariables(String authCode) {
-        return Map.of("code", authCode, "extraInfo", "초대 관련 메시지");
+        Academy academy = getAcademy();
+        return Map.of("code", academy.getCode());
+    }
+
+    private Academy getAcademy() {
+        Long currentMemberId = SecurityUtil.getCurrentMemberId();
+        Member member = memberRepository.findById(currentMemberId)
+            .orElseThrow(() -> new ClassfitException("사용자를 찾을 수 없습니다.", HttpStatus.NOT_FOUND));
+        return member.getAcademy();
     }
 }
