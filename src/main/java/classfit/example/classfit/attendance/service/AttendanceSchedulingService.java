@@ -42,7 +42,6 @@ public class AttendanceSchedulingService {
                     Attendance attendance = Attendance.builder()
                         .date(date)
                         .status(AttendanceStatus.PRESENT)
-                        .student(student)
                         .build();
                     attendanceRepository.save(attendance);
                 }

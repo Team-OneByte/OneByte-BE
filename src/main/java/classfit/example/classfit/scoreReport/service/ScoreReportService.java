@@ -244,7 +244,8 @@ public class ScoreReportService {
 
         validateAcademy(member, scoreReport.getMainClass().getAcademy().getId());
 
-        List<AttendanceInfo> attendanceInfoList = scoreReport.getStudent().getAttendances().stream()
+        List<AttendanceInfo> attendanceInfoList = scoreReport.getStudent().getClassStudents().stream()
+            .flatMap(classStudent -> classStudent.getAttendances().stream())
                 .collect(Collectors.groupingBy(
                         Attendance::getStatus,
                         Collectors.summingInt(attendance -> 1)

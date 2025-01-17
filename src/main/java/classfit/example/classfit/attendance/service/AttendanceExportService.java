@@ -4,8 +4,10 @@ import classfit.example.classfit.attendance.domain.Attendance;
 import classfit.example.classfit.attendance.dto.response.AttendanceResponse;
 import classfit.example.classfit.attendance.dto.response.StudentAttendanceResponse;
 import classfit.example.classfit.attendance.repository.AttendanceRepository;
+import classfit.example.classfit.classStudent.domain.ClassStudent;
 import classfit.example.classfit.member.domain.Member;
 import classfit.example.classfit.student.domain.Student;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,11 +30,12 @@ public class AttendanceExportService {
         Long academyId = member.getAcademy().getId();
         List<Attendance> attendances = findAttendancesByAcademyAndSubClassAndMonth(academyId, subClassId, month);
 
-        return attendances.stream()
-            .collect(Collectors.groupingBy(Attendance::getStudent))
-            .entrySet().stream()
-            .sorted(Comparator.comparing(entry -> entry.getKey().getName()))
-            .map(entry -> toStudentAttendanceResponse(entry.getKey(), entry.getValue()))
+        Map<ClassStudent, List<Attendance>> groupedAttendances = attendances.stream()
+            .collect(Collectors.groupingBy(Attendance::getClassStudent));
+
+        return groupedAttendances.entrySet().stream()
+            .sorted(Comparator.comparing(entry -> entry.getKey().getStudent().getName()))
+            .map(entry -> toStudentAttendanceResponse(entry.getKey().getStudent(), entry.getValue()))
             .collect(Collectors.toList());
     }
 

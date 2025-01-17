@@ -71,7 +71,6 @@ public class StudentService {
                         .date(attendanceDate)
                         .week(j)
                         .status(AttendanceStatus.PRESENT)
-                        .student(student)
                         .classStudent(classStudent)
                         .build();
                     attendanceRepository.save(attendance);

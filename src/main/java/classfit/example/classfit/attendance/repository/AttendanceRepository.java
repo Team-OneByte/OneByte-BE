@@ -12,13 +12,17 @@ import java.util.Optional;
 import org.springframework.data.repository.query.Param;
 
 public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
-
-    boolean existsByStudentAndDate(Student student, LocalDate date);
+    @Query("SELECT CASE WHEN COUNT(a) > 0 THEN true ELSE false END FROM Attendance a " +
+        "JOIN a.classStudent cs WHERE cs.student = :student AND a.date = :date")
+    boolean existsByStudentAndDate(
+        @Param("student") Student student,
+        @Param("date") LocalDate date
+    );
 
     @Query("SELECT MAX(a.date) FROM Attendance a")
     Optional<LocalDate> findLastGeneratedDate();
 
-    @Query("SELECT a FROM Attendance a WHERE a.student IN " +
+    @Query("SELECT a FROM Attendance a WHERE a.classStudent.student IN " +
         "(SELECT cs.student FROM ClassStudent cs WHERE cs.subClass.id = :subClassId AND cs.subClass.mainClass.academy.id =:academyId) " +
         "AND FUNCTION('MONTH', a.date) = :month")
     List<Attendance> findByAcademyIdAndSubClassIdAndMonth(
@@ -26,7 +30,7 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
         @Param("subClassId") Long subClassId,
         @Param("month") int month);
 
-    @Query("SELECT a FROM Attendance a WHERE a.student IN " +
+    @Query("SELECT a FROM Attendance a WHERE a.classStudent.student IN " +
         "(SELECT cs.student FROM ClassStudent cs WHERE cs.subClass.mainClass.academy.id =:academyId) " +
         "AND FUNCTION('MONTH', a.date) = :month")
     List<Attendance> findByAcademyIdAndMonth(
@@ -54,11 +58,17 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
         @Param("status") AttendanceStatus status,
         @Param("academyId") Long academyId);
 
-    List<Attendance> findByStudentIdAndDateBetween(Long studentId, LocalDate startDate,
-        LocalDate endDate);
+    @Query("SELECT a FROM Attendance a JOIN a.classStudent cs " +
+        "WHERE cs.student.id = :studentId " +
+        "AND a.date BETWEEN :startDate AND :endDate")
+    List<Attendance> findByStudentIdAndDateBetween(
+        @Param("studentId") Long studentId,
+        @Param("startDate") LocalDate startDate,
+        @Param("endDate") LocalDate endDate);
+
 
     @Query("SELECT a FROM Attendance a JOIN a.classStudent cs " +
-        "WHERE a.student.id = :studentId " +
+        "WHERE a.classStudent.student.id = :studentId " +
         "AND FUNCTION('MONTH', a.date) = :month " +
         "AND a.status = :status " +
         "AND cs.subClass.mainClass.academy.id = :academyId ")
