@@ -63,4 +63,9 @@ public class StudentExamScore extends BaseEntity {
     public void updateScoreReport(ScoreReport scoreReport) {
         this.scoreReport = scoreReport;
     }
+    public static StudentExamScore create(Exam exam, Student student, Integer score) {
+        return new StudentExamScore(student, exam, score, null, null);
+    }
+
+
 }
