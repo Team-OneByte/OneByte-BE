@@ -189,6 +189,7 @@ public class ScoreReportService {
     @Transactional
     public void deleteReport(@AuthMember Member member, Long studentReportId) {
         validateAcademy(member, member.getAcademy().getId());
+        studentExamScoreRepository.deleteByScoreReport_Id(studentReportId);
         scoreReportRepository.deleteById(studentReportId);
     }
 
