@@ -2,7 +2,6 @@ package classfit.example.classfit.attendance.service;
 
 import classfit.example.classfit.attendance.domain.Attendance;
 import classfit.example.classfit.attendance.repository.AttendanceRepository;
-import classfit.example.classfit.member.domain.Gender;
 import classfit.example.classfit.student.domain.Student;
 import classfit.example.classfit.student.repository.StudentRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -40,7 +39,7 @@ class AttendanceSchedulingServiceTest {
         List<Student> students = new ArrayList<>();
         for (int i = 0; i < count; i++) {
             students.add(
-                Student.builder().name("학생" + i).gender(i % 2 == 0 ? Gender.MALE : Gender.FEMALE)
+                Student.builder().name("학생" + i)
                     .birth(LocalDate.of(2010, 1, 1).plusDays(i))
                     .studentNumber("010" + String.format("%08d", i))
                     .parentNumber("010" + String.format("%08d", i + 1000)).grade("1학년")
