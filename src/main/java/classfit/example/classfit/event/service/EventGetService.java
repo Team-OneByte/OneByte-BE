@@ -2,6 +2,7 @@ package classfit.example.classfit.event.service;
 
 import static classfit.example.classfit.common.exception.ClassfitException.EVENT_NOT_FOUND;
 
+import classfit.example.classfit.academy.domain.Academy;
 import classfit.example.classfit.common.exception.ClassfitException;
 import classfit.example.classfit.event.domain.Event;
 import classfit.example.classfit.event.dto.response.EventModalResponse;
@@ -39,7 +40,14 @@ public class EventGetService {
         LocalDateTime startOfMonth = LocalDateTime.of(year, month, 1, 0, 0, 0, 0);
         LocalDateTime endOfMonth = startOfMonth.plusMonths(1).minusSeconds(1);
 
-        List<Event> events = eventRepository.findByCalendarTypeAndStartDateBetween(calendarType, startOfMonth, endOfMonth, member);
+        List<Event> events;
+        if (calendarType == CalendarType.SHARED) {
+            Long academyId = member.getAcademy().getId();
+            events = eventRepository.findBySharedCalendarAndStartDateBetween(calendarType, startOfMonth, endOfMonth, academyId);
+        } else {
+            events = eventRepository.findByPersonalCalendarTypeAndStartDateBetween(calendarType, startOfMonth, endOfMonth, member);
+        }
+
         return mapToEventCreateResponse(events);
     }
 
