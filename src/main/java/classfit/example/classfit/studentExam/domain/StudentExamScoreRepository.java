@@ -14,11 +14,37 @@ import org.springframework.transaction.annotation.Transactional;
 @Repository
 public interface StudentExamScoreRepository extends JpaRepository<StudentExamScore, Long> {
 
-    Optional<StudentExamScore> findByExamAndStudentId(Exam exam, Long studentId);
+    @Query("SELECT ses FROM StudentExamScore ses " +
+            "JOIN ses.exam e " +
+            "JOIN e.mainClass mc " +
+            "JOIN mc.academy a " +
+            "WHERE a.id = :academyId " +
+            "AND e = :exam " +
+            "AND ses.student.id = :studentId")
+    Optional<StudentExamScore> findByExamAndStudentIdAndAcademyId(@Param("academyId") Long academyId,
+            @Param("exam") Exam exam,
+            @Param("studentId") Long studentId);
+
 
     Optional<StudentExamScore> findByStudentAndExamId(Student student, Long examId);
 
-    List<StudentExamScore> findByExam(Exam exam);
+    @Query("SELECT ses FROM StudentExamScore ses " +
+            "JOIN ses.exam e " +
+            "JOIN e.mainClass mc " +
+            "JOIN mc.academy a " +
+            "WHERE a.id = :academyId " +
+            "AND ses.exam = :exam")
+    List<StudentExamScore> findByAcademyIdAndExam(@Param("academyId") Long academyId,
+            @Param("exam") Exam exam);
+
+    @Query("SELECT ses FROM StudentExamScore ses " +
+            "JOIN ses.exam e " +
+            "JOIN e.mainClass mc " +
+            "JOIN mc.academy a " +
+            "WHERE a.id = :academyId " +
+            "AND ses.exam = :exam")
+    List<StudentExamScore> findAllByAcademyIdAndExam(@Param("academyId") Long academyId,@Param("exam") Exam exam);
+
 
     List<StudentExamScore> findByScoreReport(ScoreReport scoreReport);
 

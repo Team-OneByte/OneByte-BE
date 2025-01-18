@@ -56,26 +56,29 @@ public class StudentService {
             classStudent.addSubClass(subClass);
             classStudentRepository.save(classStudent);
 
-            createAttendanceForThreeWeeks(student);
+            createAttendanceForSevenWeeks(student);
         });
 
         return StudentResponse.from(student);
     }
 
-    private void createAttendanceForThreeWeeks(Student student) {
+    private void createAttendanceForSevenWeeks(Student student) {
         LocalDate currentDate = LocalDate.now();
-        LocalDate weekStart = currentDate.with(DayOfWeek.MONDAY);
+        LocalDate weekStart = currentDate.with(DayOfWeek.MONDAY).minusWeeks(4);
+
         List<ClassStudent> classStudents = classStudentRepository.findByStudent(student);
 
         classStudents.forEach(classStudent -> {
-            for (int i = 0; i < 3; i++) {
+            for (int i = 0; i < 7; i++) {
                 LocalDate weekDate = weekStart.plusWeeks(i);
+                AttendanceStatus status = (i < 4) ? AttendanceStatus.ABSENT : AttendanceStatus.PRESENT; // 4주 전은 ABSENT, 나머지는 PRESENT
+
                 for (int j = 0; j < 7; j++) {
                     LocalDate attendanceDate = weekDate.plusDays(j);
                     Attendance attendance = Attendance.builder()
                         .date(attendanceDate)
                         .week(j)
-                        .status(AttendanceStatus.PRESENT)
+                        .status(status)
                         .classStudent(classStudent)
                         .build();
                     attendanceRepository.save(attendance);

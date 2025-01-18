@@ -71,26 +71,37 @@ public class CalendarCategoryService {
     @Transactional(readOnly = true)
     public CalendarCategoryListResponse getCategories(@AuthMember Member member) {
         MemberCalendar personalCalendar = getMemberCalendarByMemberAndType(member, CalendarType.PERSONAL);
-        MemberCalendar sharedCalendar = getMemberCalendarByMemberAndType(member, CalendarType.SHARED);
-
         List<CalendarCategoryResponse> personalCategories = classifyAndSortCategories(personalCalendar);
-        List<CalendarCategoryResponse> sharedCategories = classifyAndSortCategories(sharedCalendar);
+
+        List<CalendarCategoryResponse> sharedCategories = classifyAndSortSharedCategories(member);
 
         return CalendarCategoryListResponse.of(personalCategories, sharedCategories);
     }
 
     private List<CalendarCategoryResponse> classifyAndSortCategories(MemberCalendar memberCalendar) {
-        List<CalendarCategoryResponse> typeCategories = calendarCategoryRepository.findByMemberCalendar(memberCalendar)
+        return calendarCategoryRepository.findByMemberCalendar(memberCalendar)
             .stream()
             .map(category -> CalendarCategoryResponse.of(
                 category.getId(),
                 category.getName(),
                 category.getColor()
             ))
+            .sorted(Comparator.comparing(CalendarCategoryResponse::name))
             .collect(Collectors.toList());
+    }
 
-        typeCategories.sort(Comparator.comparing(CalendarCategoryResponse::name));
-        return typeCategories;
+    private List<CalendarCategoryResponse> classifyAndSortSharedCategories(Member member) {
+        Long academyId = member.getAcademy().getId();
+
+        return calendarCategoryRepository.findByMemberCalendarTypeAndAcademyId(CalendarType.SHARED, academyId)
+            .stream()
+            .map(category -> CalendarCategoryResponse.of(
+                category.getId(),
+                category.getName(),
+                category.getColor()
+            ))
+            .sorted(Comparator.comparing(CalendarCategoryResponse::name))
+            .collect(Collectors.toList());
     }
 
     @Transactional

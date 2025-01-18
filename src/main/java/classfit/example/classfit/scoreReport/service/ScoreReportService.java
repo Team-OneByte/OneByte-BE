@@ -32,6 +32,8 @@ import classfit.example.classfit.studentExam.domain.Standard;
 import classfit.example.classfit.studentExam.domain.StudentExamScore;
 import classfit.example.classfit.studentExam.domain.StudentExamScoreRepository;
 import classfit.example.classfit.studentExam.dto.process.ExamHistory;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -86,16 +88,7 @@ public class ScoreReportService {
         for (ClassStudent classStudent : studentsInSubClass) {
             Student student = classStudent.getStudent();
 
-            ScoreReport report = ScoreReport.builder()
-                    .mainClass(mainClass)
-                    .subClass(subClass)
-                    .includeAverage(request.includeAverage())
-                    .student(student)
-                    .reportName(request.reportName())
-                    .overallOpinion(request.overallOpinion())
-                    .startDate(request.startDate())
-                    .endDate(request.endDate())
-                    .build();
+            ScoreReport report = request.toEntity(subClass, mainClass, student, member);
             scoreReportRepository.save(report);
 
             allStudents.add(new StudentList(report.getId(), student.getId(), student.getName()));
@@ -129,7 +122,7 @@ public class ScoreReportService {
             Long subClassId) {
         validateAcademy(member, member.getAcademy().getId());
         List<ReportExam> reports = scoreReportRepository.findExamsByCreatedAtBetween(startDate,
-                endDate, mainClassId, subClassId);
+                endDate, mainClassId, subClassId,member.getAcademy().getId());
         return reports.stream()
                 .map(report -> new ReportExam(
                         report.examId(),
@@ -154,7 +147,7 @@ public class ScoreReportService {
                         () -> new ClassfitException("서브 클래스를 찾을 수 없어요.", HttpStatus.NOT_FOUND));
         validateAcademy(member, mainClass.getAcademy().getId());
         List<ScoreReport> studentReports = scoreReportRepository.findAllReportsByMainClassAndSubClass(
-                mainClassId, subClassId);
+                mainClassId, subClassId,member.getAcademy().getId());
 
         return studentReports.stream()
                 .map(report -> new FindReportResponse(
@@ -170,13 +163,12 @@ public class ScoreReportService {
 
     @Transactional(readOnly = true)
     public List<FindAllReportResponse> findAllReport(@AuthMember Member member) {
-
         Long academyId = member.getAcademy().getId();
 
         Academy academy = academyRepository.findById(academyId)
                 .orElseThrow(() -> new ClassfitException("학원을 찾을 수 없어요.", HttpStatus.NOT_FOUND));
 
-        List<ScoreReport> scoreReports = scoreReportRepository.findAllByAcademy(academy);
+        List<ScoreReport> scoreReports = scoreReportRepository.findAllByAcademy(academyId);
 
         return scoreReports.stream()
                 .map(report -> new FindAllReportResponse(
@@ -184,11 +176,12 @@ public class ScoreReportService {
                         report.getStudent().getId(),
                         report.getStudent().getName(),
                         report.getReportName(),
-                        report.getMainClass().getAcademy().getMembers().getFirst().getName(),
+                        report.getReportCreatedBy(),
                         report.getCreatedAt().toLocalDate()
                 ))
                 .collect(Collectors.toList());
     }
+
 
 
     @Transactional
@@ -288,7 +281,7 @@ public class ScoreReportService {
                                 exam.getId(),
                                 exam.getExamName(),
                                 exam.getStandard(),
-                                exam.getAverage(),
+                                String.format("%.1f", exam.getAverage()),
                                 studentExamScore.getScore()
                         );
                     }
@@ -299,14 +292,14 @@ public class ScoreReportService {
                         double convertedScore =
                                 (double) studentExamScore.getScore() / maxScore * 100.0;
 
-                        double convertedAverage = (double) exam.getAverage() / maxScore * 100.0;
+                        double convertedAverage = exam.getAverage() / maxScore * 100.0;
 
                         return new ExamHistory(
                                 exam.getId(),
                                 exam.getExamName(),
                                 exam.getStandard(),
-                                Math.round(convertedAverage),
-                                (int) Math.round(convertedScore)
+                                String.format("%.1f", convertedAverage),
+                                (int) convertedScore
                         );
                     }
 
@@ -315,7 +308,7 @@ public class ScoreReportService {
                             exam.getId(),
                             exam.getExamName(),
                             exam.getStandard(),
-                            exam.getAverage(),
+                            String.format("%.1f", exam.getAverage()),
                             studentExamScore.getScore()
                     );
                 })
@@ -345,7 +338,9 @@ public class ScoreReportService {
         if (!Objects.equals(member.getAcademy().getId(), academyId)) {
             throw new ClassfitException("해당 학원에 접근할 권한이 없습니다.", HttpStatus.FORBIDDEN);
         }
+        if (!Objects.equals(academy.getId(), academyId)) {
+            throw new ClassfitException("해당 학원에 접근할 권한이 없습니다.", HttpStatus.FORBIDDEN);
+        }
     }
-
 
 }

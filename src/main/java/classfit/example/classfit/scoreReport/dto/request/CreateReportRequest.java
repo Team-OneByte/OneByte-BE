@@ -2,6 +2,7 @@ package classfit.example.classfit.scoreReport.dto.request;
 
 import classfit.example.classfit.category.domain.MainClass;
 import classfit.example.classfit.category.domain.SubClass;
+import classfit.example.classfit.member.domain.Member;
 import classfit.example.classfit.scoreReport.domain.ScoreReport;
 import classfit.example.classfit.student.domain.Student;
 import jakarta.validation.constraints.NotNull;
@@ -17,13 +18,14 @@ public record CreateReportRequest(Long mainClassId, Long subClassId, String repo
                                   @NotNull(message = "종합 의견을 입력해주세요.")
                                   String overallOpinion) {
 
-    public ScoreReport toEntity(SubClass subClass, MainClass mainClass,Student student) {
+    public ScoreReport toEntity(SubClass subClass, MainClass mainClass,Student student, Member member) {
         return ScoreReport.builder()
                 .subClass(subClass)
                 .mainClass(mainClass)
                 .student(student)
                 .reportName(reportName)
                 .overallOpinion(overallOpinion)
+                .reportCreatedBy(member.getName())
                 .build();
     }
 }
