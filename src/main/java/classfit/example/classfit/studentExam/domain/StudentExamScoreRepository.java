@@ -5,9 +5,11 @@ import classfit.example.classfit.student.domain.Student;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 public interface StudentExamScoreRepository extends JpaRepository<StudentExamScore, Long> {
@@ -49,4 +51,8 @@ public interface StudentExamScoreRepository extends JpaRepository<StudentExamSco
     long countByExamAndScore(Exam exam, int score);
     void deleteByScoreReport_Id(Long scoreReportId);
 
+    @Modifying
+    @Transactional
+    @Query("DELETE FROM StudentExamScore ses WHERE ses.scoreReport.id = :reportId")
+    void deleteByReportId(@Param("reportId") Long reportId);
 }

@@ -49,7 +49,7 @@ public class AttendanceStatisticsService {
         List<Attendance> attendances = attendanceRepository.findByDateAndSubClassIdAndStatusAndAcademyId(date, subClassId, status, academyId);
 
         return attendances.stream()
-            .map(attendance -> attendance.getStudent().getName())
+            .map(attendance -> attendance.getClassStudent().getStudent().getName())
             .collect(Collectors.toList());
     }
 

@@ -42,9 +42,9 @@ public class StudentController {
 
     @DeleteMapping("/")
     @Operation(summary = "학생 정보 삭제", description = "학생 정보 삭제하는 API 입니다. ")
-    public ApiResponse<List<Long>> deleteStudent(@RequestParam(name = "studentIds")List<Long> studentIds) {
+    public ApiResponse<List<Long>> deleteStudent(@AuthMember Member member, @RequestParam List<Long> studentIds) {
 
-        studentService.deleteStudent(studentIds);
+        studentService.deleteStudent(member, studentIds);
         return ApiResponse.success(studentIds.stream().toList(), 200, "DELETED STUDENT");
     }
 
