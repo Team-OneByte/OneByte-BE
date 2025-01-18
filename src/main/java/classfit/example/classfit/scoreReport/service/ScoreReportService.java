@@ -54,6 +54,11 @@ public class ScoreReportService {
     private final StudentExamScoreRepository studentExamScoreRepository;
     private final AcademyRepository academyRepository;
 
+    @Transactional(readOnly = true)
+    public List<ScoreReport> findByStudentId(Long studentId) {
+        return scoreReportRepository.findByStudentId(studentId);
+    }
+
     @Transactional
     public CreateReportResponse createReport(@AuthMember Member member,
             CreateReportRequest request) {
@@ -189,6 +194,7 @@ public class ScoreReportService {
     @Transactional
     public void deleteReport(@AuthMember Member member, Long studentReportId) {
         validateAcademy(member, member.getAcademy().getId());
+        studentExamScoreRepository.deleteByReportId(studentReportId);
         scoreReportRepository.deleteById(studentReportId);
     }
 

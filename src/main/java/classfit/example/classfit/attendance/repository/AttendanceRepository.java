@@ -4,12 +4,14 @@ import classfit.example.classfit.attendance.domain.Attendance;
 import classfit.example.classfit.attendance.domain.AttendanceStatus;
 import classfit.example.classfit.student.domain.Student;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
 
 public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
     @Query("SELECT CASE WHEN COUNT(a) > 0 THEN true ELSE false END FROM Attendance a " +
@@ -66,7 +68,6 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
         @Param("startDate") LocalDate startDate,
         @Param("endDate") LocalDate endDate);
 
-
     @Query("SELECT a FROM Attendance a JOIN a.classStudent cs " +
         "WHERE a.classStudent.student.id = :studentId " +
         "AND FUNCTION('MONTH', a.date) = :month " +
@@ -77,4 +78,9 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
         @Param("month") int month,
         @Param("status") AttendanceStatus status,
         @Param("academyId") Long academyId);
+
+    @Modifying
+    @Transactional
+    @Query("DELETE FROM Attendance a WHERE a.classStudent.student.id = :studentId")
+    void deleteByStudentId(@Param("studentId") Long studentId);
 }

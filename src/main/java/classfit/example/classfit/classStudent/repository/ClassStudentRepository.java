@@ -13,6 +13,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 public interface ClassStudentRepository extends JpaRepository<ClassStudent, Long> {
@@ -32,6 +33,7 @@ public interface ClassStudentRepository extends JpaRepository<ClassStudent, Long
     List<ClassStudent> findByAcademyId(Long academyId);
 
     @Modifying
+    @Transactional
     @Query("DELETE FROM ClassStudent cs WHERE cs.student.id = :studentId")
     void deleteAllByStudentId(@Param("studentId") Long studentId);
 

@@ -10,6 +10,9 @@ import classfit.example.classfit.classStudent.domain.ClassStudent;
 import classfit.example.classfit.classStudent.repository.ClassStudentRepository;
 import classfit.example.classfit.common.exception.ClassfitException;
 import classfit.example.classfit.member.domain.Member;
+import classfit.example.classfit.scoreReport.domain.ScoreReport;
+import classfit.example.classfit.scoreReport.domain.ScoreReportRepository;
+import classfit.example.classfit.scoreReport.service.ScoreReportService;
 import classfit.example.classfit.student.domain.Gender;
 import classfit.example.classfit.student.domain.Student;
 import classfit.example.classfit.student.dto.request.StudentRequest;
@@ -37,6 +40,8 @@ public class StudentService {
     private final SubClassRepository subClassRepository;
     private final ClassStudentRepository classStudentRepository;
     private final AttendanceRepository attendanceRepository;
+    private final ScoreReportRepository scoreReportRepository;
+    private final ScoreReportService scoreReportService;
 
     @Transactional
     public StudentResponse registerStudent(StudentRequest request) {
@@ -80,11 +85,18 @@ public class StudentService {
     }
 
     @Transactional
-    public void deleteStudent(List<Long> studentIds) {
+    public void deleteStudent(Member member, List<Long> studentIds) {
         studentIds.stream()
             .map(studentId -> studentRepository.findById(studentId).orElseThrow(()
                 -> new ClassfitException("해당하는 학생 정보를 찾을 수 없습니다", HttpStatus.NOT_FOUND)))
             .forEach(student -> {
+                List<ScoreReport> scoreReports = scoreReportService.findByStudentId(student.getId());
+                for (ScoreReport scoreReport : scoreReports) {
+                    scoreReportService.deleteReport(member, scoreReport.getId());
+                }
+
+                scoreReportRepository.deleteByStudentId(student.getId());
+                attendanceRepository.deleteByStudentId(student.getId());
                 classStudentRepository.deleteAllByStudentId(student.getId());
                 studentRepository.delete(student);
             });
