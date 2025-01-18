@@ -86,7 +86,7 @@ public class DriveTrashService {
                 String fileUrl = s3Client.utilities().getUrl(builder ->
                     builder.bucket(bucketName).key(key)).toExternalForm();
 
-                FileResponse fileResponse = DriveUtil.getFileResponse(amazonS3, bucketName, summary, key, fileUrl, tagMap);
+                FileResponse fileResponse = DriveUtil.getFileResponse(summary, key, fileUrl, tagMap);
                 deletedFiles.add(fileResponse);
             });
 
@@ -99,6 +99,7 @@ public class DriveTrashService {
 
         return deletedFiles;
     }
+
 
     public List<String> storeTrash(Member member, DriveType driveType, String folderPath, List<String> fileNames) {
         List<String> trashPaths = new ArrayList<>();

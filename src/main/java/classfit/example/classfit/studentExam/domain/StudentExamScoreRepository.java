@@ -49,6 +49,7 @@ public interface StudentExamScoreRepository extends JpaRepository<StudentExamSco
     List<StudentExamScore> findByScoreReport(ScoreReport scoreReport);
 
     long countByExamAndScore(Exam exam, int score);
+    void deleteByScoreReport_Id(Long scoreReportId);
 
     @Modifying
     @Transactional
