@@ -58,7 +58,5 @@ public interface ScoreReportRepository extends JpaRepository<ScoreReport, Long> 
     @Transactional
     @Query("DELETE FROM ScoreReport sr WHERE sr.student.id = :studentId")
     void deleteByStudentId(@Param("studentId") Long studentId);
-            "WHERE r.mainClass.academy.id = :academyId")
-    List<ScoreReport> findAllByAcademy(@Param("academyId") Long academyId);
 }
 
