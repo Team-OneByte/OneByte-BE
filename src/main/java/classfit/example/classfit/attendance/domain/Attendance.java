@@ -31,20 +31,15 @@ public class Attendance {
     @Column(columnDefinition = "VARCHAR(20)", nullable = false)
     private AttendanceStatus status;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "student_id", nullable = false)
-    private Student student;
-
     @ManyToOne
     @JoinColumn(name = "class_student_id")
     private ClassStudent classStudent;
 
     @Builder
-    public Attendance(LocalDate date, int week, AttendanceStatus status, Student student, ClassStudent classStudent) {
+    public Attendance(LocalDate date, int week, AttendanceStatus status, ClassStudent classStudent) {
         this.date = date;
         this.week = week;
         this.status = status;
-        this.student = student;
         this.classStudent = classStudent;
     }
 

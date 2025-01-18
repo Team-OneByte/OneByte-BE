@@ -1,5 +1,6 @@
 package classfit.example.classfit.attendance.service;
 
+import classfit.example.classfit.attendance.domain.Attendance;
 import classfit.example.classfit.attendance.dto.response.AttendanceResponse;
 import classfit.example.classfit.attendance.dto.response.StudentAttendanceResponse;
 import classfit.example.classfit.classStudent.domain.ClassStudent;
@@ -52,9 +53,10 @@ public class AttendanceService {
     private StudentAttendanceResponse mapToStudentAttendanceDTO(Object studentObject, List<LocalDate> weekRange) {
         Student student = getStudentFromEntity(studentObject);
 
-        List<AttendanceResponse> attendanceDTOs = student.getAttendances().stream()
+        List<AttendanceResponse> attendanceDTOs = student.getClassStudents().stream()
+            .flatMap(classStudent -> classStudent.getAttendances().stream())
             .filter(attendance -> weekRange.contains(attendance.getDate()))
-            .sorted(Comparator.comparing(attendance -> attendance.getDate()))
+            .sorted(Comparator.comparing(Attendance::getDate))
             .map(attendance -> AttendanceResponse.of(attendance.getId(), attendance.getDate(), attendance.getWeek(), attendance.getStatus().name()))
             .collect(Collectors.toList());
 

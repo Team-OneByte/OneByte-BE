@@ -6,9 +6,11 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 public interface ScoreReportRepository extends JpaRepository<ScoreReport, Long> {
@@ -46,8 +48,15 @@ public interface ScoreReportRepository extends JpaRepository<ScoreReport, Long> 
             @Param("studentReportId") Long studentReportId,
             @Param("academyId") Long academyId);
 
+    List<ScoreReport> findByStudentId(Long studentId);
+
     @Query("SELECT r FROM ScoreReport r " +
-            "WHERE r.mainClass.academy.id = :academyId")
-    List<ScoreReport> findAllByAcademy(@Param("academyId") Long academyId);
+            "WHERE r.mainClass.academy = :academy")
+    List<ScoreReport> findAllByAcademy(@Param("academy") Academy academy);
+
+    @Modifying
+    @Transactional
+    @Query("DELETE FROM ScoreReport sr WHERE sr.student.id = :studentId")
+    void deleteByStudentId(@Param("studentId") Long studentId);
 }
 
