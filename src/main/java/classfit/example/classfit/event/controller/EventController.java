@@ -23,9 +23,11 @@ import java.util.List;
 @RequestMapping("/api/v1/calendar")
 @RequiredArgsConstructor
 public class EventController implements EventControllerDocs {
+
     private final EventService eventService;
     private final MemberService memberService;
 
+    @Override
     @PostMapping("/event")
     public CustomApiResponse<EventResponse> createEvent(
         @AuthMember Member member,
@@ -35,12 +37,14 @@ public class EventController implements EventControllerDocs {
         return CustomApiResponse.success(createdEvent, 200, "CREATED");
     }
 
+    @Override
     @GetMapping("/academy-members")
     public CustomApiResponse<List<AcademyMemberResponse>> getAcademyMembers(@AuthMember Member member) {
         List<AcademyMemberResponse> members = memberService.getMembersByLoggedInMemberAcademy(member);
         return CustomApiResponse.success(members, 200, "SUCCESS");
     }
 
+    @Override
     @GetMapping("/monthly")
     public CustomApiResponse<List<EventMonthlyResponse>> getMonthlyEvents(
         @AuthMember Member member,
@@ -52,6 +56,7 @@ public class EventController implements EventControllerDocs {
         return CustomApiResponse.success(events, 200, "SUCCESS");
     }
 
+    @Override
     @PostMapping("/modal")
     public CustomApiResponse<EventResponse> createModalEvent(
         @AuthMember Member member,
@@ -61,12 +66,14 @@ public class EventController implements EventControllerDocs {
         return CustomApiResponse.success(createdModalEvent, 200, "CREATED");
     }
 
+    @Override
     @GetMapping("/modal/{eventId}")
     public CustomApiResponse<EventModalResponse> getEventDetails(@PathVariable Long eventId) {
         EventModalResponse event = eventService.getEvent(eventId);
         return CustomApiResponse.success(event, 200, "SUCCESS");
     }
 
+    @Override
     @PatchMapping("/modal/{eventId}")
     public CustomApiResponse<EventResponse> updateEventDetails(
         @AuthMember Member member,
@@ -77,12 +84,14 @@ public class EventController implements EventControllerDocs {
         return CustomApiResponse.success(updatedEvent, 200, "UPDATED");
     }
 
+    @Override
     @DeleteMapping("/modal/{eventId}")
     public CustomApiResponse<Void> deleteEvent(@PathVariable Long eventId) {
         eventService.deleteEvent(eventId);
         return CustomApiResponse.success(null, 204, "DELETED");
     }
 
+    @Override
     @PatchMapping("/drag/{eventId}")
     public CustomApiResponse<EventResponse> dragUpdateEventDate(
         @PathVariable Long eventId,

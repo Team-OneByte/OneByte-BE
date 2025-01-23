@@ -23,6 +23,7 @@ public class ScoreReportController implements ScoreReportControllerDocs {
 
     private final ScoreReportService scoreReportService;
 
+    @Override
     @PostMapping
     public CustomApiResponse<CreateReportResponse> createReport(
         @AuthMember Member member,
@@ -32,6 +33,7 @@ public class ScoreReportController implements ScoreReportControllerDocs {
         return CustomApiResponse.success(response, 201, "CREATED-REPORT");
     }
 
+    @Override
     @GetMapping("/exam-list")
     public CustomApiResponse<List<ReportExam>> findExamList(
         @AuthMember Member member,
@@ -45,6 +47,7 @@ public class ScoreReportController implements ScoreReportControllerDocs {
         return CustomApiResponse.success(exams, 200, "FIND-REPORT-EXAM");
     }
 
+    @Override
     @GetMapping("/student-report")
     public CustomApiResponse<List<FindReportResponse>> findReport(
         @AuthMember Member member,
@@ -57,6 +60,7 @@ public class ScoreReportController implements ScoreReportControllerDocs {
         return CustomApiResponse.success(response, 200, "FIND-STUDENT-REPORT");
     }
 
+    @Override
     @DeleteMapping("/{student-report-id}")
     public CustomApiResponse<Void> deleteStudentReport(
         @AuthMember Member member,
@@ -66,6 +70,7 @@ public class ScoreReportController implements ScoreReportControllerDocs {
         return CustomApiResponse.success(null, 200, "DELETED-STUDENT-REPORT");
     }
 
+    @Override
     @GetMapping("/class-student")
     public CustomApiResponse<List<FindClassStudent>> findClassStudent(
         @AuthMember Member member,
@@ -77,6 +82,7 @@ public class ScoreReportController implements ScoreReportControllerDocs {
         return CustomApiResponse.success(response, 200, "FIND-CLASS-STUDENT");
     }
 
+    @Override
     @PatchMapping("/student-opinion")
     public CustomApiResponse<List<SentStudentOpinionResponse>> sentStudentOpinion(
         @AuthMember Member member,
@@ -87,6 +93,7 @@ public class ScoreReportController implements ScoreReportControllerDocs {
         return CustomApiResponse.success(response, 200, "SENT-STUDENT-OPINION");
     }
 
+    @Override
     @GetMapping("/{student-report-id}")
     public CustomApiResponse<ShowStudentReportResponse> showStudentReport(
         @AuthMember Member member,
@@ -96,6 +103,7 @@ public class ScoreReportController implements ScoreReportControllerDocs {
         return CustomApiResponse.success(response, 200, "SHOW-STUDENT-REPORT");
     }
 
+    @Override
     @GetMapping("/all-report")
     public CustomApiResponse<List<FindAllReportResponse>> findAllReport(@AuthMember Member member) {
         List<FindAllReportResponse> response = scoreReportService.findAllReport(member);

@@ -21,12 +21,14 @@ public class InvitationController implements InvitationControllerDocs {
 
     private final InvitationService invitationService;
 
+    @Override
     @GetMapping("/invite")
     public CustomApiResponse<String> findAcademyCode(@AuthMember Member member) {
         String academyCode = invitationService.findAcademyCode(member);
         return CustomApiResponse.success(academyCode, 200, "학원 코드 조회 성공");
     }
 
+    @Override
     @PostMapping("/invite")
     public CustomApiResponse<Void> inviteStaffByEmail(
         @AuthMember Member member,
@@ -36,6 +38,7 @@ public class InvitationController implements InvitationControllerDocs {
         return CustomApiResponse.success(null, 200, "초대 코드 전송 성공");
     }
 
+    @Override
     @GetMapping("/list")
     public CustomApiResponse<List<InvitationResponse>> staffInfoAll(@AuthMember Member member) {
         List<InvitationResponse> staffInfoList = invitationService.staffInfoAll(member);

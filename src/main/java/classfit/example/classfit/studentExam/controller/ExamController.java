@@ -24,6 +24,7 @@ public class ExamController implements ExamControllerDocs {
 
     private final ExamService examService;
 
+    @Override
     @PostMapping
     public CustomApiResponse<CreateExamResponse> createExam(
         @AuthMember Member findMember,
@@ -33,6 +34,7 @@ public class ExamController implements ExamControllerDocs {
         return CustomApiResponse.success(response, 201, "CREATED EXAM");
     }
 
+    @Override
     @GetMapping("/{examId}")
     public CustomApiResponse<List<ExamClassStudent>> findExamClassStudent(
         @AuthMember Member findMember,
@@ -43,6 +45,7 @@ public class ExamController implements ExamControllerDocs {
         return CustomApiResponse.success(response, 200, "FIND EXAM-STUDENT");
     }
 
+    @Override
     @PostMapping("/findexam")
     public CustomApiResponse<List<FindExamResponse>> findExamList(
         @AuthMember Member findMember,
@@ -52,6 +55,7 @@ public class ExamController implements ExamControllerDocs {
         return CustomApiResponse.success(response, 200, "FIND EXAM-LIST");
     }
 
+    @Override
     @GetMapping("/findexam/{examId}")
     public CustomApiResponse<ShowExamDetailResponse> showExamDetail(
         @AuthMember Member findMember,
@@ -61,6 +65,7 @@ public class ExamController implements ExamControllerDocs {
         return CustomApiResponse.success(response, 200, "FIND EXAM");
     }
 
+    @Override
     @PutMapping("/{examId}")
     public CustomApiResponse<UpdateExamResponse> updateExam(
         @AuthMember Member findMember,
@@ -71,6 +76,7 @@ public class ExamController implements ExamControllerDocs {
         return CustomApiResponse.success(response, 200, "UPDATED EXAM");
     }
 
+    @Override
     @DeleteMapping("/{examId}")
     public ResponseEntity<CustomApiResponse> deleteExam(
         @AuthMember Member findMember,

@@ -20,12 +20,14 @@ public class EmailController implements EmailControllerDocs {
 
     private final EmailService emailService;
 
+    @Override
     @PostMapping("/send")
     public CustomApiResponse<EmailResponse> sendMail(@RequestBody @Valid EmailRequest request) {
         EmailResponse emailAuthResponse = emailService.sendEmail(request.email(), request.purpose());
         return CustomApiResponse.success(emailAuthResponse, 200, "이메일 전송 성공");
     }
 
+    @Override
     @PostMapping("/verify")
     public CustomApiResponse<EmailResponse> verifyMail(@RequestBody @Valid EmailVerifyRequest request) {
         EmailResponse emailAuthResponse = emailService.verifyAuthCode(request);

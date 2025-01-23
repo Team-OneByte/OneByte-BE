@@ -19,6 +19,7 @@ public class SendMessageController implements SendMessageControllerDocs {
 
     private final SmsService smsService;
 
+    @Override
     @PostMapping("api/v1/send-many")
     public MultipleDetailMessageSentResponse sendMany(
         @AuthMember Member member,

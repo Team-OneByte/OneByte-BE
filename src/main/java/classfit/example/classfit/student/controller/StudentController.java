@@ -22,18 +22,21 @@ public class StudentController implements StudentControllerDocs {
 
     private final StudentService studentService;
 
+    @Override
     @PostMapping("/")
     public CustomApiResponse<StudentResponse> registerStudent(@RequestBody @Valid StudentRequest req) {
         StudentResponse studentResponse = studentService.registerStudent(req);
         return CustomApiResponse.success(studentResponse, 201, "CREATED STUDENT");
     }
 
+    @Override
     @GetMapping("/")
     public CustomApiResponse<List<StudentResponse>> studentInfoAll(@AuthMember Member member) {
         List<StudentResponse> studentList = studentService.studentInfoAll(member);
         return CustomApiResponse.success(studentList, 200, "FIND STUDENTS");
     }
 
+    @Override
     @DeleteMapping("/")
     public CustomApiResponse<List<Long>> deleteStudent(
         @AuthMember Member member,
@@ -43,6 +46,7 @@ public class StudentController implements StudentControllerDocs {
         return CustomApiResponse.success(studentIds.stream().toList(), 200, "DELETED STUDENT");
     }
 
+    @Override
     @PatchMapping("/{studentId}")
     public CustomApiResponse<Long> updateStudent(
         @PathVariable Long studentId,
@@ -52,12 +56,14 @@ public class StudentController implements StudentControllerDocs {
         return CustomApiResponse.success(studentId, 200, "UPDATED STUDENT");
     }
 
+    @Override
     @GetMapping("/{studentId}")
     public CustomApiResponse<StudentInfoResponse> studentInfo(@PathVariable Long studentId) {
         StudentInfoResponse studentInfo = studentService.getStudentInfo(studentId);
         return CustomApiResponse.success(studentInfo, 200, studentInfo.name() + "의 정보");
     }
 
+    @Override
     @GetMapping("/search")
     public CustomApiResponse<List<StudentResponse>> findStudentByName(@RequestParam(value = "name") String studentName) {
         List<StudentResponse> findStudents = studentService.findStudentsByName(studentName);
