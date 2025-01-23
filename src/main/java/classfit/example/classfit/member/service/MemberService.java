@@ -34,7 +34,7 @@ public class MemberService {
     private final RedisUtil redisUtil;
 
     @Transactional
-    public MemberResponse signIn(MemberRequest request) {
+    public MemberResponse signUp(MemberRequest request) {
 
         String emailToken = redisUtil.getData("email_code:" + EmailPurpose.SIGN_UP + ":" + request.email());
 
