@@ -9,7 +9,10 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
 @RestController
@@ -24,13 +27,6 @@ public class AcademyController {
     public ApiResponse<AcademyResponse> createAcademy(@RequestBody AcademyCreateRequest request) {
         AcademyResponse academyResponse = academyService.createAcademy(request);
         return ApiResponse.success(academyResponse, 200, "학원 생성이 완료되었습니다");
-    }
-
-    @GetMapping("/code")
-    @Operation(summary = "학원 코드 생성", description = "학원 코드 생성 API 입니다.")
-    public ApiResponse<String> createCode() {
-        String code = academyService.createCode();
-        return ApiResponse.success(code, 200, "학원 코드가 생성되었습니다.");
     }
 
     @PostMapping("/invite")
