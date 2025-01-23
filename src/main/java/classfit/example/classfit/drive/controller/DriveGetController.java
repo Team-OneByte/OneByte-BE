@@ -1,7 +1,7 @@
 package classfit.example.classfit.drive.controller;
 
 import classfit.example.classfit.auth.annotation.AuthMember;
-import classfit.example.classfit.common.ApiResponse;
+import classfit.example.classfit.common.CustomApiResponse;
 import classfit.example.classfit.drive.domain.DriveType;
 import classfit.example.classfit.drive.domain.FileType;
 import classfit.example.classfit.drive.dto.response.FileResponse;
@@ -11,7 +11,11 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import java.util.List;
 
 @RestController
@@ -24,7 +28,7 @@ public class DriveGetController {
 
     @GetMapping("/files")
     @Operation(summary = "파일 목록 조회", description = "S3에 업로드된 파일들을 조회하는 API입니다.")
-    public ApiResponse<List<FileResponse>> getFiles(
+    public CustomApiResponse<List<FileResponse>> getFiles(
         @AuthMember Member member,
         @Parameter(description = "내 드라이브는 PERSONAL, 공용 드라이브는 SHARED 입니다.")
         @RequestParam DriveType driveType,
@@ -32,12 +36,12 @@ public class DriveGetController {
         @RequestParam(required = false, defaultValue = "") String folderPath
     ) {
         List<FileResponse> fileUrls = driveGetService.getFilesFromS3(member, driveType, folderPath);
-        return ApiResponse.success(fileUrls, 200, "SUCCESS");
+        return CustomApiResponse.success(fileUrls, 200, "SUCCESS");
     }
 
     @GetMapping("/search")
     @Operation(summary = "파일명으로 검색", description = "파일명을 기준으로 파일을 검색하는 API입니다.")
-    public ApiResponse<List<FileResponse>> searchFilesByName(
+    public CustomApiResponse<List<FileResponse>> searchFilesByName(
         @AuthMember Member member,
         @Parameter(description = "내 드라이브는 PERSONAL, 공용 드라이브는 SHARED 입니다.")
         @RequestParam DriveType driveType,
@@ -47,12 +51,12 @@ public class DriveGetController {
         @RequestParam(required = false, defaultValue = "") String folderPath
     ) {
         List<FileResponse> files = driveGetService.searchFilesByName(member, driveType, fileName, folderPath);
-        return ApiResponse.success(files, 200, "SUCCESS");
+        return CustomApiResponse.success(files, 200, "SUCCESS");
     }
 
     @GetMapping("/filter")
     @Operation(summary = "확장자 필터링", description = "파일 확장자로 필터링하여 파일을 조회하는 API입니다.")
-    public ApiResponse<List<FileResponse>> filterFilesByExtension(
+    public CustomApiResponse<List<FileResponse>> filterFilesByExtension(
         @AuthMember Member member,
         @Parameter(description = "내 드라이브는 PERSONAL, 공용 드라이브는 SHARED 입니다.")
         @RequestParam DriveType driveType,
@@ -63,6 +67,6 @@ public class DriveGetController {
 
     ) {
         List<FileResponse> files = driveGetService.classifyFilesByType(member, driveType, fileType, folderPath);
-        return ApiResponse.success(files, 200, "확장자 필터링 성공");
+        return CustomApiResponse.success(files, 200, "확장자 필터링 성공");
     }
 }

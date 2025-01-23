@@ -1,7 +1,7 @@
 package classfit.example.classfit.member.controller;
 
 import classfit.example.classfit.auth.annotation.AuthMember;
-import classfit.example.classfit.common.ApiResponse;
+import classfit.example.classfit.common.CustomApiResponse;
 import classfit.example.classfit.member.domain.Member;
 import classfit.example.classfit.member.dto.request.MemberPasswordRequest;
 import classfit.example.classfit.member.dto.request.MemberRequest;
@@ -25,29 +25,29 @@ public class MemberController {
 
     @PostMapping("/signup")
     @Operation(summary = "회원 가입", description = "회원가입 API 입니다.")
-    public ApiResponse<MemberResponse> signIn(@RequestBody @Valid MemberRequest request) {
+    public CustomApiResponse<MemberResponse> signIn(@RequestBody @Valid MemberRequest request) {
         MemberResponse memberResponse = memberService.signIn(request);
-        return ApiResponse.success(memberResponse, 200, "회원가입이 완료되었습니다.");
+        return CustomApiResponse.success(memberResponse, 200, "회원가입이 완료되었습니다.");
     }
 
     @PostMapping("/password")
     @Operation(summary = "비밀번호 수정", description = "특정 회원의 비밀번호 수정 API 입니다.")
-    public ApiResponse<String> updatePassword(@RequestBody @Valid MemberPasswordRequest request) {
+    public CustomApiResponse<String> updatePassword(@RequestBody @Valid MemberPasswordRequest request) {
         memberService.updatePassword(request);
-        return ApiResponse.success(null, 200, "비밀번호가 변경되었습니다.");
+        return CustomApiResponse.success(null, 200, "비밀번호가 변경되었습니다.");
     }
 
     @GetMapping("/mypage")
     @Operation(summary = "회원정보 조회", description = "마이페이지 API 입니다.")
-    public ApiResponse<MemberInfoResponse> myPage(@AuthMember Member member) {
+    public CustomApiResponse<MemberInfoResponse> myPage(@AuthMember Member member) {
         MemberInfoResponse memberInfoResponse = memberService.myPage(member);
-        return ApiResponse.success(memberInfoResponse, 200, "SUCCESS");
+        return CustomApiResponse.success(memberInfoResponse, 200, "SUCCESS");
     }
 
     @PostMapping("/mypage")
     @Operation(summary = "회원정보 수정", description = "회원 정보 수정하는 API 입니다.")
-    public ApiResponse<MemberInfoResponse> updateMyPage(@AuthMember Member member, @RequestBody MemberUpdateInfoRequest request) {
+    public CustomApiResponse<MemberInfoResponse> updateMyPage(@AuthMember Member member, @RequestBody MemberUpdateInfoRequest request) {
         MemberInfoResponse memberInfoResponse = memberService.updateMyPage(member, request);
-        return ApiResponse.success(memberInfoResponse, 200, "SUCCESS");
+        return CustomApiResponse.success(memberInfoResponse, 200, "SUCCESS");
     }
 }

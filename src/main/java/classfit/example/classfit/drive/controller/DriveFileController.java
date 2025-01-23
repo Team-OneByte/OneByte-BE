@@ -1,7 +1,7 @@
 package classfit.example.classfit.drive.controller;
 
 import classfit.example.classfit.auth.annotation.AuthMember;
-import classfit.example.classfit.common.ApiResponse;
+import classfit.example.classfit.common.CustomApiResponse;
 import classfit.example.classfit.drive.domain.DriveType;
 import classfit.example.classfit.drive.service.DriveDownloadService;
 import classfit.example.classfit.drive.service.DriveUploadService;
@@ -15,6 +15,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
 import java.util.List;
 
 @RestController
@@ -27,7 +28,7 @@ public class DriveFileController {
 
     @PostMapping("/files")
     @Operation(summary = "다중 파일 업로드", description = "다중 파일 업로드 API 입니다.")
-    public ApiResponse<List<String>> uploadFiles(
+    public CustomApiResponse<List<String>> uploadFiles(
         @AuthMember Member member,
         @Parameter(description = "내 드라이브는 PERSONAL, 공용 드라이브는 SHARED 입니다.")
         @RequestParam DriveType driveType,
@@ -36,7 +37,7 @@ public class DriveFileController {
         @RequestParam(required = false, defaultValue = "") String folderPath
     ) {
         List<String> fileUrls = driveUploadService.uploadFiles(member, driveType, multipartFiles, folderPath);
-        return ApiResponse.success(fileUrls, 200, "SUCCESS");
+        return CustomApiResponse.success(fileUrls, 200, "SUCCESS");
     }
 
     @GetMapping("/download")

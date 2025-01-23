@@ -3,7 +3,7 @@ package classfit.example.classfit.category.controller;
 import classfit.example.classfit.auth.annotation.AuthMember;
 import classfit.example.classfit.category.dto.response.ClassInfoResponse;
 import classfit.example.classfit.category.service.ClassInfoService;
-import classfit.example.classfit.common.ApiResponse;
+import classfit.example.classfit.common.CustomApiResponse;
 import classfit.example.classfit.member.domain.Member;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -23,8 +23,8 @@ public class ClassInfoController {
 
     @GetMapping("/class-info")
     @Operation(summary = "클래스 정보 조회", description = "클래스 정보 조회 api 입니다.")
-    public ApiResponse<List<ClassInfoResponse>> getClassInfo(@AuthMember Member member) {
+    public CustomApiResponse<List<ClassInfoResponse>> getClassInfo(@AuthMember Member member) {
         List<ClassInfoResponse> categories = classInfoService.getClasses(member);
-        return ApiResponse.success(categories, 200, "SUCCESS");
+        return CustomApiResponse.success(categories, 200, "SUCCESS");
     }
 }

@@ -2,7 +2,7 @@ package classfit.example.classfit.auth.controller;
 
 import classfit.example.classfit.auth.annotation.AuthMember;
 import classfit.example.classfit.auth.service.AuthService;
-import classfit.example.classfit.common.ApiResponse;
+import classfit.example.classfit.common.CustomApiResponse;
 import classfit.example.classfit.member.domain.Member;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -31,8 +31,8 @@ public class AuthController {
 
     @PostMapping("/logout")
     @Operation(summary = "로그아웃", description = "로그아웃 API 입니다.")
-    public ApiResponse<String> logout(@AuthMember Member member) {
+    public CustomApiResponse<String> logout(@AuthMember Member member) {
         authService.logout(member);
-        return ApiResponse.success(null, 200, "로그아웃이 완료되었습니다.");
+        return CustomApiResponse.success(null, 200, "로그아웃이 완료되었습니다.");
     }
 }

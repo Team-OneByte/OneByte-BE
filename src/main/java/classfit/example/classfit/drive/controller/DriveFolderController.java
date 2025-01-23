@@ -1,7 +1,7 @@
 package classfit.example.classfit.drive.controller;
 
 import classfit.example.classfit.auth.annotation.AuthMember;
-import classfit.example.classfit.common.ApiResponse;
+import classfit.example.classfit.common.CustomApiResponse;
 import classfit.example.classfit.drive.domain.DriveType;
 import classfit.example.classfit.drive.service.DriveFolderService;
 import classfit.example.classfit.member.domain.Member;
@@ -23,7 +23,7 @@ public class DriveFolderController {
 
     @PostMapping("/folder")
     @Operation(summary = "폴더 생성", description = "새로운 폴더를 생성하는 API입니다.")
-    public ApiResponse<String> createFolder(
+    public CustomApiResponse<String> createFolder(
         @AuthMember Member member,
         @Parameter(description = "내 드라이브는 PERSONAL, 공용 드라이브는 SHARED 입니다.")
         @RequestParam DriveType driveType,
@@ -33,12 +33,12 @@ public class DriveFolderController {
         @RequestParam(required = false, defaultValue = "") String folderPath
     ) {
         String fullPath = driveFolderService.createFolder(member, driveType, folderName, folderPath);
-        return ApiResponse.success(fullPath, 200, "SUCCESS");
+        return CustomApiResponse.success(fullPath, 200, "SUCCESS");
     }
 
     @GetMapping("/folders")
     @Operation(summary = "폴더 조회", description = "폴더들을 조회하는 API입니다.")
-    public ApiResponse<List<String>> getFolders(
+    public CustomApiResponse<List<String>> getFolders(
         @AuthMember Member member,
         @Parameter(description = "내 드라이브는 PERSONAL, 공용 드라이브는 SHARED 입니다.")
         @RequestParam DriveType driveType,
@@ -46,6 +46,6 @@ public class DriveFolderController {
         @RequestParam(required = false, defaultValue = "") String folderPath
     ) {
         List<String> folders = driveFolderService.getFolders(member, driveType, folderPath);
-        return ApiResponse.success(folders, 200, "폴더 목록 조회 성공");
+        return CustomApiResponse.success(folders, 200, "폴더 목록 조회 성공");
     }
 }
