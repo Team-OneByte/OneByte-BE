@@ -14,12 +14,35 @@
 ---
 
 ## 👥 팀원 소개
+<table>
+  <tr>
+    <td>방예원</td>
+    <td>백재혁</td>
+    <td>이예린</td>
+  </tr>
+  <tr>
+    <td>
+      <img width="160px" src="https://github.com/user-attachments/assets/55525ab7-754c-4317-a483-0173fd6e6222" alt="방예원" />
+    </td>
+    <td>
+      <img width="160px" src="assets/team/baek-jae-hyeok.jpg" alt="백재혁" />
+    </td>
+    <td>
+      <img width="160px" src="assets/team/lee-ye-rin.jpg" alt="이예린" />
+    </td>
+  </tr>
+  <tr>
+    <td><a href="https://github.com/bangyewon">bangyewon</a></td>
+    <td><a href="https://github.com/baekjaehyeok">baekjaehyeok</a></td>
+    <td><a href="https://github.com/leeyeerin">leeyeerin</a></td>
+  </tr>
+  <tr>
+    <td>백엔드</td>
+    <td>백엔드</td>
+    <td>백엔드</td>
+  </tr>
+</table>
 
-| 사진 | 이름 | 역할 | GitHub |
-| --- | --- | --- | --- |
-| ![방예원](assets/team/bang-ye-won.jpg) | 방예원 | 백엔드 | [GitHub](https://github.com/bangyewon) |
-| ![백재혁](assets/team/baek-jae-hyeok.jpg) | 백재혁 | 백엔드 | [GitHub](https://github.com/baekjaehyeok) |
-| ![이예린](assets/team/lee-ye-rin.jpg) | 이예린 | 백엔드 | [GitHub](https://github.com/leeyeerin) |
 
 ---
 
