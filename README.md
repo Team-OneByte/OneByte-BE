@@ -5,20 +5,6 @@
 
 ---
 
-## 🛠️ 서비스 개요
-
-클래스핏(Classfit)은 학원 선생님들이 ‘수업에만 집중할 수 있는 환경’을 제공하는 맞춤형 업무툴입니다. 학원 운영의 복잡함을 덜어내고, 직관적이고 효율적인 사용 경험을 통해 학원 관리의 핵심 기능만을
-제공합니다.
-
-- ### **핵심 기능** :
-    - 학원 관리
-    - 출결 관리
-    - 성적 관리
-    - 일정 관리
-    - 드라이브
-
----
-
 ## 🔧 주요 기능
 
 ### 1. **로그인 및 학원 관리**
@@ -57,10 +43,6 @@
 ![스크린샷 2025-01-25 025643](https://github.com/user-attachments/assets/0d32478a-ec77-4581-8b78-15f425e98827)
 
 
-
-
-
-
 ---
 
 ### 4. **일정 관리 (스케줄, Task)**
@@ -71,8 +53,6 @@
 ![스크린샷 2025-01-25 025707](https://github.com/user-attachments/assets/b56cc513-de97-4d6c-944d-f560c7af04b0)
 ![스크린샷 2025-01-25 025720](https://github.com/user-attachments/assets/268460e2-d2f2-4a8e-8770-3340f488b791)
 
-
-
 ---
 
 ### 5. **드라이브**
@@ -82,20 +62,30 @@
 
 ![스크린샷 2025-01-25 025733](https://github.com/user-attachments/assets/0cca3543-8445-4efc-9431-7bf998d98698)
 
-
-
-
 ---
 
 ## 🛠️ 기술 스택
 
-- **협업 도구**: Figma, Notion, Swagger, Discord
-- **디자인**: Figma
-- **프론트엔드**: React, TypeScript, Styled-Components, Zustand, Vercel
-- **백엔드**: Spring Boot, Spring Security, Spring Data JPA
-    - **데이터 베이스** : MySQL, Redis
-    - **인프라** : AWS EC2, AWS RDS, AWS Elastic Cache, AWS S3, Nginx
-    - **가상화** : Docker
+<div align=left>
+    <img src="https://img.shields.io/badge/java 21-007396?style=for-the-badge&logo=OpenJDK&logoColor=white">
+    <img src="https://img.shields.io/badge/spring boot-6DB33F?style=for-the-badge&logo=springboot&logoColor=white">
+    <img src="https://img.shields.io/badge/Spring DATA JPA-6DB33F?style=for-the-badge&logo=spring&logoColor=white">
+    <img src="https://img.shields.io/badge/Spring Security-6DB33F?style=for-the-badge&logo=Spring Security&logoColor=white">
+    <img src="https://img.shields.io/badge/MySQL 8.0-4479A1?style=for-the-badge&logo=MySQL&logoColor=white">
+    <img src="https://img.shields.io/badge/Redis-DC382D?style=for-the-badge&logo=Redis&logoColor=white">
+    <br> 
+    <img src="https://img.shields.io/badge/Amazon%20EC2-FF9900?style=for-the-badge&logo=Amazon EC2&logoColor=white">
+    <img src="https://img.shields.io/badge/aws rds-134?style=for-the-badge&logo=amazonrds&logoColor=white">
+    <img src="https://img.shields.io/badge/Amazon%20S3-569A31?style=for-the-badge&logo=Amazon S3&logoColor=white">
+    <img src="https://img.shields.io/badge/GitHub Actions-2088FF?style=for-the-badge&logo=GitHub Actions&logoColor=white">
+    <img src="https://img.shields.io/badge/nginx-%23009639.svg?style=for-the-badge&logo=nginx&logoColor=white">
+    <img src="https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white"> 
+    <br>
+    <img src="https://img.shields.io/badge/swagger-25A16?style=for-the-badge&logo=swagger&logoColor=white">
+    <img src="https://img.shields.io/badge/notion-000000?style=for-the-badge&logo=notion&logoColor=white">
+    <img src="https://img.shields.io/badge/github-181717?style=for-the-badge&logo=github&logoColor=white">
+    <img src="https://img.shields.io/badge/git-F05032?style=for-the-badge&logo=git&logoColor=white">
+</div>
 
 ---
 
@@ -146,19 +136,15 @@
 
 ---
 
-## 📹 시연 영상 및 발표 자료
+## 🗓️ 개발 기간
 
-클래스핏의 주요 기능을 소개하는 시연 영상과 발표자료를 확인해보세요!
+**2024.10.10 ~ 2025.01.18**
 
-1. [Classfit, 최종 발표자료.pdf](..%2F..%2FOneDrive%2F%EB%AC%B8%EC%84%9C%2F%EC%B9%B4%EC%B9%B4%EC%98%A4%ED%86%A1%20%EB%B0%9B%EC%9D%80%20%ED%8C%8C%EC%9D%BC%2F%EC%9E%87%ED%83%806%EA%B8%B0_%EC%B5%9C%EC%A2%85_%EC%9B%90%EB%B0%94%EC%9D%B4%ED%8A%B8-%EC%95%95%EC%B6%95%EB%90%A8.pdf)
-2. [Classfit, 시연 영상](https://github.com/user-attachments/assets/899b0eb4-18bf-43b3-8d92-e0c49238bc04)
+* [release - v1.0.0](https://github.com/ITA-OneByte/OneByte-BE/releases/tag/v1.0.0)
 
 ---
 
-## 🚀 앞으로의 계획
+## 📹 발표 자료 및 시연 영상
 
-1. **확장성 있는 기능 추가**: 각 학원 환경에 맞춘 커스터마이징 기능을 계속해서 추가하여, 더 많은 학원들이 사용할 수 있도록 할 것입니다.
-2. **UX/UI 개선**: 사용자 경험을 최우선으로 고려하여, UI를 지속적으로 개선할 예정입니다.
-3. **성능 최적화**: 서버 및 데이터베이스 성능을 지속적으로 개선하여 안정적인 서비스를 제공하고자 합니다.
-
-* [Release - V1.0.0 (2025-01-23)](https://github.com/ITA-OneByte/OneByte-BE/releases/tag/v1.0.0)
+1. [Classfit 최종 발표자료.pdf](..%2F..%2FOneDrive%2F%EB%AC%B8%EC%84%9C%2F%EC%B9%B4%EC%B9%B4%EC%98%A4%ED%86%A1%20%EB%B0%9B%EC%9D%80%20%ED%8C%8C%EC%9D%BC%2F%EC%9E%87%ED%83%806%EA%B8%B0_%EC%B5%9C%EC%A2%85_%EC%9B%90%EB%B0%94%EC%9D%B4%ED%8A%B8-%EC%95%95%EC%B6%95%EB%90%A8.pdf)
+2. [Classfit 시연 영상](https://github.com/user-attachments/assets/899b0eb4-18bf-43b3-8d92-e0c49238bc04)
