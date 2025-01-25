@@ -135,7 +135,7 @@
   <tr>
     <td><a href="https://github.com/bangyewon">bangyewon</a></td>
     <td><a href="https://github.com/BaekJaehyuk">BaekJaeHyuk</a></td>
-    <td><a href="https://github.com/dpfls0922">leeyeerin</a></td>
+    <td><a href="https://github.com/dpfls0922">dpfls0922</a></td>
   </tr>
   <tr>
     <td>백엔드</td>
