@@ -27,14 +27,14 @@ public class CalendarCategoryController implements CalendarCategoryControllerDoc
         @RequestBody CalendarCategoryCreateRequest request
     ) {
         CalendarCategoryCreateResponse result = calendarCategoryService.addCategory(member, request);
-        return CustomApiResponse.success(result, 201, "캘린더 카테고리가 생성되었습니다.");
+        return CustomApiResponse.success(result, 201, "캘린더 카테고리 생성 성공");
     }
 
     @Override
     @GetMapping("/category-list")
     public CustomApiResponse<CalendarCategoryListResponse> getCalendarCategories(@AuthMember Member member) {
         CalendarCategoryListResponse result = calendarCategoryService.getCategories(member);
-        return CustomApiResponse.success(result, 200, "캘린더 카테고리를 성공적으로 조회했습니다.");
+        return CustomApiResponse.success(result, 200, "캘린더 카테고리 조회 성공");
     }
 
     @Override
@@ -44,13 +44,13 @@ public class CalendarCategoryController implements CalendarCategoryControllerDoc
         @RequestBody CalendarCategoryUpdateRequest request
     ) {
         CalendarCategoryResponse result = calendarCategoryService.updateCategory(categoryId, request);
-        return CustomApiResponse.success(result, 200, "캘린더 카테고리가 수정되었습니다.");
+        return CustomApiResponse.success(result, 200, "캘린더 카테고리 수정 성공");
     }
 
     @Override
     @DeleteMapping("/{categoryId}")
     public CustomApiResponse<CalendarCategoryResponse> deleteCalendarCategory(@PathVariable Long categoryId) {
         calendarCategoryService.deleteCategory(categoryId);
-        return CustomApiResponse.success(null, 204, "캘린더 카테고리가 삭제되었습니다.");
+        return CustomApiResponse.success(null, 204, "캘린더 카테고리 삭제 성공");
     }
 }

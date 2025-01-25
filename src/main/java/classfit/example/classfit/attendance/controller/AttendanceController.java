@@ -33,7 +33,7 @@ public class AttendanceController implements AttendanceControllerDocs {
         List<LocalDate> weekRange = attendanceService.getWeeklyAttendanceRange(weekOffset);
         Page<Student> students = attendanceService.getAllStudents(page, member);
         List<StudentAttendanceResponse> studentAttendances = attendanceService.getStudentAttendance(students.getContent(), weekRange);
-        return CustomApiResponse.success(studentAttendances, 200, "SUCCESS");
+        return CustomApiResponse.success(studentAttendances, 200, "전체 학생 출결 조회 성공");
     }
 
     @GetMapping("/{mainClassId}/{subClassId}")
@@ -47,7 +47,7 @@ public class AttendanceController implements AttendanceControllerDocs {
         List<LocalDate> weekRange = attendanceService.getWeeklyAttendanceRange(weekOffset);
         Page<ClassStudent> students = attendanceService.getClassStudentsByMainClassAndSubClass(mainClassId, subClassId, page, member);
         List<StudentAttendanceResponse> studentAttendances = attendanceService.getStudentAttendance(students.getContent(), weekRange);
-        return CustomApiResponse.success(studentAttendances, 200, "SUCCESS");
+        return CustomApiResponse.success(studentAttendances, 200, "특정 클래스 출결 조회 성공");
     }
 
     @PatchMapping("/")
@@ -56,6 +56,6 @@ public class AttendanceController implements AttendanceControllerDocs {
         @RequestBody List<StudentAttendanceUpdateRequest> requestDTO
     ) {
         List<StudentAttendanceResponse> updatedStudents = attendanceUpdateService.updateStudentAttendances(requestDTO, member);
-        return CustomApiResponse.success(updatedStudents, 200, "UPDATED");
+        return CustomApiResponse.success(updatedStudents, 200, "출결 수정 성공");
     }
 }

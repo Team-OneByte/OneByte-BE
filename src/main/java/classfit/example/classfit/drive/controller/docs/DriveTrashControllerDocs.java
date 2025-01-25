@@ -17,7 +17,7 @@ import java.util.List;
 public interface DriveTrashControllerDocs {
 
     @Operation(summary = "휴지통 조회", description = "휴지통 조회 API 입니다.", responses = {
-        @ApiResponse(responseCode = "200", description = "조회 성공")
+        @ApiResponse(responseCode = "200", description = "휴지통 조회 성공")
     })
     CustomApiResponse<List<FileResponse>> trashList(
         @AuthMember Member member,
@@ -35,7 +35,7 @@ public interface DriveTrashControllerDocs {
     );
 
     @Operation(summary = "휴지통 복원", description = "휴지통 복원 API 입니다.", responses = {
-        @ApiResponse(responseCode = "200", description = "복원 성공")
+        @ApiResponse(responseCode = "200", description = "휴지통 복원 성공")
     })
     CustomApiResponse<List<String>> restoreTrash(
         @AuthMember Member member,
@@ -44,7 +44,7 @@ public interface DriveTrashControllerDocs {
     );
 
     @Operation(summary = "휴지통 영구삭제", description = "휴지통 영구삭제 API 입니다.", responses = {
-        @ApiResponse(responseCode = "200", description = "삭제 성공")
+        @ApiResponse(responseCode = "200", description = "휴지통 영구삭제 성공")
     })
     CustomApiResponse<Void> deleteFromTrash(
         @AuthMember Member member,

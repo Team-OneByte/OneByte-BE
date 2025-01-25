@@ -30,7 +30,7 @@ public class DriveTrashController implements DriveTrashControllerDocs {
         @RequestParam DriveType driveType
     ) {
         List<FileResponse> filesFromTrash = driveTrashService.getFilesFromTrash(member, driveType);
-        return CustomApiResponse.success(filesFromTrash, 200, "조회 성공");
+        return CustomApiResponse.success(filesFromTrash, 200, "휴지통 조회 성공");
     }
 
     @Override
@@ -42,7 +42,7 @@ public class DriveTrashController implements DriveTrashControllerDocs {
         @RequestParam List<String> fileNames
     ) {
         List<String> trashPathList = driveTrashService.storeTrash(member, driveType, folderPath, fileNames);
-        return CustomApiResponse.success(trashPathList, 200, "휴지통 이동 완료");
+        return CustomApiResponse.success(trashPathList, 200, "휴지통 이동 성공");
     }
 
     @Override
@@ -53,7 +53,7 @@ public class DriveTrashController implements DriveTrashControllerDocs {
         @RequestParam List<String> fileNames
     ) {
         List<String> restorePathList = driveRestoreService.restoreTrash(member, driveType, fileNames);
-        return CustomApiResponse.success(restorePathList, 200, "복원 성공");
+        return CustomApiResponse.success(restorePathList, 200, "휴지통 복원 성공");
     }
 
     @Override
@@ -65,6 +65,6 @@ public class DriveTrashController implements DriveTrashControllerDocs {
         @RequestParam List<String> fileNames
     ) {
         driveDeleteService.deleteFromTrash(member, driveType, folderPath, fileNames);
-        return CustomApiResponse.success(null, 200, "삭제 성공");
+        return CustomApiResponse.success(null, 200, "휴지통 영구삭제 성공");
     }
 }

@@ -24,7 +24,7 @@ public class SubClassController implements SubClassControllerDocs {
         @RequestBody SubClassRequest req
     ) {
         SubClassResponse result = subClassService.addSubClass(findMember, req);
-        return CustomApiResponse.success(result, 201, "CREATED");
+        return CustomApiResponse.success(result, 201, "하위 클래스 생성 성공");
     }
 
     @Override
@@ -35,7 +35,7 @@ public class SubClassController implements SubClassControllerDocs {
         @RequestBody SubClassRequest req
     ) {
         SubClassResponse result = subClassService.updateSubClass(findMember, subClassId, req);
-        return CustomApiResponse.success(result, 200, "UODATED");
+        return CustomApiResponse.success(result, 200, "하위 클래스 수정 성공");
     }
 
     @Override
@@ -45,7 +45,7 @@ public class SubClassController implements SubClassControllerDocs {
         @PathVariable(name = "subClassId") Long subClassId
     ) {
         subClassService.deleteSubClass(findMember, subClassId);
-        return CustomApiResponse.success(null, 200, "DELETED");
+        return CustomApiResponse.success(null, 200, "하위 클래스 삭제 성공");
     }
 
 }

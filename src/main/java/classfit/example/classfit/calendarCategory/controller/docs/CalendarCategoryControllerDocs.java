@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 public interface CalendarCategoryControllerDocs {
 
     @Operation(summary = "캘린더 카테고리 추가", description = "캘린더 카테고리를 추가하는 API입니다.", responses = {
-        @ApiResponse(responseCode = "201", description = "캘린더 카테고리가 생성되었습니다.")
+        @ApiResponse(responseCode = "201", description = "캘린더 카테고리 생성 성공")
     })
     CustomApiResponse<CalendarCategoryCreateResponse> addCalendarCategory(
         @AuthMember Member member,
@@ -26,12 +26,12 @@ public interface CalendarCategoryControllerDocs {
     );
 
     @Operation(summary = "캘린더 카테고리 조회", description = "캘린더 카테고리를 조회하는 API입니다.", responses = {
-        @ApiResponse(responseCode = "200", description = "캘린더 카테고리를 성공적으로 조회했습니다.")
+        @ApiResponse(responseCode = "200", description = "캘린더 카테고리 조회 성공")
     })
     CustomApiResponse<CalendarCategoryListResponse> getCalendarCategories(@AuthMember Member member);
 
     @Operation(summary = "캘린더 카테고리 수정", description = "캘린더 카테고리를 수정하는 API입니다.", responses = {
-        @ApiResponse(responseCode = "200", description = "캘린더 카테고리가 수정되었습니다.")
+        @ApiResponse(responseCode = "200", description = "캘린더 카테고리 수정 성공")
     })
     CustomApiResponse<CalendarCategoryResponse> updateCalendarCategory(
         @PathVariable Long categoryId,
@@ -39,7 +39,7 @@ public interface CalendarCategoryControllerDocs {
     );
 
     @Operation(summary = "캘린더 카테고리 삭제", description = "캘린더 카테고리를 삭제하는 API입니다.", responses = {
-        @ApiResponse(responseCode = "204", description = "캘린더 카테고리가 삭제되었습니다.")
+        @ApiResponse(responseCode = "204", description = "캘린더 카테고리 삭제 성공")
     })
     CustomApiResponse<CalendarCategoryResponse> deleteCalendarCategory(@PathVariable Long categoryId);
 }

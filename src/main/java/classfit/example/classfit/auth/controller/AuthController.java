@@ -31,6 +31,6 @@ public class AuthController implements AuthControllerDocs {
     @PostMapping("/logout")
     public CustomApiResponse<String> logout(@AuthMember Member member) {
         authService.logout(member);
-        return CustomApiResponse.success(null, 200, "로그아웃이 완료되었습니다.");
+        return CustomApiResponse.success(null, 200, "로그아웃 성공");
     }
 }

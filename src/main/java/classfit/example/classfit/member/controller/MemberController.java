@@ -25,21 +25,21 @@ public class MemberController implements MemberControllerDocs {
     @PostMapping("/signup")
     public CustomApiResponse<MemberResponse> signUp(@RequestBody @Valid MemberRequest request) {
         MemberResponse memberResponse = memberService.signUp(request);
-        return CustomApiResponse.success(memberResponse, 200, "회원가입이 완료되었습니다.");
+        return CustomApiResponse.success(memberResponse, 200, "회원가입 성공");
     }
 
     @Override
     @PostMapping("/password")
     public CustomApiResponse<Void> updatePassword(@RequestBody @Valid MemberPasswordRequest request) {
         memberService.updatePassword(request);
-        return CustomApiResponse.success(null, 200, "비밀번호가 변경되었습니다.");
+        return CustomApiResponse.success(null, 200, "비밀번호 수정 성공");
     }
 
     @Override
     @GetMapping("/my-page")
     public CustomApiResponse<MemberInfoResponse> myPage(@AuthMember Member member) {
         MemberInfoResponse memberInfoResponse = memberService.myPage(member);
-        return CustomApiResponse.success(memberInfoResponse, 200, "SUCCESS");
+        return CustomApiResponse.success(memberInfoResponse, 200, "회원정보 조회 성공");
     }
 
     @Override
@@ -49,6 +49,6 @@ public class MemberController implements MemberControllerDocs {
         @RequestBody MemberUpdateInfoRequest request
     ) {
         MemberInfoResponse memberInfoResponse = memberService.updateMyPage(member, request);
-        return CustomApiResponse.success(memberInfoResponse, 200, "SUCCESS");
+        return CustomApiResponse.success(memberInfoResponse, 200, "회원정보 수정 성공");
     }
 }

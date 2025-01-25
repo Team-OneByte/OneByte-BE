@@ -22,7 +22,7 @@ import java.util.List;
 public interface ExamControllerDocs {
 
     @Operation(summary = "시험 정보 등록", description = "시험 정보 등록하는 API 입니다.", responses = {
-        @ApiResponse(responseCode = "201", description = "CREATED EXAM")
+        @ApiResponse(responseCode = "201", description = "시험 정보 등록 성공")
     })
     CustomApiResponse<CreateExamResponse> createExam(
         @AuthMember Member findMember,
@@ -30,7 +30,7 @@ public interface ExamControllerDocs {
     );
 
     @Operation(summary = "시험 등록 시 해당 클래스 학생 조회", description = "시험 등록시 해당 클래스 학생 조회하는 API 입니다.", responses = {
-        @ApiResponse(responseCode = "200", description = "FIND EXAM-STUDENT")
+        @ApiResponse(responseCode = "200", description = "해당 클래스 학생 조회 성공")
     })
     CustomApiResponse<List<ExamClassStudent>> findExamClassStudent(
         @AuthMember Member findMember,
@@ -38,7 +38,7 @@ public interface ExamControllerDocs {
     );
 
     @Operation(summary = "시험 리스트 조회", description = "시험 이름과 작성자로 시험 검색하는 API 입니다.", responses = {
-        @ApiResponse(responseCode = "200", description = "FIND EXAM-LIST")
+        @ApiResponse(responseCode = "200", description = "시험 리스트 조회 성공")
     })
     CustomApiResponse<List<FindExamResponse>> findExamList(
         @AuthMember Member findMember,
@@ -46,7 +46,7 @@ public interface ExamControllerDocs {
     );
 
     @Operation(summary = "시험 상세 조회", description = "시험 상세 조회 API 입니다.", responses = {
-        @ApiResponse(responseCode = "200", description = "SHOW EXAM")
+        @ApiResponse(responseCode = "200", description = "시험 상세 조회 성공")
     })
     CustomApiResponse<ShowExamDetailResponse> showExamDetail(
         @AuthMember Member findMember,
@@ -54,7 +54,7 @@ public interface ExamControllerDocs {
     );
 
     @Operation(summary = "시험 수정", description = "시험 수정 API 입니다.", responses = {
-        @ApiResponse(responseCode = "200", description = "UPDATED EXAM")
+        @ApiResponse(responseCode = "200", description = "시험 수정 성공")
     })
     CustomApiResponse<UpdateExamResponse> updateExam(
         @AuthMember Member findMember,
@@ -63,7 +63,7 @@ public interface ExamControllerDocs {
     );
 
     @Operation(summary = "시험 삭제", description = "시험 삭제 API 입니다.", responses = {
-        @ApiResponse(responseCode = "200", description = "DELETED EXAM")
+        @ApiResponse(responseCode = "200", description = "시험 삭제 성공")
     })
     ResponseEntity<CustomApiResponse> deleteExam(
         @AuthMember Member findMember,
@@ -71,7 +71,7 @@ public interface ExamControllerDocs {
     );
 
     @Operation(summary = "학생 시험 점수 수정", description = "학생 성적 수정하는 API 입니다.", responses = {
-        @ApiResponse(responseCode = "200", description = "UPDATED STUDENT-SCORE")
+        @ApiResponse(responseCode = "200", description = "학생 시험 점수 수정 성공")
     })
     CustomApiResponse<UpdateStudentScoreResponse> updateStudentScore(
         @AuthMember Member findMember,

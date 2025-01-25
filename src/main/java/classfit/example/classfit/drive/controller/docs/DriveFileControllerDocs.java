@@ -19,7 +19,7 @@ import java.util.List;
 public interface DriveFileControllerDocs {
 
     @Operation(summary = "다중 파일 업로드", description = "다중 파일 업로드 API 입니다.", responses = {
-        @ApiResponse(responseCode = "200", description = "SUCCESS")
+        @ApiResponse(responseCode = "200", description = "다중 파일 업로드 성공")
     })
     CustomApiResponse<List<String>> uploadFiles(
         @AuthMember Member member,
@@ -29,7 +29,7 @@ public interface DriveFileControllerDocs {
     );
 
     @Operation(summary = "파일 다운로드", description = "다중 파일을 압축하여 다운로드하는 API 입니다.", responses = {
-        @ApiResponse(responseCode = "200", description = "SUCCESS")
+        @ApiResponse(responseCode = "200")
     })
     ResponseEntity<InputStreamResource> downloadMultipleFiles(
         @AuthMember Member member,

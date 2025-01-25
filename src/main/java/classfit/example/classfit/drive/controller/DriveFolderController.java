@@ -27,7 +27,7 @@ public class DriveFolderController implements DriveFolderControllerDocs {
         @RequestParam(required = false, defaultValue = "") String folderPath
     ) {
         String fullPath = driveFolderService.createFolder(member, driveType, folderName, folderPath);
-        return CustomApiResponse.success(fullPath, 200, "폴더 생성 성공했습니다.");
+        return CustomApiResponse.success(fullPath, 200, "폴더 생성 성공");
     }
 
     @Override
@@ -38,6 +38,6 @@ public class DriveFolderController implements DriveFolderControllerDocs {
         @RequestParam(required = false, defaultValue = "") String folderPath
     ) {
         List<String> folders = driveFolderService.getFolders(member, driveType, folderPath);
-        return CustomApiResponse.success(folders, 200, "폴더 목록 조회 성공했습니다.");
+        return CustomApiResponse.success(folders, 200, "폴더 목록 조회 성공");
     }
 }

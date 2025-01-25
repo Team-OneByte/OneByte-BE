@@ -18,22 +18,22 @@ import org.springframework.web.bind.annotation.RequestBody;
 public interface MemberControllerDocs {
 
     @Operation(summary = "회원 가입", description = "회원가입 API 입니다.", responses = {
-        @ApiResponse(responseCode = "200", description = "회원가입이 완료되었습니다.")
+        @ApiResponse(responseCode = "200", description = "회원가입 성공")
     })
     CustomApiResponse<MemberResponse> signUp(@RequestBody @Valid MemberRequest request);
 
     @Operation(summary = "비밀번호 수정", description = "직접 회원의 비밀번호 수정 API 입니다.", responses = {
-        @ApiResponse(responseCode = "200", description = "비밀번호가 변경되었습니다.")
+        @ApiResponse(responseCode = "200", description = "비밀번호 수정 성공")
     })
     CustomApiResponse<Void> updatePassword(@RequestBody @Valid MemberPasswordRequest request);
 
     @Operation(summary = "회원정보 조회", description = "아이디에 기반한 회원정보 조회 API 입니다.", responses = {
-        @ApiResponse(responseCode = "200", description = "SUCCESS")
+        @ApiResponse(responseCode = "200", description = "회원정보 조회 성공")
     })
     CustomApiResponse<MemberInfoResponse> myPage(@AuthMember Member member);
 
     @Operation(summary = "회원정보 수정", description = "회원 정보를 수정하는 API 입니다.", responses = {
-        @ApiResponse(responseCode = "200", description = "SUCCESS")
+        @ApiResponse(responseCode = "200", description = "회원정보 수정 성공")
     })
     CustomApiResponse<MemberInfoResponse> updateMyPage(
         @AuthMember Member member,

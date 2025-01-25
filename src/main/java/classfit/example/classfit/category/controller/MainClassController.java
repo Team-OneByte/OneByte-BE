@@ -28,14 +28,14 @@ public class MainClassController implements MainClassControllerDocs {
         @Valid @RequestBody MainClassRequest request
     ) {
         MainClassResponse result = mainClassService.addMainClass(findMember, request);
-        return CustomApiResponse.success(result, 201, "메인 클래스가 생성되었습니다.");
+        return CustomApiResponse.success(result, 201, "메인 클래스 생성 성공");
     }
 
     @Override
     @GetMapping("/main-category")
     public CustomApiResponse<List<AllMainClassResponse>> showMainClass(@AuthMember Member findMember) {
         List<AllMainClassResponse> result = mainClassService.showMainClass(findMember);
-        return CustomApiResponse.success(result, 200, "메인 클래스 조회 성공했습니다.");
+        return CustomApiResponse.success(result, 200, "메인 클래스 조회 성공");
     }
 
     @Override
@@ -45,7 +45,7 @@ public class MainClassController implements MainClassControllerDocs {
         @PathVariable(name = "mainClassId") Long mainClassId
     ) {
         mainClassService.deleteMainClass(findMember, mainClassId);
-        return CustomApiResponse.success(null, 200, "메인 클래스 삭제 성공했습니다.");
+        return CustomApiResponse.success(null, 200, "메인 클래스 삭제 성공");
     }
 
     @Override
@@ -56,7 +56,7 @@ public class MainClassController implements MainClassControllerDocs {
         @Valid @RequestBody MainClassRequest request
     ) {
         MainClassResponse updateMainClass = mainClassService.updateMainClass(findMember, mainClassId, request);
-        return CustomApiResponse.success(updateMainClass, 200, "메인 클래스 수정 성공했습니다.");
+        return CustomApiResponse.success(updateMainClass, 200, "메인 클래스 수정 성공");
     }
 
 }

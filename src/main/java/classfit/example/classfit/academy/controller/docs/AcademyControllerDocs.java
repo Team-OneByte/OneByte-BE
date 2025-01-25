@@ -13,12 +13,12 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 public interface AcademyControllerDocs {
 
     @Operation(summary = "학원 생성", description = "학원 생성 API 입니다.", responses = {
-        @ApiResponse(responseCode = "200", description = "학원 생성이 완료되었습니다.")
+        @ApiResponse(responseCode = "200", description = "학원 생성 완료.")
     })
     CustomApiResponse<AcademyResponse> createAcademy(@RequestBody AcademyCreateRequest request);
 
     @Operation(summary = "학원 가입", description = "학원 코드로 등록된 학원에 가입하는 API 입니다.", responses = {
-        @ApiResponse(responseCode = "200", description = "학원 생성이 완료되었습니다.")
+        @ApiResponse(responseCode = "200", description = "학원 가입 성공")
     })
     CustomApiResponse<Void> joinAcademy(@RequestBody AcademyJoinRequest request);
 }

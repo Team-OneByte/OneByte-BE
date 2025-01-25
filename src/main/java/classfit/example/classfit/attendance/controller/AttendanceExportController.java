@@ -28,6 +28,6 @@ public class AttendanceExportController implements AttendanceExportControllerDoc
         @RequestParam(required = false) Long subClassId
     ) {
         List<StudentAttendanceResponse> attendanceData = attendanceExportService.getAttendanceData(month, subClassId, member);
-        return CustomApiResponse.success(attendanceData, 200, "SUCCESS");
+        return CustomApiResponse.success(attendanceData, 200, "엑셀 다운로드 성공");
     }
 }

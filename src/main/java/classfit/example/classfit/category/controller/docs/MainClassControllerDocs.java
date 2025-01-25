@@ -19,7 +19,7 @@ import java.util.List;
 public interface MainClassControllerDocs {
 
     @Operation(summary = "메인 클래스 추가", description = "메인 클래스를 추가하는 API입니다.", responses = {
-        @ApiResponse(responseCode = "201", description = "메인 클래스가 생성되었습니다.")
+        @ApiResponse(responseCode = "201", description = "메인 클래스 생성 성공")
     })
     CustomApiResponse<MainClassResponse> addMainClass(
         @AuthMember Member findMember,
@@ -27,12 +27,12 @@ public interface MainClassControllerDocs {
     );
 
     @Operation(summary = "메인 클래스 조회", description = "메인 클래스를 조회할 수 있는 API입니다.", responses = {
-        @ApiResponse(responseCode = "200", description = "메인 클래스 조회 성공했습니다.")
+        @ApiResponse(responseCode = "200", description = "메인 클래스 조회 성공")
     })
     CustomApiResponse<List<AllMainClassResponse>> showMainClass(@AuthMember Member findMember);
 
     @Operation(summary = "메인 클래스 삭제", description = "메인 클래스를 삭제하는 API입니다.", responses = {
-        @ApiResponse(responseCode = "200", description = "메인 클래스 삭제 성공했습니다.")
+        @ApiResponse(responseCode = "200", description = "메인 클래스 삭제 성공")
     })
     CustomApiResponse<Void> deleteMainClass(
         @AuthMember Member findMember,
@@ -40,7 +40,7 @@ public interface MainClassControllerDocs {
     );
 
     @Operation(summary = "메인 클래스 수정", description = "메인 클래스를 수정하는 API입니다.", responses = {
-        @ApiResponse(responseCode = "200", description = "메인 클래스 수정 성공했습니다.")
+        @ApiResponse(responseCode = "200", description = "메인 클래스 수정 성공")
     })
     CustomApiResponse<MainClassResponse> updateMainClass(
         @AuthMember Member findMember,

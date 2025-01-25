@@ -21,7 +21,7 @@ import java.util.List;
 public interface AttendanceControllerDocs {
 
     @Operation(summary = "전체 학생 출결 조회", description = "전체 학생의 주차별 출결 정보를 조회하는 API입니다.", responses = {
-        @ApiResponse(responseCode = "200", description = "출결 조회 성공")
+        @ApiResponse(responseCode = "200", description = "전체 학생 출결 조회 성공")
     })
     CustomApiResponse<List<StudentAttendanceResponse>> getAttendance(
         @AuthMember Member member,
@@ -30,7 +30,7 @@ public interface AttendanceControllerDocs {
     );
 
     @Operation(summary = "특정 클래스 출결 조회", description = "특정 클래스의 주차별 출결 정보를 조회하는 API입니다.", responses = {
-        @ApiResponse(responseCode = "200", description = "출결 조회 성공")
+        @ApiResponse(responseCode = "200", description = "특정 클래스 출결 조회 성공")
     })
     CustomApiResponse<List<StudentAttendanceResponse>> getClassAttendance(
         @AuthMember Member member,

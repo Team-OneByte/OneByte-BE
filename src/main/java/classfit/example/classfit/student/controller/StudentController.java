@@ -26,14 +26,14 @@ public class StudentController implements StudentControllerDocs {
     @PostMapping("/")
     public CustomApiResponse<StudentResponse> registerStudent(@RequestBody @Valid StudentRequest req) {
         StudentResponse studentResponse = studentService.registerStudent(req);
-        return CustomApiResponse.success(studentResponse, 201, "CREATED STUDENT");
+        return CustomApiResponse.success(studentResponse, 201, "학생 정보 등록 성공");
     }
 
     @Override
     @GetMapping("/")
     public CustomApiResponse<List<StudentResponse>> studentInfoAll(@AuthMember Member member) {
         List<StudentResponse> studentList = studentService.studentInfoAll(member);
-        return CustomApiResponse.success(studentList, 200, "FIND STUDENTS");
+        return CustomApiResponse.success(studentList, 200, "전체 학생 정보 조회 성공");
     }
 
     @Override
@@ -43,7 +43,7 @@ public class StudentController implements StudentControllerDocs {
         @RequestParam List<Long> studentIds
     ) {
         studentService.deleteStudent(member, studentIds);
-        return CustomApiResponse.success(studentIds.stream().toList(), 200, "DELETED STUDENT");
+        return CustomApiResponse.success(studentIds.stream().toList(), 200, "학생 정보 삭제 성공");
     }
 
     @Override
@@ -53,20 +53,20 @@ public class StudentController implements StudentControllerDocs {
         @RequestBody @Valid StudentUpdateRequest req
     ) {
         studentService.updateStudent(studentId, req);
-        return CustomApiResponse.success(studentId, 200, "UPDATED STUDENT");
+        return CustomApiResponse.success(studentId, 200, "학생 정보 수정 성공");
     }
 
     @Override
     @GetMapping("/{studentId}")
     public CustomApiResponse<StudentInfoResponse> studentInfo(@PathVariable Long studentId) {
         StudentInfoResponse studentInfo = studentService.getStudentInfo(studentId);
-        return CustomApiResponse.success(studentInfo, 200, studentInfo.name() + "의 정보");
+        return CustomApiResponse.success(studentInfo, 200, "개별 학생 정보 조회 성공");
     }
 
     @Override
     @GetMapping("/search")
     public CustomApiResponse<List<StudentResponse>> findStudentByName(@RequestParam(value = "name") String studentName) {
         List<StudentResponse> findStudents = studentService.findStudentsByName(studentName);
-        return CustomApiResponse.success(findStudents, 200, "FIND STUDENTS");
+        return CustomApiResponse.success(findStudents, 200, "학생 이름 검색 성공");
     }
 }

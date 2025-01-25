@@ -22,13 +22,13 @@ public class AcademyController implements AcademyControllerDocs {
     @PostMapping("/create")
     public CustomApiResponse<AcademyResponse> createAcademy(AcademyCreateRequest request) {
         AcademyResponse academyResponse = academyService.createAcademy(request);
-        return CustomApiResponse.success(academyResponse, 200, "학원 생성이 완료되었습니다");
+        return CustomApiResponse.success(academyResponse, 200, "학원 생성 성공");
     }
 
     @Override
     @PostMapping("/invite")
     public CustomApiResponse<Void> joinAcademy(AcademyJoinRequest request) {
         academyService.joinAcademy(request);
-        return CustomApiResponse.success(null, 200, "학원 가입을 성공했습니다.");
+        return CustomApiResponse.success(null, 200, "학원 가입 성공");
     }
 }

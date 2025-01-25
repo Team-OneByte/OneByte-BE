@@ -33,7 +33,7 @@ public class DriveFileController implements DriveFileControllerDocs {
         @RequestParam(required = false, defaultValue = "") String folderPath
     ) {
         List<String> fileUrls = driveUploadService.uploadFiles(member, driveType, multipartFiles, folderPath);
-        return CustomApiResponse.success(fileUrls, 200, "SUCCESS");
+        return CustomApiResponse.success(fileUrls, 200, "다중 파일 업로드 성공");
     }
 
     @Override

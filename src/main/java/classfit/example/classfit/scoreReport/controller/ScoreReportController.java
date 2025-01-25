@@ -30,7 +30,7 @@ public class ScoreReportController implements ScoreReportControllerDocs {
         @RequestBody @Valid CreateReportRequest request
     ) {
         CreateReportResponse response = scoreReportService.createReport(member, request);
-        return CustomApiResponse.success(response, 201, "CREATED-REPORT");
+        return CustomApiResponse.success(response, 201, "학습 리포트 생성 성공");
     }
 
     @Override
@@ -44,7 +44,7 @@ public class ScoreReportController implements ScoreReportControllerDocs {
     ) {
         List<ReportExam> exams = scoreReportService.showReportExam(member, startDate, endDate, mainClassId,
             subClassId);
-        return CustomApiResponse.success(exams, 200, "FIND-REPORT-EXAM");
+        return CustomApiResponse.success(exams, 200, "기간 내 시험지 조회 성공");
     }
 
     @Override
@@ -57,7 +57,7 @@ public class ScoreReportController implements ScoreReportControllerDocs {
     ) {
         List<FindReportResponse> response = scoreReportService.findReport(member, mainClassId,
             subClassId, memberName);
-        return CustomApiResponse.success(response, 200, "FIND-STUDENT-REPORT");
+        return CustomApiResponse.success(response, 200, "학생 리포트 검색 성공");
     }
 
     @Override
@@ -67,7 +67,7 @@ public class ScoreReportController implements ScoreReportControllerDocs {
         @PathVariable(name = "student-report-id") Long studentReportId
     ) {
         scoreReportService.deleteReport(member, studentReportId);
-        return CustomApiResponse.success(null, 200, "DELETED-STUDENT-REPORT");
+        return CustomApiResponse.success(null, 200, "학생 학습리포트 삭제 성공");
     }
 
     @Override
@@ -79,7 +79,7 @@ public class ScoreReportController implements ScoreReportControllerDocs {
     ) {
         List<FindClassStudent> response = scoreReportService.findClassStudents(member, mainClassId,
             subClassId);
-        return CustomApiResponse.success(response, 200, "FIND-CLASS-STUDENT");
+        return CustomApiResponse.success(response, 200, "클래스 별 학생 조회 성공");
     }
 
     @Override
@@ -90,7 +90,7 @@ public class ScoreReportController implements ScoreReportControllerDocs {
     ) {
         List<SentStudentOpinionResponse> response = scoreReportService.sentStudentOpinion(member,
             requests);
-        return CustomApiResponse.success(response, 200, "SENT-STUDENT-OPINION");
+        return CustomApiResponse.success(response, 200, "학생의 개인 의견 전송 성공");
     }
 
     @Override
@@ -100,13 +100,13 @@ public class ScoreReportController implements ScoreReportControllerDocs {
         @PathVariable(name = "student-report-id") Long reportId
     ) {
         ShowStudentReportResponse response = scoreReportService.showStudentReport(member, reportId);
-        return CustomApiResponse.success(response, 200, "SHOW-STUDENT-REPORT");
+        return CustomApiResponse.success(response, 200, "학생 리포트 상세조회 성공");
     }
 
     @Override
     @GetMapping("/all-report")
     public CustomApiResponse<List<FindAllReportResponse>> findAllReport(@AuthMember Member member) {
         List<FindAllReportResponse> response = scoreReportService.findAllReport(member);
-        return CustomApiResponse.success(response, 200, "FIND-ALL-STUDENT-REPORTS");
+        return CustomApiResponse.success(response, 200, "학생 리포트 전체조회 성공");
     }
 }

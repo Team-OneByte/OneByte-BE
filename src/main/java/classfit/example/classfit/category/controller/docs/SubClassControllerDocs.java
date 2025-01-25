@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 public interface SubClassControllerDocs {
 
     @Operation(summary = "하위 클래스 추가", description = "하위 클래스를 추가하는 API입니다.", responses = {
-        @ApiResponse(responseCode = "201", description = "하위 클래스가 생성되었습니다.")
+        @ApiResponse(responseCode = "201", description = "하위 클래스 생성 성공")
     })
     CustomApiResponse<SubClassResponse> addSubClass(
         @AuthMember Member findMember,
@@ -25,7 +25,7 @@ public interface SubClassControllerDocs {
     );
 
     @Operation(summary = "하위 클래스 수정", description = "하위 클래스 이름을 수정하는 API입니다.", responses = {
-        @ApiResponse(responseCode = "200", description = "하위 클래스가 수정되었습니다.")
+        @ApiResponse(responseCode = "200", description = "하위 클래스 수정 성공")
     })
     CustomApiResponse<SubClassResponse> updateSubClass(
         @AuthMember Member findMember,
@@ -34,7 +34,7 @@ public interface SubClassControllerDocs {
     );
 
     @Operation(summary = "하위 클래스 삭제", description = "하위 클래스를 삭제하는 API입니다.", responses = {
-        @ApiResponse(responseCode = "200", description = "하위 클래스가 삭제되었습니다.")
+        @ApiResponse(responseCode = "200", description = "하위 클래스 삭제 성공")
     })
     CustomApiResponse<Void> deleteSubClass(
         @AuthMember Member findMember,

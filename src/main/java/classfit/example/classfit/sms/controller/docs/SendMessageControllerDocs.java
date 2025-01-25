@@ -15,7 +15,7 @@ import java.util.List;
 public interface SendMessageControllerDocs {
 
     @Operation(summary = "단체 문자 전송", description = "학생과 학생 부모님께 문자를 전송하는 API 입니다.", responses = {
-        @ApiResponse(responseCode = "200", description = "문자가 성공적으로 전송되었습니다.")
+        @ApiResponse(responseCode = "200")
     })
     MultipleDetailMessageSentResponse sendMany(
         @AuthMember Member member,

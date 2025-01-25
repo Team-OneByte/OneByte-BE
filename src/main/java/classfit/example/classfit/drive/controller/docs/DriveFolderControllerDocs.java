@@ -16,7 +16,7 @@ import java.util.List;
 public interface DriveFolderControllerDocs {
 
     @Operation(summary = "폴더 생성", description = "새로운 폴더를 생성하는 API입니다.", responses = {
-        @ApiResponse(responseCode = "200", description = "폴더 생성 성공했습니다.")
+        @ApiResponse(responseCode = "200", description = "폴더 생성 성공")
     })
     CustomApiResponse<String> createFolder(
         @AuthMember Member member,
@@ -26,7 +26,7 @@ public interface DriveFolderControllerDocs {
     );
 
     @Operation(summary = "폴더 조회", description = "폴더들을 조회하는 API입니다.", responses = {
-        @ApiResponse(responseCode = "200", description = "폴더 목록 조회 성공했습니다.")
+        @ApiResponse(responseCode = "200", description = "폴더 목록 조회 성공")
     })
     CustomApiResponse<List<String>> getFolders(
         @AuthMember Member member,

@@ -31,7 +31,7 @@ public class ExamController implements ExamControllerDocs {
         @RequestBody CreateExamRequest req
     ) {
         CreateExamResponse response = examService.createExam(findMember, req);
-        return CustomApiResponse.success(response, 201, "CREATED EXAM");
+        return CustomApiResponse.success(response, 201, "시험 정보 등록 성공");
     }
 
     @Override
@@ -42,7 +42,7 @@ public class ExamController implements ExamControllerDocs {
     ) {
         List<ExamClassStudent> response = examService.findExamClassStudent(findMember,
             examId);
-        return CustomApiResponse.success(response, 200, "FIND EXAM-STUDENT");
+        return CustomApiResponse.success(response, 200, "해당 클래스 학생 조회 성공");
     }
 
     @Override
@@ -52,7 +52,7 @@ public class ExamController implements ExamControllerDocs {
         @RequestBody FindExamRequest request
     ) {
         List<FindExamResponse> response = examService.findExamList(findMember, request);
-        return CustomApiResponse.success(response, 200, "FIND EXAM-LIST");
+        return CustomApiResponse.success(response, 200, "시험 리스트 조회 성공");
     }
 
     @Override
@@ -62,7 +62,7 @@ public class ExamController implements ExamControllerDocs {
         @PathVariable(name = "examId") Long examId
     ) {
         ShowExamDetailResponse response = examService.showExamDetail(findMember, examId);
-        return CustomApiResponse.success(response, 200, "FIND EXAM");
+        return CustomApiResponse.success(response, 200, "시험 상세 조회 성공");
     }
 
     @Override
@@ -73,7 +73,7 @@ public class ExamController implements ExamControllerDocs {
         @RequestBody UpdateExamRequest request
     ) {
         UpdateExamResponse response = examService.updateExam(findMember, examId, request);
-        return CustomApiResponse.success(response, 200, "UPDATED EXAM");
+        return CustomApiResponse.success(response, 200, "시험 수정 성공");
     }
 
     @Override
@@ -83,7 +83,7 @@ public class ExamController implements ExamControllerDocs {
         @PathVariable(name = "examId") Long examId
     ) {
         examService.deleteExam(findMember, examId);
-        return ResponseEntity.ok(CustomApiResponse.success(null, 200, "DELETED EXAM"));
+        return ResponseEntity.ok(CustomApiResponse.success(null, 200, "시험 삭제 성공"));
     }
 
     @PatchMapping("/findexam/{examId}/score")
@@ -93,6 +93,6 @@ public class ExamController implements ExamControllerDocs {
         @RequestBody List<UpdateStudentScoreRequest> requests
     ) {
         UpdateStudentScoreResponse response = examService.updateStudentScore(findMember, examId, requests);
-        return CustomApiResponse.success(response, 200, "UPDATED-STUDENT-SCORE");
+        return CustomApiResponse.success(response, 200, "학생 시험 점수 수정 성공");
     }
 }

@@ -34,14 +34,14 @@ public class EventController implements EventControllerDocs {
         @RequestBody EventCreateRequest request
     ) {
         EventResponse createdEvent = eventService.createEvent(member, request);
-        return CustomApiResponse.success(createdEvent, 200, "CREATED");
+        return CustomApiResponse.success(createdEvent, 200, "캘린더 일정 등록 성공");
     }
 
     @Override
     @GetMapping("/academy-members")
     public CustomApiResponse<List<AcademyMemberResponse>> getAcademyMembers(@AuthMember Member member) {
         List<AcademyMemberResponse> members = memberService.getMembersByLoggedInMemberAcademy(member);
-        return CustomApiResponse.success(members, 200, "SUCCESS");
+        return CustomApiResponse.success(members, 200, "학원생 필드 조회 성공");
     }
 
     @Override
@@ -53,7 +53,7 @@ public class EventController implements EventControllerDocs {
         @RequestParam int month
     ) {
         List<EventMonthlyResponse> events = eventService.getMonthlyEventsByCalendarType(calendarType, year, month, member);
-        return CustomApiResponse.success(events, 200, "SUCCESS");
+        return CustomApiResponse.success(events, 200, "월별 일정 조회 성공");
     }
 
     @Override
@@ -63,14 +63,14 @@ public class EventController implements EventControllerDocs {
         @RequestBody EventModalRequest request
     ) {
         EventResponse createdModalEvent = eventService.createModalEvent(member, request);
-        return CustomApiResponse.success(createdModalEvent, 200, "CREATED");
+        return CustomApiResponse.success(createdModalEvent, 200, "모달 일정 등록 성공");
     }
 
     @Override
     @GetMapping("/modal/{eventId}")
     public CustomApiResponse<EventModalResponse> getEventDetails(@PathVariable Long eventId) {
         EventModalResponse event = eventService.getEvent(eventId);
-        return CustomApiResponse.success(event, 200, "SUCCESS");
+        return CustomApiResponse.success(event, 200, "모달 일정 상세 조회 성공");
     }
 
     @Override
@@ -81,14 +81,14 @@ public class EventController implements EventControllerDocs {
         @RequestBody EventModalRequest request
     ) {
         EventResponse updatedEvent = eventService.updateEvent(member, eventId, request);
-        return CustomApiResponse.success(updatedEvent, 200, "UPDATED");
+        return CustomApiResponse.success(updatedEvent, 200, "모달 일정 수정 성공");
     }
 
     @Override
     @DeleteMapping("/modal/{eventId}")
     public CustomApiResponse<Void> deleteEvent(@PathVariable Long eventId) {
         eventService.deleteEvent(eventId);
-        return CustomApiResponse.success(null, 204, "DELETED");
+        return CustomApiResponse.success(null, 204, "모달 일정 삭제 성공");
     }
 
     @Override
@@ -98,6 +98,6 @@ public class EventController implements EventControllerDocs {
         @RequestBody EventDragUpdate eventDragUpdate
     ) {
         EventResponse updatedEvent = eventService.dragUpdateEvent(eventId, eventDragUpdate);
-        return CustomApiResponse.success(updatedEvent, 200, "UPDATED");
+        return CustomApiResponse.success(updatedEvent, 200, "드래그 앤 드롭 일정 날짜 수정 성공");
     }
 }
