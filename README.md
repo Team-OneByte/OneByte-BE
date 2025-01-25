@@ -92,9 +92,9 @@
 - **협업 도구**: Figma, Notion, Swagger, Discord
 - **디자인**: Figma
 - **프론트엔드**: React, TypeScript, Styled-Components, Zustand, Vercel
-- **백엔드**: Spring Boot, Spring Security, Spring Data JPA, Redis, MySQL, Docker, Git Actions
+- **백엔드**: Spring Boot, Spring Security, Spring Data JPA
     - **데이터 베이스** : MySQL, Redis
-    - **인프라** : AWS S3, AWS Lambda, AWS EC2, AWS RDS, AWS Elastic Cache, AWS EventBridge, Nginx
+    - **인프라** : AWS EC2, AWS RDS, AWS Elastic Cache, AWS S3, Nginx
     - **가상화** : Docker
 
 ---
