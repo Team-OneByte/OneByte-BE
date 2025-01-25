@@ -1,10 +1,11 @@
 package classfit.example.classfit.event.controller;
 
 import classfit.example.classfit.auth.annotation.AuthMember;
+import classfit.example.classfit.common.CustomApiResponse;
+import classfit.example.classfit.event.controller.docs.EventControllerDocs;
+import classfit.example.classfit.event.dto.request.EventCreateRequest;
 import classfit.example.classfit.event.dto.request.EventDragUpdate;
 import classfit.example.classfit.event.dto.request.EventModalRequest;
-import classfit.example.classfit.common.ApiResponse;
-import classfit.example.classfit.event.dto.request.EventCreateRequest;
 import classfit.example.classfit.event.dto.response.EventModalResponse;
 import classfit.example.classfit.event.dto.response.EventMonthlyResponse;
 import classfit.example.classfit.event.dto.response.EventResponse;
@@ -13,103 +14,90 @@ import classfit.example.classfit.member.domain.Member;
 import classfit.example.classfit.member.dto.response.AcademyMemberResponse;
 import classfit.example.classfit.member.service.MemberService;
 import classfit.example.classfit.memberCalendar.domain.CalendarType;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/calendar")
 @RequiredArgsConstructor
-@Tag(name = "일정관리 컨트롤러", description = "일정관리 관련 API입니다.")
-public class EventController {
+public class EventController implements EventControllerDocs {
+
     private final EventService eventService;
     private final MemberService memberService;
 
+    @Override
     @PostMapping("/event")
-    @Operation(summary = "캘린더 일정 등록", description = "캘린더 일정 등록하는 api 입니다.")
-    public ApiResponse<EventResponse> createEvent(
+    public CustomApiResponse<EventResponse> createEvent(
         @AuthMember Member member,
         @RequestBody EventCreateRequest request
     ) {
         EventResponse createdEvent = eventService.createEvent(member, request);
-        return ApiResponse.success(createdEvent, 200, "CREATED");
+        return CustomApiResponse.success(createdEvent, 200, "캘린더 일정 등록 성공");
     }
 
+    @Override
     @GetMapping("/academy-members")
-    @Operation(summary = "참석자 필드 조회", description = "일정 등록 시 참석자 필드에 들어갈 리스트를 조회하는 api 입니다.")
-    public ApiResponse<List<AcademyMemberResponse>> getAcademyMembers(@AuthMember Member loggedInMember) {
-        List<AcademyMemberResponse> members = memberService.getMembersByLoggedInMemberAcademy(loggedInMember);
-        return ApiResponse.success(members, 200, "SUCCESS");
+    public CustomApiResponse<List<AcademyMemberResponse>> getAcademyMembers(@AuthMember Member member) {
+        List<AcademyMemberResponse> members = memberService.getMembersByLoggedInMemberAcademy(member);
+        return CustomApiResponse.success(members, 200, "학원생 필드 조회 성공");
     }
 
+    @Override
     @GetMapping("/monthly")
-    @Operation(summary = "월별 일정 조회", description = "월별 일정들을 조회하는 api 입니다.")
-    public ApiResponse<List<EventMonthlyResponse>> getMonthlyEvents(
+    public CustomApiResponse<List<EventMonthlyResponse>> getMonthlyEvents(
         @AuthMember Member member,
         @RequestParam CalendarType calendarType,
         @RequestParam int year,
         @RequestParam int month
     ) {
         List<EventMonthlyResponse> events = eventService.getMonthlyEventsByCalendarType(calendarType, year, month, member);
-        return ApiResponse.success(events, 200, "SUCCESS");
+        return CustomApiResponse.success(events, 200, "월별 일정 조회 성공");
     }
 
+    @Override
     @PostMapping("/modal")
-    @Operation(summary = "모달 일정 등록", description = "모달 일정을 등록하는 api 입니다.")
-    public ApiResponse<EventResponse> createModalEvent(
+    public CustomApiResponse<EventResponse> createModalEvent(
         @AuthMember Member member,
         @RequestBody EventModalRequest request
     ) {
         EventResponse createdModalEvent = eventService.createModalEvent(member, request);
-        return ApiResponse.success(createdModalEvent, 200, "CREATED");
+        return CustomApiResponse.success(createdModalEvent, 200, "모달 일정 등록 성공");
     }
 
+    @Override
     @GetMapping("/modal/{eventId}")
-    @Operation(summary = "모달 일정 상세 조회", description = "모달 일정을 상세조회하는 api 입니다.")
-    public ApiResponse<EventModalResponse> getEventDetails(
-        @PathVariable Long eventId
-    ) {
+    public CustomApiResponse<EventModalResponse> getEventDetails(@PathVariable Long eventId) {
         EventModalResponse event = eventService.getEvent(eventId);
-        return ApiResponse.success(event, 200, "SUCCESS");
+        return CustomApiResponse.success(event, 200, "모달 일정 상세 조회 성공");
     }
 
+    @Override
     @PatchMapping("/modal/{eventId}")
-    @Operation(summary = "모달 일정 수정", description = "모달 일정을 수정하는 api 입니다.")
-    public ApiResponse<EventResponse> updateEventDetails(
+    public CustomApiResponse<EventResponse> updateEventDetails(
         @AuthMember Member member,
         @PathVariable Long eventId,
         @RequestBody EventModalRequest request
     ) {
         EventResponse updatedEvent = eventService.updateEvent(member, eventId, request);
-        return ApiResponse.success(updatedEvent, 200, "UPDATED");
+        return CustomApiResponse.success(updatedEvent, 200, "모달 일정 수정 성공");
     }
 
+    @Override
     @DeleteMapping("/modal/{eventId}")
-    @Operation(summary = "모달 일정 삭제", description = "모달 일정을 삭제하는 api 입니다.")
-    public ApiResponse<EventResponse> deleteEvent(
-        @PathVariable Long eventId
-    ) {
+    public CustomApiResponse<Void> deleteEvent(@PathVariable Long eventId) {
         eventService.deleteEvent(eventId);
-        return ApiResponse.success(null, 204, "DELETED");
+        return CustomApiResponse.success(null, 204, "모달 일정 삭제 성공");
     }
 
+    @Override
     @PatchMapping("/drag/{eventId}")
-    @Operation(summary = "드래그 앤 드롭 일정 날짜 수정", description = "드래그 앤 드롭으로 일정 날짜 수정하는 api 입니다.")
-    public ApiResponse<EventResponse> dragUpdateEventDate(
+    public CustomApiResponse<EventResponse> dragUpdateEventDate(
         @PathVariable Long eventId,
         @RequestBody EventDragUpdate eventDragUpdate
     ) {
         EventResponse updatedEvent = eventService.dragUpdateEvent(eventId, eventDragUpdate);
-        return ApiResponse.success(updatedEvent, 200, "UPDATED");
+        return CustomApiResponse.success(updatedEvent, 200, "드래그 앤 드롭 일정 날짜 수정 성공");
     }
 }

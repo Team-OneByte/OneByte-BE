@@ -3,7 +3,7 @@ package classfit.example.classfit.auth.security.filter;
 import classfit.example.classfit.auth.dto.request.UserRequest;
 import classfit.example.classfit.auth.security.custom.CustomAuthenticationToken;
 import classfit.example.classfit.auth.security.jwt.JWTUtil;
-import classfit.example.classfit.common.ApiResponse;
+import classfit.example.classfit.common.CustomApiResponse;
 import classfit.example.classfit.common.exception.ClassfitAuthException;
 import classfit.example.classfit.common.exception.ClassfitException;
 import classfit.example.classfit.common.util.CookieUtil;
@@ -62,10 +62,10 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest req, HttpServletResponse res, AuthenticationException failed) throws IOException {
         if (failed instanceof ClassfitAuthException) {
-            ApiResponse.errorResponse(res, failed.getMessage(), ((ClassfitAuthException) failed).getHttpStatusCode());
+            CustomApiResponse.errorResponse(res, failed.getMessage(), ((ClassfitAuthException) failed).getHttpStatusCode());
             return;
         }
-        ApiResponse.errorResponse(res, "아이디 또는 비밀번호가 잘못되었습니다.", HttpServletResponse.SC_UNAUTHORIZED);
+        CustomApiResponse.errorResponse(res, "아이디 또는 비밀번호가 잘못되었습니다.", HttpServletResponse.SC_UNAUTHORIZED);
     }
 
     private UserRequest parseRequest(HttpServletRequest request) {

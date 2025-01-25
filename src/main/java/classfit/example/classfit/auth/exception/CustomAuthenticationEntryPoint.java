@@ -1,6 +1,6 @@
 package classfit.example.classfit.auth.exception;
 
-import classfit.example.classfit.common.ApiResponse;
+import classfit.example.classfit.common.CustomApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
@@ -15,6 +15,6 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException {
-        ApiResponse.errorResponse(response, "접근 권한이 없습니다.", HttpStatus.UNAUTHORIZED.value());
+        CustomApiResponse.errorResponse(response, "접근 권한이 없습니다.", HttpStatus.UNAUTHORIZED.value());
     }
 }

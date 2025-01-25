@@ -7,15 +7,15 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public record ApiResponse<T>(int statusCode, ResultType resultType, T data, ErrorResult error,
-                             String message) {
+public record CustomApiResponse<T>(int statusCode, ResultType resultType, T data, ErrorResult error,
+                                   String message) {
 
-    public static <T> ApiResponse<T> success(T data, int statusCode, String message) {
-        return new ApiResponse<>(statusCode, ResultType.SUCCESS, data, null, message);
+    public static <T> CustomApiResponse<T> success(T data, int statusCode, String message) {
+        return new CustomApiResponse<>(statusCode, ResultType.SUCCESS, data, null, message);
     }
 
-    public static ApiResponse<?> fail(int statusCode, String errorMessage) {
-        return new ApiResponse<>(statusCode, ResultType.FAIL, null, new ErrorResult(errorMessage),
+    public static CustomApiResponse<?> fail(int statusCode, String errorMessage) {
+        return new CustomApiResponse<>(statusCode, ResultType.FAIL, null, new ErrorResult(errorMessage),
             null);
     }
 

@@ -6,7 +6,6 @@ import classfit.example.classfit.academy.dto.request.AcademyJoinRequest;
 import classfit.example.classfit.academy.dto.response.AcademyResponse;
 import classfit.example.classfit.academy.repository.AcademyRepository;
 import classfit.example.classfit.common.exception.ClassfitException;
-import classfit.example.classfit.common.util.EmailUtil;
 import classfit.example.classfit.invitation.domain.Invitation;
 import classfit.example.classfit.invitation.domain.InvitationStatus;
 import classfit.example.classfit.invitation.repository.InvitationRepository;
@@ -64,10 +63,6 @@ public class AcademyService {
         member.updateRole("MEMBER");
 
         academy.addMember(member);
-    }
-
-    public String createCode() {
-        return EmailUtil.createdCode();
     }
 }
 

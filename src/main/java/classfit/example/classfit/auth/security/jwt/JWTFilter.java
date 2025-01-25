@@ -2,7 +2,7 @@ package classfit.example.classfit.auth.security.jwt;
 
 import classfit.example.classfit.auth.security.custom.CustomUserDetailService;
 import classfit.example.classfit.auth.security.custom.CustomUserDetails;
-import classfit.example.classfit.common.ApiResponse;
+import classfit.example.classfit.common.CustomApiResponse;
 import classfit.example.classfit.common.exception.ClassfitAuthException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -56,7 +56,7 @@ public class JWTFilter extends OncePerRequestFilter {
 
             filterChain.doFilter(request, response);
         } catch (ClassfitAuthException ex) {
-            ApiResponse.errorResponse(response, ex.getMessage(), ex.getHttpStatusCode());
+            CustomApiResponse.errorResponse(response, ex.getMessage(), ex.getHttpStatusCode());
         }
     }
 }
