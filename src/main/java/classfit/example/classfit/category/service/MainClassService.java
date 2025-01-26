@@ -37,7 +37,7 @@ public class MainClassService {
         MainClass mainClass = new MainClass(req.mainClassName(), academy);
         mainClassRepository.save(mainClass);
 
-        return new MainClassResponse(mainClass.getId(), mainClass.getMainClassName());
+        return MainClassResponse.from(mainClass);
     }
 
     @Transactional(readOnly = true)

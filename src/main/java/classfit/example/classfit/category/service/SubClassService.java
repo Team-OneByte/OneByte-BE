@@ -24,7 +24,6 @@ public class SubClassService {
 
     private final SubClassRepository subClassRepository;
     private final MainClassRepository mainClassRepository;
-    private final MemberRepository memberRepository;
 
     private static void checkMemberRelationMainClass(Member findMember, MainClass findMainClass) {
         if (!Objects.equals(findMember.getAcademy().getId(), findMainClass.getAcademy().getId())) {
@@ -45,7 +44,6 @@ public class SubClassService {
 
 
     @Transactional
-// 서브클래스 추가
     public SubClassResponse createSubClass(@AuthMember Member findMember, SubClassRequest req) {
         Academy findAcademy = findMember.getAcademy();
 
@@ -65,12 +63,10 @@ public class SubClassService {
 
         subClassRepository.save(subClass);
 
-        return new SubClassResponse(req.mainClassId(), subClass.getId(),
-            subClass.getSubClassName());
+        return SubClassResponse.from(subClass);
     }
 
     @Transactional
-    // 서브 클래스 수정
     public SubClassResponse updateSubClass(@AuthMember Member findMember, Long subClassId, SubClassRequest req) {
         MainClass findMainClass = mainClassRepository.findById(req.mainClassId()).orElseThrow(
             () -> new ClassfitException("메인 클래스를 찾을 수 없어요.", HttpStatus.NOT_FOUND));
@@ -87,7 +83,6 @@ public class SubClassService {
     }
 
     @Transactional
-    // 서브 클래스 삭제
     public void deleteSubClass(@AuthMember Member findMember, Long subClassId) {
 
         SubClass findSubClass = subClassRepository.findById(subClassId).orElseThrow(

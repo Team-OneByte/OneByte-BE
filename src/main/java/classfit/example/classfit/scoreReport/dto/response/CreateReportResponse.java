@@ -22,9 +22,9 @@ public record CreateReportResponse(
 ) {
     public static CreateReportResponse of(List<StudentList> studentList, Long mainClassId, Long subClassId,
             String reportName, LocalDate startDate, LocalDate endDate,
-            Member member) {
+            Member member,boolean includeAverage) {
         return new CreateReportResponse(
-                false,
+                includeAverage,
                 mainClassId,
                 subClassId,
                 studentList,

@@ -100,7 +100,8 @@ public class ScoreReportService {
                 request.reportName(),
                 request.startDate(),
                 request.endDate(),
-                member
+                member,
+                request.includeAverage()
         );
     }
 
