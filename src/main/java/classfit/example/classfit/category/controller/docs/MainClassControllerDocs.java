@@ -21,7 +21,7 @@ public interface MainClassControllerDocs {
     @Operation(summary = "메인 클래스 추가", description = "메인 클래스를 추가하는 API입니다.", responses = {
         @ApiResponse(responseCode = "201", description = "메인 클래스 생성 성공")
     })
-    CustomApiResponse<MainClassResponse> addMainClass(
+    CustomApiResponse<MainClassResponse> createMainClass(
         @AuthMember Member findMember,
         @Valid @RequestBody MainClassRequest req
     );

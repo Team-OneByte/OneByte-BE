@@ -23,9 +23,8 @@ public class MainClassService {
 
     private final MainClassRepository mainClassRepository;
 
-    // 메인 클래스 추가
     @Transactional
-    public MainClassResponse addMainClass(@AuthMember Member findMember, MainClassRequest req) {
+    public MainClassResponse createMainClass(@AuthMember Member findMember, MainClassRequest req) {
 
         Academy academy = findMember.getAcademy();
 
@@ -41,7 +40,6 @@ public class MainClassService {
         return new MainClassResponse(mainClass.getId(), mainClass.getMainClassName());
     }
 
-    // 메인 클래스 전체 조회
     @Transactional(readOnly = true)
     public List<AllMainClassResponse> showMainClass(Member findMember) {
 
@@ -53,7 +51,6 @@ public class MainClassService {
             mainClass.getMainClassName())).toList();
     }
 
-    // 메인 클래스 삭제
     @Transactional
     public void deleteMainClass(Member findMember, Long mainClassId) {
 
