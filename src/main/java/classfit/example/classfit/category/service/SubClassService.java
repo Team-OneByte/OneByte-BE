@@ -28,7 +28,7 @@ public class SubClassService {
 
     private static void checkMemberRelationMainClass(Member findMember, MainClass findMainClass) {
         if (!Objects.equals(findMember.getAcademy().getId(), findMainClass.getAcademy().getId())) {
-            throw new ClassfitException(ErrorCode.INVALID_MAIN_CLASS_ACCESS);
+            throw new ClassfitException(ErrorCode.MAIN_CLASS_ACCESS_INVALID);
         }
     }
 
@@ -39,7 +39,7 @@ public class SubClassService {
                 .anyMatch(member -> member.getId().equals(findMember.getId()));
 
         if (!isMemberInAcademy) {
-            throw new ClassfitException(ErrorCode.INVALID_ACADEMY_ACCESS);
+            throw new ClassfitException(ErrorCode.ACADEMY_ACCESS_INVALID);
         }
     }
 

@@ -23,7 +23,7 @@ public class CustomAuthenticationProvider extends DaoAuthenticationProvider {
         CustomUserDetails userDetails = (CustomUserDetails) result.getPrincipal();
 
         if (userDetails.member().getAcademy() == null) {
-            throw new ClassfitAuthException(ErrorCode.INVALID_MEMBER_ACADEMY);
+            throw new ClassfitAuthException(ErrorCode.MEMBER_ACADEMY_INVALID);
         }
 
         return new CustomAuthenticationToken(

@@ -33,7 +33,7 @@ public class GlobalExceptionHandler {
 
         log.error(">>> ArgumentTypeMismatchException: {}", errorMessages);
         return ResponseEntity.badRequest()
-            .body(CustomApiResponse.fail(ErrorCode.INVALID_PARAMETER, errorMessages));
+            .body(CustomApiResponse.fail(ErrorCode.PARAMETER_INVALID, errorMessages));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -45,7 +45,7 @@ public class GlobalExceptionHandler {
 
         log.error(">>> ArgumentNotValidException: {}", errorMessages);
         return ResponseEntity.badRequest()
-            .body(CustomApiResponse.fail(ErrorCode.INVALID_PARAMETER, errorMessages));
+            .body(CustomApiResponse.fail(ErrorCode.PARAMETER_INVALID, errorMessages));
     }
 
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
@@ -54,7 +54,7 @@ public class GlobalExceptionHandler {
 
         final List<String> errorMessages = List.of("지원되지 않는 HTTP 메서드입니다.");
         return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED)
-            .body(CustomApiResponse.fail(ErrorCode.INVALID_METHOD, errorMessages));
+            .body(CustomApiResponse.fail(ErrorCode.METHOD_INVALID, errorMessages));
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
@@ -66,10 +66,10 @@ public class GlobalExceptionHandler {
                 "알 수 없는 필드" : mismatchedInputException.getPath().get(0).getFieldName();
 
             return ResponseEntity.badRequest()
-                .body(CustomApiResponse.fail(ErrorCode.INVALID_PARAMETER, List.of(fieldName + " 필드의 값이 잘못되었습니다.")));
+                .body(CustomApiResponse.fail(ErrorCode.PARAMETER_INVALID, List.of(fieldName + " 필드의 값이 잘못되었습니다.")));
         }
         return ResponseEntity.badRequest()
-            .body(CustomApiResponse.fail(ErrorCode.INVALID_PARAMETER, List.of("확인할 수 없는 형태의 데이터가 들어왔습니다")));
+            .body(CustomApiResponse.fail(ErrorCode.PARAMETER_INVALID, List.of("확인할 수 없는 형태의 데이터가 들어왔습니다")));
     }
 
     @ExceptionHandler(EntityNotFoundException.class)

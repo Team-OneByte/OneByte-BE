@@ -45,7 +45,7 @@ public class AuthService {
         }
 
         if (!REFRESH_TOKEN_CATEGORY.equals(jwtUtil.getCategory(refreshToken))) {
-            throw new ClassfitException(ErrorCode.INVALID_TOKEN);
+            throw new ClassfitException(ErrorCode.TOKEN_INVALID);
         }
 
         String email = jwtUtil.getEmail(refreshToken);

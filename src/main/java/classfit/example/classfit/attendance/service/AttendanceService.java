@@ -69,7 +69,7 @@ public class AttendanceService {
         } else if (entity instanceof ClassStudent) {
             return ((ClassStudent) entity).getStudent();
         }
-        throw new ClassfitException(ErrorCode.INVALID_ENTITY_TYPE);
+        throw new ClassfitException(ErrorCode.ENTITY_TYPE_INVALID);
     }
 
     public List<LocalDate> getWeeklyAttendanceRange(int weekOffset) {

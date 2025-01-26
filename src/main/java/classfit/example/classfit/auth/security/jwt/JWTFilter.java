@@ -45,7 +45,7 @@ public class JWTFilter extends OncePerRequestFilter {
             }
 
             if (!ACCESS_TOKEN_CATEGORY.equals(jwtUtil.getCategory(accessToken))) {
-                throw new ClassfitAuthException(ErrorCode.INVALID_TOKEN);
+                throw new ClassfitAuthException(ErrorCode.TOKEN_INVALID);
             }
 
             String email = jwtUtil.getEmail(accessToken);

@@ -114,7 +114,7 @@ public class CalendarCategoryService {
 
     public CalendarCategory getCategoryById(Long categoryId) {
         return calendarCategoryRepository.findById(categoryId)
-            .orElseThrow(() -> new ClassfitException(ErrorCode.CATEGORY_NOT_FOUND));
+            .orElseThrow(() -> new ClassfitException(ErrorCode.EVENT_CATEGORY_NOT_FOUND));
     }
 
     @Transactional

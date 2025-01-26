@@ -103,7 +103,7 @@ public class MemberService {
 
     private boolean hasAcademy(Member loggedInMember) {
         if (loggedInMember.getAcademy() == null) {
-            throw new ClassfitException(ErrorCode.INVALID_MEMBER_ACADEMY);
+            throw new ClassfitException(ErrorCode.MEMBER_ACADEMY_INVALID);
         }
         return true;
     }

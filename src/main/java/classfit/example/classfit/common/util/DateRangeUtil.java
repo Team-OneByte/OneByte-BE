@@ -10,7 +10,7 @@ import java.util.List;
 public class DateRangeUtil {
     public static void validateWeekOffset(int weekOffset) {
         if (weekOffset < -4 || weekOffset > 2) {
-            throw new ClassfitException(ErrorCode.INVALID_WEEK_VALUE);
+            throw new ClassfitException(ErrorCode.ATTENDANCE_WEEK_VALUE_INVALID);
         }
     }
 

@@ -57,10 +57,10 @@ public class ExamService {
         Academy academy = academyRepository.findById(academyId)
                 .orElseThrow(() -> new ClassfitException(ErrorCode.ACADEMY_NOT_FOUND));
         if (!Objects.equals(member.getAcademy().getId(), academyId)) {
-            throw new ClassfitException(ErrorCode.INVALID_ACADEMY_ACCESS);
+            throw new ClassfitException(ErrorCode.ACADEMY_ACCESS_INVALID);
         }
         if (!Objects.equals(academy.getId(), academyId)) {
-            throw new ClassfitException(ErrorCode.INVALID_ACADEMY_ACCESS);
+            throw new ClassfitException(ErrorCode.ACADEMY_ACCESS_INVALID);
         }
     }
 

@@ -13,7 +13,6 @@ import classfit.example.classfit.invitation.repository.InvitationRepository;
 import classfit.example.classfit.member.domain.Member;
 import classfit.example.classfit.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -52,10 +51,10 @@ public class AcademyService {
     public void joinAcademy(AcademyJoinRequest request) {
 
         Academy academy = academyRepository.findByCode(request.code())
-            .orElseThrow(() -> new ClassfitException(ErrorCode.INVALID_AUTH_CODE));
+            .orElseThrow(() -> new ClassfitException(ErrorCode.EMAIL_AUTH_CODE_INVALID));
 
         Invitation invitation = invitationRepository.findByAcademyIdAndEmail(academy.getId(), request.email())
-            .orElseThrow(() -> new ClassfitException(ErrorCode.INVALID_INVITATION));
+            .orElseThrow(() -> new ClassfitException(ErrorCode.ACADEMY_INVITATION_INVALID));
 
         Member member = memberRepository.findByEmail(request.email())
             .orElseThrow(() -> new ClassfitException(ErrorCode.EMAIL_NOT_FOUND));

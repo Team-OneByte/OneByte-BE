@@ -46,7 +46,7 @@ public class Attendance {
         try {
             this.status = AttendanceStatus.valueOf(status.toUpperCase());
         } catch (IllegalArgumentException e) {
-            throw new ClassfitException(ErrorCode.INVALID_STATUS_TYPE);
+            throw new ClassfitException(ErrorCode.ATTENDANCE_STATUS_INVALID);
         }
     }
 }

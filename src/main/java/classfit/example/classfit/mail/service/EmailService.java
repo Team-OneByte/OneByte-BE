@@ -38,7 +38,7 @@ public class EmailService {
         EmailHandler handler = handlers.stream()
             .filter(h -> h.supports(purpose))
             .findFirst()
-            .orElseThrow(() -> new ClassfitException(ErrorCode.INVALID_EMAIL_TYPE));
+            .orElseThrow(() -> new ClassfitException(ErrorCode.EMAIL_TYPE_INVALID));
 
         handler.validate(email);
         String authCode = EmailUtil.createdCode();
@@ -60,11 +60,11 @@ public class EmailService {
         String authCode = redisUtil.getData("email_code:" + request.purpose() + ":" + request.email());
 
         if (authCode == null) {
-            throw new ClassfitException(ErrorCode.AUTH_CODE_INVALID_OR_EXPIRED);
+            throw new ClassfitException(ErrorCode.EMAIL_AUTH_CODE_INVALID_OR_EXPIRED);
         }
 
         if (!authCode.equals(request.code())) {
-            throw new ClassfitException(ErrorCode.INVALID_AUTH_CODE);
+            throw new ClassfitException(ErrorCode.EMAIL_AUTH_CODE_INVALID);
         }
 
         String emailJwt = jwtUtil.createEmailJwt("email", 60 * 5L);

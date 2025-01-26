@@ -27,7 +27,7 @@ public class DriveUtil {
             Long academyId = member.getAcademy().getId();
             return String.format("shared/%d/%s%s", academyId, fullFolderPath, fileName);
         }
-        throw new ClassfitException(ErrorCode.INVALID_DRIVE_TYPE);
+        throw new ClassfitException(ErrorCode.DRIVE_TYPE_INVALID);
     }
 
     public static String buildPrefix(DriveType driveType, Member member, String folderPath) {

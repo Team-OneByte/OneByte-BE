@@ -39,7 +39,7 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
         UserRequest userRequest = parseRequest(request);
         userRequest.validate().ifPresent(errorMessage -> {
-            throw new ClassfitAuthException(ErrorCode.INVALID_REQUEST_FORMAT);
+            throw new ClassfitAuthException(ErrorCode.REQUEST_FORMAT_INVALID);
         });
 
         CustomAuthenticationToken authRequest = new CustomAuthenticationToken(
@@ -66,7 +66,7 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
             CustomApiResponse.errorResponse(res, failed.getMessage(), ((ClassfitAuthException) failed).getHttpStatusCode());
             return;
         }
-        CustomApiResponse.errorResponse(res, ErrorCode.INVALID_CREDENTIALS.getMessage(), ErrorCode.INVALID_CREDENTIALS.getStatusCode());
+        CustomApiResponse.errorResponse(res, ErrorCode.CREDENTIALS_INVALID.getMessage(), ErrorCode.CREDENTIALS_INVALID.getStatusCode());
     }
 
     private UserRequest parseRequest(HttpServletRequest request) {
@@ -74,7 +74,7 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
             ObjectMapper objectMapper = new ObjectMapper();
             return objectMapper.readValue(request.getInputStream(), UserRequest.class);
         } catch (IOException e) {
-            throw new ClassfitException(ErrorCode.INVALID_REQUEST_FORMAT);
+            throw new ClassfitException(ErrorCode.REQUEST_FORMAT_INVALID);
         }
     }
 

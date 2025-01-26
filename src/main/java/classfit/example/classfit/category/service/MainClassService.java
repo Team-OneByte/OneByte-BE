@@ -62,7 +62,7 @@ public class MainClassService {
             () -> new ClassfitException(ErrorCode.MAIN_CLASS_NOT_FOUND));
 
         if (!Objects.equals(findMember.getAcademy(), mainClass.getAcademy())) {
-            throw new ClassfitException(ErrorCode.INVALID_ACADEMY_ACCESS);
+            throw new ClassfitException(ErrorCode.ACADEMY_ACCESS_INVALID);
         }
 
         mainClassRepository.delete(mainClass);
@@ -76,7 +76,7 @@ public class MainClassService {
             () -> new ClassfitException(ErrorCode.MAIN_CLASS_NOT_FOUND));
 
         if (!Objects.equals(findMember.getAcademy(), mainClass.getAcademy())) {
-            throw new ClassfitException(ErrorCode.INVALID_ACADEMY_ACCESS);
+            throw new ClassfitException(ErrorCode.ACADEMY_ACCESS_INVALID);
         }
         mainClass.updateMainClassName(request.mainClassName());
         return new MainClassResponse(mainClass.getId(), mainClass.getMainClassName());

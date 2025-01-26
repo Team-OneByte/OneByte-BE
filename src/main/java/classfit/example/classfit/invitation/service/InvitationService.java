@@ -29,7 +29,7 @@ public class InvitationService {
         Academy academy = member.getAcademy();
 
         if (academy == null) {
-            throw new ClassfitException(ErrorCode.INVALID_INVITATION);
+            throw new ClassfitException(ErrorCode.ACADEMY_INVITATION_INVALID);
         }
 
         return academy.getCode();
