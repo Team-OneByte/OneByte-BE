@@ -13,7 +13,9 @@ import java.util.List;
 
 public record CreateReportRequest
     (
-        Long mainClassId, Long subClassId, String reportName,
+        Long mainClassId,
+        Long subClassId,
+        String reportName,
         Boolean includeAverage,
         @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
         @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate,

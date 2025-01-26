@@ -46,7 +46,7 @@ public class SubClassService {
 
     @Transactional
 // 서브클래스 추가
-    public SubClassResponse addSubClass(@AuthMember Member findMember, SubClassRequest req) {
+    public SubClassResponse createSubClass(@AuthMember Member findMember, SubClassRequest req) {
         Academy findAcademy = findMember.getAcademy();
 
         MainClass findMainClass = mainClassRepository.findById(req.mainClassId())

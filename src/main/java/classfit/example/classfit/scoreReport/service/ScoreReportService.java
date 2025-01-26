@@ -55,11 +55,11 @@ public class ScoreReportService {
     public CreateReportResponse createReport(@AuthMember Member member,
                                              CreateReportRequest request) {
         MainClass mainClass = mainClassRepository.findById(request.mainClassId())
-            .orElseThrow(
-                () -> new ClassfitException("메인 클래스를 찾을 수 없어요.", HttpStatus.NOT_FOUND));
+                .orElseThrow(
+                        () -> new ClassfitException("메인 클래스를 찾을 수 없어요.", HttpStatus.NOT_FOUND));
         SubClass subClass = subClassRepository.findById(request.subClassId())
-            .orElseThrow(
-                () -> new ClassfitException("서브 클래스를 찾을 수 없어요.", HttpStatus.NOT_FOUND));
+                .orElseThrow(
+                        () -> new ClassfitException("서브 클래스를 찾을 수 없어요.", HttpStatus.NOT_FOUND));
         validateAcademy(member, member.getAcademy().getId());
 
         List<Exam> exams = examRepository.findAllById(request.examIdList());
@@ -68,7 +68,7 @@ public class ScoreReportService {
         }
 
         List<ClassStudent> studentsInSubClass = classStudentRepository.findAllBySubClassId(
-            subClass.getId());
+                subClass.getId());
         if (studentsInSubClass.isEmpty()) {
             throw new ClassfitException("해당 클래스에 학생이 없습니다.", HttpStatus.NOT_FOUND);
         }
@@ -85,24 +85,23 @@ public class ScoreReportService {
 
             for (Long examId : request.examIdList()) {
                 StudentExamScore studentExamScore = studentExamScoreRepository.findByStudentAndExamId(
-                        student, examId)
-                    .orElseThrow(() -> new ClassfitException("시험 점수를 찾을 수 없어요.",
-                        HttpStatus.NOT_FOUND));
+                                student, examId)
+                        .orElseThrow(() -> new ClassfitException("시험 점수를 찾을 수 없어요.",
+                                HttpStatus.NOT_FOUND));
                 studentExamScore.updateScoreReport(report);
                 studentExamScoreRepository.save(studentExamScore);
             }
         }
 
-        return CreateReportResponse.builder()
-            .mainClassId(mainClass.getId())
-            .subClassId(subClass.getId())
-            .studentList(allStudents)
-            .reportName(request.reportName())
-            .startDate(request.startDate())
-            .endDate(request.endDate())
-            .examIdList(exams.stream().map(Exam::getId).toList())
-            .overallOpinion(request.overallOpinion())
-            .build();
+        return CreateReportResponse.of(
+                allStudents,
+                mainClass.getId(),
+                subClass.getId(),
+                request.reportName(),
+                request.startDate(),
+                request.endDate(),
+                member
+        );
     }
 
 
