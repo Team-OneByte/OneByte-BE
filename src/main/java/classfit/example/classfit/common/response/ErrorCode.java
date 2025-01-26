@@ -23,7 +23,7 @@ public enum ErrorCode {
     COOKIE_NOT_FOUND("쿠키가 존재하지 않습니다.", HttpStatus.BAD_REQUEST),
     REFRESH_TOKEN_NOT_FOUND("Refresh 토큰이 존재하지 않습니다.", HttpStatus.BAD_REQUEST),
     REFRESH_TOKEN_EXPIRED("Refresh 토큰이 만료되었습니다.", HttpStatus.BAD_REQUEST),
-    ACCESS_TOKEN_EXPIRED("Access 토큰이 만료되었습니다.", HttpStatus.BAD_REQUEST),
+    ACCESS_TOKEN_EXPIRED("Access 토큰이 만료되었습니다.", HttpStatus.REQUEST_TIMEOUT),
     INVALID_TOKEN("유효하지 않은 토큰입니다.", HttpStatus.BAD_REQUEST),
     REFRESH_TOKEN_INVALID_OR_EXPIRED("Refresh 토큰이 유효하지 않거나 만료되었습니다.", HttpStatus.NOT_FOUND),
 
@@ -34,7 +34,7 @@ public enum ErrorCode {
 
     // 멤버/이메일
     MEMBER_NOT_FOUND("멤버를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
-    INVALID_MEMBER_ACADEMY("로그인한 멤버는 학원에 소속되어 있지 않습니다.", HttpStatus.FORBIDDEN),
+    INVALID_MEMBER_ACADEMY("로그인한 멤버는 학원에 소속되어 있지 않습니다.", HttpStatus.UNPROCESSABLE_ENTITY),
 
     EMAIL_NOT_FOUND("계정이 존재하지 않습니다.", HttpStatus.NOT_FOUND),
     EMAIL_ALREADY_EXISTS("이미 가입된 이메일입니다.", HttpStatus.CONFLICT),
