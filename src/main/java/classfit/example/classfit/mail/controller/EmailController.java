@@ -1,6 +1,6 @@
 package classfit.example.classfit.mail.controller;
 
-import classfit.example.classfit.common.CustomApiResponse;
+import classfit.example.classfit.common.response.CustomApiResponse;
 import classfit.example.classfit.mail.controller.docs.EmailControllerDocs;
 import classfit.example.classfit.mail.dto.request.EmailRequest;
 import classfit.example.classfit.mail.dto.request.EmailVerifyRequest;

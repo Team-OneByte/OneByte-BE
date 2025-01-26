@@ -1,4 +1,4 @@
-package classfit.example.classfit.common;
+package classfit.example.classfit.common.response;
 
 import classfit.example.classfit.common.domain.ResultType;
 import com.fasterxml.jackson.annotation.JsonInclude;

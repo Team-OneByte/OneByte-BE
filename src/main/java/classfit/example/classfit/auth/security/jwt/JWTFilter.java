@@ -2,7 +2,7 @@ package classfit.example.classfit.auth.security.jwt;
 
 import classfit.example.classfit.auth.security.custom.CustomUserDetailService;
 import classfit.example.classfit.auth.security.custom.CustomUserDetails;
-import classfit.example.classfit.common.CustomApiResponse;
+import classfit.example.classfit.common.response.CustomApiResponse;
 import classfit.example.classfit.common.exception.ClassfitAuthException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

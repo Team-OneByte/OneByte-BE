@@ -5,7 +5,7 @@ import classfit.example.classfit.category.controller.docs.SubClassControllerDocs
 import classfit.example.classfit.category.dto.request.SubClassRequest;
 import classfit.example.classfit.category.dto.response.SubClassResponse;
 import classfit.example.classfit.category.service.SubClassService;
-import classfit.example.classfit.common.CustomApiResponse;
+import classfit.example.classfit.common.response.CustomApiResponse;
 import classfit.example.classfit.member.domain.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;

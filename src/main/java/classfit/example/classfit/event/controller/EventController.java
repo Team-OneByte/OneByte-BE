@@ -1,7 +1,7 @@
 package classfit.example.classfit.event.controller;
 
 import classfit.example.classfit.auth.annotation.AuthMember;
-import classfit.example.classfit.common.CustomApiResponse;
+import classfit.example.classfit.common.response.CustomApiResponse;
 import classfit.example.classfit.event.controller.docs.EventControllerDocs;
 import classfit.example.classfit.event.dto.request.EventCreateRequest;
 import classfit.example.classfit.event.dto.request.EventDragUpdate;
