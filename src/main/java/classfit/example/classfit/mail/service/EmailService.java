@@ -2,6 +2,7 @@ package classfit.example.classfit.mail.service;
 
 import classfit.example.classfit.auth.security.jwt.JWTUtil;
 import classfit.example.classfit.common.exception.ClassfitException;
+import classfit.example.classfit.common.response.ErrorCode;
 import classfit.example.classfit.common.util.EmailUtil;
 import classfit.example.classfit.common.util.RedisUtil;
 import classfit.example.classfit.mail.dto.request.EmailPurpose;
@@ -37,7 +38,7 @@ public class EmailService {
         EmailHandler handler = handlers.stream()
             .filter(h -> h.supports(purpose))
             .findFirst()
-            .orElseThrow(() -> new ClassfitException("지원하지 않는 이메일 사용 수단입니다.", HttpStatus.NOT_FOUND));
+            .orElseThrow(() -> new ClassfitException(ErrorCode.INVALID_EMAIL_TYPE));
 
         handler.validate(email);
         String authCode = EmailUtil.createdCode();
@@ -59,11 +60,11 @@ public class EmailService {
         String authCode = redisUtil.getData("email_code:" + request.purpose() + ":" + request.email());
 
         if (authCode == null) {
-            throw new ClassfitException("인증 코드가 만료되었거나 존재하지 않습니다.", HttpStatus.NOT_FOUND);
+            throw new ClassfitException(ErrorCode.AUTH_CODE_INVALID_OR_EXPIRED);
         }
 
         if (!authCode.equals(request.code())) {
-            throw new ClassfitException("이메일 인증 번호가 일치하지 않습니다.", HttpStatus.NOT_FOUND);
+            throw new ClassfitException(ErrorCode.INVALID_AUTH_CODE);
         }
 
         String emailJwt = jwtUtil.createEmailJwt("email", 60 * 5L);
@@ -86,7 +87,7 @@ public class EmailService {
 
             javaMailSender.send(message);
         } catch (MessagingException e) {
-            throw new ClassfitException("이메일 전송에 실패하였습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new ClassfitException(ErrorCode.EMAIL_SENDING_FAILED);
         }
     }
 }

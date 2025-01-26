@@ -5,6 +5,8 @@ import classfit.example.classfit.attendance.dto.response.AttendanceResponse;
 import classfit.example.classfit.attendance.dto.response.StudentAttendanceResponse;
 import classfit.example.classfit.classStudent.domain.ClassStudent;
 import classfit.example.classfit.classStudent.repository.ClassStudentRepository;
+import classfit.example.classfit.common.exception.ClassfitException;
+import classfit.example.classfit.common.response.ErrorCode;
 import classfit.example.classfit.common.util.DateRangeUtil;
 import classfit.example.classfit.member.domain.Member;
 import classfit.example.classfit.student.domain.Student;
@@ -20,8 +22,6 @@ import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import static classfit.example.classfit.common.exception.ClassfitException.INVALID_ENTITY_TYPE;
 
 @Service
 @RequiredArgsConstructor
@@ -69,7 +69,7 @@ public class AttendanceService {
         } else if (entity instanceof ClassStudent) {
             return ((ClassStudent) entity).getStudent();
         }
-        throw new IllegalArgumentException(INVALID_ENTITY_TYPE);
+        throw new ClassfitException(ErrorCode.INVALID_ENTITY_TYPE);
     }
 
     public List<LocalDate> getWeeklyAttendanceRange(int weekOffset) {

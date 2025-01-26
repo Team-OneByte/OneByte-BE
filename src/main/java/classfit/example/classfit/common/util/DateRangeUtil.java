@@ -1,19 +1,16 @@
 package classfit.example.classfit.common.util;
 
 import classfit.example.classfit.common.exception.ClassfitException;
-import org.springframework.http.HttpStatus;
-
+import classfit.example.classfit.common.response.ErrorCode;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import static classfit.example.classfit.common.exception.ClassfitException.INVALID_WEEK_VALUE;
-
 public class DateRangeUtil {
     public static void validateWeekOffset(int weekOffset) {
         if (weekOffset < -4 || weekOffset > 2) {
-            throw new ClassfitException(INVALID_WEEK_VALUE, HttpStatus.BAD_REQUEST);
+            throw new ClassfitException(ErrorCode.INVALID_WEEK_VALUE);
         }
     }
 

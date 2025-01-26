@@ -9,6 +9,7 @@ import classfit.example.classfit.category.dto.response.SubClassResponse;
 import classfit.example.classfit.category.repository.MainClassRepository;
 import classfit.example.classfit.category.repository.SubClassRepository;
 import classfit.example.classfit.common.exception.ClassfitException;
+import classfit.example.classfit.common.response.ErrorCode;
 import classfit.example.classfit.member.domain.Member;
 import classfit.example.classfit.member.repository.MemberRepository;
 import jakarta.transaction.Transactional;
@@ -24,11 +25,10 @@ public class SubClassService {
 
     private final SubClassRepository subClassRepository;
     private final MainClassRepository mainClassRepository;
-    private final MemberRepository memberRepository;
 
     private static void checkMemberRelationMainClass(Member findMember, MainClass findMainClass) {
         if (!Objects.equals(findMember.getAcademy().getId(), findMainClass.getAcademy().getId())) {
-            throw new ClassfitException("사용자와 클래스가 일치하지 않습니다.", HttpStatus.FORBIDDEN);
+            throw new ClassfitException(ErrorCode.INVALID_MAIN_CLASS_ACCESS);
         }
     }
 
@@ -39,7 +39,7 @@ public class SubClassService {
                 .anyMatch(member -> member.getId().equals(findMember.getId()));
 
         if (!isMemberInAcademy) {
-            throw new ClassfitException("사용자가 해당 학원에 속해 있지 않습니다.", HttpStatus.FORBIDDEN);
+            throw new ClassfitException(ErrorCode.INVALID_ACADEMY_ACCESS);
         }
     }
 
@@ -51,12 +51,12 @@ public class SubClassService {
 
         MainClass findMainClass = mainClassRepository.findById(req.mainClassId())
             .orElseThrow(
-                () -> new ClassfitException("메인 클래스를 찾을 수 없어요.", HttpStatus.NOT_FOUND));
+                () -> new ClassfitException(ErrorCode.MAIN_CLASS_NOT_FOUND));
 
         boolean exists = subClassRepository.existsByMemberAndSubClassNameAndAcademyAndMainClass(
                 findMember, findAcademy, req.subClassName(), findMainClass);
         if (exists) {
-            throw new ClassfitException("해당 메인 클래스 내에 이미 같은 이름의 서브 클래스가 있어요.", HttpStatus.CONFLICT);
+            throw new ClassfitException(ErrorCode.SUB_CLASS_ALREADY_EXISTS);
         }
 
         checkMemberRelationMainClass(findMember, findMainClass);
@@ -73,9 +73,9 @@ public class SubClassService {
     // 서브 클래스 수정
     public SubClassResponse updateSubClass(@AuthMember Member findMember, Long subClassId, SubClassRequest req) {
         MainClass findMainClass = mainClassRepository.findById(req.mainClassId()).orElseThrow(
-            () -> new ClassfitException("메인 클래스를 찾을 수 없어요.", HttpStatus.NOT_FOUND));
+            () -> new ClassfitException(ErrorCode.MAIN_CLASS_NOT_FOUND));
         SubClass findSubClass = subClassRepository.findById(subClassId).orElseThrow(
-            () -> new ClassfitException("서브 클래스를 찾을 수 없어요.", HttpStatus.NOT_FOUND));
+            () -> new ClassfitException(ErrorCode.SUB_CLASS_NOT_FOUND));
 
         checkMemberRelationSubClass(findMember, findSubClass);
 
@@ -91,7 +91,7 @@ public class SubClassService {
     public void deleteSubClass(@AuthMember Member findMember, Long subClassId) {
 
         SubClass findSubClass = subClassRepository.findById(subClassId).orElseThrow(
-            () -> new ClassfitException("서브 클래스를 찾을 수 없어요.", HttpStatus.NOT_FOUND));
+            () -> new ClassfitException(ErrorCode.SUB_CLASS_NOT_FOUND));
 
         checkMemberRelationSubClass(findMember, findSubClass);
 

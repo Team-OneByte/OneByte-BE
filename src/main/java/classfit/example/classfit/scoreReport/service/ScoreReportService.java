@@ -12,6 +12,7 @@ import classfit.example.classfit.category.repository.SubClassRepository;
 import classfit.example.classfit.classStudent.domain.ClassStudent;
 import classfit.example.classfit.classStudent.repository.ClassStudentRepository;
 import classfit.example.classfit.common.exception.ClassfitException;
+import classfit.example.classfit.common.response.ErrorCode;
 import classfit.example.classfit.member.domain.Member;
 import classfit.example.classfit.scoreReport.domain.ScoreReport;
 import classfit.example.classfit.scoreReport.domain.ScoreReportRepository;
@@ -56,21 +57,21 @@ public class ScoreReportService {
                                              CreateReportRequest request) {
         MainClass mainClass = mainClassRepository.findById(request.mainClassId())
             .orElseThrow(
-                () -> new ClassfitException("메인 클래스를 찾을 수 없어요.", HttpStatus.NOT_FOUND));
+                () -> new ClassfitException(ErrorCode.MEMBER_NOT_FOUND));
         SubClass subClass = subClassRepository.findById(request.subClassId())
             .orElseThrow(
-                () -> new ClassfitException("서브 클래스를 찾을 수 없어요.", HttpStatus.NOT_FOUND));
+                () -> new ClassfitException(ErrorCode.SUB_CLASS_NOT_FOUND));
         validateAcademy(member, member.getAcademy().getId());
 
         List<Exam> exams = examRepository.findAllById(request.examIdList());
         if (exams.isEmpty()) {
-            throw new ClassfitException("시험지를 찾을 수 없어요.", HttpStatus.NOT_FOUND);
+            throw new ClassfitException(ErrorCode.EXAM_NOT_FOUND);
         }
 
         List<ClassStudent> studentsInSubClass = classStudentRepository.findAllBySubClassId(
             subClass.getId());
         if (studentsInSubClass.isEmpty()) {
-            throw new ClassfitException("해당 클래스에 학생이 없습니다.", HttpStatus.NOT_FOUND);
+            throw new ClassfitException(ErrorCode.STUDENT_NOT_FOUND);
         }
 
         List<StudentList> allStudents = new ArrayList<>();
@@ -86,8 +87,7 @@ public class ScoreReportService {
             for (Long examId : request.examIdList()) {
                 StudentExamScore studentExamScore = studentExamScoreRepository.findByStudentAndExamId(
                         student, examId)
-                    .orElseThrow(() -> new ClassfitException("시험 점수를 찾을 수 없어요.",
-                        HttpStatus.NOT_FOUND));
+                    .orElseThrow(() -> new ClassfitException(ErrorCode.SCORE_NOT_FOUND));
                 studentExamScore.updateScoreReport(report);
                 studentExamScoreRepository.save(studentExamScore);
             }
@@ -131,10 +131,10 @@ public class ScoreReportService {
                                                Long subClassId, String memberName) {
         MainClass mainClass = mainClassRepository.findById(mainClassId)
             .orElseThrow(
-                () -> new ClassfitException("메인 클래스를 찾을 수 없어요.", HttpStatus.NOT_FOUND));
+                () -> new ClassfitException(ErrorCode.MAIN_CLASS_NOT_FOUND));
         SubClass subClass = subClassRepository.findById(subClassId)
             .orElseThrow(
-                () -> new ClassfitException("서브 클래스를 찾을 수 없어요.", HttpStatus.NOT_FOUND));
+                () -> new ClassfitException(ErrorCode.SUB_CLASS_NOT_FOUND));
         validateAcademy(member, mainClass.getAcademy().getId());
         List<ScoreReport> studentReports = scoreReportRepository.findAllReportsByMainClassAndSubClass(
             mainClassId, subClassId, member.getAcademy().getId());
@@ -156,7 +156,7 @@ public class ScoreReportService {
         Long academyId = member.getAcademy().getId();
 
         Academy academy = academyRepository.findById(academyId)
-            .orElseThrow(() -> new ClassfitException("학원을 찾을 수 없어요.", HttpStatus.NOT_FOUND));
+            .orElseThrow(() -> new ClassfitException(ErrorCode.ACADEMY_NOT_FOUND));
 
         List<ScoreReport> scoreReports = scoreReportRepository.findAllByAcademy(academy);
 
@@ -186,10 +186,10 @@ public class ScoreReportService {
 
         MainClass mainClass = mainClassRepository.findById(mainClassId)
             .orElseThrow(
-                () -> new ClassfitException("메인 클래스를 찾을 수 없어요.", HttpStatus.NOT_FOUND));
+                () -> new ClassfitException(ErrorCode.MAIN_CLASS_NOT_FOUND));
         SubClass subClass = subClassRepository.findById(subClassId)
             .orElseThrow(
-                () -> new ClassfitException("서브 클래스를 찾을 수 없어요.", HttpStatus.NOT_FOUND));
+                () -> new ClassfitException(ErrorCode.SUB_CLASS_NOT_FOUND));
         validateAcademy(member, member.getAcademy().getId());
 
         List<FindClassStudent> classStudents = classStudentRepository.findStudentIdsByMainClassIdAndSubClassId(
@@ -209,7 +209,7 @@ public class ScoreReportService {
         for (SentStudentOpinionRequest request : requests) {
             ScoreReport scoreReport = scoreReportRepository.findById(request.reportId())
                 .orElseThrow(
-                    () -> new ClassfitException("학습리포트를 찾을 수 없어요.", HttpStatus.NOT_FOUND));
+                    () -> new ClassfitException(ErrorCode.REPORT_NOT_FOUND));
             validateAcademy(member, scoreReport.getMainClass().getAcademy().getId());
 
             scoreReport.updateStudentOpinion(request.studentOpinion());
@@ -228,7 +228,7 @@ public class ScoreReportService {
     @Transactional(readOnly = true)
     public ShowStudentReportResponse showStudentReport(@AuthMember Member member, Long reportId) {
         ScoreReport scoreReport = scoreReportRepository.findById(reportId)
-            .orElseThrow(() -> new ClassfitException("학습리포트를 찾을 수 없어요.", HttpStatus.NOT_FOUND));
+            .orElseThrow(() -> new ClassfitException(ErrorCode.REPORT_NOT_FOUND));
 
         validateAcademy(member, scoreReport.getMainClass().getAcademy().getId());
 
@@ -323,12 +323,12 @@ public class ScoreReportService {
 
     private void validateAcademy(Member member, Long academyId) {
         Academy academy = academyRepository.findById(academyId)
-            .orElseThrow(() -> new ClassfitException("학원을 찾을 수 없어요.", HttpStatus.NOT_FOUND));
+            .orElseThrow(() -> new ClassfitException(ErrorCode.ACADEMY_NOT_FOUND));
         if (!Objects.equals(member.getAcademy().getId(), academyId)) {
-            throw new ClassfitException("해당 학원에 접근할 권한이 없습니다.", HttpStatus.FORBIDDEN);
+            throw new ClassfitException(ErrorCode.INVALID_ACADEMY_ACCESS);
         }
         if (!Objects.equals(academy.getId(), academyId)) {
-            throw new ClassfitException("해당 학원에 접근할 권한이 없습니다.", HttpStatus.FORBIDDEN);
+            throw new ClassfitException(ErrorCode.INVALID_ACADEMY_ACCESS);
         }
     }
 

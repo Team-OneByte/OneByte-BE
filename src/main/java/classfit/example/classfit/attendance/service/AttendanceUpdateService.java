@@ -7,18 +7,15 @@ import classfit.example.classfit.attendance.dto.response.AttendanceResponse;
 import classfit.example.classfit.attendance.dto.response.StudentAttendanceResponse;
 import classfit.example.classfit.attendance.repository.AttendanceRepository;
 import classfit.example.classfit.common.exception.ClassfitException;
+import classfit.example.classfit.common.response.ErrorCode;
 import classfit.example.classfit.member.domain.Member;
 import classfit.example.classfit.student.domain.Student;
 import classfit.example.classfit.student.repository.StudentRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-
-import static classfit.example.classfit.common.exception.ClassfitException.ATTENDANCE_NOT_FOUND;
-import static classfit.example.classfit.common.exception.ClassfitException.STUDENT_NOT_FOUND;
 
 @Service
 @RequiredArgsConstructor
@@ -58,11 +55,11 @@ public class AttendanceUpdateService {
 
     private Student findStudentByIdAndAcademy(Long studentId, Long academyId) {
         return studentRepository.findByIdAndAcademyId(studentId, academyId)
-            .orElseThrow(() -> new ClassfitException(STUDENT_NOT_FOUND, HttpStatus.NOT_FOUND));
+            .orElseThrow(() -> new ClassfitException(ErrorCode.STUDENT_NOT_FOUND));
     }
 
     private Attendance findAttendanceById(Long attendanceId) {
         return attendanceRepository.findById(attendanceId)
-            .orElseThrow(() -> new ClassfitException(ATTENDANCE_NOT_FOUND, HttpStatus.NOT_FOUND));
+            .orElseThrow(() -> new ClassfitException(ErrorCode.ATTENDANCE_NOT_FOUND));
     }
 }

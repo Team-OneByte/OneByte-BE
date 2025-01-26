@@ -1,6 +1,7 @@
 package classfit.example.classfit.common.util;
 
 import classfit.example.classfit.common.exception.ClassfitException;
+import classfit.example.classfit.common.response.ErrorCode;
 import classfit.example.classfit.drive.domain.DriveType;
 import classfit.example.classfit.drive.domain.FileType;
 import classfit.example.classfit.drive.dto.response.FileResponse;
@@ -26,7 +27,7 @@ public class DriveUtil {
             Long academyId = member.getAcademy().getId();
             return String.format("shared/%d/%s%s", academyId, fullFolderPath, fileName);
         }
-        throw new ClassfitException("지원하지 않는 드라이브 타입입니다.", HttpStatus.NO_CONTENT);
+        throw new ClassfitException(ErrorCode.INVALID_DRIVE_TYPE);
     }
 
     public static String buildPrefix(DriveType driveType, Member member, String folderPath) {

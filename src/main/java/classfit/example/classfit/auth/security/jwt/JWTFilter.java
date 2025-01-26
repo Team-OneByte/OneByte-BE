@@ -4,6 +4,7 @@ import classfit.example.classfit.auth.security.custom.CustomUserDetailService;
 import classfit.example.classfit.auth.security.custom.CustomUserDetails;
 import classfit.example.classfit.common.response.CustomApiResponse;
 import classfit.example.classfit.common.exception.ClassfitAuthException;
+import classfit.example.classfit.common.response.ErrorCode;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -40,11 +41,11 @@ public class JWTFilter extends OncePerRequestFilter {
 
         try {
             if (jwtUtil.isExpired(accessToken)) {
-                throw new ClassfitAuthException("액세스 토큰이 만료되었습니다.", HttpStatus.REQUEST_TIMEOUT);
+                throw new ClassfitAuthException(ErrorCode.ACCESS_TOKEN_EXPIRED);
             }
 
             if (!ACCESS_TOKEN_CATEGORY.equals(jwtUtil.getCategory(accessToken))) {
-                throw new ClassfitAuthException("유효하지 않은 토큰입니다.", HttpStatus.UNAUTHORIZED);
+                throw new ClassfitAuthException(ErrorCode.INVALID_TOKEN);
             }
 
             String email = jwtUtil.getEmail(accessToken);

@@ -9,6 +9,7 @@ import classfit.example.classfit.category.repository.SubClassRepository;
 import classfit.example.classfit.classStudent.domain.ClassStudent;
 import classfit.example.classfit.classStudent.repository.ClassStudentRepository;
 import classfit.example.classfit.common.exception.ClassfitException;
+import classfit.example.classfit.common.response.ErrorCode;
 import classfit.example.classfit.member.domain.Member;
 import classfit.example.classfit.scoreReport.domain.ScoreReport;
 import classfit.example.classfit.scoreReport.domain.ScoreReportRepository;
@@ -50,7 +51,7 @@ public class StudentService {
 
         request.subClassList().forEach(subClassId -> {
             SubClass subClass = subClassRepository.findById(subClassId).orElseThrow(
-                () -> new ClassfitException("존재하지 않는 SubClass ID입니다.", HttpStatus.NOT_FOUND));
+                () -> new ClassfitException(ErrorCode.SUB_CLASS_NOT_FOUND));
             ClassStudent classStudent = new ClassStudent();
             classStudent.addStudent(student);
             classStudent.addSubClass(subClass);
@@ -91,7 +92,7 @@ public class StudentService {
     public void deleteStudent(Member member, List<Long> studentIds) {
         studentIds.stream()
             .map(studentId -> studentRepository.findById(studentId).orElseThrow(()
-                -> new ClassfitException("해당하는 학생 정보를 찾을 수 없습니다", HttpStatus.NOT_FOUND)))
+                -> new ClassfitException(ErrorCode.STUDENT_NOT_FOUND)))
             .forEach(student -> {
                 List<ScoreReport> scoreReports = scoreReportService.findByStudentId(student.getId());
                 for (ScoreReport scoreReport : scoreReports) {
@@ -118,7 +119,7 @@ public class StudentService {
     @Transactional(readOnly = true)
     public StudentInfoResponse getStudentInfo(Long studentId) {
         Student student = studentRepository.findById(studentId).orElseThrow(
-            () -> new ClassfitException("해당하는 학생 정보가 존재하지 않습니다.", HttpStatus.NOT_FOUND));
+            () -> new ClassfitException(ErrorCode.STUDENT_NOT_FOUND));
 
         List<String> subClassList = studentRepository.findSubClassesByStudentId(studentId);
         return StudentInfoResponse.of(student, subClassList);
@@ -129,7 +130,7 @@ public class StudentService {
 
         List<Student> students = studentRepository.findAllByName(studentName)
             .filter(list -> !list.isEmpty())
-            .orElseThrow(() -> new ClassfitException("해당 학생은 존재하지 않습니다.", HttpStatus.NOT_FOUND));
+            .orElseThrow(() -> new ClassfitException(ErrorCode.STUDENT_NOT_FOUND));
 
         return students.stream()
             .map(StudentResponse::from)
@@ -139,7 +140,7 @@ public class StudentService {
     @Transactional
     public void updateStudent(Long studentId, StudentUpdateRequest req) {
         Student student = studentRepository.findById(studentId).orElseThrow(
-            () -> new ClassfitException("해당하는 학생 정보가 존재하지 않습니다.", HttpStatus.NOT_FOUND));
+            () -> new ClassfitException(ErrorCode.STUDENT_NOT_FOUND));
 
         updateFields(student, req);
         updateSubClasses(student, req.subClassList());
@@ -171,7 +172,7 @@ public class StudentService {
                 studentField.set(student, newValue);
             }
         } catch (IllegalAccessException | NoSuchFieldException e) {
-            throw new ClassfitException("학생의 정보 수정에 실패했습니다.", HttpStatus.NOT_MODIFIED);
+            throw new ClassfitException(ErrorCode.STUDENT_MODIFIED_FAILED);
         }
     }
 
@@ -184,7 +185,7 @@ public class StudentService {
 
         subClassList.forEach(subClassId -> {
             SubClass subClass = subClassRepository.findById(subClassId).orElseThrow(
-                () -> new ClassfitException("존재하지 않는 SubClass 입니다.", HttpStatus.NOT_FOUND));
+                () -> new ClassfitException(ErrorCode.SUB_CLASS_NOT_FOUND));
 
             ClassStudent classStudent = new ClassStudent();
             classStudent.addStudent(student);
