@@ -9,12 +9,19 @@ import lombok.Builder;
 import org.springframework.format.annotation.DateTimeFormat;
 
 @Builder
-public record CreateExamResponse(Long examId, Long subClassId, String subClassName,
-                                 Long mainClassId, String mainClassName,
-                                 @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate examDate,
-                                 Standard standard,
-                                 Integer highestScore, ExamPeriod examPeriod, String examName,
-                                 List<String> range) {
+public record CreateExamResponse(
+        Long examId,
+        Long subClassId,
+        String subClassName,
+        Long mainClassId,
+        String mainClassName,
+        @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate examDate,
+        Standard standard,
+        Integer highestScore,
+        ExamPeriod examPeriod,
+        String examName,
+        List<String> range
+) {
 
     public static CreateExamResponse from(Exam exam) {
         return CreateExamResponse.builder()

@@ -4,8 +4,13 @@ import classfit.example.classfit.common.exception.ClassfitException;
 import jakarta.validation.constraints.Min;
 import org.springframework.http.HttpStatus;
 
-public record ExamStudent(Long studentId, String name,
-                               @Min(value = 0, message = "점수는 0 이상이어야 합니다.") Integer score,String evaluationDetail ,boolean checkedStudent) {
+public record ExamStudent(
+        Long studentId,
+        String name,
+        @Min(value = 0, message = "점수는 0 이상이어야 합니다.") Integer score,
+        String evaluationDetail,
+        boolean checkedStudent
+) {
 
     public static ExamStudent of(Long studentId, String name, Integer score,
             Integer highestScore,String evaluationDetail,boolean checkedStudent) {
