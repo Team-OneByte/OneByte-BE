@@ -57,7 +57,7 @@ public class ScoreReportService {
                                              CreateReportRequest request) {
         MainClass mainClass = mainClassRepository.findById(request.mainClassId())
             .orElseThrow(
-                () -> new ClassfitException(ErrorCode.MEMBER_NOT_FOUND));
+                () -> new ClassfitException(ErrorCode.MAIN_CLASS_NOT_FOUND));
         SubClass subClass = subClassRepository.findById(request.subClassId())
             .orElseThrow(
                 () -> new ClassfitException(ErrorCode.SUB_CLASS_NOT_FOUND));
@@ -331,5 +331,4 @@ public class ScoreReportService {
             throw new ClassfitException(ErrorCode.INVALID_ACADEMY_ACCESS);
         }
     }
-
 }

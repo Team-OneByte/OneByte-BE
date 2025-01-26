@@ -37,7 +37,7 @@ public class AcademyService {
         }
 
         Member member = memberRepository.findByEmail(request.email()).orElseThrow(
-            () -> new ClassfitException(ErrorCode.MEMBER_NOT_FOUND));
+            () -> new ClassfitException(ErrorCode.EMAIL_NOT_FOUND));
 
         member.updateRole("ADMIN");
 
