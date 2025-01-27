@@ -3,31 +3,18 @@ package classfit.example.classfit.studentExam.domain;
 import classfit.example.classfit.category.domain.MainClass;
 import classfit.example.classfit.category.domain.SubClass;
 import classfit.example.classfit.common.domain.BaseEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+import lombok.*;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import jakarta.persistence.*;
 
 @Entity
-@Table(name = "exam")
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
+@Builder
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Exam extends BaseEntity {
 
     @Id
@@ -79,21 +66,8 @@ public class Exam extends BaseEntity {
     @OneToMany(mappedBy = "exam", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<StudentExamScore> studentExamScores = new ArrayList<>();
 
-    @Builder
-    public Exam(SubClass subClass, MainClass mainClass, String examName, LocalDate examDate,
-            Standard standard, ExamPeriod examPeriod, Integer highestScore, String examRange) {
-        this.subClass = subClass;
-        this.mainClass = mainClass;
-        this.examName = examName;
-        this.examDate = examDate;
-        this.standard = standard;
-        this.examPeriod = examPeriod;
-        this.highestScore = highestScore;
-        this.examRange = examRange;
-    }
-
     public void updateExam(LocalDate examDate, Standard standard, Integer highestScore,
-            ExamPeriod examPeriod, String examName, List<String> examRange) {
+                           ExamPeriod examPeriod, String examName, List<String> examRange) {
         this.examDate = examDate;
         this.standard = standard;
         this.highestScore = highestScore;
@@ -115,6 +89,9 @@ public class Exam extends BaseEntity {
     public void updateAverage(Integer newAverage) {
         this.average = newAverage.doubleValue();
     }
-    public void updateCreatedBy(Long createdBy) {this.createdBy = createdBy;}
+
+    public void updateCreatedBy(Long createdBy) {
+        this.createdBy = createdBy;
+    }
 
 }

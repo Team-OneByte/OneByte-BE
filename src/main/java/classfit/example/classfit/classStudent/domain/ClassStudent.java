@@ -4,19 +4,16 @@ import classfit.example.classfit.attendance.domain.Attendance;
 import classfit.example.classfit.category.domain.SubClass;
 import classfit.example.classfit.student.domain.Student;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Builder
 @Getter
-@NoArgsConstructor
-@AllArgsConstructor
+@Builder
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ClassStudent {
 
     @Id

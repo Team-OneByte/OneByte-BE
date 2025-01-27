@@ -4,28 +4,16 @@ import classfit.example.classfit.category.domain.MainClass;
 import classfit.example.classfit.category.domain.SubClass;
 import classfit.example.classfit.common.domain.BaseEntity;
 import classfit.example.classfit.student.domain.Student;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+import lombok.*;
+
 import java.time.LocalDate;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "score_report")
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Builder
-@AllArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ScoreReport extends BaseEntity {
 
     @Id
@@ -66,8 +54,6 @@ public class ScoreReport extends BaseEntity {
 
     @Column(name = "report_created_by")
     private String reportCreatedBy;
-
-
 
 
     public void updateStudentOpinion(String studentOpinion) {
