@@ -10,22 +10,31 @@ import java.util.List;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Builder
-public record StudentInfoResponse
-    (
-        Long studentId,
-        String name,
-        Gender gender,
-        LocalDate birth,
-        String studentNumber,
-        String parentNumber,
-        String grade,
-        List<String> subClassList,
-        String address,
-        String remark,
-        String counselingLog,
-        boolean isStudent
-    ) {
+public record StudentInfoResponse(
+    Long studentId,
 
+    String name,
+
+    Gender gender,
+
+    LocalDate birth,
+
+    String studentNumber,
+
+    String parentNumber,
+
+    String grade,
+
+    List<String> subClassList,
+
+    String address,
+
+    String remark,
+
+    String counselingLog,
+
+    boolean isStudent
+) {
     public static StudentInfoResponse of(Student student, List<String> subClassList) {
         return StudentInfoResponse.builder()
             .studentId(student.getId())

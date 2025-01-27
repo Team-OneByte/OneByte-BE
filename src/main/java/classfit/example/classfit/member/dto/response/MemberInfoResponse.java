@@ -6,19 +6,17 @@ import lombok.Builder;
 import java.time.LocalDate;
 
 @Builder
-public record MemberInfoResponse
-    (
-        String name,
+public record MemberInfoResponse(
+    String name,
 
-        String phoneNumber,
+    String phoneNumber,
 
-        LocalDate birth,
+    LocalDate birth,
 
-        String email,
+    String email,
 
-        String subject
-    ) {
-
+    String subject
+) {
     public static MemberInfoResponse from(Member member) {
         return MemberInfoResponse.builder()
             .name(member.getName())

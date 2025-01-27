@@ -6,12 +6,11 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 
-public record MemberUpdateInfoRequest
-    (
-        @DateTimeFormat(pattern = "yyyy-MM-dd")
-        @Past LocalDate birth,
+public record MemberUpdateInfoRequest(
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @Past LocalDate birth,
 
-        @Size(max = 30)
-        String subject
-    ) {
+    @Size(max = 30)
+    String subject
+) {
 }

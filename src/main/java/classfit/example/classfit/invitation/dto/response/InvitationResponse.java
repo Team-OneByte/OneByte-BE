@@ -5,17 +5,15 @@ import classfit.example.classfit.invitation.domain.InvitationStatus;
 import lombok.Builder;
 
 @Builder
-public record InvitationResponse
-    (
-        String staffName,
+public record InvitationResponse(
+    String staffName,
 
-        String email,
+    String email,
 
-        String academyName,
+    String academyName,
 
-        InvitationStatus status
-    ) {
-
+    InvitationStatus status
+) {
     public static InvitationResponse from(Invitation invitation) {
         return InvitationResponse.builder()
             .staffName(invitation.getName())

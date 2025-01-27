@@ -4,13 +4,11 @@ import classfit.example.classfit.academy.domain.Academy;
 import lombok.Builder;
 
 @Builder
-public record AcademyResponse
-    (
-        Long id,
+public record AcademyResponse(
+    Long id,
 
-        String name
-    ) {
-
+    String name
+) {
     public static AcademyResponse from(Academy academy) {
         return AcademyResponse.builder()
             .id(academy.getId())

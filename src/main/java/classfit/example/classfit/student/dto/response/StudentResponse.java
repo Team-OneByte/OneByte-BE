@@ -6,14 +6,15 @@ import lombok.Builder;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Builder
-public record StudentResponse
-    (
-        Long studentId,
-        String name,
-        String studentNumber,
-        boolean isStudent
-    ) {
+public record StudentResponse(
+    Long studentId,
 
+    String name,
+
+    String studentNumber,
+
+    boolean isStudent
+) {
     public static StudentResponse from(Student student) {
         return StudentResponse.builder()
             .studentId(student.getId())

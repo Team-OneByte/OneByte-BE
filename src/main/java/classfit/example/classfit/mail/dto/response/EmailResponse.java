@@ -5,19 +5,17 @@ import lombok.Builder;
 
 @Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public record EmailResponse
-    (
-        String email,
-        String emailToken
-    ) {
-
-    public static EmailResponse of(final String email) {
+public record EmailResponse(
+    String email,
+    String emailToken
+) {
+    public static EmailResponse of(String email) {
         return EmailResponse.builder()
             .email(email)
             .build();
     }
 
-    public static EmailResponse from(final String email, final String emailToken) {
+    public static EmailResponse from(String email, String emailToken) {
         return EmailResponse.builder()
             .email(email)
             .emailToken(emailToken)

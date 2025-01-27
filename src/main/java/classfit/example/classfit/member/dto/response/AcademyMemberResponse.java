@@ -6,13 +6,13 @@ import lombok.Builder;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Builder
-public record AcademyMemberResponse
-    (
-        Long id,
-        String name,
-        String email
-    ) {
+public record AcademyMemberResponse(
+    Long id,
 
+    String name,
+
+    String email
+) {
     public static AcademyMemberResponse from(Member member) {
         return AcademyMemberResponse.builder()
             .id(member.getId())
