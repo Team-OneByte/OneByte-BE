@@ -2,6 +2,7 @@ package classfit.example.classfit.invitation.service;
 
 import classfit.example.classfit.academy.domain.Academy;
 import classfit.example.classfit.common.exception.ClassfitException;
+import classfit.example.classfit.common.response.ErrorCode;
 import classfit.example.classfit.invitation.domain.Invitation;
 import classfit.example.classfit.invitation.dto.request.InvitationRequest;
 import classfit.example.classfit.invitation.dto.response.InvitationResponse;
@@ -10,7 +11,6 @@ import classfit.example.classfit.mail.dto.request.EmailPurpose;
 import classfit.example.classfit.mail.service.EmailService;
 import classfit.example.classfit.member.domain.Member;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,7 +29,7 @@ public class InvitationService {
         Academy academy = member.getAcademy();
 
         if (academy == null) {
-            throw new ClassfitException("해당 사용자는 학원에 등록되지 않았습니다.", HttpStatus.NOT_FOUND);
+            throw new ClassfitException(ErrorCode.ACADEMY_INVITATION_INVALID);
         }
 
         return academy.getCode();

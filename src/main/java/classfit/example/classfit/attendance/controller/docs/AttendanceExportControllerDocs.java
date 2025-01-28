@@ -2,7 +2,7 @@ package classfit.example.classfit.attendance.controller.docs;
 
 import classfit.example.classfit.attendance.dto.response.StudentAttendanceResponse;
 import classfit.example.classfit.auth.annotation.AuthMember;
-import classfit.example.classfit.common.CustomApiResponse;
+import classfit.example.classfit.common.response.CustomApiResponse;
 import classfit.example.classfit.member.domain.Member;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

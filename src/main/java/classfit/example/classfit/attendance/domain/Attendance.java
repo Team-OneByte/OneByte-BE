@@ -1,7 +1,8 @@
 package classfit.example.classfit.attendance.domain;
 
 import classfit.example.classfit.classStudent.domain.ClassStudent;
-import classfit.example.classfit.student.domain.Student;
+import classfit.example.classfit.common.exception.ClassfitException;
+import classfit.example.classfit.common.response.ErrorCode;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -9,8 +10,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
-
-import static classfit.example.classfit.common.exception.ClassfitException.INVALID_STATUS_TYPE;
 
 @Entity
 @Getter
@@ -47,7 +46,7 @@ public class Attendance {
         try {
             this.status = AttendanceStatus.valueOf(status.toUpperCase());
         } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException(INVALID_STATUS_TYPE);
+            throw new ClassfitException(ErrorCode.ATTENDANCE_STATUS_INVALID);
         }
     }
 }

@@ -8,7 +8,7 @@ import classfit.example.classfit.calendarCategory.dto.response.CalendarCategoryC
 import classfit.example.classfit.calendarCategory.dto.response.CalendarCategoryListResponse;
 import classfit.example.classfit.calendarCategory.dto.response.CalendarCategoryResponse;
 import classfit.example.classfit.calendarCategory.service.CalendarCategoryService;
-import classfit.example.classfit.common.CustomApiResponse;
+import classfit.example.classfit.common.response.CustomApiResponse;
 import classfit.example.classfit.member.domain.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;

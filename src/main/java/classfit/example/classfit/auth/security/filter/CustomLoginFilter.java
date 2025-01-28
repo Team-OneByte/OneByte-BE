@@ -3,9 +3,10 @@ package classfit.example.classfit.auth.security.filter;
 import classfit.example.classfit.auth.dto.request.UserRequest;
 import classfit.example.classfit.auth.security.custom.CustomAuthenticationToken;
 import classfit.example.classfit.auth.security.jwt.JWTUtil;
-import classfit.example.classfit.common.CustomApiResponse;
+import classfit.example.classfit.common.response.CustomApiResponse;
 import classfit.example.classfit.common.exception.ClassfitAuthException;
 import classfit.example.classfit.common.exception.ClassfitException;
+import classfit.example.classfit.common.response.ErrorCode;
 import classfit.example.classfit.common.util.CookieUtil;
 import classfit.example.classfit.common.util.RedisUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -38,7 +39,7 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
         UserRequest userRequest = parseRequest(request);
         userRequest.validate().ifPresent(errorMessage -> {
-            throw new ClassfitAuthException(errorMessage, HttpStatus.BAD_REQUEST);
+            throw new ClassfitAuthException(ErrorCode.REQUEST_FORMAT_INVALID);
         });
 
         CustomAuthenticationToken authRequest = new CustomAuthenticationToken(
@@ -65,7 +66,7 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
             CustomApiResponse.errorResponse(res, failed.getMessage(), ((ClassfitAuthException) failed).getHttpStatusCode());
             return;
         }
-        CustomApiResponse.errorResponse(res, "아이디 또는 비밀번호가 잘못되었습니다.", HttpServletResponse.SC_UNAUTHORIZED);
+        CustomApiResponse.errorResponse(res, ErrorCode.CREDENTIALS_INVALID.getMessage(), ErrorCode.CREDENTIALS_INVALID.getStatusCode());
     }
 
     private UserRequest parseRequest(HttpServletRequest request) {
@@ -73,7 +74,7 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
             ObjectMapper objectMapper = new ObjectMapper();
             return objectMapper.readValue(request.getInputStream(), UserRequest.class);
         } catch (IOException e) {
-            throw new ClassfitException("입력 형식이 잘못되었습니다.", HttpStatus.BAD_REQUEST);
+            throw new ClassfitException(ErrorCode.REQUEST_FORMAT_INVALID);
         }
     }
 

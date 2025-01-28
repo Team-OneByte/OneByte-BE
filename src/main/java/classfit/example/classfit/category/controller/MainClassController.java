@@ -6,7 +6,7 @@ import classfit.example.classfit.category.dto.request.MainClassRequest;
 import classfit.example.classfit.category.dto.response.AllMainClassResponse;
 import classfit.example.classfit.category.dto.response.MainClassResponse;
 import classfit.example.classfit.category.service.MainClassService;
-import classfit.example.classfit.common.CustomApiResponse;
+import classfit.example.classfit.common.response.CustomApiResponse;
 import classfit.example.classfit.member.domain.Member;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

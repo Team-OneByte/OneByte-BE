@@ -1,6 +1,7 @@
 package classfit.example.classfit.auth.annotation;
 
 import classfit.example.classfit.common.exception.ClassfitAuthException;
+import classfit.example.classfit.common.response.ErrorCode;
 import classfit.example.classfit.common.util.SecurityUtil;
 import classfit.example.classfit.member.domain.Member;
 import classfit.example.classfit.member.repository.MemberRepository;
@@ -30,6 +31,6 @@ public class AuthMemberArgumentResolver implements HandlerMethodArgumentResolver
     public Object resolveArgument(@NonNull MethodParameter parameter, ModelAndViewContainer mavContainer, @NonNull NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
         Long currentMemberId = SecurityUtil.getCurrentMemberId();
         return memberRepository.findById(currentMemberId)
-            .orElseThrow(() -> new ClassfitAuthException("사용자를 찾을 수 없습니다.", HttpStatus.NOT_FOUND));
+            .orElseThrow(() -> new ClassfitAuthException(ErrorCode.MEMBER_NOT_FOUND));
     }
 }

@@ -1,9 +1,7 @@
 package classfit.example.classfit.event.service;
 
-import static classfit.example.classfit.common.exception.ClassfitException.EVENT_NOT_FOUND;
-
-import classfit.example.classfit.academy.domain.Academy;
 import classfit.example.classfit.common.exception.ClassfitException;
+import classfit.example.classfit.common.response.ErrorCode;
 import classfit.example.classfit.event.domain.Event;
 import classfit.example.classfit.event.dto.response.EventModalResponse;
 import classfit.example.classfit.event.dto.response.EventMonthlyResponse;
@@ -15,7 +13,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,7 +29,7 @@ public class EventGetService {
 
     private Event getEventById(long eventId) {
         return eventRepository.findById(eventId)
-            .orElseThrow(() -> new ClassfitException(EVENT_NOT_FOUND, HttpStatus.NOT_FOUND));
+            .orElseThrow(() -> new ClassfitException(ErrorCode.EVENT_NOT_FOUND));
     }
 
     @Transactional(readOnly = true)

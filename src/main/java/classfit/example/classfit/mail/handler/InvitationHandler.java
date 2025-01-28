@@ -2,6 +2,7 @@ package classfit.example.classfit.mail.handler;
 
 import classfit.example.classfit.academy.domain.Academy;
 import classfit.example.classfit.common.exception.ClassfitException;
+import classfit.example.classfit.common.response.ErrorCode;
 import classfit.example.classfit.common.util.SecurityUtil;
 import classfit.example.classfit.mail.dto.request.EmailPurpose;
 import classfit.example.classfit.member.domain.Member;
@@ -47,7 +48,7 @@ public class InvitationHandler implements EmailHandler {
     private Academy getAcademy() {
         Long currentMemberId = SecurityUtil.getCurrentMemberId();
         Member member = memberRepository.findById(currentMemberId)
-            .orElseThrow(() -> new ClassfitException("사용자를 찾을 수 없습니다.", HttpStatus.NOT_FOUND));
+            .orElseThrow(() -> new ClassfitException(ErrorCode.MEMBER_NOT_FOUND));
         return member.getAcademy();
     }
 }

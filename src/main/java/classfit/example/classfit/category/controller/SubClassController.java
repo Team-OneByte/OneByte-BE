@@ -5,8 +5,9 @@ import classfit.example.classfit.category.controller.docs.SubClassControllerDocs
 import classfit.example.classfit.category.dto.request.SubClassRequest;
 import classfit.example.classfit.category.dto.response.SubClassResponse;
 import classfit.example.classfit.category.service.SubClassService;
-import classfit.example.classfit.common.CustomApiResponse;
+import classfit.example.classfit.common.response.CustomApiResponse;
 import classfit.example.classfit.member.domain.Member;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,7 +22,7 @@ public class SubClassController implements SubClassControllerDocs {
     @PostMapping("/sub-category")
     public CustomApiResponse<SubClassResponse> addSubClass(
         @AuthMember Member findMember,
-        @RequestBody SubClassRequest req
+        @RequestBody @Valid SubClassRequest req
     ) {
         SubClassResponse result = subClassService.addSubClass(findMember, req);
         return CustomApiResponse.success(result, 201, "하위 클래스 생성 성공");
@@ -32,7 +33,7 @@ public class SubClassController implements SubClassControllerDocs {
     public CustomApiResponse<SubClassResponse> updateSubClass(
         @AuthMember Member findMember,
         @PathVariable(name = "subClassId") Long subClassId,
-        @RequestBody SubClassRequest req
+        @RequestBody @Valid SubClassRequest req
     ) {
         SubClassResponse result = subClassService.updateSubClass(findMember, subClassId, req);
         return CustomApiResponse.success(result, 200, "하위 클래스 수정 성공");
@@ -47,5 +48,4 @@ public class SubClassController implements SubClassControllerDocs {
         subClassService.deleteSubClass(findMember, subClassId);
         return CustomApiResponse.success(null, 200, "하위 클래스 삭제 성공");
     }
-
 }

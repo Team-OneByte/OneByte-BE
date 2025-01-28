@@ -1,6 +1,6 @@
 package classfit.example.classfit.auth.exception;
 
-import classfit.example.classfit.common.CustomApiResponse;
+import classfit.example.classfit.common.response.CustomApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;

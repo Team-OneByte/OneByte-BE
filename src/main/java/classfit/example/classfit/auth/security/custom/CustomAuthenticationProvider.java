@@ -1,6 +1,7 @@
 package classfit.example.classfit.auth.security.custom;
 
 import classfit.example.classfit.common.exception.ClassfitAuthException;
+import classfit.example.classfit.common.response.ErrorCode;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.core.Authentication;
@@ -22,7 +23,7 @@ public class CustomAuthenticationProvider extends DaoAuthenticationProvider {
         CustomUserDetails userDetails = (CustomUserDetails) result.getPrincipal();
 
         if (userDetails.member().getAcademy() == null) {
-            throw new ClassfitAuthException("해당 회원은 학원이 등록되지 않았습니다.", HttpStatus.UNPROCESSABLE_ENTITY);
+            throw new ClassfitAuthException(ErrorCode.MEMBER_ACADEMY_INVALID);
         }
 
         return new CustomAuthenticationToken(

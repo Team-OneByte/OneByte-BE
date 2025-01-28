@@ -1,15 +1,13 @@
 package classfit.example.classfit.common.util;
 
 import classfit.example.classfit.common.exception.ClassfitException;
+import classfit.example.classfit.common.response.ErrorCode;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
-import java.time.LocalDate;
-import java.util.List;
-
-import static classfit.example.classfit.common.exception.ClassfitException.INVALID_WEEK_VALUE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import java.time.LocalDate;
+import java.util.List;
 
 class DateRangeUtilTest {
 
@@ -77,7 +75,7 @@ class DateRangeUtilTest {
             DateRangeUtil.getWeekRange(inputDate, -5);
         });
 
-        assertEquals(INVALID_WEEK_VALUE, exception.getMessage());
+        assertEquals(ErrorCode.INVALID_WEEK_VALUE, exception.getMessage());
     }
 
     @Test
@@ -89,6 +87,6 @@ class DateRangeUtilTest {
             DateRangeUtil.getWeekRange(inputDate, 3);
         });
 
-        assertEquals(INVALID_WEEK_VALUE, exception.getMessage());
+        assertEquals(ErrorCode.INVALID_WEEK_VALUE, exception.getMessage());
     }
 }
