@@ -31,20 +31,11 @@ public class ClassStudent {
 
     @OneToMany(mappedBy = "classStudent", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Attendance> attendances = new ArrayList<>();
-
-    public void addStudent(Student student) {
-        this.student = student;
-    }
-
-    public void addSubClass(SubClass subClass) {
-        if (this.subClass != null) {
-            this.subClass.getClassStudents().remove(this);
-        }
-
-        this.subClass = subClass;
-
-        if (!subClass.getClassStudents().contains(this)) {
-            subClass.getClassStudents().add(this);
-        }
+    
+    public static ClassStudent create(Student student, SubClass subClass) {
+        return ClassStudent.builder()
+            .student(student)
+            .subClass(subClass)
+            .build();
     }
 }

@@ -22,7 +22,6 @@ import classfit.example.classfit.student.dto.response.StudentInfoResponse;
 import classfit.example.classfit.student.dto.response.StudentResponse;
 import classfit.example.classfit.student.repository.StudentRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -50,11 +49,8 @@ public class StudentService {
         studentRepository.save(student);
 
         request.subClassList().forEach(subClassId -> {
-            SubClass subClass = subClassRepository.findById(subClassId).orElseThrow(
-                () -> new ClassfitException(ErrorCode.SUB_CLASS_NOT_FOUND));
-            ClassStudent classStudent = new ClassStudent();
-            classStudent.addStudent(student);
-            classStudent.addSubClass(subClass);
+            SubClass subClass = getSubClass(subClassId);
+            ClassStudent classStudent = ClassStudent.create(student, subClass);
             classStudentRepository.save(classStudent);
 
             createAttendanceForSevenWeeks(student);
@@ -184,13 +180,14 @@ public class StudentService {
         classStudentRepository.deleteAllByStudentId(student.getId());
 
         subClassList.forEach(subClassId -> {
-            SubClass subClass = subClassRepository.findById(subClassId).orElseThrow(
-                () -> new ClassfitException(ErrorCode.SUB_CLASS_NOT_FOUND));
-
-            ClassStudent classStudent = new ClassStudent();
-            classStudent.addStudent(student);
-            classStudent.addSubClass(subClass);
+            SubClass subClass = getSubClass(subClassId);
+            ClassStudent classStudent = ClassStudent.create(student, subClass);
             classStudentRepository.save(classStudent);
         });
+    }
+
+    private SubClass getSubClass(Long subClassId) {
+        return subClassRepository.findById(subClassId).orElseThrow(
+            () -> new ClassfitException(ErrorCode.SUB_CLASS_NOT_FOUND));
     }
 }
