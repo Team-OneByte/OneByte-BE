@@ -1,6 +1,7 @@
 package classfit.example.classfit.sms.service;
 
 import classfit.example.classfit.common.exception.ClassfitException;
+import classfit.example.classfit.common.response.ErrorCode;
 import classfit.example.classfit.member.domain.Member;
 import classfit.example.classfit.sms.dto.SendRequest;
 import classfit.example.classfit.student.domain.Student;
@@ -41,7 +42,7 @@ public class SmsService {
         for (SendRequest request : requestList) {
             Student student = studentRepository.findById(Long.valueOf(request.studentId()))
                 .orElseThrow(
-                    () -> new ClassfitException("학생을 찾을 수 없어요.", HttpStatus.NOT_FOUND));
+                    () -> new ClassfitException(ErrorCode.STUDENT_NOT_FOUND));
 
             Message message = new Message();
             message.setFrom(senderPhoneNumber);

@@ -5,7 +5,7 @@ import classfit.example.classfit.academy.dto.request.AcademyCreateRequest;
 import classfit.example.classfit.academy.dto.request.AcademyJoinRequest;
 import classfit.example.classfit.academy.dto.response.AcademyResponse;
 import classfit.example.classfit.academy.service.AcademyService;
-import classfit.example.classfit.common.CustomApiResponse;
+import classfit.example.classfit.common.response.CustomApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

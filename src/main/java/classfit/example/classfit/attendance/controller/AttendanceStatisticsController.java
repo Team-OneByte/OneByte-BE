@@ -6,7 +6,7 @@ import classfit.example.classfit.attendance.dto.response.StatisticsDateResponse;
 import classfit.example.classfit.attendance.dto.response.StatisticsMemberResponse;
 import classfit.example.classfit.attendance.service.AttendanceStatisticsService;
 import classfit.example.classfit.auth.annotation.AuthMember;
-import classfit.example.classfit.common.CustomApiResponse;
+import classfit.example.classfit.common.response.CustomApiResponse;
 import classfit.example.classfit.member.domain.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;

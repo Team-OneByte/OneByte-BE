@@ -3,7 +3,7 @@ package classfit.example.classfit.academy.controller.docs;
 import classfit.example.classfit.academy.dto.request.AcademyCreateRequest;
 import classfit.example.classfit.academy.dto.request.AcademyJoinRequest;
 import classfit.example.classfit.academy.dto.response.AcademyResponse;
-import classfit.example.classfit.common.CustomApiResponse;
+import classfit.example.classfit.common.response.CustomApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;

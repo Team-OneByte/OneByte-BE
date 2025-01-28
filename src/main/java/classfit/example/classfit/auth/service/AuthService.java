@@ -2,6 +2,7 @@ package classfit.example.classfit.auth.service;
 
 import classfit.example.classfit.auth.security.jwt.JWTUtil;
 import classfit.example.classfit.common.exception.ClassfitException;
+import classfit.example.classfit.common.response.ErrorCode;
 import classfit.example.classfit.common.util.CookieUtil;
 import classfit.example.classfit.common.util.RedisUtil;
 import classfit.example.classfit.member.domain.Member;
@@ -33,18 +34,18 @@ public class AuthService {
     public ResponseEntity<?> reissue(HttpServletRequest request, HttpServletResponse response) {
 
         String refreshToken = Arrays.stream(Optional.ofNullable(request.getCookies())
-                .orElseThrow(() -> new ClassfitException("쿠키가 존재하지 않습니다.", HttpStatus.BAD_REQUEST)))
+                .orElseThrow(() -> new ClassfitException(ErrorCode.COOKIE_NOT_FOUND)))
             .filter(cookie -> REFRESH_TOKEN_CATEGORY.equals(cookie.getName()))
             .map(Cookie::getValue)
             .findFirst()
-            .orElseThrow(() -> new ClassfitException("Refresh 토큰이 존재하지 않습니다.", HttpStatus.BAD_REQUEST));
+            .orElseThrow(() -> new ClassfitException(ErrorCode.REFRESH_TOKEN_NOT_FOUND));
 
         if (jwtUtil.isExpired(refreshToken)) {
-            throw new ClassfitException("Refresh 토큰이 만료되었습니다.", HttpStatus.BAD_REQUEST);
+            throw new ClassfitException(ErrorCode.REFRESH_TOKEN_EXPIRED);
         }
 
         if (!REFRESH_TOKEN_CATEGORY.equals(jwtUtil.getCategory(refreshToken))) {
-            throw new ClassfitException("유효하지 않은 토큰입니다.", HttpStatus.BAD_REQUEST);
+            throw new ClassfitException(ErrorCode.TOKEN_INVALID);
         }
 
         String email = jwtUtil.getEmail(refreshToken);
@@ -54,7 +55,7 @@ public class AuthService {
         String existedToken = redisUtil.getData(redisKey);
 
         if (existedToken == null) {
-            throw new ClassfitException("존재하지 않는 Refresh 토큰입니다.", HttpStatus.BAD_REQUEST);
+            throw new ClassfitException(ErrorCode.REFRESH_TOKEN_NOT_FOUND);
         }
 
         String newAccess = jwtUtil.createJwt(ACCESS_TOKEN_CATEGORY, email, role, 1000 * 60 * 5L);
@@ -73,7 +74,7 @@ public class AuthService {
         String refreshToken = redisUtil.getData(redisRefreshTokenKey);
 
         if (jwtUtil.isExpired(refreshToken) || refreshToken == null) {
-            throw new ClassfitException("Refresh 토큰이 유효하지 않거나 만료되었습니다.", HttpStatus.NOT_FOUND);
+            throw new ClassfitException(ErrorCode.REFRESH_TOKEN_INVALID_OR_EXPIRED);
         }
 
         redisUtil.deleteData(redisRefreshTokenKey);

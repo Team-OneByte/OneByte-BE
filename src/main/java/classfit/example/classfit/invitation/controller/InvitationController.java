@@ -1,7 +1,7 @@
 package classfit.example.classfit.invitation.controller;
 
 import classfit.example.classfit.auth.annotation.AuthMember;
-import classfit.example.classfit.common.CustomApiResponse;
+import classfit.example.classfit.common.response.CustomApiResponse;
 import classfit.example.classfit.invitation.controller.docs.InvitationControllerDocs;
 import classfit.example.classfit.invitation.dto.request.InvitationRequest;
 import classfit.example.classfit.invitation.dto.response.InvitationResponse;

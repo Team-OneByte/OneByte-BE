@@ -3,7 +3,7 @@ package classfit.example.classfit.auth.controller;
 import classfit.example.classfit.auth.annotation.AuthMember;
 import classfit.example.classfit.auth.controller.docs.AuthControllerDocs;
 import classfit.example.classfit.auth.service.AuthService;
-import classfit.example.classfit.common.CustomApiResponse;
+import classfit.example.classfit.common.response.CustomApiResponse;
 import classfit.example.classfit.member.domain.Member;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

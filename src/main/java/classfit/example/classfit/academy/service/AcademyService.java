@@ -6,13 +6,13 @@ import classfit.example.classfit.academy.dto.request.AcademyJoinRequest;
 import classfit.example.classfit.academy.dto.response.AcademyResponse;
 import classfit.example.classfit.academy.repository.AcademyRepository;
 import classfit.example.classfit.common.exception.ClassfitException;
+import classfit.example.classfit.common.response.ErrorCode;
 import classfit.example.classfit.invitation.domain.Invitation;
 import classfit.example.classfit.invitation.domain.InvitationStatus;
 import classfit.example.classfit.invitation.repository.InvitationRepository;
 import classfit.example.classfit.member.domain.Member;
 import classfit.example.classfit.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,15 +28,15 @@ public class AcademyService {
     public AcademyResponse createAcademy(AcademyCreateRequest request) {
 
         if (academyRepository.existsByCode(request.code())) {
-            throw new ClassfitException("이미 등록된 코드가 존재합니다. 다시 시도해 주세요.", HttpStatus.NOT_IMPLEMENTED);
+            throw new ClassfitException(ErrorCode.ACADEMY_CODE_ALREADY_EXISTS);
         }
 
         if (academyRepository.existsByName(request.name())) {
-            throw new ClassfitException("이미 등록된 학원명이 존재합니다. 다시 시도해 주세요.", HttpStatus.NOT_IMPLEMENTED);
+            throw new ClassfitException(ErrorCode.ACADEMY_ALREADY_EXISTS);
         }
 
         Member member = memberRepository.findByEmail(request.email()).orElseThrow(
-            () -> new ClassfitException("등록된 회원 정보가 없습니다. 회원 가입을 완료해 주세요.", HttpStatus.NOT_FOUND));
+            () -> new ClassfitException(ErrorCode.EMAIL_NOT_FOUND));
 
         member.updateRole("ADMIN");
 
@@ -51,13 +51,13 @@ public class AcademyService {
     public void joinAcademy(AcademyJoinRequest request) {
 
         Academy academy = academyRepository.findByCode(request.code())
-            .orElseThrow(() -> new ClassfitException("유효하지 않은 코드입니다.", HttpStatus.NOT_FOUND));
+            .orElseThrow(() -> new ClassfitException(ErrorCode.EMAIL_AUTH_CODE_INVALID));
 
         Invitation invitation = invitationRepository.findByAcademyIdAndEmail(academy.getId(), request.email())
-            .orElseThrow(() -> new ClassfitException("학원으로부터 초대받지 않은 계정입니다.", HttpStatus.NOT_FOUND));
+            .orElseThrow(() -> new ClassfitException(ErrorCode.ACADEMY_INVITATION_INVALID));
 
         Member member = memberRepository.findByEmail(request.email())
-            .orElseThrow(() -> new ClassfitException("존재하지 않는 계정입니다.", HttpStatus.NOT_FOUND));
+            .orElseThrow(() -> new ClassfitException(ErrorCode.EMAIL_NOT_FOUND));
 
         invitation.updateStatus(InvitationStatus.COMPLETED);
         member.updateRole("MEMBER");

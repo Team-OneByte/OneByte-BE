@@ -1,7 +1,7 @@
 package classfit.example.classfit.drive.controller.docs;
 
 import classfit.example.classfit.auth.annotation.AuthMember;
-import classfit.example.classfit.common.CustomApiResponse;
+import classfit.example.classfit.common.response.CustomApiResponse;
 import classfit.example.classfit.drive.domain.DriveType;
 import classfit.example.classfit.drive.domain.FileType;
 import classfit.example.classfit.drive.dto.response.FileResponse;

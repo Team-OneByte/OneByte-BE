@@ -4,7 +4,7 @@ import classfit.example.classfit.auth.annotation.AuthMember;
 import classfit.example.classfit.category.controller.docs.ClassInfoControllerDocs;
 import classfit.example.classfit.category.dto.response.ClassInfoResponse;
 import classfit.example.classfit.category.service.ClassInfoService;
-import classfit.example.classfit.common.CustomApiResponse;
+import classfit.example.classfit.common.response.CustomApiResponse;
 import classfit.example.classfit.member.domain.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;

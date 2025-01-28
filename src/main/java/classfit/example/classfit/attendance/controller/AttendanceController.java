@@ -7,7 +7,7 @@ import classfit.example.classfit.attendance.service.AttendanceService;
 import classfit.example.classfit.attendance.service.AttendanceUpdateService;
 import classfit.example.classfit.auth.annotation.AuthMember;
 import classfit.example.classfit.classStudent.domain.ClassStudent;
-import classfit.example.classfit.common.CustomApiResponse;
+import classfit.example.classfit.common.response.CustomApiResponse;
 import classfit.example.classfit.member.domain.Member;
 import classfit.example.classfit.student.domain.Student;
 import lombok.RequiredArgsConstructor;

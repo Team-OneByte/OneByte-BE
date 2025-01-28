@@ -1,8 +1,7 @@
 package classfit.example.classfit.event.service;
 
-import static classfit.example.classfit.common.exception.ClassfitException.EVENT_NOT_FOUND;
-
 import classfit.example.classfit.common.exception.ClassfitException;
+import classfit.example.classfit.common.response.ErrorCode;
 import classfit.example.classfit.event.domain.Event;
 import classfit.example.classfit.event.dto.request.EventCreateRequest;
 import classfit.example.classfit.event.dto.request.EventDragUpdate;
@@ -15,7 +14,6 @@ import classfit.example.classfit.member.domain.Member;
 import classfit.example.classfit.memberCalendar.domain.CalendarType;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -60,7 +58,7 @@ public class EventService {
 
     private Event getEventById(long eventId) {
         return eventRepository.findById(eventId)
-            .orElseThrow(() -> new ClassfitException(EVENT_NOT_FOUND, HttpStatus.NOT_FOUND));
+            .orElseThrow(() -> new ClassfitException(ErrorCode.EVENT_NOT_FOUND));
     }
 
     public EventResponse dragUpdateEvent(Long eventId, EventDragUpdate request) {

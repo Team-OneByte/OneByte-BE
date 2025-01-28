@@ -8,6 +8,7 @@ import classfit.example.classfit.category.dto.response.AllMainClassResponse;
 import classfit.example.classfit.category.dto.response.MainClassResponse;
 import classfit.example.classfit.category.repository.MainClassRepository;
 import classfit.example.classfit.common.exception.ClassfitException;
+import classfit.example.classfit.common.response.ErrorCode;
 import classfit.example.classfit.member.domain.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -31,7 +32,7 @@ public class MainClassService {
         boolean exists = mainClassRepository.existsByAcademyAndMainClassName(academy,
             req.mainClassName());
         if (exists) {
-            throw new ClassfitException("이미 같은 이름의 메인 클래스가 있어요.", HttpStatus.CONFLICT);
+            throw new ClassfitException(ErrorCode.MAIN_CLASS_ALREADY_EXISTS);
         }
 
         MainClass mainClass = new MainClass(req.mainClassName(), academy);
@@ -55,10 +56,10 @@ public class MainClassService {
     public void deleteMainClass(Member findMember, Long mainClassId) {
 
         MainClass mainClass = mainClassRepository.findById(mainClassId).orElseThrow(
-            () -> new ClassfitException("해당 메인 클래스를 찾을 수 없습니다.", HttpStatus.NOT_FOUND));
+            () -> new ClassfitException(ErrorCode.MAIN_CLASS_NOT_FOUND));
 
         if (!Objects.equals(findMember.getAcademy(), mainClass.getAcademy())) {
-            throw new ClassfitException("사용자가 속한 학원 내의 클래스가 아닙니다.", HttpStatus.FORBIDDEN);
+            throw new ClassfitException(ErrorCode.ACADEMY_ACCESS_INVALID);
         }
 
         mainClassRepository.delete(mainClass);
@@ -69,10 +70,10 @@ public class MainClassService {
     public MainClassResponse updateMainClass(Member findMember, Long mainClassId, MainClassRequest request) {
 
         MainClass mainClass = mainClassRepository.findById(mainClassId).orElseThrow(
-            () -> new ClassfitException("해당 메인 클래스를 찾을 수 없습니다.", HttpStatus.NOT_FOUND));
+            () -> new ClassfitException(ErrorCode.MAIN_CLASS_NOT_FOUND));
 
         if (!Objects.equals(findMember.getAcademy(), mainClass.getAcademy())) {
-            throw new ClassfitException("사용자가 속한 학원 내의 클래스가 아닙니다.", HttpStatus.FORBIDDEN);
+            throw new ClassfitException(ErrorCode.ACADEMY_ACCESS_INVALID);
         }
         mainClass.updateMainClassName(request.mainClassName());
         return new MainClassResponse(mainClass.getId(), mainClass.getMainClassName());
