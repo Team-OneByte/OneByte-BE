@@ -19,18 +19,7 @@ public record EventModalResponse(
     LocalDateTime repeatEndDate,
     boolean isAllDay
 ) {
-    public static EventModalResponse of(
-        final Long id,
-        final String name,
-        final CalendarType calendarType,
-        final EventType eventType,
-        final LocalDateTime startDate,
-        final LocalDateTime endDate,
-        final Long categoryId,
-        final EventRepeatType eventRepeatType,
-        final LocalDateTime repeatEndDate,
-        final boolean isAllDay
-    ) {
+    public static EventModalResponse of(final Long id, final String name, final CalendarType calendarType, final EventType eventType, final LocalDateTime startDate, final LocalDateTime endDate, final Long categoryId, final EventRepeatType eventRepeatType, final LocalDateTime repeatEndDate, final boolean isAllDay) {
         return EventModalResponse.builder()
             .id(id)
             .name(name)

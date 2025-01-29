@@ -9,11 +9,7 @@ public record CalendarCategoryResponse(
     String name,
     String color
 ){
-    public static CalendarCategoryResponse of(
-        final Long id,
-        final String name,
-        final CategoryColor color
-    ) {
+    public static CalendarCategoryResponse of(final Long id, final String name, final CategoryColor color) {
         return CalendarCategoryResponse.builder()
             .id(id)
             .name(name)

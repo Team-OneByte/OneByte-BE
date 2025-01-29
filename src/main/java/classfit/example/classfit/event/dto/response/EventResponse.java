@@ -12,13 +12,7 @@ public record EventResponse(
     LocalDateTime startDate,
     LocalDateTime endDate
 ) {
-    public static EventResponse of(
-        final Long id,
-        final String name,
-        final EventType eventType,
-        final LocalDateTime startDate,
-        final LocalDateTime endDate
-    ) {
+    public static EventResponse of(final Long id, final String name, final EventType eventType, final LocalDateTime startDate, final LocalDateTime endDate) {
         return EventResponse.builder()
             .id(id)
             .name(name)

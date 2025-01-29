@@ -9,11 +9,7 @@ public record StudentAttendanceResponse(
     String name,
     List<AttendanceResponse> attendance
 ) {
-    public static StudentAttendanceResponse of(
-        final Long id,
-        final String name,
-        final List<AttendanceResponse> attendance
-    ) {
+    public static StudentAttendanceResponse of(final Long id, final String name, final List<AttendanceResponse> attendance) {
         return StudentAttendanceResponse.builder()
             .id(id)
             .name(name)
