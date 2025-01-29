@@ -10,12 +10,7 @@ public record AttendanceResponse(
     int week,
     String status
 ) {
-    public static AttendanceResponse of(
-        final Long id,
-        final LocalDate date,
-        final int week,
-        final String status
-    ) {
+    public static AttendanceResponse of(final Long id, final LocalDate date, final int week, final String status) {
         return AttendanceResponse.builder()
             .id(id)
             .date(date)

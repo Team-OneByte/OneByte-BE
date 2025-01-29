@@ -12,14 +12,7 @@ public record StatisticsDateResponse(
     int late,
     int extra
 ) {
-    public static StatisticsDateResponse of(
-        final LocalDate date,
-        final int week,
-        final int present,
-        final int absent,
-        final int late,
-        final int extra
-    ) {
+    public static StatisticsDateResponse of(final LocalDate date, final int week, final int present, final int absent, final int late, final int extra) {
         return StatisticsDateResponse.builder()
             .date(date)
             .week(week)

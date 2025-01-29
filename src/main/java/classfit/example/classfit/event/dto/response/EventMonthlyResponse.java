@@ -11,14 +11,7 @@ public record EventMonthlyResponse(
     String startDate,
     String endDate
 ) {
-    public static EventMonthlyResponse of(
-        final String id,
-        final String name,
-        final String color,
-        final String eventType,
-        final String startDate,
-        final String endDate
-    ) {
+    public static EventMonthlyResponse of(final String id, final String name, final String color, final String eventType, final String startDate, final String endDate) {
         return EventMonthlyResponse.builder()
             .id(id)
             .name(name)
