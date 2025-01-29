@@ -20,9 +20,16 @@ public record CreateReportResponse(
         String overallOpinion,
         String reportCreatedBy
 ) {
-    public static CreateReportResponse of(List<StudentList> studentList, Long mainClassId, Long subClassId,
-            String reportName, LocalDate startDate, LocalDate endDate,
-            Member member,boolean includeAverage) {
+
+    public static CreateReportResponse of(
+            List<StudentList> studentList,
+            Long mainClassId,
+            Long subClassId,
+            String reportName,
+            LocalDate startDate,
+            LocalDate endDate,
+            Member member,
+            boolean includeAverage) {
         return new CreateReportResponse(
                 includeAverage,
                 mainClassId,

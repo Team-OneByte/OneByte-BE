@@ -85,5 +85,5 @@ public interface ScoreReportControllerDocs {
     @Operation(summary = "학생 리포트 전체조회", description = "학습 리포트 생성 성적 리포트 전체조회 API입니다.", responses = {
         @ApiResponse(responseCode = "200", description = "학생 리포트 전체조회 성공")
     })
-    CustomApiResponse<List<FindAllReportResponse>> findAllReport(@AuthMember Member member);
+    CustomApiResponse<List<FindReportResponse>> findAllReport(@AuthMember Member member);
 }

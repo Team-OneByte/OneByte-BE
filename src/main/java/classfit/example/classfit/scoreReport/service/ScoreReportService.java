@@ -151,7 +151,7 @@ public class ScoreReportService {
     }
 
     @Transactional(readOnly = true)
-    public List<FindAllReportResponse> findAllReport(@AuthMember Member member) {
+    public List<FindReportResponse> findAllReport(@AuthMember Member member) {
         Long academyId = member.getAcademy().getId();
 
         Academy academy = academyRepository.findById(academyId)
@@ -160,7 +160,7 @@ public class ScoreReportService {
         List<ScoreReport> scoreReports = scoreReportRepository.findAllByAcademy(academy);
 
         return scoreReports.stream()
-            .map(report -> new FindAllReportResponse(
+            .map(report -> new FindReportResponse(
                 report.getId(),
                 report.getStudent().getId(),
                 report.getStudent().getName(),
