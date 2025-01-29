@@ -1,7 +1,9 @@
 package classfit.example.classfit.calendarCategory.dto.response;
 
 import classfit.example.classfit.memberCalendar.domain.CalendarType;
+import lombok.Builder;
 
+@Builder
 public record CalendarCategoryCreateResponse(
     Long id,
     String name,
@@ -14,6 +16,11 @@ public record CalendarCategoryCreateResponse(
         final String color,
         final CalendarType type
     ) {
-        return new CalendarCategoryCreateResponse(id, name, color, type);
+        return CalendarCategoryCreateResponse.builder()
+            .id(id)
+            .name(name)
+            .color(color)
+            .type(type)
+            .build();
     }
 }

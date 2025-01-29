@@ -1,7 +1,9 @@
 package classfit.example.classfit.attendance.dto.response;
 
 import java.util.List;
+import lombok.Builder;
 
+@Builder
 public record StudentAttendanceResponse(
     Long id,
     String name,
@@ -12,6 +14,10 @@ public record StudentAttendanceResponse(
         final String name,
         final List<AttendanceResponse> attendance
     ) {
-        return new StudentAttendanceResponse(id, name, attendance);
+        return StudentAttendanceResponse.builder()
+            .id(id)
+            .name(name)
+            .attendance(attendance)
+            .build();
     }
 }

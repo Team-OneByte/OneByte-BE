@@ -1,7 +1,9 @@
 package classfit.example.classfit.calendarCategory.dto.response;
 
 import classfit.example.classfit.calendarCategory.domain.CategoryColor;
+import lombok.Builder;
 
+@Builder
 public record CalendarCategoryResponse(
     Long id,
     String name,
@@ -12,6 +14,10 @@ public record CalendarCategoryResponse(
         final String name,
         final CategoryColor color
     ) {
-        return new CalendarCategoryResponse(id, name, color.getHexCode());
+        return CalendarCategoryResponse.builder()
+            .id(id)
+            .name(name)
+            .color(color.getHexCode())
+            .build();
     }
 }

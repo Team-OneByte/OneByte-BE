@@ -1,5 +1,8 @@
 package classfit.example.classfit.attendance.dto.response;
 
+import lombok.Builder;
+
+@Builder
 public record StatisticsMemberResponse(
     Long studentId,
     String name,
@@ -16,6 +19,13 @@ public record StatisticsMemberResponse(
         final int late,
         final int extra
     ) {
-        return new StatisticsMemberResponse(studentId, name, present, absent, late, 0);
+        return StatisticsMemberResponse.builder()
+            .studentId(studentId)
+            .name(name)
+            .present(present)
+            .absent(absent)
+            .late(late)
+            .extra(extra)
+            .build();
     }
 }
