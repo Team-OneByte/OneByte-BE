@@ -2,20 +2,18 @@ package classfit.example.classfit.category.domain;
 
 import classfit.example.classfit.classStudent.domain.ClassStudent;
 import classfit.example.classfit.common.domain.BaseEntity;
-import classfit.example.classfit.member.domain.Member;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Getter
+@Builder
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class SubClass extends BaseEntity {
-
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

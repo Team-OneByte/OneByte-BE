@@ -8,8 +8,7 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-public record MemberRequest
-    (
+public record MemberRequest(
         @NotBlank(message = "이름은 공백일 수 없습니다.")
         String name,
 
@@ -23,8 +22,8 @@ public record MemberRequest
         @NotBlank(message = "비밀번호는 공백일 수 없습니다.")
         @Size(min = 8, max = 20, message = "비밀번호는 8 ~ 20자리로 입력해 주세요")
         @Pattern(
-            regexp = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d!@#$%^&*()_+\\-\\[\\]{};':\"\\\\|,.<>\\/?]{8,20}$",
-            message = "비밀번호는 영문자 숫자를 포함해야 합니다."
+                regexp = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d!@#$%^&*()_+\\-\\[\\]{};':\"\\\\|,.<>\\/?]{8,20}$",
+                message = "비밀번호는 영문자 숫자를 포함해야 합니다."
         )
         String password,
 
@@ -33,16 +32,14 @@ public record MemberRequest
 
         @NotBlank(message = "이메일 인증번호 확인이 필요합니다.")
         String emailToken
-
-    ) {
+) {
     public Member toEntity(BCryptPasswordEncoder bCryptPasswordEncoder) {
         return Member.builder()
-            .name(name())
-            .phoneNumber(phoneNumber())
-            .email(email())
-            .status(MemberStatus.ACTIVE)
-            .password(bCryptPasswordEncoder.encode(password()))
-            .build();
+                .name(name())
+                .phoneNumber(phoneNumber())
+                .email(email())
+                .status(MemberStatus.ACTIVE)
+                .password(bCryptPasswordEncoder.encode(password()))
+                .build();
     }
-
 }

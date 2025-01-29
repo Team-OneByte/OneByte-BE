@@ -45,8 +45,7 @@ public class SubClassService {
 
 
     @Transactional
-// 서브클래스 추가
-    public SubClassResponse addSubClass(@AuthMember Member findMember, SubClassRequest req) {
+    public SubClassResponse createSubClass(@AuthMember Member findMember, SubClassRequest req) {
         Academy findAcademy = findMember.getAcademy();
 
         MainClass findMainClass = mainClassRepository.findById(req.mainClassId())
@@ -65,12 +64,10 @@ public class SubClassService {
 
         subClassRepository.save(subClass);
 
-        return new SubClassResponse(req.mainClassId(), subClass.getId(),
-            subClass.getSubClassName());
+        return SubClassResponse.from(subClass);
     }
 
     @Transactional
-    // 서브 클래스 수정
     public SubClassResponse updateSubClass(@AuthMember Member findMember, Long subClassId, SubClassRequest req) {
         MainClass findMainClass = mainClassRepository.findById(req.mainClassId()).orElseThrow(
             () -> new ClassfitException(ErrorCode.MAIN_CLASS_NOT_FOUND));
@@ -87,7 +84,6 @@ public class SubClassService {
     }
 
     @Transactional
-    // 서브 클래스 삭제
     public void deleteSubClass(@AuthMember Member findMember, Long subClassId) {
 
         SubClass findSubClass = subClassRepository.findById(subClassId).orElseThrow(

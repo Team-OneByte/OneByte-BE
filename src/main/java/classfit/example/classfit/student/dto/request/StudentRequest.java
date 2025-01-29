@@ -9,8 +9,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDate;
 import java.util.List;
 
-public record StudentRequest
-    (
+public record StudentRequest(
         @NotBlank(message = "이름은 필수 항목입니다.")
         @Size(max = 30) String name,
 
@@ -39,20 +38,19 @@ public record StudentRequest
         String remark,
 
         String counselingLog
-    ) {
-
-    public Student toEntity(Boolean isStudent) {
+) {
+    public Student toEntity(final Boolean isStudent) {
         return Student.builder()
-            .name(name())
-            .gender(Gender.valueOf(gender().strip().toUpperCase()))
-            .birth(birth())
-            .studentNumber(studentNumber())
-            .parentNumber(parentNumber())
-            .grade(grade())
-            .address(address())
-            .isStudent(isStudent)
-            .remark(remark())
-            .counselingLog(counselingLog())
-            .build();
+                .name(name())
+                .gender(Gender.valueOf(gender().strip().toUpperCase()))
+                .birth(birth())
+                .studentNumber(studentNumber())
+                .parentNumber(parentNumber())
+                .grade(grade())
+                .address(address())
+                .isStudent(isStudent)
+                .remark(remark())
+                .counselingLog(counselingLog())
+                .build();
     }
 }

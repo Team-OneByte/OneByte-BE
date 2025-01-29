@@ -4,5 +4,6 @@ import java.util.List;
 
 public record StudentAttendanceUpdateRequest(
         Long studentId,
-        List<AttendanceStatusUpdateRequest> attendance) {
+        List<AttendanceStatusUpdateRequest> attendance
+) {
 }

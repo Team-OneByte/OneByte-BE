@@ -4,18 +4,15 @@ import classfit.example.classfit.classStudent.domain.ClassStudent;
 import classfit.example.classfit.common.exception.ClassfitException;
 import classfit.example.classfit.common.response.ErrorCode;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-
+import lombok.*;
 import java.time.LocalDate;
 
 @Entity
 @Getter
+@Builder
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Attendance {
-
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,14 +30,6 @@ public class Attendance {
     @ManyToOne
     @JoinColumn(name = "class_student_id")
     private ClassStudent classStudent;
-
-    @Builder
-    public Attendance(LocalDate date, int week, AttendanceStatus status, ClassStudent classStudent) {
-        this.date = date;
-        this.week = week;
-        this.status = status;
-        this.classStudent = classStudent;
-    }
 
     public void updateStatus(String status) {
         try {

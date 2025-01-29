@@ -4,8 +4,7 @@ import classfit.example.classfit.drive.domain.FileType;
 
 import java.time.LocalDateTime;
 
-public record FileResponse
-    (
+public record FileResponse(
         FileType fileType,
         String originalFileName,
         String fileName,
@@ -14,5 +13,5 @@ public record FileResponse
         String folderPath,
         String uploadedBy,
         LocalDateTime uploadedAt
-    ) {
+) {
 }

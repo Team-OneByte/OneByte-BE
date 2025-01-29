@@ -105,8 +105,8 @@ public class ScoreReportController implements ScoreReportControllerDocs {
 
     @Override
     @GetMapping("/all-report")
-    public CustomApiResponse<List<FindAllReportResponse>> findAllReport(@AuthMember Member member) {
-        List<FindAllReportResponse> response = scoreReportService.findAllReport(member);
+    public CustomApiResponse<List<FindReportResponse>> findAllReport(@AuthMember Member member) {
+        List<FindReportResponse> response = scoreReportService.findAllReport(member);
         return CustomApiResponse.success(response, 200, "학생 리포트 전체조회 성공");
     }
 }

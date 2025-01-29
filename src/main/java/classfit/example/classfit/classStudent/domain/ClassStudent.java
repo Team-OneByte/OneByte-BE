@@ -4,19 +4,16 @@ import classfit.example.classfit.attendance.domain.Attendance;
 import classfit.example.classfit.category.domain.SubClass;
 import classfit.example.classfit.student.domain.Student;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Builder
 @Getter
-@NoArgsConstructor
-@AllArgsConstructor
+@Builder
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ClassStudent {
 
     @Id
@@ -34,20 +31,11 @@ public class ClassStudent {
 
     @OneToMany(mappedBy = "classStudent", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Attendance> attendances = new ArrayList<>();
-
-    public void addStudent(Student student) {
-        this.student = student;
-    }
-
-    public void addSubClass(SubClass subClass) {
-        if (this.subClass != null) {
-            this.subClass.getClassStudents().remove(this);
-        }
-
-        this.subClass = subClass;
-
-        if (!subClass.getClassStudents().contains(this)) {
-            subClass.getClassStudents().add(this);
-        }
+    
+    public static ClassStudent create(Student student, SubClass subClass) {
+        return ClassStudent.builder()
+            .student(student)
+            .subClass(subClass)
+            .build();
     }
 }

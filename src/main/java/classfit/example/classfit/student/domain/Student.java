@@ -1,6 +1,5 @@
 package classfit.example.classfit.student.domain;
 
-import classfit.example.classfit.attendance.domain.Attendance;
 import classfit.example.classfit.classStudent.domain.ClassStudent;
 import classfit.example.classfit.common.domain.BaseEntity;
 import classfit.example.classfit.studentExam.domain.StudentExamScore;
@@ -12,10 +11,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Builder
 @Getter
+@Builder
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
 public class Student extends BaseEntity {
 
     @Id

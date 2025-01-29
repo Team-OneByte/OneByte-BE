@@ -19,7 +19,7 @@ public interface SubClassControllerDocs {
     @Operation(summary = "하위 클래스 추가", description = "하위 클래스를 추가하는 API입니다.", responses = {
         @ApiResponse(responseCode = "201", description = "하위 클래스 생성 성공")
     })
-    CustomApiResponse<SubClassResponse> addSubClass(
+    CustomApiResponse<SubClassResponse> createSubClass(
         @AuthMember Member findMember,
         @Valid @RequestBody SubClassRequest req
     );

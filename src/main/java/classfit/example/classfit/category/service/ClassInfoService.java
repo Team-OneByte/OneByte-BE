@@ -38,6 +38,6 @@ public class ClassInfoService {
     }
 
     private SubClassResponse mapToSubClassResponse(Long mainClassId, SubClass subClass) {
-        return SubClassResponse.of(mainClassId, subClass.getId(), subClass.getSubClassName());
+        return SubClassResponse.from(subClass);
     }
 }

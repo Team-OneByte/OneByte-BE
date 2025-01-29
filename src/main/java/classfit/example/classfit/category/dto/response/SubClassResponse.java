@@ -1,8 +1,19 @@
 package classfit.example.classfit.category.dto.response;
 
-public record SubClassResponse(Long mainClassId, Long subClassId, String subClassName) {
+import classfit.example.classfit.category.domain.SubClass;
+import lombok.Builder;
 
-    public static SubClassResponse of(Long mainClassId, Long subClassId, String subClassName) {
-        return new SubClassResponse(mainClassId, subClassId, subClassName);
+@Builder
+public record SubClassResponse(
+        Long mainClassId,
+        Long subClassId,
+        String subClassName
+) {
+    public static SubClassResponse from(SubClass subClass) {
+        return SubClassResponse.builder()
+                .mainClassId(subClass.getMainClass().getId())
+                .subClassId(subClass.getId())
+                .subClassName(subClass.getSubClassName())
+                .build();
     }
 }

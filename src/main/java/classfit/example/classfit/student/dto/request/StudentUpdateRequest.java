@@ -11,8 +11,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDate;
 import java.util.List;
 
-public record StudentUpdateRequest
-    (
+public record StudentUpdateRequest(
         @NotBlankNullable
         @Size(max = 30) String name,
 
@@ -41,6 +40,5 @@ public record StudentUpdateRequest
         String remark,
 
         String counselingLog
-    ) {
-
+) {
 }
