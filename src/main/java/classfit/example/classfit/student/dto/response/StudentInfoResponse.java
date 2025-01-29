@@ -11,44 +11,44 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Builder
 public record StudentInfoResponse(
-    Long studentId,
+        Long studentId,
 
-    String name,
+        String name,
 
-    Gender gender,
+        Gender gender,
 
-    LocalDate birth,
+        LocalDate birth,
 
-    String studentNumber,
+        String studentNumber,
 
-    String parentNumber,
+        String parentNumber,
 
-    String grade,
+        String grade,
 
-    List<String> subClassList,
+        List<String> subClassList,
 
-    String address,
+        String address,
 
-    String remark,
+        String remark,
 
-    String counselingLog,
+        String counselingLog,
 
-    boolean isStudent
+        boolean isStudent
 ) {
-    public static StudentInfoResponse of(Student student, List<String> subClassList) {
+    public static StudentInfoResponse of(final Student student, final List<String> subClassList) {
         return StudentInfoResponse.builder()
-            .studentId(student.getId())
-            .name(student.getName())
-            .gender(student.getGender())
-            .birth(student.getBirth())
-            .studentNumber(student.getStudentNumber())
-            .parentNumber(student.getParentNumber())
-            .grade(student.getGrade())
-            .subClassList(subClassList)
-            .address(student.getAddress())
-            .remark(student.getRemark())
-            .counselingLog(student.getCounselingLog())
-            .isStudent(student.isStudent())
-            .build();
+                .studentId(student.getId())
+                .name(student.getName())
+                .gender(student.getGender())
+                .birth(student.getBirth())
+                .studentNumber(student.getStudentNumber())
+                .parentNumber(student.getParentNumber())
+                .grade(student.getGrade())
+                .subClassList(subClassList)
+                .address(student.getAddress())
+                .remark(student.getRemark())
+                .counselingLog(student.getCounselingLog())
+                .isStudent(student.isStudent())
+                .build();
     }
 }

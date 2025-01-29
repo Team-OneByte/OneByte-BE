@@ -1,8 +1,9 @@
 package classfit.example.classfit.scoreReport.dto.response;
 
 import classfit.example.classfit.scoreReport.domain.ScoreReport;
-import java.time.LocalDate;
 import lombok.Builder;
+
+import java.time.LocalDate;
 
 @Builder
 public record FindReportResponse(
@@ -14,7 +15,7 @@ public record FindReportResponse(
         LocalDate createAt
 ) {
 
-    public static FindReportResponse from(ScoreReport report) {
+    public static FindReportResponse from(final ScoreReport report) {
         return FindReportResponse.builder()
                 .studentReportId(report.getId())
                 .studentId(report.getStudent().getId())

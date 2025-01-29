@@ -1,11 +1,11 @@
 package classfit.example.classfit.scoreReport.dto.response;
 
 import classfit.example.classfit.member.domain.Member;
-import classfit.example.classfit.scoreReport.domain.ScoreReport;
 import classfit.example.classfit.student.dto.StudentList;
+import lombok.Builder;
+
 import java.time.LocalDate;
 import java.util.List;
-import lombok.Builder;
 
 @Builder
 public record CreateReportResponse(
@@ -30,18 +30,16 @@ public record CreateReportResponse(
             LocalDate endDate,
             Member member,
             boolean includeAverage) {
-        return new CreateReportResponse(
-                includeAverage,
-                mainClassId,
-                subClassId,
-                studentList,
-                reportName,
-                startDate,
-                endDate,
-                List.of(),
-                null,
-                member.getName()
-        );
+        return CreateReportResponse.builder()
+                .studentList(studentList)
+                .mainClassId(mainClassId)
+                .subClassId(subClassId)
+                .reportName(reportName)
+                .startDate(startDate)
+                .endDate(endDate)
+                .reportCreatedBy(member.getName())
+                .includeAverage(includeAverage)
+                .build();
     }
 
 }

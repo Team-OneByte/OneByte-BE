@@ -1,10 +1,10 @@
 package classfit.example.classfit.student.dto;
 
 public record StudentList(
-    Long reportId,
+        Long reportId,
 
-    Long studentId,
+        Long studentId,
 
-    String name
+        String name
 ) {
 }

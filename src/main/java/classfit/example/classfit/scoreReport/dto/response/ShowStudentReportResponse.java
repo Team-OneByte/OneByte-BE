@@ -2,17 +2,16 @@ package classfit.example.classfit.scoreReport.dto.response;
 
 import classfit.example.classfit.attendance.dto.process.AttendanceInfo;
 import classfit.example.classfit.studentExam.dto.process.ExamHistory;
+import lombok.Builder;
+
 import java.time.LocalDate;
 import java.util.List;
-import lombok.Builder;
-import org.springframework.cglib.core.Local;
 
 @Builder
 public record ShowStudentReportResponse(
         Long studentId,
         String studentName,
         String mainClassName,
-
         String subClassName,
         String reportName,
         LocalDate startDate,

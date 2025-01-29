@@ -9,7 +9,7 @@ public record FindClassStudent(
         String studentName
 ) {
 
-    public static FindClassStudent from(Student student) {
+    public static FindClassStudent from(final Student student) {
         return FindClassStudent.builder()
                 .studentId(student.getId())
                 .studentName(student.getName())

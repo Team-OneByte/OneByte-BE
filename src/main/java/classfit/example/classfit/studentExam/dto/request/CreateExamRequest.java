@@ -5,9 +5,10 @@ import classfit.example.classfit.category.domain.SubClass;
 import classfit.example.classfit.studentExam.domain.Exam;
 import classfit.example.classfit.studentExam.domain.ExamPeriod;
 import classfit.example.classfit.studentExam.domain.Standard;
+import org.springframework.format.annotation.DateTimeFormat;
+
 import java.time.LocalDate;
 import java.util.List;
-import org.springframework.format.annotation.DateTimeFormat;
 
 public record CreateExamRequest(
         Long subClassId,
@@ -20,7 +21,7 @@ public record CreateExamRequest(
         List<String> range
 ) {
 
-    public Exam toEntity(SubClass subClass, MainClass mainClass) {
+    public Exam toEntity(final SubClass subClass, final MainClass mainClass) {
         return Exam.builder()
                 .subClass(subClass)
                 .mainClass(mainClass)

@@ -5,17 +5,17 @@ import lombok.Builder;
 
 @Builder
 public record CalendarCategoryCreateResponse(
-    Long id,
-    String name,
-    String color,
-    CalendarType type
-){
+        Long id,
+        String name,
+        String color,
+        CalendarType type
+) {
     public static CalendarCategoryCreateResponse of(final Long id, final String name, final String color, final CalendarType type) {
         return CalendarCategoryCreateResponse.builder()
-            .id(id)
-            .name(name)
-            .color(color)
-            .type(type)
-            .build();
+                .id(id)
+                .name(name)
+                .color(color)
+                .type(type)
+                .build();
     }
 }

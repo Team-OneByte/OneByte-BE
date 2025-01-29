@@ -9,5 +9,4 @@ public record ExamHistory(
         String average,
         Integer score
 ) {
-
 }

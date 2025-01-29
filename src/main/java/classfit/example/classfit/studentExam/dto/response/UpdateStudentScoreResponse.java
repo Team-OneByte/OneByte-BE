@@ -2,8 +2,9 @@ package classfit.example.classfit.studentExam.dto.response;
 
 import classfit.example.classfit.studentExam.domain.Standard;
 import classfit.example.classfit.studentExam.dto.process.ExamStudent;
-import java.util.List;
 import lombok.Builder;
+
+import java.util.List;
 
 @Builder
 public record UpdateStudentScoreResponse(

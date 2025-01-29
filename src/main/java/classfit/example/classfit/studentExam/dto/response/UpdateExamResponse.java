@@ -2,9 +2,10 @@ package classfit.example.classfit.studentExam.dto.response;
 
 import classfit.example.classfit.studentExam.domain.ExamPeriod;
 import classfit.example.classfit.studentExam.domain.Standard;
+import lombok.Builder;
+
 import java.time.LocalDate;
 import java.util.List;
-import lombok.Builder;
 
 @Builder
 public record UpdateExamResponse(

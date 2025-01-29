@@ -8,5 +8,4 @@ public record MainClassRequest(
         @Size(max = 10, message = "메인 클래스 이름은 10자를 초과할 수 없습니다.")
         String mainClassName
 ) {
-
 }

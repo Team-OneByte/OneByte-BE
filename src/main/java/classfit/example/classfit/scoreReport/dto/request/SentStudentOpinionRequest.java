@@ -5,5 +5,4 @@ public record SentStudentOpinionRequest(
         Long studentId,
         String studentOpinion
 ) {
-
 }

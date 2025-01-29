@@ -8,7 +8,6 @@ public record MainClassResponse(
         Long mainClassId,
         String mainClassName
 ) {
-
     public static MainClassResponse from(MainClass mainClass) {
         return MainClassResponse.builder()
                 .mainClassId(mainClass.getId())

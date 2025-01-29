@@ -7,23 +7,19 @@ import java.time.LocalDate;
 
 @Builder
 public record MemberInfoResponse(
-    String name,
-
-    String phoneNumber,
-
-    LocalDate birth,
-
-    String email,
-
-    String subject
+        String name,
+        String phoneNumber,
+        LocalDate birth,
+        String email,
+        String subject
 ) {
-    public static MemberInfoResponse from(Member member) {
+    public static MemberInfoResponse from(final Member member) {
         return MemberInfoResponse.builder()
-            .name(member.getName())
-            .phoneNumber(member.getPhoneNumber())
-            .birth(member.getBirthDate())
-            .subject(member.getSubject())
-            .email(member.getEmail())
-            .build();
+                .name(member.getName())
+                .phoneNumber(member.getPhoneNumber())
+                .birth(member.getBirthDate())
+                .subject(member.getSubject())
+                .email(member.getEmail())
+                .build();
     }
 }

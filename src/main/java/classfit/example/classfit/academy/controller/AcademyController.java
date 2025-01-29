@@ -6,8 +6,10 @@ import classfit.example.classfit.academy.dto.request.AcademyJoinRequest;
 import classfit.example.classfit.academy.dto.response.AcademyResponse;
 import classfit.example.classfit.academy.service.AcademyService;
 import classfit.example.classfit.common.response.CustomApiResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -20,14 +22,14 @@ public class AcademyController implements AcademyControllerDocs {
 
     @Override
     @PostMapping("/create")
-    public CustomApiResponse<AcademyResponse> createAcademy(AcademyCreateRequest request) {
+    public CustomApiResponse<AcademyResponse> createAcademy(@Valid @RequestBody AcademyCreateRequest request) {
         AcademyResponse academyResponse = academyService.createAcademy(request);
         return CustomApiResponse.success(academyResponse, 200, "학원 생성 성공");
     }
 
     @Override
     @PostMapping("/invite")
-    public CustomApiResponse<Void> joinAcademy(AcademyJoinRequest request) {
+    public CustomApiResponse<Void> joinAcademy(@Valid @RequestBody AcademyJoinRequest request) {
         academyService.joinAcademy(request);
         return CustomApiResponse.success(null, 200, "학원 가입 성공");
     }

@@ -7,14 +7,13 @@ import lombok.Builder;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Builder
 public record MemberResponse(
-    Long id,
-
-    String email
+        Long id,
+        String email
 ) {
-    public static MemberResponse from(Member member) {
+    public static MemberResponse from(final Member member) {
         return MemberResponse.builder()
-            .id(member.getId())
-            .email(member.getEmail())
-            .build();
+                .id(member.getId())
+                .email(member.getEmail())
+                .build();
     }
 }

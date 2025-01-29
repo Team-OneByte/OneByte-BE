@@ -3,10 +3,11 @@ package classfit.example.classfit.studentExam.dto.response;
 import classfit.example.classfit.studentExam.domain.Exam;
 import classfit.example.classfit.studentExam.domain.ExamPeriod;
 import classfit.example.classfit.studentExam.domain.Standard;
-import java.time.LocalDate;
-import java.util.List;
 import lombok.Builder;
 import org.springframework.format.annotation.DateTimeFormat;
+
+import java.time.LocalDate;
+import java.util.List;
 
 @Builder
 public record CreateExamResponse(
@@ -23,7 +24,7 @@ public record CreateExamResponse(
         List<String> range
 ) {
 
-    public static CreateExamResponse from(Exam exam) {
+    public static CreateExamResponse from(final Exam exam) {
         return CreateExamResponse.builder()
                 .examId(exam.getId())
                 .subClassId(exam.getSubClass().getId())

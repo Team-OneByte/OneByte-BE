@@ -9,7 +9,6 @@ public record SubClassResponse(
         Long subClassId,
         String subClassName
 ) {
-
     public static SubClassResponse from(SubClass subClass) {
         return SubClassResponse.builder()
                 .mainClassId(subClass.getMainClass().getId())

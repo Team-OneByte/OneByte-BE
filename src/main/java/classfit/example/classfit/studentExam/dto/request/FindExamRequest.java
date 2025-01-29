@@ -6,5 +6,4 @@ public record FindExamRequest(
         String memberName,
         String examName
 ) {
-
 }

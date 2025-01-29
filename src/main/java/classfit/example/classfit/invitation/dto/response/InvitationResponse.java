@@ -6,20 +6,17 @@ import lombok.Builder;
 
 @Builder
 public record InvitationResponse(
-    String staffName,
-
-    String email,
-
-    String academyName,
-
-    InvitationStatus status
+        String staffName,
+        String email,
+        String academyName,
+        InvitationStatus status
 ) {
-    public static InvitationResponse from(Invitation invitation) {
+    public static InvitationResponse from(final Invitation invitation) {
         return InvitationResponse.builder()
-            .staffName(invitation.getName())
-            .email(invitation.getEmail())
-            .academyName(invitation.getAcademy().getName())
-            .status(invitation.getStatus())
-            .build();
+                .staffName(invitation.getName())
+                .email(invitation.getEmail())
+                .academyName(invitation.getAcademy().getName())
+                .status(invitation.getStatus())
+                .build();
     }
 }
