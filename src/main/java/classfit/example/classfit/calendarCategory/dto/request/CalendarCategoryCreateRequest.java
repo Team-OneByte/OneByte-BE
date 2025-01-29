@@ -5,5 +5,6 @@ import classfit.example.classfit.memberCalendar.domain.CalendarType;
 public record CalendarCategoryCreateRequest(
     String name,
     String color,
-    CalendarType type) {
+    CalendarType type
+) {
 }

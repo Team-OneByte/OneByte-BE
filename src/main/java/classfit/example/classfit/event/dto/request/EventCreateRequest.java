@@ -33,7 +33,8 @@ public record EventCreateRequest(
     @Schema(description = "위치", required = false)
     Optional<String> location,
     @Schema(description = "메모", required = false)
-    Optional<String> memo) {
+    Optional<String> memo
+) {
     public LocalDateTime getEndDate() {
         return Event.getEndDate(eventType, startDate, endDate);
     }
