@@ -1,10 +1,12 @@
 package classfit.example.classfit.member.dto.request;
 
+import classfit.example.classfit.common.validation.PasswordMatch;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
+@PasswordMatch
 public record MemberPasswordRequest(
         @NotBlank(message = "이메일은 공백일 수 없습니다.")
         @Email(message = "형식이 올바르지 않습니다.")

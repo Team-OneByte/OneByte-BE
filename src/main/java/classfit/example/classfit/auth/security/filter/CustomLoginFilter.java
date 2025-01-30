@@ -3,9 +3,9 @@ package classfit.example.classfit.auth.security.filter;
 import classfit.example.classfit.auth.dto.request.UserRequest;
 import classfit.example.classfit.auth.security.custom.CustomAuthenticationToken;
 import classfit.example.classfit.auth.security.jwt.JWTUtil;
-import classfit.example.classfit.common.response.CustomApiResponse;
 import classfit.example.classfit.common.exception.ClassfitAuthException;
 import classfit.example.classfit.common.exception.ClassfitException;
+import classfit.example.classfit.common.response.CustomApiResponse;
 import classfit.example.classfit.common.response.ErrorCode;
 import classfit.example.classfit.common.util.CookieUtil;
 import classfit.example.classfit.common.util.RedisUtil;
@@ -14,7 +14,9 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -38,12 +40,12 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
         UserRequest userRequest = parseRequest(request);
-        userRequest.validate().ifPresent(errorMessage -> {
+        userRequest.validate().ifPresent(error -> {
             throw new ClassfitAuthException(ErrorCode.REQUEST_FORMAT_INVALID);
         });
 
         CustomAuthenticationToken authRequest = new CustomAuthenticationToken(
-            userRequest.email(), userRequest.password(), null
+                userRequest.email(), userRequest.password(), null
         );
         return authenticationManager.authenticate(authRequest);
     }
@@ -53,11 +55,14 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
         CustomAuthenticationToken customAuth = (CustomAuthenticationToken) authResult;
         String role = customAuth.getAuthorities().iterator().next().getAuthority();
 
-        String accessToken = jwtUtil.createJwt(ACCESS_TOKEN_CATEGORY, customAuth.getEmail(), role, 1000 * 60 * 60 * 24 * 5L);
+        String accessToken = jwtUtil.createJwt(ACCESS_TOKEN_CATEGORY, customAuth.getEmail(), role, 1000 * 60 * 5L);
         String refreshToken = jwtUtil.createJwt(REFRESH_TOKEN_CATEGORY, customAuth.getEmail(), role, 1000 * 60 * 60 * 24 * 7L);
-
         redisUtil.setDataExpire(REFRESH_TOKEN_CATEGORY + ":" + customAuth.getEmail(), refreshToken, 60 * 60 * 24 * 7L);
-        setResponse(res, accessToken, refreshToken);
+
+        res.setHeader(CREDENTIAL, SECURITY_SCHEMA_TYPE + accessToken);
+        ResponseCookie responseCookie = CookieUtil.setCookie(REFRESH_TOKEN_CATEGORY, refreshToken, 7 * 24 * 60 * 60);
+        res.setHeader(HttpHeaders.SET_COOKIE, responseCookie.toString());
+        res.setStatus(HttpStatus.OK.value());
     }
 
     @Override
@@ -76,11 +81,5 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
         } catch (IOException e) {
             throw new ClassfitException(ErrorCode.REQUEST_FORMAT_INVALID);
         }
-    }
-
-    private void setResponse(HttpServletResponse res, String accessToken, String refreshToken) {
-        res.setHeader(CREDENTIAL, SECURITY_SCHEMA_TYPE + accessToken);
-        CookieUtil.setCookie(res, REFRESH_TOKEN_CATEGORY, refreshToken, 7 * 24 * 60 * 60);
-        res.setStatus(HttpStatus.OK.value());
     }
 }

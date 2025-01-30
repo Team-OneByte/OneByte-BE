@@ -56,30 +56,30 @@ public class SecurityConfig {
         customLoginFilter.setFilterProcessesUrl("/api/v1/signin");
 
         security
-            .csrf(AbstractHttpConfigurer::disable)
-            .formLogin(AbstractHttpConfigurer::disable)
-            .httpBasic(AbstractHttpConfigurer::disable)
-            .cors(Customizer.withDefaults())
-            .sessionManagement((session) -> session
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .authenticationProvider(customAuthenticationProvider());
+                .csrf(AbstractHttpConfigurer::disable)
+                .formLogin(AbstractHttpConfigurer::disable)
+                .httpBasic(AbstractHttpConfigurer::disable)
+                .cors(Customizer.withDefaults())
+                .sessionManagement((session) -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authenticationProvider(customAuthenticationProvider());
 
         security
-            .authorizeHttpRequests((auth) -> auth
-                .requestMatchers("/", "/swagger-ui/**", "/v3/api-docs/**").permitAll()  // 스웨거 관련 엔드포인트 허용
-                .requestMatchers("/api/v1/signin", "/api/v1/signup", "/api/v1/password", "/api/v1/reissue", "/api/v1/mail/send", "/api/v1/mail/verify").permitAll()
-                .requestMatchers("/api/v1/academy/code", "/api/v1/academy/register", "/api/v1/academy/create", "/api/v1/academy/invite").permitAll()
-                .requestMatchers("/api/v1/**").hasAnyRole("MEMBER", "ADMIN")
-                .requestMatchers("/admin/**").hasRole("ADMIN")
-                .anyRequest().authenticated());
+                .authorizeHttpRequests((auth) -> auth
+                        .requestMatchers("/", "/swagger-ui/**", "/v3/api-docs/**").permitAll()  // 스웨거 관련 엔드포인트 허용
+                        .requestMatchers("/api/v1/signin", "/api/v1/signup", "/api/v1/password", "/api/v1/reissue", "/api/v1/mail/send", "/api/v1/mail/verify").permitAll()
+                        .requestMatchers("/api/v1/academy/code", "/api/v1/academy/register", "/api/v1/academy/create", "/api/v1/academy/invite").permitAll()
+                        .requestMatchers("/api/v1/**").hasAnyRole("MEMBER", "ADMIN")
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .anyRequest().authenticated());
 
         security
-            .addFilterBefore(new JWTFilter(customUserDetailService, jwtUtil), CustomLoginFilter.class)
-            .addFilterAt(customLoginFilter, UsernamePasswordAuthenticationFilter.class)
-            .exceptionHandling(exception -> exception
-                .authenticationEntryPoint(new CustomAuthenticationEntryPoint()) // 인증되지 않은 사용자 처리
-                .accessDeniedHandler(new CustomAccessDeniedHandler()) // 인증
-            );
+                .addFilterBefore(new JWTFilter(customUserDetailService, jwtUtil), CustomLoginFilter.class)
+                .addFilterAt(customLoginFilter, UsernamePasswordAuthenticationFilter.class)
+                .exceptionHandling(exception -> exception
+                        .authenticationEntryPoint(new CustomAuthenticationEntryPoint()) // 인증되지 않은 사용자 처리
+                        .accessDeniedHandler(new CustomAccessDeniedHandler()) // 인증
+                );
 
         return security.build();
     }

@@ -35,9 +35,7 @@ public class AcademyService {
             throw new ClassfitException(ErrorCode.ACADEMY_ALREADY_EXISTS);
         }
 
-        Member member = memberRepository.findByEmail(request.email()).orElseThrow(
-            () -> new ClassfitException(ErrorCode.EMAIL_NOT_FOUND));
-
+        Member member = getMember(request.email());
         member.updateRole("ADMIN");
 
         Academy academy = request.toEntity();
@@ -51,18 +49,22 @@ public class AcademyService {
     public void joinAcademy(AcademyJoinRequest request) {
 
         Academy academy = academyRepository.findByCode(request.code())
-            .orElseThrow(() -> new ClassfitException(ErrorCode.EMAIL_AUTH_CODE_INVALID));
+                .orElseThrow(() -> new ClassfitException(ErrorCode.EMAIL_AUTH_CODE_INVALID));
 
         Invitation invitation = invitationRepository.findByAcademyIdAndEmail(academy.getId(), request.email())
-            .orElseThrow(() -> new ClassfitException(ErrorCode.ACADEMY_INVITATION_INVALID));
+                .orElseThrow(() -> new ClassfitException(ErrorCode.ACADEMY_INVITATION_INVALID));
 
-        Member member = memberRepository.findByEmail(request.email())
-            .orElseThrow(() -> new ClassfitException(ErrorCode.EMAIL_NOT_FOUND));
+        Member member = getMember(request.email());
 
         invitation.updateStatus(InvitationStatus.COMPLETED);
         member.updateRole("MEMBER");
 
         academy.addMember(member);
+    }
+
+    private Member getMember(String request) {
+        return memberRepository.findByEmail(request).orElseThrow(
+                () -> new ClassfitException(ErrorCode.EMAIL_NOT_FOUND));
     }
 }
 
