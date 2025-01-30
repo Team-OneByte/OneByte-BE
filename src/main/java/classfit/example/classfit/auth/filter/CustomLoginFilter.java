@@ -1,8 +1,8 @@
-package classfit.example.classfit.auth.security.filter;
+package classfit.example.classfit.auth.filter;
 
 import classfit.example.classfit.auth.dto.request.UserRequest;
-import classfit.example.classfit.auth.security.custom.CustomAuthenticationToken;
-import classfit.example.classfit.auth.security.jwt.JWTUtil;
+import classfit.example.classfit.auth.custom.CustomAuthenticationToken;
+import classfit.example.classfit.common.util.JWTUtil;
 import classfit.example.classfit.common.exception.ClassfitAuthException;
 import classfit.example.classfit.common.exception.ClassfitException;
 import classfit.example.classfit.common.response.CustomApiResponse;

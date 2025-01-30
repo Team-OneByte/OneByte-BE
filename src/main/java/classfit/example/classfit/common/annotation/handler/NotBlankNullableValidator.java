@@ -1,5 +1,6 @@
-package classfit.example.classfit.common.validation;
+package classfit.example.classfit.common.annotation.handler;
 
+import classfit.example.classfit.common.annotation.NotBlankNullable;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 

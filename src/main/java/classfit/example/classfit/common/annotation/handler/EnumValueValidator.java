@@ -1,11 +1,12 @@
-package classfit.example.classfit.common.validation;
+package classfit.example.classfit.common.annotation.handler;
 
+import classfit.example.classfit.common.annotation.EnumValue;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
 import java.util.Arrays;
 
-public class EnumValidator implements ConstraintValidator<EnumValue, String> {
+public class EnumValueValidator implements ConstraintValidator<EnumValue, String> {
 
     private EnumValue enumValue;
 
@@ -27,7 +28,7 @@ public class EnumValidator implements ConstraintValidator<EnumValue, String> {
         }
 
         return Arrays.stream(enumConstants)
-            .anyMatch(enumConstant -> convertible(value, enumConstant) || convertibleIgnoreCase(value, enumConstant));
+                .anyMatch(enumConstant -> convertible(value, enumConstant) || convertibleIgnoreCase(value, enumConstant));
     }
 
     private boolean convertible(final String value, final Enum<?> enumConstant) {

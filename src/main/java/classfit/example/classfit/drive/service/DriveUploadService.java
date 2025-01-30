@@ -1,6 +1,6 @@
 package classfit.example.classfit.drive.service;
 
-import classfit.example.classfit.auth.annotation.AuthMember;
+import classfit.example.classfit.common.annotation.AuthMember;
 import classfit.example.classfit.common.util.DriveUtil;
 import classfit.example.classfit.drive.domain.DriveType;
 import classfit.example.classfit.member.domain.Member;
@@ -29,13 +29,13 @@ public class DriveUploadService {
 
     public List<String> uploadFiles(@AuthMember Member member, DriveType driveType, List<MultipartFile> files, String folderPath) {
         return files.stream().map(file -> {
-                try {
-                    return uploadFileToS3(member, file, driveType, folderPath);
-                } catch (IOException e) {
-                    throw new RuntimeException("파일 업로드 중 오류 발생: " + file.getOriginalFilename(), e);
-                }
-            })
-            .collect(Collectors.toList());
+                    try {
+                        return uploadFileToS3(member, file, driveType, folderPath);
+                    } catch (IOException e) {
+                        throw new RuntimeException("파일 업로드 중 오류 발생: " + file.getOriginalFilename(), e);
+                    }
+                })
+                .collect(Collectors.toList());
     }
 
     private String uploadFileToS3(Member member, MultipartFile file, DriveType driveType, String folderPath) throws IOException {
@@ -73,11 +73,11 @@ public class DriveUploadService {
         }
 
         List<Tag> tags = List.of(
-            new Tag("folderPath", finalFolderPath),
-            new Tag("driveType", driveType.toString().toLowerCase()),
-            new Tag("originalFileName", originalFileName),
-            new Tag("uploadedBy", member.getName()),
-            new Tag("uploadedAt", formattedDate)
+                new Tag("folderPath", finalFolderPath),
+                new Tag("driveType", driveType.toString().toLowerCase()),
+                new Tag("originalFileName", originalFileName),
+                new Tag("uploadedBy", member.getName()),
+                new Tag("uploadedAt", formattedDate)
         );
         amazonS3.setObjectTagging(new SetObjectTaggingRequest(bucketName, objectKey, new ObjectTagging(tags)));
     }

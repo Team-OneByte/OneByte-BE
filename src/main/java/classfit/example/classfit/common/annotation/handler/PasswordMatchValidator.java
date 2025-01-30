@@ -1,5 +1,6 @@
-package classfit.example.classfit.common.validation;
+package classfit.example.classfit.common.annotation.handler;
 
+import classfit.example.classfit.common.annotation.PasswordMatch;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import org.springframework.beans.BeanWrapperImpl;

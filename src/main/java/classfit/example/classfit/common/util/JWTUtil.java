@@ -1,4 +1,4 @@
-package classfit.example.classfit.auth.security.jwt;
+package classfit.example.classfit.common.util;
 
 import classfit.example.classfit.common.exception.ClassfitException;
 import classfit.example.classfit.common.response.ErrorCode;

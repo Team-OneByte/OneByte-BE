@@ -1,6 +1,6 @@
 package classfit.example.classfit.calendarCategory.service;
 
-import classfit.example.classfit.auth.annotation.AuthMember;
+import classfit.example.classfit.common.annotation.AuthMember;
 import classfit.example.classfit.calendarCategory.domain.CalendarCategory;
 import classfit.example.classfit.calendarCategory.domain.CategoryColor;
 import classfit.example.classfit.calendarCategory.dto.request.CalendarCategoryCreateRequest;
@@ -15,9 +15,11 @@ import classfit.example.classfit.member.domain.Member;
 import classfit.example.classfit.memberCalendar.domain.CalendarType;
 import classfit.example.classfit.memberCalendar.domain.MemberCalendar;
 import classfit.example.classfit.memberCalendar.service.MemberCalendarService;
+
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,7 +35,7 @@ public class CalendarCategoryService {
         CalendarCategory category = buildCategory(member, request);
         CalendarCategory savedCategory = calendarCategoryRepository.save(category);
         return CalendarCategoryCreateResponse.of(savedCategory.getId(), savedCategory.getName(),
-            String.valueOf(savedCategory.getColor()), savedCategory.getMemberCalendar().getType());
+                String.valueOf(savedCategory.getColor()), savedCategory.getMemberCalendar().getType());
     }
 
     private CalendarCategory buildCategory(Member member, CalendarCategoryCreateRequest request) {
@@ -41,10 +43,10 @@ public class CalendarCategoryService {
         String uniqueName = createUniqueCategoryName(request.name(), -1L);
 
         return CalendarCategory.builder()
-            .name(uniqueName)
-            .color(CategoryColor.valueOf(request.color()))
-            .memberCalendar(memberCalendar)
-            .build();
+                .name(uniqueName)
+                .color(CategoryColor.valueOf(request.color()))
+                .memberCalendar(memberCalendar)
+                .build();
     }
 
     private MemberCalendar getMemberCalendarByMemberAndType(Member member, CalendarType type) {
@@ -78,28 +80,28 @@ public class CalendarCategoryService {
 
     private List<CalendarCategoryResponse> classifyAndSortCategories(MemberCalendar memberCalendar) {
         return calendarCategoryRepository.findByMemberCalendar(memberCalendar)
-            .stream()
-            .map(category -> CalendarCategoryResponse.of(
-                category.getId(),
-                category.getName(),
-                category.getColor()
-            ))
-            .sorted(Comparator.comparing(CalendarCategoryResponse::name))
-            .collect(Collectors.toList());
+                .stream()
+                .map(category -> CalendarCategoryResponse.of(
+                        category.getId(),
+                        category.getName(),
+                        category.getColor()
+                ))
+                .sorted(Comparator.comparing(CalendarCategoryResponse::name))
+                .collect(Collectors.toList());
     }
 
     private List<CalendarCategoryResponse> classifyAndSortSharedCategories(Member member) {
         Long academyId = member.getAcademy().getId();
 
         return calendarCategoryRepository.findByMemberCalendarTypeAndAcademyId(CalendarType.SHARED, academyId)
-            .stream()
-            .map(category -> CalendarCategoryResponse.of(
-                category.getId(),
-                category.getName(),
-                category.getColor()
-            ))
-            .sorted(Comparator.comparing(CalendarCategoryResponse::name))
-            .collect(Collectors.toList());
+                .stream()
+                .map(category -> CalendarCategoryResponse.of(
+                        category.getId(),
+                        category.getName(),
+                        category.getColor()
+                ))
+                .sorted(Comparator.comparing(CalendarCategoryResponse::name))
+                .collect(Collectors.toList());
     }
 
     @Transactional
@@ -114,7 +116,7 @@ public class CalendarCategoryService {
 
     public CalendarCategory getCategoryById(Long categoryId) {
         return calendarCategoryRepository.findById(categoryId)
-            .orElseThrow(() -> new ClassfitException(ErrorCode.EVENT_CATEGORY_NOT_FOUND));
+                .orElseThrow(() -> new ClassfitException(ErrorCode.EVENT_CATEGORY_NOT_FOUND));
     }
 
     @Transactional

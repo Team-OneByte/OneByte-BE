@@ -1,7 +1,7 @@
 package classfit.example.classfit.category.service;
 
 import classfit.example.classfit.academy.domain.Academy;
-import classfit.example.classfit.auth.annotation.AuthMember;
+import classfit.example.classfit.common.annotation.AuthMember;
 import classfit.example.classfit.category.domain.MainClass;
 import classfit.example.classfit.category.dto.request.MainClassRequest;
 import classfit.example.classfit.category.dto.response.AllMainClassResponse;
@@ -11,7 +11,6 @@ import classfit.example.classfit.common.exception.ClassfitException;
 import classfit.example.classfit.common.response.ErrorCode;
 import classfit.example.classfit.member.domain.Member;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,7 +29,7 @@ public class MainClassService {
         Academy academy = findMember.getAcademy();
 
         boolean exists = mainClassRepository.existsByAcademyAndMainClassName(academy,
-            req.mainClassName());
+                req.mainClassName());
         if (exists) {
             throw new ClassfitException(ErrorCode.MAIN_CLASS_ALREADY_EXISTS);
         }
@@ -49,14 +48,14 @@ public class MainClassService {
         List<MainClass> mainClasses = mainClassRepository.findByAcademy(academy);
 
         return mainClasses.stream().map(mainClass -> new AllMainClassResponse(mainClass.getId(),
-            mainClass.getMainClassName())).toList();
+                mainClass.getMainClassName())).toList();
     }
 
     @Transactional
     public void deleteMainClass(Member findMember, Long mainClassId) {
 
         MainClass mainClass = mainClassRepository.findById(mainClassId).orElseThrow(
-            () -> new ClassfitException(ErrorCode.MAIN_CLASS_NOT_FOUND));
+                () -> new ClassfitException(ErrorCode.MAIN_CLASS_NOT_FOUND));
 
         if (!Objects.equals(findMember.getAcademy(), mainClass.getAcademy())) {
             throw new ClassfitException(ErrorCode.ACADEMY_ACCESS_INVALID);
@@ -70,7 +69,7 @@ public class MainClassService {
     public MainClassResponse updateMainClass(Member findMember, Long mainClassId, MainClassRequest request) {
 
         MainClass mainClass = mainClassRepository.findById(mainClassId).orElseThrow(
-            () -> new ClassfitException(ErrorCode.MAIN_CLASS_NOT_FOUND));
+                () -> new ClassfitException(ErrorCode.MAIN_CLASS_NOT_FOUND));
 
         if (!Objects.equals(findMember.getAcademy(), mainClass.getAcademy())) {
             throw new ClassfitException(ErrorCode.ACADEMY_ACCESS_INVALID);

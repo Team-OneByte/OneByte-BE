@@ -1,4 +1,4 @@
-package classfit.example.classfit.auth.security.custom;
+package classfit.example.classfit.auth.custom;
 
 import lombok.Getter;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

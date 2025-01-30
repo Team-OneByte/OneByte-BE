@@ -1,6 +1,6 @@
 package classfit.example.classfit.category.controller.docs;
 
-import classfit.example.classfit.auth.annotation.AuthMember;
+import classfit.example.classfit.common.annotation.AuthMember;
 import classfit.example.classfit.category.dto.response.ClassInfoResponse;
 import classfit.example.classfit.common.response.CustomApiResponse;
 import classfit.example.classfit.member.domain.Member;
@@ -14,7 +14,7 @@ import java.util.List;
 public interface ClassInfoControllerDocs {
 
     @Operation(summary = "클래스 정보 조회", description = "클래스 정보 조회 API입니다.", responses = {
-        @ApiResponse(responseCode = "200", description = "클래스 정보 조회 성공")
+            @ApiResponse(responseCode = "200", description = "클래스 정보 조회 성공")
     })
     CustomApiResponse<List<ClassInfoResponse>> getClassInfo(@AuthMember Member member);
 }

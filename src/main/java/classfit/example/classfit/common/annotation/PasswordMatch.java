@@ -1,5 +1,6 @@
-package classfit.example.classfit.common.validation;
+package classfit.example.classfit.common.annotation;
 
+import classfit.example.classfit.common.annotation.handler.PasswordMatchValidator;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 

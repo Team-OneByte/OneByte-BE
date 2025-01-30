@@ -1,6 +1,6 @@
 package classfit.example.classfit.member.service;
 
-import classfit.example.classfit.auth.security.jwt.JWTUtil;
+import classfit.example.classfit.common.util.JWTUtil;
 import classfit.example.classfit.common.exception.ClassfitException;
 import classfit.example.classfit.common.response.ErrorCode;
 import classfit.example.classfit.member.domain.Member;

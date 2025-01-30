@@ -1,6 +1,6 @@
 package classfit.example.classfit.member.dto.request;
 
-import classfit.example.classfit.common.validation.PasswordMatch;
+import classfit.example.classfit.common.annotation.PasswordMatch;
 import classfit.example.classfit.member.domain.Member;
 import classfit.example.classfit.member.domain.MemberStatus;
 import jakarta.validation.constraints.Email;

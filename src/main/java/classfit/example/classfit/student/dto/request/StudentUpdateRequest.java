@@ -1,7 +1,7 @@
 package classfit.example.classfit.student.dto.request;
 
-import classfit.example.classfit.common.validation.EnumValue;
-import classfit.example.classfit.common.validation.NotBlankNullable;
+import classfit.example.classfit.common.annotation.EnumValue;
+import classfit.example.classfit.common.annotation.NotBlankNullable;
 import classfit.example.classfit.student.domain.Gender;
 import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Pattern;

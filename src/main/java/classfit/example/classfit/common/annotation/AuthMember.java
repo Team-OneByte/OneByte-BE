@@ -1,4 +1,4 @@
-package classfit.example.classfit.auth.annotation;
+package classfit.example.classfit.common.annotation;
 
 import io.swagger.v3.oas.annotations.Parameter;
 

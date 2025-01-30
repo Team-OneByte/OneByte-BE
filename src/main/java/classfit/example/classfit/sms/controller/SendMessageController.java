@@ -1,6 +1,6 @@
 package classfit.example.classfit.sms.controller;
 
-import classfit.example.classfit.auth.annotation.AuthMember;
+import classfit.example.classfit.common.annotation.AuthMember;
 import classfit.example.classfit.member.domain.Member;
 import classfit.example.classfit.sms.controller.docs.SendMessageControllerDocs;
 import classfit.example.classfit.sms.dto.SendRequest;
@@ -22,8 +22,8 @@ public class SendMessageController implements SendMessageControllerDocs {
     @Override
     @PostMapping("api/v1/send-many")
     public MultipleDetailMessageSentResponse sendMany(
-        @AuthMember Member member,
-        @RequestBody List<SendRequest> requestList
+            @AuthMember Member member,
+            @RequestBody List<SendRequest> requestList
     ) {
         return smsService.sendMessages(requestList, member);
     }
