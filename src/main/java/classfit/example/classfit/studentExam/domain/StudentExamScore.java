@@ -39,22 +39,31 @@ public class StudentExamScore extends BaseEntity {
 
     @Column(name = "checked_student")
     boolean checkedStudent;
+
+    @Column(name = "standrd_status")
+    @Enumerated(EnumType.STRING)
+    private StandardStatus standardStatus;
+
     @Builder
-    public StudentExamScore(Student student, Exam exam, Integer score, ScoreReport scoreReport,String evaluationDetail) {
+    public StudentExamScore(Student student, Exam exam, Integer score,
+            StandardStatus standardStatus, ScoreReport scoreReport, String evaluationDetail) {
 
         this.student = student;
         this.exam = exam;
         this.score = score;
+        this.standardStatus = standardStatus;
         this.scoreReport = scoreReport;
-        this.evaluationDetail =evaluationDetail;
+        this.evaluationDetail = evaluationDetail;
     }
 
     public void updateScore(Integer score) {
         this.score = score;
     }
-    public  void updateEvaluationDetail(String evaluationDetail) {
+
+    public void updateEvaluationDetail(String evaluationDetail) {
         this.evaluationDetail = evaluationDetail;
     }
+
     public void updateCheckedStudent(boolean checkedStudent) {
         this.checkedStudent = checkedStudent;
     }
@@ -63,9 +72,9 @@ public class StudentExamScore extends BaseEntity {
     public void updateScoreReport(ScoreReport scoreReport) {
         this.scoreReport = scoreReport;
     }
-    public static StudentExamScore create(Exam exam, Student student, Integer score) {
-        return new StudentExamScore(student, exam, score, null, null);
-    }
 
+    public void updateStandardStatus(StandardStatus standardStatus) {
+        this.standardStatus = standardStatus;
+    }
 
 }

@@ -1,4 +1,4 @@
-package classfit.example.classfit.studentExam.dto.request;
+package classfit.example.classfit.studentExam.dto.examRequest;
 
 import classfit.example.classfit.studentExam.domain.ExamPeriod;
 import classfit.example.classfit.studentExam.domain.Standard;

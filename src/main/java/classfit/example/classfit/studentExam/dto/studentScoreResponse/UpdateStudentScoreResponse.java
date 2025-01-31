@@ -1,4 +1,4 @@
-package classfit.example.classfit.studentExam.dto.response;
+package classfit.example.classfit.studentExam.dto.studentScoreResponse;
 
 import classfit.example.classfit.studentExam.domain.Standard;
 import classfit.example.classfit.studentExam.dto.process.ExamStudent;

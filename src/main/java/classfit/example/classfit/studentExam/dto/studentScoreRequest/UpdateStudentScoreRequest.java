@@ -1,4 +1,4 @@
-package classfit.example.classfit.studentExam.dto.request;
+package classfit.example.classfit.studentExam.dto.studentScoreRequest;
 
 import classfit.example.classfit.common.exception.ClassfitException;
 import classfit.example.classfit.common.response.ErrorCode;

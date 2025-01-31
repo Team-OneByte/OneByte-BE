@@ -82,10 +82,6 @@ public class Exam extends BaseEntity {
         this.average = average;
     }
 
-    public void updateHighestScore(Integer highestScore) {
-        this.highestScore = highestScore;
-    }
-
     public void updateAverage(Integer newAverage) {
         this.average = newAverage.doubleValue();
     }

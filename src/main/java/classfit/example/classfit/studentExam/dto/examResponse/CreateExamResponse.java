@@ -1,4 +1,4 @@
-package classfit.example.classfit.studentExam.dto.response;
+package classfit.example.classfit.studentExam.dto.examResponse;
 
 import classfit.example.classfit.studentExam.domain.Exam;
 import classfit.example.classfit.studentExam.domain.ExamPeriod;

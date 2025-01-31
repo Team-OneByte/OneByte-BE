@@ -1,4 +1,4 @@
-package classfit.example.classfit.studentExam.dto.request;
+package classfit.example.classfit.studentExam.dto.examRequest;
 
 public record FindExamRequest(
         Long mainClassId,
