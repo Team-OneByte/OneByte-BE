@@ -2,6 +2,7 @@ package classfit.example.classfit.studentExam.dto.studentScoreRequest;
 
 import classfit.example.classfit.common.exception.ClassfitException;
 import classfit.example.classfit.common.response.ErrorCode;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 
@@ -9,7 +10,9 @@ import lombok.Builder;
 public record UpdateStudentScoreRequest(
         Long studentId,
 
-        @NotNull(message = "점수는 필수 입력값입니다.") Integer score,
+        @NotNull(message = "점수는 필수 입력값입니다.")
+        @Min(value = 0, message ="시험의 최고점수는 0이상 이어야 합니다.")
+        Integer score,
         String evaluationDetail,
 
         boolean checkedStudent
