@@ -65,7 +65,6 @@ public class ExamService {
         }
     }
 
-    // TODO evaluation,pf 기준 설정 후 score 관련 검증 추가
     @Transactional
     public CreateExamResponse createExam(@AuthMember Member findMember,
             CreateExamRequest examRequest) {
@@ -124,10 +123,9 @@ public class ExamService {
             Integer score = studentExamScore.getScore();
             String evaluationDetail = studentExamScore.getEvaluationDetail();
             boolean checkedStudent = studentExamScore.isCheckedStudent();
-            LocalDateTime updateAt = studentExamScore.getUpdatedAt();
 
             return ExamClassStudent.of(student.getId(), student.getName(), score,
-                    findExam.getHighestScore(), evaluationDetail, checkedStudent, updateAt);
+                    findExam.getHighestScore(), evaluationDetail, checkedStudent);
         }).collect(Collectors.toList());
     }
 
@@ -214,7 +212,7 @@ public class ExamService {
                             .orElse(LocalDateTime.now());
 
                     return new ExamClassStudent(student.getId(), student.getName(), score, evaluationDetail,
-                            checkedStudent, updateAt);
+                            checkedStudent);
                 })
 
                 .collect(Collectors.toList());

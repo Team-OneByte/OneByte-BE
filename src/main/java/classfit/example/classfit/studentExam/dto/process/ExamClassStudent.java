@@ -19,9 +19,7 @@ public record ExamClassStudent(
 
         String evaluationDetail,
 
-        boolean checkedStudent,
-
-        LocalDateTime updateAt
+        boolean checkedStudent
 ) {
     public static ExamClassStudent of(
             Long studentId,
@@ -29,8 +27,7 @@ public record ExamClassStudent(
             Integer score,
             Integer highestScore,
             String evaluationDetail,
-            boolean checkedStudent,
-            LocalDateTime updateAt
+            boolean checkedStudent
     ) {
         if (score > highestScore) {
             throw new ClassfitException(ErrorCode.SCORE_EXCEEDS_HIGHEST);
@@ -41,7 +38,6 @@ public record ExamClassStudent(
                 .score(score)
                 .evaluationDetail(evaluationDetail)
                 .checkedStudent(checkedStudent)
-                .updateAt(updateAt)
                 .build();
     }
 }
