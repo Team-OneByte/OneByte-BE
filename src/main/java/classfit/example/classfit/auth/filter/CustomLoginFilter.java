@@ -1,16 +1,13 @@
 package classfit.example.classfit.auth.filter;
 
-import classfit.example.classfit.auth.dto.request.UserRequest;
 import classfit.example.classfit.auth.custom.CustomAuthenticationToken;
-import classfit.example.classfit.common.util.JWTUtil;
-import classfit.example.classfit.common.exception.ClassfitAuthException;
-import classfit.example.classfit.common.exception.ClassfitException;
-import classfit.example.classfit.common.response.CustomApiResponse;
-import classfit.example.classfit.common.response.ErrorCode;
 import classfit.example.classfit.common.util.CookieUtil;
+import classfit.example.classfit.common.util.JWTUtil;
 import classfit.example.classfit.common.util.RedisUtil;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -18,12 +15,13 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import java.io.IOException;
-
+import java.util.Map;
 
 @RequiredArgsConstructor
 public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
@@ -39,16 +37,22 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
-        UserRequest userRequest = parseRequest(request);
-        userRequest.validate().ifPresent(error -> {
-            throw new ClassfitAuthException(ErrorCode.REQUEST_FORMAT_INVALID);
-        });
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            Map<String, String> requestMap = objectMapper.readValue(request.getInputStream(), new TypeReference<>() {
+            });
 
-        CustomAuthenticationToken authRequest = new CustomAuthenticationToken(
-                userRequest.email(), userRequest.password(), null
-        );
-        return authenticationManager.authenticate(authRequest);
+            String email = requestMap.get("email");
+            String password = requestMap.get("password");
+
+            CustomAuthenticationToken authRequest = new CustomAuthenticationToken(email, password, null);
+
+            return authenticationManager.authenticate(authRequest);
+        } catch (IOException e) {
+            throw new BadCredentialsException(e.getMessage());
+        }
     }
+
 
     @Override
     protected void successfulAuthentication(HttpServletRequest req, HttpServletResponse res, FilterChain chain, Authentication authResult) {
@@ -66,20 +70,7 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
     }
 
     @Override
-    protected void unsuccessfulAuthentication(HttpServletRequest req, HttpServletResponse res, AuthenticationException failed) throws IOException {
-        if (failed instanceof ClassfitAuthException) {
-            CustomApiResponse.errorResponse(res, failed.getMessage(), ((ClassfitAuthException) failed).getHttpStatusCode());
-            return;
-        }
-        CustomApiResponse.errorResponse(res, ErrorCode.CREDENTIALS_INVALID.getMessage(), ErrorCode.CREDENTIALS_INVALID.getStatusCode());
-    }
-
-    private UserRequest parseRequest(HttpServletRequest request) {
-        try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            return objectMapper.readValue(request.getInputStream(), UserRequest.class);
-        } catch (IOException e) {
-            throw new ClassfitException(ErrorCode.REQUEST_FORMAT_INVALID);
-        }
+    protected void unsuccessfulAuthentication(HttpServletRequest req, HttpServletResponse res, AuthenticationException failed) throws IOException, ServletException {
+        getFailureHandler().onAuthenticationFailure(req, res, failed);
     }
 }

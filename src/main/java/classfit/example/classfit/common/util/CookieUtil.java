@@ -1,6 +1,5 @@
 package classfit.example.classfit.common.util;
 
-
 import org.springframework.http.ResponseCookie;
 
 public class CookieUtil {
