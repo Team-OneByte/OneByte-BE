@@ -1,11 +1,11 @@
 package classfit.example.classfit.auth.filter;
 
-import classfit.example.classfit.auth.custom.CustomUserDetails;
 import classfit.example.classfit.auth.custom.CustomUserDetailService;
-import classfit.example.classfit.common.util.JWTUtil;
-import classfit.example.classfit.common.exception.ClassfitAuthException;
+import classfit.example.classfit.auth.custom.CustomUserDetails;
+import classfit.example.classfit.common.exception.ClassfitException;
 import classfit.example.classfit.common.response.CustomApiResponse;
 import classfit.example.classfit.common.response.ErrorCode;
+import classfit.example.classfit.common.util.JWTUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -38,11 +38,11 @@ public class JWTFilter extends OncePerRequestFilter {
 
         try {
             if (jwtUtil.isExpired(accessToken)) {
-                throw new ClassfitAuthException(ErrorCode.ACCESS_TOKEN_EXPIRED);
+                throw new ClassfitException(ErrorCode.ACCESS_TOKEN_EXPIRED);
             }
 
             if (!ACCESS_TOKEN_CATEGORY.equals(jwtUtil.getCategory(accessToken))) {
-                throw new ClassfitAuthException(ErrorCode.TOKEN_INVALID);
+                throw new ClassfitException(ErrorCode.TOKEN_INVALID);
             }
 
             String email = jwtUtil.getEmail(accessToken);
@@ -52,7 +52,7 @@ public class JWTFilter extends OncePerRequestFilter {
             SecurityContextHolder.getContext().setAuthentication(authToken);
 
             filterChain.doFilter(request, response);
-        } catch (ClassfitAuthException ex) {
+        } catch (ClassfitException ex) {
             CustomApiResponse.errorResponse(response, ex.getMessage(), ex.getHttpStatusCode());
         }
     }
