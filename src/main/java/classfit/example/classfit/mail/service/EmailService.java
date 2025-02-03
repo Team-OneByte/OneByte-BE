@@ -1,9 +1,9 @@
 package classfit.example.classfit.mail.service;
 
-import classfit.example.classfit.common.util.JWTUtil;
 import classfit.example.classfit.common.exception.ClassfitException;
 import classfit.example.classfit.common.response.ErrorCode;
 import classfit.example.classfit.common.util.EmailUtil;
+import classfit.example.classfit.common.util.JWTUtil;
 import classfit.example.classfit.common.util.RedisUtil;
 import classfit.example.classfit.mail.dto.request.EmailPurpose;
 import classfit.example.classfit.mail.dto.request.EmailVerifyRequest;
@@ -14,12 +14,14 @@ import jakarta.mail.internet.MimeMessage;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring6.SpringTemplateEngine;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 @RequiredArgsConstructor
@@ -59,21 +61,24 @@ public class EmailService {
         return EmailResponse.from(request.email(), emailJwt);
     }
 
-    private void sendEmailForm(String email, String subject, Map<String, Object> templateVariables) {
-        try {
-            MimeMessage message = javaMailSender.createMimeMessage();
-            message.addRecipients(MimeMessage.RecipientType.TO, email);
-            message.setSubject(subject);
+    @Async("emailAsyncExecutor")
+    public void sendEmailForm(String email, String subject, Map<String, Object> templateVariables) {
+        CompletableFuture.runAsync(() -> {
+            try {
+                MimeMessage message = javaMailSender.createMimeMessage();
+                message.addRecipients(MimeMessage.RecipientType.TO, email);
+                message.setSubject(subject);
 
-            Context context = new Context();
-            context.setVariables(templateVariables);
+                Context context = new Context();
+                context.setVariables(templateVariables);
 
-            String processedTemplate = templateEngine.process("mail", context);
-            message.setText(processedTemplate, "utf-8", "html");
+                String processedTemplate = templateEngine.process("mail", context);
+                message.setText(processedTemplate, "utf-8", "html");
 
-            javaMailSender.send(message);
-        } catch (MessagingException e) {
-            throw new ClassfitException(ErrorCode.EMAIL_SENDING_FAILED);
-        }
+                javaMailSender.send(message);
+            } catch (MessagingException e) {
+                throw new ClassfitException(ErrorCode.EMAIL_SENDING_FAILED);
+            }
+        });
     }
 }
