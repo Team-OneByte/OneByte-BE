@@ -1,6 +1,6 @@
 package classfit.example.classfit.drive.controller;
 
-import classfit.example.classfit.auth.annotation.AuthMember;
+import classfit.example.classfit.common.annotation.AuthMember;
 import classfit.example.classfit.common.response.CustomApiResponse;
 import classfit.example.classfit.drive.controller.docs.DriveGetControllerDocs;
 import classfit.example.classfit.drive.domain.DriveType;
@@ -26,9 +26,9 @@ public class DriveGetController implements DriveGetControllerDocs {
     @Override
     @GetMapping("/files")
     public CustomApiResponse<List<FileResponse>> getFiles(
-        @AuthMember Member member,
-        @RequestParam DriveType driveType,
-        @RequestParam(required = false, defaultValue = "") String folderPath
+            @AuthMember Member member,
+            @RequestParam DriveType driveType,
+            @RequestParam(required = false, defaultValue = "") String folderPath
     ) {
         List<FileResponse> fileUrls = driveGetService.getFilesFromS3(member, driveType, folderPath);
         return CustomApiResponse.success(fileUrls, 200, "파일 조회 성공");
@@ -37,10 +37,10 @@ public class DriveGetController implements DriveGetControllerDocs {
     @Override
     @GetMapping("/search")
     public CustomApiResponse<List<FileResponse>> searchFilesByName(
-        @AuthMember Member member,
-        @RequestParam DriveType driveType,
-        @RequestParam(required = false, defaultValue = "") String fileName,
-        @RequestParam(required = false, defaultValue = "") String folderPath
+            @AuthMember Member member,
+            @RequestParam DriveType driveType,
+            @RequestParam(required = false, defaultValue = "") String fileName,
+            @RequestParam(required = false, defaultValue = "") String folderPath
     ) {
         List<FileResponse> files = driveGetService.searchFilesByName(member, driveType, fileName, folderPath);
         return CustomApiResponse.success(files, 200, "파일 이름 검색 성공");
@@ -49,10 +49,10 @@ public class DriveGetController implements DriveGetControllerDocs {
     @Override
     @GetMapping("/filter")
     public CustomApiResponse<List<FileResponse>> filterFilesByExtension(
-        @AuthMember Member member,
-        @RequestParam DriveType driveType,
-        @RequestParam FileType fileType,
-        @RequestParam(required = false, defaultValue = "") String folderPath
+            @AuthMember Member member,
+            @RequestParam DriveType driveType,
+            @RequestParam FileType fileType,
+            @RequestParam(required = false, defaultValue = "") String folderPath
     ) {
         List<FileResponse> files = driveGetService.classifyFilesByType(member, driveType, fileType, folderPath);
         return CustomApiResponse.success(files, 200, "확장자 필터링 성공");

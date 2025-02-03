@@ -1,5 +1,6 @@
 package classfit.example.classfit.member.dto.request;
 
+import classfit.example.classfit.common.annotation.PasswordMatch;
 import classfit.example.classfit.member.domain.Member;
 import classfit.example.classfit.member.domain.MemberStatus;
 import jakarta.validation.constraints.Email;
@@ -8,6 +9,7 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+@PasswordMatch
 public record MemberRequest(
         @NotBlank(message = "이름은 공백일 수 없습니다.")
         String name,

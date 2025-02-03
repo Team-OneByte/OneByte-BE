@@ -1,6 +1,6 @@
 package classfit.example.classfit.mail.service;
 
-import classfit.example.classfit.auth.security.jwt.JWTUtil;
+import classfit.example.classfit.common.util.JWTUtil;
 import classfit.example.classfit.common.exception.ClassfitException;
 import classfit.example.classfit.common.response.ErrorCode;
 import classfit.example.classfit.common.util.EmailUtil;
@@ -13,7 +13,6 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
@@ -36,40 +35,27 @@ public class EmailService {
     public EmailResponse sendEmail(String email, EmailPurpose purpose) {
 
         EmailHandler handler = handlers.stream()
-            .filter(h -> h.supports(purpose))
-            .findFirst()
-            .orElseThrow(() -> new ClassfitException(ErrorCode.EMAIL_TYPE_INVALID));
+                .filter(h -> h.supports(purpose))
+                .findFirst()
+                .orElseThrow(() -> new ClassfitException(ErrorCode.EMAIL_TYPE_INVALID));
 
         handler.validate(email);
         String authCode = EmailUtil.createdCode();
         sendEmailForm(email, handler.getTitle(), handler.getTemplateVariables(authCode));
 
-        if (handler.getExpirationTime() > 0) {
-            redisUtil.setDataExpire(
-                "email_code:" + purpose + ":" + email,
-                authCode,
-                handler.getExpirationTime()
-            );
-        }
-
+        redisUtil.setDataExpire("email:" + purpose + ":" + email, authCode, handler.getExpirationTime());
         return EmailResponse.of(email);
     }
 
     @Transactional
     public EmailResponse verifyAuthCode(EmailVerifyRequest request) {
-        String authCode = redisUtil.getData("email_code:" + request.purpose() + ":" + request.email());
-
-        if (authCode == null) {
-            throw new ClassfitException(ErrorCode.EMAIL_AUTH_CODE_INVALID_OR_EXPIRED);
-        }
+        String authCode = redisUtil.getData("email:" + request.purpose() + ":" + request.email());
 
         if (!authCode.equals(request.code())) {
             throw new ClassfitException(ErrorCode.EMAIL_AUTH_CODE_INVALID);
         }
 
-        String emailJwt = jwtUtil.createEmailJwt("email", 60 * 5L);
-
-        redisUtil.setDataExpire("email_code:" + request.purpose() + ":" + request.email(), emailJwt, 60 * 5L);
+        String emailJwt = jwtUtil.createJwt("email", request.email(), null, 1000L * 60 * 10);
         return EmailResponse.from(request.email(), emailJwt);
     }
 

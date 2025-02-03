@@ -1,6 +1,6 @@
 package classfit.example.classfit.calendarCategory.controller;
 
-import classfit.example.classfit.auth.annotation.AuthMember;
+import classfit.example.classfit.common.annotation.AuthMember;
 import classfit.example.classfit.calendarCategory.controller.docs.CalendarCategoryControllerDocs;
 import classfit.example.classfit.calendarCategory.dto.request.CalendarCategoryCreateRequest;
 import classfit.example.classfit.calendarCategory.dto.request.CalendarCategoryUpdateRequest;
@@ -23,8 +23,8 @@ public class CalendarCategoryController implements CalendarCategoryControllerDoc
     @Override
     @PostMapping("/category")
     public CustomApiResponse<CalendarCategoryCreateResponse> addCalendarCategory(
-        @AuthMember Member member,
-        @RequestBody CalendarCategoryCreateRequest request
+            @AuthMember Member member,
+            @RequestBody CalendarCategoryCreateRequest request
     ) {
         CalendarCategoryCreateResponse result = calendarCategoryService.addCategory(member, request);
         return CustomApiResponse.success(result, 201, "캘린더 카테고리 생성 성공");
@@ -40,8 +40,8 @@ public class CalendarCategoryController implements CalendarCategoryControllerDoc
     @Override
     @PatchMapping("/{categoryId}")
     public CustomApiResponse<CalendarCategoryResponse> updateCalendarCategory(
-        @PathVariable Long categoryId,
-        @RequestBody CalendarCategoryUpdateRequest request
+            @PathVariable Long categoryId,
+            @RequestBody CalendarCategoryUpdateRequest request
     ) {
         CalendarCategoryResponse result = calendarCategoryService.updateCategory(categoryId, request);
         return CustomApiResponse.success(result, 200, "캘린더 카테고리 수정 성공");

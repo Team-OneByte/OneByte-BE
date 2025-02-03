@@ -1,6 +1,6 @@
 package classfit.example.classfit.sms.controller.docs;
 
-import classfit.example.classfit.auth.annotation.AuthMember;
+import classfit.example.classfit.common.annotation.AuthMember;
 import classfit.example.classfit.member.domain.Member;
 import classfit.example.classfit.sms.dto.SendRequest;
 import io.swagger.v3.oas.annotations.Operation;
@@ -15,11 +15,11 @@ import java.util.List;
 public interface SendMessageControllerDocs {
 
     @Operation(summary = "단체 문자 전송", description = "학생과 학생 부모님께 문자를 전송하는 API 입니다.", responses = {
-        @ApiResponse(responseCode = "200")
+            @ApiResponse(responseCode = "200")
     })
     MultipleDetailMessageSentResponse sendMany(
-        @AuthMember Member member,
-        @RequestBody List<SendRequest> requestList
+            @AuthMember Member member,
+            @RequestBody List<SendRequest> requestList
     );
 }
 

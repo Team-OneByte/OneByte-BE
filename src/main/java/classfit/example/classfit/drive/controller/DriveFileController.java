@@ -1,6 +1,6 @@
 package classfit.example.classfit.drive.controller;
 
-import classfit.example.classfit.auth.annotation.AuthMember;
+import classfit.example.classfit.common.annotation.AuthMember;
 import classfit.example.classfit.common.response.CustomApiResponse;
 import classfit.example.classfit.drive.controller.docs.DriveFileControllerDocs;
 import classfit.example.classfit.drive.domain.DriveType;
@@ -27,10 +27,10 @@ public class DriveFileController implements DriveFileControllerDocs {
     @Override
     @PostMapping("/files")
     public CustomApiResponse<List<String>> uploadFiles(
-        @AuthMember Member member,
-        @RequestParam DriveType driveType,
-        @RequestParam("multipartFiles") List<MultipartFile> multipartFiles,
-        @RequestParam(required = false, defaultValue = "") String folderPath
+            @AuthMember Member member,
+            @RequestParam DriveType driveType,
+            @RequestParam("multipartFiles") List<MultipartFile> multipartFiles,
+            @RequestParam(required = false, defaultValue = "") String folderPath
     ) {
         List<String> fileUrls = driveUploadService.uploadFiles(member, driveType, multipartFiles, folderPath);
         return CustomApiResponse.success(fileUrls, 200, "다중 파일 업로드 성공");
@@ -39,9 +39,9 @@ public class DriveFileController implements DriveFileControllerDocs {
     @Override
     @GetMapping("/download")
     public ResponseEntity<InputStreamResource> downloadMultipleFiles(
-        @AuthMember Member member,
-        @RequestParam DriveType driveType,
-        @RequestParam List<String> fileNames
+            @AuthMember Member member,
+            @RequestParam DriveType driveType,
+            @RequestParam List<String> fileNames
     ) {
         InputStreamResource resource = driveDownloadService.downloadMultipleFiles(member, driveType, fileNames);
         String zipFileName = "files.zip";

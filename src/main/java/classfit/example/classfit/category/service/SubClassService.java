@@ -1,7 +1,7 @@
 package classfit.example.classfit.category.service;
 
 import classfit.example.classfit.academy.domain.Academy;
-import classfit.example.classfit.auth.annotation.AuthMember;
+import classfit.example.classfit.common.annotation.AuthMember;
 import classfit.example.classfit.category.domain.MainClass;
 import classfit.example.classfit.category.domain.SubClass;
 import classfit.example.classfit.category.dto.request.SubClassRequest;
@@ -11,10 +11,8 @@ import classfit.example.classfit.category.repository.SubClassRepository;
 import classfit.example.classfit.common.exception.ClassfitException;
 import classfit.example.classfit.common.response.ErrorCode;
 import classfit.example.classfit.member.domain.Member;
-import classfit.example.classfit.member.repository.MemberRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
@@ -49,8 +47,8 @@ public class SubClassService {
         Academy findAcademy = findMember.getAcademy();
 
         MainClass findMainClass = mainClassRepository.findById(req.mainClassId())
-            .orElseThrow(
-                () -> new ClassfitException(ErrorCode.MAIN_CLASS_NOT_FOUND));
+                .orElseThrow(
+                        () -> new ClassfitException(ErrorCode.MAIN_CLASS_NOT_FOUND));
 
         boolean exists = subClassRepository.existsByMemberAndSubClassNameAndAcademyAndMainClass(
                 findMember, findAcademy, req.subClassName(), findMainClass);
@@ -70,16 +68,16 @@ public class SubClassService {
     @Transactional
     public SubClassResponse updateSubClass(@AuthMember Member findMember, Long subClassId, SubClassRequest req) {
         MainClass findMainClass = mainClassRepository.findById(req.mainClassId()).orElseThrow(
-            () -> new ClassfitException(ErrorCode.MAIN_CLASS_NOT_FOUND));
+                () -> new ClassfitException(ErrorCode.MAIN_CLASS_NOT_FOUND));
         SubClass findSubClass = subClassRepository.findById(subClassId).orElseThrow(
-            () -> new ClassfitException(ErrorCode.SUB_CLASS_NOT_FOUND));
+                () -> new ClassfitException(ErrorCode.SUB_CLASS_NOT_FOUND));
 
         checkMemberRelationSubClass(findMember, findSubClass);
 
         findSubClass.updateSubClassName(req.subClassName());
 
         return new SubClassResponse(findMainClass.getId(), findSubClass.getId(),
-            findSubClass.getSubClassName());
+                findSubClass.getSubClassName());
 
     }
 
@@ -87,7 +85,7 @@ public class SubClassService {
     public void deleteSubClass(@AuthMember Member findMember, Long subClassId) {
 
         SubClass findSubClass = subClassRepository.findById(subClassId).orElseThrow(
-            () -> new ClassfitException(ErrorCode.SUB_CLASS_NOT_FOUND));
+                () -> new ClassfitException(ErrorCode.SUB_CLASS_NOT_FOUND));
 
         checkMemberRelationSubClass(findMember, findSubClass);
 

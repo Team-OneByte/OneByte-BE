@@ -15,6 +15,6 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
 
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException {
-        CustomApiResponse.errorResponse(response, "접근 권한이 없습니다.", HttpStatus.UNAUTHORIZED.value());
+        CustomApiResponse.errorResponse(response, "해당 리소스에 접근 권한이 없습니다.", HttpStatus.UNAUTHORIZED.value());
     }
 }

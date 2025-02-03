@@ -1,6 +1,6 @@
 package classfit.example.classfit.category.controller;
 
-import classfit.example.classfit.auth.annotation.AuthMember;
+import classfit.example.classfit.common.annotation.AuthMember;
 import classfit.example.classfit.category.controller.docs.MainClassControllerDocs;
 import classfit.example.classfit.category.dto.request.MainClassRequest;
 import classfit.example.classfit.category.dto.response.AllMainClassResponse;
@@ -24,8 +24,8 @@ public class MainClassController implements MainClassControllerDocs {
     @Override
     @PostMapping("/main-category")
     public CustomApiResponse<MainClassResponse> createMainClass(
-        @AuthMember Member findMember,
-        @Valid @RequestBody MainClassRequest request
+            @AuthMember Member findMember,
+            @Valid @RequestBody MainClassRequest request
     ) {
         MainClassResponse result = mainClassService.createMainClass(findMember, request);
         return CustomApiResponse.success(result, 201, "메인 클래스 생성 성공");
@@ -41,8 +41,8 @@ public class MainClassController implements MainClassControllerDocs {
     @Override
     @DeleteMapping("/main-category/{mainClassId}")
     public CustomApiResponse<Void> deleteMainClass(
-        @AuthMember Member findMember,
-        @PathVariable(name = "mainClassId") Long mainClassId
+            @AuthMember Member findMember,
+            @PathVariable(name = "mainClassId") Long mainClassId
     ) {
         mainClassService.deleteMainClass(findMember, mainClassId);
         return CustomApiResponse.success(null, 200, "메인 클래스 삭제 성공");
@@ -51,9 +51,9 @@ public class MainClassController implements MainClassControllerDocs {
     @Override
     @PatchMapping("/main-category/{mainClassId}/update")
     public CustomApiResponse<MainClassResponse> updateMainClass(
-        @AuthMember Member findMember,
-        @PathVariable(name = "mainClassId") Long mainClassId,
-        @Valid @RequestBody MainClassRequest request
+            @AuthMember Member findMember,
+            @PathVariable(name = "mainClassId") Long mainClassId,
+            @Valid @RequestBody MainClassRequest request
     ) {
         MainClassResponse updateMainClass = mainClassService.updateMainClass(findMember, mainClassId, request);
         return CustomApiResponse.success(updateMainClass, 200, "메인 클래스 수정 성공");

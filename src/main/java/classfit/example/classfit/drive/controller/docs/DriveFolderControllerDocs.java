@@ -1,6 +1,6 @@
 package classfit.example.classfit.drive.controller.docs;
 
-import classfit.example.classfit.auth.annotation.AuthMember;
+import classfit.example.classfit.common.annotation.AuthMember;
 import classfit.example.classfit.common.response.CustomApiResponse;
 import classfit.example.classfit.drive.domain.DriveType;
 import classfit.example.classfit.member.domain.Member;
@@ -16,21 +16,21 @@ import java.util.List;
 public interface DriveFolderControllerDocs {
 
     @Operation(summary = "폴더 생성", description = "새로운 폴더를 생성하는 API입니다.", responses = {
-        @ApiResponse(responseCode = "200", description = "폴더 생성 성공")
+            @ApiResponse(responseCode = "200", description = "폴더 생성 성공")
     })
     CustomApiResponse<String> createFolder(
-        @AuthMember Member member,
-        @Parameter(description = "내 드라이브는 PERSONAL, 공유 드라이브는 SHARED 입니다.") @RequestParam DriveType driveType,
-        @Parameter(description = "생성할 폴더 이름입니다.") @RequestParam String folderName,
-        @Parameter(description = "폴더 경로입니다. 비어 있으면 루트 폴더에 생성됩니다.") @RequestParam(required = false, defaultValue = "") String folderPath
+            @AuthMember Member member,
+            @Parameter(description = "내 드라이브는 PERSONAL, 공유 드라이브는 SHARED 입니다.") @RequestParam DriveType driveType,
+            @Parameter(description = "생성할 폴더 이름입니다.") @RequestParam String folderName,
+            @Parameter(description = "폴더 경로입니다. 비어 있으면 루트 폴더에 생성됩니다.") @RequestParam(required = false, defaultValue = "") String folderPath
     );
 
     @Operation(summary = "폴더 조회", description = "폴더들을 조회하는 API입니다.", responses = {
-        @ApiResponse(responseCode = "200", description = "폴더 목록 조회 성공")
+            @ApiResponse(responseCode = "200", description = "폴더 목록 조회 성공")
     })
     CustomApiResponse<List<String>> getFolders(
-        @AuthMember Member member,
-        @Parameter(description = "내 드라이브는 PERSONAL, 공유 드라이브는 SHARED 입니다.") @RequestParam DriveType driveType,
-        @Parameter(description = "조회할 폴더 경로입니다. 비어 있으면 루트 폴더를 조회합니다.") @RequestParam(required = false, defaultValue = "") String folderPath
+            @AuthMember Member member,
+            @Parameter(description = "내 드라이브는 PERSONAL, 공유 드라이브는 SHARED 입니다.") @RequestParam DriveType driveType,
+            @Parameter(description = "조회할 폴더 경로입니다. 비어 있으면 루트 폴더를 조회합니다.") @RequestParam(required = false, defaultValue = "") String folderPath
     );
 }

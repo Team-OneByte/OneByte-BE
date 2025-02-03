@@ -1,6 +1,6 @@
 package classfit.example.classfit.drive.controller.docs;
 
-import classfit.example.classfit.auth.annotation.AuthMember;
+import classfit.example.classfit.common.annotation.AuthMember;
 import classfit.example.classfit.common.response.CustomApiResponse;
 import classfit.example.classfit.drive.domain.DriveType;
 import classfit.example.classfit.member.domain.Member;
@@ -19,21 +19,21 @@ import java.util.List;
 public interface DriveFileControllerDocs {
 
     @Operation(summary = "다중 파일 업로드", description = "다중 파일 업로드 API 입니다.", responses = {
-        @ApiResponse(responseCode = "200", description = "다중 파일 업로드 성공")
+            @ApiResponse(responseCode = "200", description = "다중 파일 업로드 성공")
     })
     CustomApiResponse<List<String>> uploadFiles(
-        @AuthMember Member member,
-        @Parameter(description = "내 드라이브는 PERSONAL, 공유 드라이브는 SHARED 입니다.") @RequestParam DriveType driveType,
-        @Parameter(description = "업로드할 파일 목록입니다.") @RequestParam List<MultipartFile> multipartFiles,
-        @Parameter(description = "폴더 경로입니다. 비어 있으면 루트 폴더에 생성됩니다.") @RequestParam(required = false, defaultValue = "") String folderPath
+            @AuthMember Member member,
+            @Parameter(description = "내 드라이브는 PERSONAL, 공유 드라이브는 SHARED 입니다.") @RequestParam DriveType driveType,
+            @Parameter(description = "업로드할 파일 목록입니다.") @RequestParam List<MultipartFile> multipartFiles,
+            @Parameter(description = "폴더 경로입니다. 비어 있으면 루트 폴더에 생성됩니다.") @RequestParam(required = false, defaultValue = "") String folderPath
     );
 
     @Operation(summary = "파일 다운로드", description = "다중 파일을 압축하여 다운로드하는 API 입니다.", responses = {
-        @ApiResponse(responseCode = "200")
+            @ApiResponse(responseCode = "200")
     })
     ResponseEntity<InputStreamResource> downloadMultipleFiles(
-        @AuthMember Member member,
-        @Parameter(description = "내 드라이브는 PERSONAL, 공유 드라이브는 SHARED 입니다.") @RequestParam DriveType driveType,
-        @Parameter(description = "다운로드할 파일 이름 목록입니다.") @RequestParam List<String> fileNames
+            @AuthMember Member member,
+            @Parameter(description = "내 드라이브는 PERSONAL, 공유 드라이브는 SHARED 입니다.") @RequestParam DriveType driveType,
+            @Parameter(description = "다운로드할 파일 이름 목록입니다.") @RequestParam List<String> fileNames
     );
 }

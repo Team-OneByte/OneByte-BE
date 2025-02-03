@@ -1,6 +1,6 @@
 package classfit.example.classfit.auth.controller;
 
-import classfit.example.classfit.auth.annotation.AuthMember;
+import classfit.example.classfit.common.annotation.AuthMember;
 import classfit.example.classfit.auth.controller.docs.AuthControllerDocs;
 import classfit.example.classfit.auth.service.AuthService;
 import classfit.example.classfit.common.response.CustomApiResponse;

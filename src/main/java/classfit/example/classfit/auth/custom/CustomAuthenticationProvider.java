@@ -1,8 +1,7 @@
-package classfit.example.classfit.auth.security.custom;
+package classfit.example.classfit.auth.custom;
 
 import classfit.example.classfit.common.exception.ClassfitAuthException;
 import classfit.example.classfit.common.response.ErrorCode;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -27,9 +26,9 @@ public class CustomAuthenticationProvider extends DaoAuthenticationProvider {
         }
 
         return new CustomAuthenticationToken(
-            authentication.getName(),
-            authentication.getCredentials().toString(),
-            result.getAuthorities()
+                authentication.getName(),
+                authentication.getCredentials().toString(),
+                result.getAuthorities()
         );
     }
 

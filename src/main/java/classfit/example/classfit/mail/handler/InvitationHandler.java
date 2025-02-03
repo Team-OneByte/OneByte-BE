@@ -8,7 +8,6 @@ import classfit.example.classfit.mail.dto.request.EmailPurpose;
 import classfit.example.classfit.member.domain.Member;
 import classfit.example.classfit.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
@@ -36,7 +35,7 @@ public class InvitationHandler implements EmailHandler {
 
     @Override
     public long getExpirationTime() {
-        return -1;
+        return 10L;
     }
 
     @Override
@@ -48,7 +47,7 @@ public class InvitationHandler implements EmailHandler {
     private Academy getAcademy() {
         Long currentMemberId = SecurityUtil.getCurrentMemberId();
         Member member = memberRepository.findById(currentMemberId)
-            .orElseThrow(() -> new ClassfitException(ErrorCode.MEMBER_NOT_FOUND));
+                .orElseThrow(() -> new ClassfitException(ErrorCode.MEMBER_NOT_FOUND));
         return member.getAcademy();
     }
 }

@@ -1,6 +1,6 @@
 package classfit.example.classfit.invitation.controller;
 
-import classfit.example.classfit.auth.annotation.AuthMember;
+import classfit.example.classfit.common.annotation.AuthMember;
 import classfit.example.classfit.common.response.CustomApiResponse;
 import classfit.example.classfit.invitation.controller.docs.InvitationControllerDocs;
 import classfit.example.classfit.invitation.dto.request.InvitationRequest;
@@ -31,8 +31,8 @@ public class InvitationController implements InvitationControllerDocs {
     @Override
     @PostMapping("/invite")
     public CustomApiResponse<Void> inviteStaffByEmail(
-        @AuthMember Member member,
-        @RequestBody InvitationRequest request
+            @AuthMember Member member,
+            @RequestBody InvitationRequest request
     ) {
         invitationService.inviteStaffByEmail(member, request);
         return CustomApiResponse.success(null, 200, "초대 코드 전송 성공");

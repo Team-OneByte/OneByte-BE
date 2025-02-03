@@ -1,6 +1,6 @@
 package classfit.example.classfit.category.controller;
 
-import classfit.example.classfit.auth.annotation.AuthMember;
+import classfit.example.classfit.common.annotation.AuthMember;
 import classfit.example.classfit.category.controller.docs.ClassInfoControllerDocs;
 import classfit.example.classfit.category.dto.response.ClassInfoResponse;
 import classfit.example.classfit.category.service.ClassInfoService;

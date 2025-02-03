@@ -1,6 +1,6 @@
 package classfit.example.classfit.member.controller;
 
-import classfit.example.classfit.auth.annotation.AuthMember;
+import classfit.example.classfit.common.annotation.AuthMember;
 import classfit.example.classfit.common.response.CustomApiResponse;
 import classfit.example.classfit.member.controller.docs.MemberControllerDocs;
 import classfit.example.classfit.member.domain.Member;
@@ -45,8 +45,8 @@ public class MemberController implements MemberControllerDocs {
     @Override
     @PostMapping("/my-page")
     public CustomApiResponse<MemberInfoResponse> updateMyPage(
-        @AuthMember Member member,
-        @RequestBody MemberUpdateInfoRequest request
+            @AuthMember Member member,
+            @RequestBody MemberUpdateInfoRequest request
     ) {
         MemberInfoResponse memberInfoResponse = memberService.updateMyPage(member, request);
         return CustomApiResponse.success(memberInfoResponse, 200, "회원정보 수정 성공");

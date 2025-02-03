@@ -1,6 +1,6 @@
 package classfit.example.classfit.event.controller;
 
-import classfit.example.classfit.auth.annotation.AuthMember;
+import classfit.example.classfit.common.annotation.AuthMember;
 import classfit.example.classfit.common.response.CustomApiResponse;
 import classfit.example.classfit.event.controller.docs.EventControllerDocs;
 import classfit.example.classfit.event.dto.request.EventCreateRequest;
@@ -30,8 +30,8 @@ public class EventController implements EventControllerDocs {
     @Override
     @PostMapping("/event")
     public CustomApiResponse<EventResponse> createEvent(
-        @AuthMember Member member,
-        @RequestBody EventCreateRequest request
+            @AuthMember Member member,
+            @RequestBody EventCreateRequest request
     ) {
         EventResponse createdEvent = eventService.createEvent(member, request);
         return CustomApiResponse.success(createdEvent, 200, "캘린더 일정 등록 성공");
@@ -47,10 +47,10 @@ public class EventController implements EventControllerDocs {
     @Override
     @GetMapping("/monthly")
     public CustomApiResponse<List<EventMonthlyResponse>> getMonthlyEvents(
-        @AuthMember Member member,
-        @RequestParam CalendarType calendarType,
-        @RequestParam int year,
-        @RequestParam int month
+            @AuthMember Member member,
+            @RequestParam CalendarType calendarType,
+            @RequestParam int year,
+            @RequestParam int month
     ) {
         List<EventMonthlyResponse> events = eventService.getMonthlyEventsByCalendarType(calendarType, year, month, member);
         return CustomApiResponse.success(events, 200, "월별 일정 조회 성공");
@@ -59,8 +59,8 @@ public class EventController implements EventControllerDocs {
     @Override
     @PostMapping("/modal")
     public CustomApiResponse<EventResponse> createModalEvent(
-        @AuthMember Member member,
-        @RequestBody EventModalRequest request
+            @AuthMember Member member,
+            @RequestBody EventModalRequest request
     ) {
         EventResponse createdModalEvent = eventService.createModalEvent(member, request);
         return CustomApiResponse.success(createdModalEvent, 200, "모달 일정 등록 성공");
@@ -76,9 +76,9 @@ public class EventController implements EventControllerDocs {
     @Override
     @PatchMapping("/modal/{eventId}")
     public CustomApiResponse<EventResponse> updateEventDetails(
-        @AuthMember Member member,
-        @PathVariable Long eventId,
-        @RequestBody EventModalRequest request
+            @AuthMember Member member,
+            @PathVariable Long eventId,
+            @RequestBody EventModalRequest request
     ) {
         EventResponse updatedEvent = eventService.updateEvent(member, eventId, request);
         return CustomApiResponse.success(updatedEvent, 200, "모달 일정 수정 성공");
@@ -94,8 +94,8 @@ public class EventController implements EventControllerDocs {
     @Override
     @PatchMapping("/drag/{eventId}")
     public CustomApiResponse<EventResponse> dragUpdateEventDate(
-        @PathVariable Long eventId,
-        @RequestBody EventDragUpdate eventDragUpdate
+            @PathVariable Long eventId,
+            @RequestBody EventDragUpdate eventDragUpdate
     ) {
         EventResponse updatedEvent = eventService.dragUpdateEvent(eventId, eventDragUpdate);
         return CustomApiResponse.success(updatedEvent, 200, "드래그 앤 드롭 일정 날짜 수정 성공");

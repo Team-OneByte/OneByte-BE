@@ -1,6 +1,6 @@
 package classfit.example.classfit.common.config;
 
-import classfit.example.classfit.auth.security.filter.CustomLoginFilter;
+import classfit.example.classfit.auth.filter.CustomLoginFilter;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import io.swagger.v3.oas.annotations.info.Info;
@@ -30,18 +30,18 @@ import org.springframework.security.web.context.AbstractSecurityWebApplicationIn
 import java.util.Optional;
 
 @OpenAPIDefinition(
-    info = @Info(title = "CLASSFIT API 명세서", description = "백엔드 API"),
-    security = @SecurityRequirement(name = "JWT TOKEN"),
-    servers = {
-        @Server(url = "https://classfit.duckdns.org", description = "Default Server URL"),
-        @Server(url = "http://localhost:8080", description = "Localhost Server URL")
-    }
+        info = @Info(title = "CLASSFIT API 명세서", description = "백엔드 API"),
+        security = @SecurityRequirement(name = "JWT TOKEN"),
+        servers = {
+                @Server(url = "https://classfit.duckdns.org", description = "Default Server URL"),
+                @Server(url = "http://localhost:8080", description = "Localhost Server URL")
+        }
 )
 @SecurityScheme(
-    name = "JWT TOKEN",
-    type = SecuritySchemeType.HTTP,
-    scheme = "bearer",
-    bearerFormat = "JWT"
+        name = "JWT TOKEN",
+        type = SecuritySchemeType.HTTP,
+        scheme = "bearer",
+        bearerFormat = "JWT"
 )
 @Configuration
 @RequiredArgsConstructor
@@ -57,46 +57,46 @@ public class SwaggerConfig {
 
         return openAPI -> {
             FilterChainProxy filterChainProxy = applicationContext.getBean(
-                AbstractSecurityWebApplicationInitializer.DEFAULT_FILTER_NAME, FilterChainProxy.class);
+                    AbstractSecurityWebApplicationInitializer.DEFAULT_FILTER_NAME, FilterChainProxy.class);
 
             for (SecurityFilterChain filterChain : filterChainProxy.getFilterChains()) {
                 Optional<CustomLoginFilter> optionalFilter =
-                    filterChain.getFilters().stream()
-                        .filter(CustomLoginFilter.class::isInstance)
-                        .map(CustomLoginFilter.class::cast)
-                        .findAny();
+                        filterChain.getFilters().stream()
+                                .filter(CustomLoginFilter.class::isInstance)
+                                .map(CustomLoginFilter.class::cast)
+                                .findAny();
 
                 if (optionalFilter.isPresent()) {
                     CustomLoginFilter customLoginFilter = optionalFilter.get();
 
                     Operation operation = new Operation()
-                        .summary("로그인 API입니다.")
-                        .addTagsItem("로그인 컨트롤러") // 태그 추가
-                        .requestBody(new RequestBody().content(
-                            new Content().addMediaType(
-                                org.springframework.http.MediaType.APPLICATION_JSON_VALUE,
-                                new MediaType().schema(new ObjectSchema()
-                                    .addProperties("email", new StringSchema().example("email@example.com"))
-                                    .addProperties(customLoginFilter.getPasswordParameter(), new StringSchema().example("password123"))
-                                )
-                            )
-                        ));
+                            .summary("로그인 API입니다.")
+                            .addTagsItem("로그인 컨트롤러") // 태그 추가
+                            .requestBody(new RequestBody().content(
+                                    new Content().addMediaType(
+                                            org.springframework.http.MediaType.APPLICATION_JSON_VALUE,
+                                            new MediaType().schema(new ObjectSchema()
+                                                    .addProperties("email", new StringSchema().example("email@example.com"))
+                                                    .addProperties(customLoginFilter.getPasswordParameter(), new StringSchema().example("password123"))
+                                            )
+                                    )
+                            ));
 
                     ApiResponses apiResponses = new ApiResponses();
                     apiResponses.addApiResponse(String.valueOf(HttpStatus.OK.value()),
-                        new ApiResponse()
-                            .description("로그인 성공")
-                            .content(new Content().addMediaType(
-                                org.springframework.http.MediaType.APPLICATION_JSON_VALUE,
-                                new MediaType().example("{\"accessToken\": \"sample-access-token\", \"refreshToken\": \"sample-refresh-token\"}")
-                            )));
+                            new ApiResponse()
+                                    .description("로그인 성공")
+                                    .content(new Content().addMediaType(
+                                            org.springframework.http.MediaType.APPLICATION_JSON_VALUE,
+                                            new MediaType().example("{\"accessToken\": \"sample-access-token\", \"refreshToken\": \"sample-refresh-token\"}")
+                                    )));
                     apiResponses.addApiResponse(String.valueOf(HttpStatus.UNAUTHORIZED.value()),
-                        new ApiResponse()
-                            .description("로그인 실패")
-                            .content(new Content().addMediaType(
-                                org.springframework.http.MediaType.APPLICATION_JSON_VALUE,
-                                new MediaType().example("{\"error\": \"Unauthorized\"}")
-                            )));
+                            new ApiResponse()
+                                    .description("로그인 실패")
+                                    .content(new Content().addMediaType(
+                                            org.springframework.http.MediaType.APPLICATION_JSON_VALUE,
+                                            new MediaType().example("{\"error\": \"Unauthorized\"}")
+                                    )));
 
                     operation.responses(apiResponses);
 
@@ -112,9 +112,9 @@ public class SwaggerConfig {
     @Bean
     public GroupedOpenApi publicApi() {
         return GroupedOpenApi.builder()
-            .group("CLASSFIT API")
-            .pathsToMatch("/api/**")
-            .addOpenApiCustomizer(springSecurityLoginCustomised())
-            .build();
+                .group("CLASSFIT API")
+                .pathsToMatch("/api/**")
+                .addOpenApiCustomizer(springSecurityLoginCustomised())
+                .build();
     }
 }
