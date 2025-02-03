@@ -18,20 +18,20 @@ import classfit.example.classfit.studentExam.domain.Exam;
 import classfit.example.classfit.studentExam.domain.ExamRepository;
 import classfit.example.classfit.studentExam.domain.Standard;
 import classfit.example.classfit.studentExam.domain.StandardStatus;
-import classfit.example.classfit.studentExam.domain.StudentExamScore;
+import classfit.example.classfit.studentExam.domain.ExamScore;
 import classfit.example.classfit.studentExam.domain.StudentExamScoreRepository;
 import classfit.example.classfit.studentExam.dto.process.ExamClassStudent;
 import classfit.example.classfit.studentExam.dto.process.ExamStudent;
 import classfit.example.classfit.studentExam.dto.examRequest.CreateExamRequest;
 import classfit.example.classfit.studentExam.dto.examRequest.FindExamRequest;
 import classfit.example.classfit.studentExam.dto.examRequest.UpdateExamRequest;
-import classfit.example.classfit.studentExam.dto.studentScoreRequest.CreateStudentScoreRequest;
-import classfit.example.classfit.studentExam.dto.studentScoreRequest.UpdateStudentScoreRequest;
+import classfit.example.classfit.studentExam.dto.examScoreRequest.CreateExamScoreRequest;
+import classfit.example.classfit.studentExam.dto.examScoreRequest.UpdateExamScoreRequest;
 import classfit.example.classfit.studentExam.dto.examResponse.CreateExamResponse;
 import classfit.example.classfit.studentExam.dto.examResponse.FindExamResponse;
 import classfit.example.classfit.studentExam.dto.examResponse.ShowExamDetailResponse;
 import classfit.example.classfit.studentExam.dto.examResponse.UpdateExamResponse;
-import classfit.example.classfit.studentExam.dto.studentScoreResponse.UpdateStudentScoreResponse;
+import classfit.example.classfit.studentExam.dto.examScoreResponse.UpdateExamScoreResponse;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Objects;
@@ -81,31 +81,6 @@ public class ExamService {
 
         Exam savedExam = examRepository.save(newExam);
 
-        List<ClassStudent> classStudents = classStudentRepository.findByAcademyIdAndSubClass(
-                findMember.getAcademy().getId(), findSubClass);
-        List<StudentExamScore> studentExamScores = classStudents.stream()
-                .map(classStudent -> {
-                    Student student = classStudent.getStudent();
-                    CreateStudentScoreRequest createStudentScoreRequest = new CreateStudentScoreRequest(
-                            student.getId(),
-                            savedExam.getId(),
-                            0,
-                            StandardStatus.NONE
-                    );
-                    return createStudentScoreRequest.toEntity(student, savedExam);
-                })
-                .collect(Collectors.toList());
-
-        if (examRequest.standard() == Standard.PF) {
-            studentExamScores.forEach(
-                    studentExam -> studentExam.updateStandardStatus(StandardStatus.PASS));
-        } else if (examRequest.standard() == Standard.EVALUATION) {
-            studentExamScores.forEach(
-                    studentExam -> studentExam.updateStandardStatus(StandardStatus.EVALUATION));
-        }
-
-        studentExamScoreRepository.saveAll(studentExamScores);
-
         return CreateExamResponse.from(savedExam);
     }
 
@@ -115,10 +90,10 @@ public class ExamService {
                 .orElseThrow(() -> new ClassfitException(ErrorCode.EXAM_NOT_FOUND));
         validateAcademy(findMember, findMember.getAcademy().getId());
 
-        List<StudentExamScore> studentExamScores = studentExamScoreRepository.findByAcademyIdAndExam(
+        List<ExamScore> examScores = studentExamScoreRepository.findByAcademyIdAndExam(
                 findMember.getAcademy().getId(), findExam);
 
-        return studentExamScores.stream().map(studentExamScore -> {
+        return examScores.stream().map(studentExamScore -> {
             Student student = studentExamScore.getStudent();
             Integer score = studentExamScore.getScore();
             String evaluationDetail = studentExamScore.getEvaluationDetail();
@@ -172,14 +147,14 @@ public class ExamService {
         validateAcademy(findMember, findExam.getMainClass().getAcademy().getId());
 
         SubClass subClass = findExam.getSubClass();
-        List<StudentExamScore> studentScores = findExam.getStudentExamScores();
+        List<ExamScore> studentScores = findExam.getExamScores();
         List<ClassStudent> classStudents = classStudentRepository.findByAcademyIdAndSubClass(
                 findMember.getAcademy().getId(), subClass);
-        Integer perfectScore = studentScores.stream().mapToInt(StudentExamScore::getScore).max()
+        Integer perfectScore = studentScores.stream().mapToInt(ExamScore::getScore).max()
                 .orElse(findExam.getHighestScore());
-        Integer lowestScore = studentScores.stream().mapToInt(StudentExamScore::getScore).min()
+        Integer lowestScore = studentScores.stream().mapToInt(ExamScore::getScore).min()
                 .orElse(0);
-        Double average = (Double) studentScores.stream().mapToInt(StudentExamScore::getScore)
+        Double average = (Double) studentScores.stream().mapToInt(ExamScore::getScore)
                 .average()
                 .orElse((perfectScore + lowestScore) / 2.0);
         String formattedAverage = String.format("%.1f", average);
@@ -192,22 +167,22 @@ public class ExamService {
 
                     Integer score = studentScores.stream()
                             .filter(scoreObj -> scoreObj.getStudent().getId().equals(student.getId()))
-                            .map(StudentExamScore::getScore).findFirst().orElse(0);
+                            .map(ExamScore::getScore).findFirst().orElse(0);
 
                     String evaluationDetail = studentExamScoreRepository.findByExamAndStudentIdAndAcademyId(
                                     findMember.getAcademy().getId(), findExam,
                                     student.getId())
-                            .map(StudentExamScore::getEvaluationDetail)
+                            .map(ExamScore::getEvaluationDetail)
                             .orElse(null);
                     boolean checkedStudent = studentScores.stream()
                             .filter(scoreObj -> scoreObj.getStudent().getId().equals(student.getId()))
-                            .map(StudentExamScore::isCheckedStudent)
+                            .map(ExamScore::isCheckedStudent)
                             .findFirst()
                             .orElse(false);
 
                     LocalDateTime updateAt = studentScores.stream()
                             .filter(scoreObj -> scoreObj.getStudent().getId().equals(student.getId()))
-                            .map(StudentExamScore::getUpdatedAt)
+                            .map(ExamScore::getUpdatedAt)
                             .findFirst()
                             .orElse(LocalDateTime.now());
 
@@ -235,15 +210,15 @@ public class ExamService {
 
         Integer newHighestScore = request.highestScore();
 
-        List<StudentExamScore> studentExamScores = studentExamScoreRepository.findAllByAcademyIdAndExam(
+        List<ExamScore> examScores = studentExamScoreRepository.findAllByAcademyIdAndExam(
                 findMember.getAcademy().getId(),
                 findExam);
 
         if (newHighestScore != null && newHighestScore > 0) {
-            for (StudentExamScore studentExamScore : studentExamScores) {
-                if (studentExamScore.getScore() > newHighestScore) {
-                    studentExamScore.updateScore(0);
-                    studentExamScoreRepository.save(studentExamScore);
+            for (ExamScore examScore : examScores) {
+                if (examScore.getScore() > newHighestScore) {
+                    examScore.updateScore(0);
+                    studentExamScoreRepository.save(examScore);
                 }
             }
         }
@@ -269,39 +244,39 @@ public class ExamService {
     }
 
     @Transactional
-    public UpdateStudentScoreResponse updateStudentScore(@AuthMember Member findMember, Long examId,
-            List<UpdateStudentScoreRequest> requests) {
+    public UpdateExamScoreResponse updateStudentScore(@AuthMember Member findMember, Long examId,
+            List<UpdateExamScoreRequest> requests) {
         Exam findExam = examRepository.findById(examId).orElseThrow(
                 () -> new ClassfitException(ErrorCode.EXAM_NOT_FOUND));
         validateAcademy(findMember, findExam.getMainClass().getAcademy().getId());
 
-        for (UpdateStudentScoreRequest request : requests) {
-            StudentExamScore studentExamScore = studentExamScoreRepository.findByExamAndStudentIdAndAcademyId(
+        for (UpdateExamScoreRequest request : requests) {
+            ExamScore examScore = studentExamScoreRepository.findByExamAndStudentIdAndAcademyId(
                     findMember.getAcademy().getId(),
                     findExam, request.studentId()).orElseGet(() -> {
                 Student student = studentRepository.findById(request.studentId()).orElseThrow(
                         () -> new ClassfitException(ErrorCode.STUDENT_NOT_FOUND));
-                StudentExamScore newScore = StudentExamScore.create(findExam, student,
+                ExamScore newScore = ExamScore.create(findExam, student,
                         request.score());
                 return studentExamScoreRepository.save(newScore);
             });
 
-            studentExamScore.updateScore(request.score());
+            examScore.updateScore(request.score());
 
             if (findExam.getHighestScore() == -1) { // PF
                 if (request.score() == -3) {  // P
-                    studentExamScore.updateScore(-3);
+                    examScore.updateScore(-3);
                 } else if (request.score() == -4) {  // F
-                    studentExamScore.updateScore(-4);
+                    examScore.updateScore(-4);
                 }
             } else if (findExam.getHighestScore() == -2) { // Evaluation
-                studentExamScore.updateScore(-5);  // Evaluation -5
-                studentExamScore.updateEvaluationDetail(request.evaluationDetail());
+                examScore.updateScore(-5);  // Evaluation -5
+                examScore.updateEvaluationDetail(request.evaluationDetail());
             }
 
             // 체크 상태 업데이트
-            studentExamScore.updateCheckedStudent(request.checkedStudent());
-            studentExamScoreRepository.save(studentExamScore);
+            examScore.updateCheckedStudent(request.checkedStudent());
+            studentExamScoreRepository.save(examScore);
         }
 
         studentExamScoreRepository.flush();
@@ -316,17 +291,17 @@ public class ExamService {
             Integer score = studentExamScoreRepository.findByExamAndStudentIdAndAcademyId(
                             findMember.getAcademy().getId(), findExam,
                             student.getId())
-                    .map(StudentExamScore::getScore)
+                    .map(ExamScore::getScore)
                     .orElse(0);
             String evaluationDetail = studentExamScoreRepository.findByExamAndStudentIdAndAcademyId(
                             findMember.getAcademy().getId(), findExam,
                             student.getId())
-                    .map(StudentExamScore::getEvaluationDetail)
+                    .map(ExamScore::getEvaluationDetail)
                     .orElse(null);
 
             boolean checkedStudent = requests.stream()
                     .filter(request -> request.studentId().equals(student.getId()))
-                    .map(UpdateStudentScoreRequest::checkedStudent)
+                    .map(UpdateExamScoreRequest::checkedStudent)
                     .findFirst()
                     .orElse(false);
 
@@ -334,7 +309,7 @@ public class ExamService {
                     findExam.getHighestScore(), evaluationDetail, checkedStudent);
         }).collect(Collectors.toList());
 
-        return new UpdateStudentScoreResponse(standard, findExam.getHighestScore(), examStudents);
+        return new UpdateExamScoreResponse(standard, findExam.getHighestScore(), examStudents);
     }
 
 }

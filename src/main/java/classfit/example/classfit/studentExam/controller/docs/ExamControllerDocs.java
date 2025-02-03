@@ -7,9 +7,9 @@ import classfit.example.classfit.studentExam.dto.process.ExamClassStudent;
 import classfit.example.classfit.studentExam.dto.examRequest.CreateExamRequest;
 import classfit.example.classfit.studentExam.dto.examRequest.FindExamRequest;
 import classfit.example.classfit.studentExam.dto.examRequest.UpdateExamRequest;
-import classfit.example.classfit.studentExam.dto.studentScoreRequest.UpdateStudentScoreRequest;
+import classfit.example.classfit.studentExam.dto.examScoreRequest.UpdateExamScoreRequest;
 import classfit.example.classfit.studentExam.dto.examResponse.*;
-import classfit.example.classfit.studentExam.dto.studentScoreResponse.UpdateStudentScoreResponse;
+import classfit.example.classfit.studentExam.dto.examScoreResponse.UpdateExamScoreResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -74,9 +74,9 @@ public interface ExamControllerDocs {
     @Operation(summary = "학생 시험 점수 수정", description = "학생 성적 수정하는 API 입니다.", responses = {
         @ApiResponse(responseCode = "200", description = "학생 시험 점수 수정 성공")
     })
-    CustomApiResponse<UpdateStudentScoreResponse> updateStudentScore(
+    CustomApiResponse<UpdateExamScoreResponse> updateStudentScore(
         @AuthMember Member findMember,
         @PathVariable Long examId,
-        @RequestBody List<UpdateStudentScoreRequest> requests
+        @RequestBody List<UpdateExamScoreRequest> requests
     );
 }

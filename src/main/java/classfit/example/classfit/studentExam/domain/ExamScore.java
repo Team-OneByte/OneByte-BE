@@ -1,18 +1,17 @@
 package classfit.example.classfit.studentExam.domain;
 
 import classfit.example.classfit.common.domain.BaseEntity;
-import classfit.example.classfit.common.exception.ClassfitException;
 import classfit.example.classfit.scoreReport.domain.ScoreReport;
 import classfit.example.classfit.student.domain.Student;
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.http.HttpStatus;
 
 @Entity
-@Table(name = "student_exam_score")
 @Getter
+@Builder
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class StudentExamScore extends BaseEntity {
+public class ExamScore extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -44,17 +43,6 @@ public class StudentExamScore extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private StandardStatus standardStatus;
 
-    @Builder
-    public StudentExamScore(Student student, Exam exam, Integer score,
-            StandardStatus standardStatus, ScoreReport scoreReport, String evaluationDetail) {
-
-        this.student = student;
-        this.exam = exam;
-        this.score = score;
-        this.standardStatus = standardStatus;
-        this.scoreReport = scoreReport;
-        this.evaluationDetail = evaluationDetail;
-    }
 
     public void updateScore(Integer score) {
         this.score = score;

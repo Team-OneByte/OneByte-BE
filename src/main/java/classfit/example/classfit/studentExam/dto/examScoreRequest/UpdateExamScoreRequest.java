@@ -1,4 +1,4 @@
-package classfit.example.classfit.studentExam.dto.studentScoreRequest;
+package classfit.example.classfit.studentExam.dto.examScoreRequest;
 
 import classfit.example.classfit.common.exception.ClassfitException;
 import classfit.example.classfit.common.response.ErrorCode;
@@ -7,7 +7,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 
 @Builder
-public record UpdateStudentScoreRequest(
+public record UpdateExamScoreRequest(
         Long studentId,
 
         @NotNull(message = "점수는 필수 입력값입니다.")
@@ -17,7 +17,7 @@ public record UpdateStudentScoreRequest(
 
         boolean checkedStudent
 ) {
-    public static UpdateStudentScoreRequest of(
+    public static UpdateExamScoreRequest of(
             Long studentId,
             Integer score,
             Integer highestScore,
@@ -27,7 +27,7 @@ public record UpdateStudentScoreRequest(
         if (score > highestScore) {
             throw new ClassfitException(ErrorCode.SCORE_EXCEEDS_HIGHEST);
         }
-        return UpdateStudentScoreRequest.builder()
+        return UpdateExamScoreRequest.builder()
                 .studentId(studentId)
                 .score(score)
                 .evaluationDetail(evaluationDetail)

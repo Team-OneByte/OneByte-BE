@@ -64,7 +64,7 @@ public class Exam extends BaseEntity {
 
 
     @OneToMany(mappedBy = "exam", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<StudentExamScore> studentExamScores = new ArrayList<>();
+    private List<ExamScore> examScores = new ArrayList<>();
 
     public void updateExam(LocalDate examDate, Standard standard, Integer highestScore,
                            ExamPeriod examPeriod, String examName, List<String> examRange) {

@@ -12,47 +12,47 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 @Repository
-public interface StudentExamScoreRepository extends JpaRepository<StudentExamScore, Long> {
+public interface StudentExamScoreRepository extends JpaRepository<ExamScore, Long> {
 
-    @Query("SELECT ses FROM StudentExamScore ses " +
+    @Query("SELECT ses FROM ExamScore ses " +
             "JOIN ses.exam e " +
             "JOIN e.mainClass mc " +
             "JOIN mc.academy a " +
             "WHERE a.id = :academyId " +
             "AND e = :exam " +
             "AND ses.student.id = :studentId")
-    Optional<StudentExamScore> findByExamAndStudentIdAndAcademyId(@Param("academyId") Long academyId,
+    Optional<ExamScore> findByExamAndStudentIdAndAcademyId(@Param("academyId") Long academyId,
             @Param("exam") Exam exam,
             @Param("studentId") Long studentId);
 
 
-    Optional<StudentExamScore> findByStudentAndExamId(Student student, Long examId);
+    Optional<ExamScore> findByStudentAndExamId(Student student, Long examId);
 
-    @Query("SELECT ses FROM StudentExamScore ses " +
+    @Query("SELECT ses FROM ExamScore ses " +
             "JOIN ses.exam e " +
             "JOIN e.mainClass mc " +
             "JOIN mc.academy a " +
             "WHERE a.id = :academyId " +
             "AND ses.exam = :exam")
-    List<StudentExamScore> findByAcademyIdAndExam(@Param("academyId") Long academyId,
+    List<ExamScore> findByAcademyIdAndExam(@Param("academyId") Long academyId,
             @Param("exam") Exam exam);
 
-    @Query("SELECT ses FROM StudentExamScore ses " +
+    @Query("SELECT ses FROM ExamScore ses " +
             "JOIN ses.exam e " +
             "JOIN e.mainClass mc " +
             "JOIN mc.academy a " +
             "WHERE a.id = :academyId " +
             "AND ses.exam = :exam")
-    List<StudentExamScore> findAllByAcademyIdAndExam(@Param("academyId") Long academyId,@Param("exam") Exam exam);
+    List<ExamScore> findAllByAcademyIdAndExam(@Param("academyId") Long academyId,@Param("exam") Exam exam);
 
 
-    List<StudentExamScore> findByScoreReport(ScoreReport scoreReport);
+    List<ExamScore> findByScoreReport(ScoreReport scoreReport);
 
     long countByExamAndScore(Exam exam, int score);
     void deleteByScoreReport_Id(Long scoreReportId);
 
     @Modifying
     @Transactional
-    @Query("DELETE FROM StudentExamScore ses WHERE ses.scoreReport.id = :reportId")
+    @Query("DELETE FROM ExamScore ses WHERE ses.scoreReport.id = :reportId")
     void deleteByReportId(@Param("reportId") Long reportId);
 }

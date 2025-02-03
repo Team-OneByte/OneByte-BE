@@ -8,9 +8,9 @@ import classfit.example.classfit.studentExam.dto.process.ExamClassStudent;
 import classfit.example.classfit.studentExam.dto.examRequest.CreateExamRequest;
 import classfit.example.classfit.studentExam.dto.examRequest.FindExamRequest;
 import classfit.example.classfit.studentExam.dto.examRequest.UpdateExamRequest;
-import classfit.example.classfit.studentExam.dto.studentScoreRequest.UpdateStudentScoreRequest;
+import classfit.example.classfit.studentExam.dto.examScoreRequest.UpdateExamScoreRequest;
 import classfit.example.classfit.studentExam.dto.examResponse.*;
-import classfit.example.classfit.studentExam.dto.studentScoreResponse.UpdateStudentScoreResponse;
+import classfit.example.classfit.studentExam.dto.examScoreResponse.UpdateExamScoreResponse;
 import classfit.example.classfit.studentExam.service.ExamService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -88,12 +88,12 @@ public class ExamController implements ExamControllerDocs {
     }
 
     @PatchMapping("/findexam/{examId}/score")
-    public CustomApiResponse<UpdateStudentScoreResponse> updateStudentScore(
+    public CustomApiResponse<UpdateExamScoreResponse> updateStudentScore(
         @AuthMember Member findMember,
         @PathVariable(name = "examId") Long examId,
-        @RequestBody List<UpdateStudentScoreRequest> requests
+        @RequestBody List<UpdateExamScoreRequest> requests
     ) {
-        UpdateStudentScoreResponse response = examService.updateStudentScore(findMember, examId, requests);
+        UpdateExamScoreResponse response = examService.updateStudentScore(findMember, examId, requests);
         return CustomApiResponse.success(response, 200, "학생 시험 점수 수정 성공");
     }
 }

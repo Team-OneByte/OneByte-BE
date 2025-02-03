@@ -25,7 +25,6 @@ import classfit.example.classfit.student.dto.StudentList;
 import classfit.example.classfit.studentExam.domain.*;
 import classfit.example.classfit.studentExam.dto.process.ExamHistory;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -85,10 +84,10 @@ public class ScoreReportService {
             allStudents.add(new StudentList(report.getId(), student.getId(), student.getName()));
 
             for (Long examId : request.examIdList()) {
-                StudentExamScore studentExamScore = studentExamScoreRepository.findByStudentAndExamId(student, examId)
+                ExamScore examScore = studentExamScoreRepository.findByStudentAndExamId(student, examId)
                     .orElseThrow(() -> new ClassfitException(ErrorCode.SCORE_NOT_FOUND));
-                studentExamScore.updateScoreReport(report);
-                studentExamScoreRepository.save(studentExamScore);
+                examScore.updateScoreReport(report);
+                studentExamScoreRepository.save(examScore);
             }
         }
 
@@ -249,10 +248,10 @@ public class ScoreReportService {
             .mapToInt(AttendanceInfo::attendanceCount)
             .sum();
 
-        List<StudentExamScore> studentExamScores = studentExamScoreRepository.findByScoreReport(
+        List<ExamScore> examScores = studentExamScoreRepository.findByScoreReport(
             scoreReport);
 
-        List<ExamHistory> examHistoryList = studentExamScores.stream()
+        List<ExamHistory> examHistoryList = examScores.stream()
             .filter(studentExamScore -> studentExamScore.getScoreReport().getId()
                 .equals(scoreReport.getId()))
             .map(studentExamScore -> {
