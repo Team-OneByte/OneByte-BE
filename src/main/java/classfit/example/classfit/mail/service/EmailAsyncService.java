@@ -1,5 +1,7 @@
 package classfit.example.classfit.mail.service;
 
+import classfit.example.classfit.common.exception.ClassfitException;
+import classfit.example.classfit.common.response.ErrorCode;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +35,7 @@ public class EmailAsyncService {
 
             javaMailSender.send(message);
         } catch (MessagingException e) {
-            throw new RuntimeException("이메일 전송 실패");
+            throw new ClassfitException(ErrorCode.EMAIL_SENDING_FAILED);
         }
     }
 }
