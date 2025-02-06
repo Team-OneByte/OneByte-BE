@@ -5,12 +5,12 @@ import classfit.example.classfit.academy.repository.AcademyRepository;
 import classfit.example.classfit.attendance.domain.Attendance;
 import classfit.example.classfit.attendance.dto.process.AttendanceInfo;
 import classfit.example.classfit.common.annotation.AuthMember;
-import classfit.example.classfit.category.domain.MainClass;
-import classfit.example.classfit.category.domain.SubClass;
-import classfit.example.classfit.category.repository.MainClassRepository;
-import classfit.example.classfit.category.repository.SubClassRepository;
-import classfit.example.classfit.classStudent.domain.ClassStudent;
-import classfit.example.classfit.classStudent.repository.ClassStudentRepository;
+import classfit.example.classfit.course.domain.MainClass;
+import classfit.example.classfit.course.domain.SubClass;
+import classfit.example.classfit.course.repository.MainClassRepository;
+import classfit.example.classfit.course.repository.SubClassRepository;
+import classfit.example.classfit.student.domain.Enrollment;
+import classfit.example.classfit.student.repository.EnrollmentRepository;
 import classfit.example.classfit.common.exception.ClassfitException;
 import classfit.example.classfit.common.response.ErrorCode;
 import classfit.example.classfit.member.domain.Member;
@@ -42,7 +42,7 @@ public class ScoreReportService {
     private final MainClassRepository mainClassRepository;
     private final SubClassRepository subClassRepository;
     private final ExamRepository examRepository;
-    private final ClassStudentRepository classStudentRepository;
+    private final EnrollmentRepository enrollmentRepository;
     private final StudentExamScoreRepository studentExamScoreRepository;
     private final AcademyRepository academyRepository;
 
@@ -67,7 +67,7 @@ public class ScoreReportService {
             throw new ClassfitException(ErrorCode.EXAM_NOT_FOUND);
         }
 
-        List<ClassStudent> studentsInSubClass = classStudentRepository.findAllBySubClassId(
+        List<Enrollment> studentsInSubClass = enrollmentRepository.findAllBySubClassId(
                 subClass.getId());
         if (studentsInSubClass.isEmpty()) {
             throw new ClassfitException(ErrorCode.STUDENT_NOT_FOUND);
@@ -75,8 +75,8 @@ public class ScoreReportService {
 
         List<StudentList> allStudents = new ArrayList<>();
 
-        for (ClassStudent classStudent : studentsInSubClass) {
-            Student student = classStudent.getStudent();
+        for (Enrollment enrollment : studentsInSubClass) {
+            Student student = enrollment.getStudent();
 
             ScoreReport report = request.toEntity(subClass, mainClass, student, member);
             scoreReportRepository.save(report);
@@ -190,7 +190,7 @@ public class ScoreReportService {
                         () -> new ClassfitException(ErrorCode.SUB_CLASS_NOT_FOUND));
         validateAcademy(member, member.getAcademy().getId());
 
-        List<FindClassStudent> classStudents = classStudentRepository.findStudentIdsByMainClassIdAndSubClassId(
+        List<FindClassStudent> classStudents = enrollmentRepository.findStudentIdsByMainClassIdAndSubClassId(
                 mainClassId, subClassId);
         return classStudents.stream()
                 .map(classStudent -> new FindClassStudent(
@@ -230,7 +230,7 @@ public class ScoreReportService {
 
         validateAcademy(member, scoreReport.getMainClass().getAcademy().getId());
 
-        List<AttendanceInfo> attendanceInfoList = scoreReport.getStudent().getClassStudents().stream()
+        List<AttendanceInfo> attendanceInfoList = scoreReport.getStudent().getEnrollments().stream()
                 .flatMap(classStudent -> classStudent.getAttendances().stream())
                 .collect(Collectors.groupingBy(
                         Attendance::getStatus,

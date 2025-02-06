@@ -6,7 +6,7 @@ import classfit.example.classfit.attendance.dto.response.StudentAttendanceRespon
 import classfit.example.classfit.attendance.service.AttendanceService;
 import classfit.example.classfit.attendance.service.AttendanceUpdateService;
 import classfit.example.classfit.common.annotation.AuthMember;
-import classfit.example.classfit.classStudent.domain.ClassStudent;
+import classfit.example.classfit.student.domain.Enrollment;
 import classfit.example.classfit.common.response.CustomApiResponse;
 import classfit.example.classfit.member.domain.Member;
 import classfit.example.classfit.student.domain.Student;
@@ -45,7 +45,7 @@ public class AttendanceController implements AttendanceControllerDocs {
             @PathVariable("subClassId") Long subClassId
     ) {
         List<LocalDate> weekRange = attendanceService.getWeeklyAttendanceRange(weekOffset);
-        Page<ClassStudent> students = attendanceService.getClassStudentsByMainClassAndSubClass(mainClassId, subClassId, page, member);
+        Page<Enrollment> students = attendanceService.getClassStudentsByMainClassAndSubClass(mainClassId, subClassId, page, member);
         List<StudentAttendanceResponse> studentAttendances = attendanceService.getStudentAttendance(students.getContent(), weekRange);
         return CustomApiResponse.success(studentAttendances, 200, "특정 클래스 출결 조회 성공");
     }

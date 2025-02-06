@@ -1,7 +1,7 @@
 package classfit.example.classfit.studentExam.domain;
 
-import classfit.example.classfit.category.domain.MainClass;
-import classfit.example.classfit.category.domain.SubClass;
+import classfit.example.classfit.course.domain.MainClass;
+import classfit.example.classfit.course.domain.SubClass;
 import classfit.example.classfit.common.domain.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;

@@ -8,7 +8,7 @@ import classfit.example.classfit.academy.repository.AcademyRepository;
 import classfit.example.classfit.common.exception.ClassfitException;
 import classfit.example.classfit.common.response.ErrorCode;
 import classfit.example.classfit.invitation.domain.Invitation;
-import classfit.example.classfit.invitation.domain.InvitationStatus;
+import classfit.example.classfit.invitation.domain.enumType.InvitationType;
 import classfit.example.classfit.invitation.repository.InvitationRepository;
 import classfit.example.classfit.member.domain.Member;
 import classfit.example.classfit.member.repository.MemberRepository;
@@ -56,7 +56,7 @@ public class AcademyService {
 
         Member member = getMember(request.email());
 
-        invitation.updateStatus(InvitationStatus.COMPLETED);
+        invitation.updateStatus(InvitationType.COMPLETED);
         member.updateRole("MEMBER");
 
         academy.addMember(member);

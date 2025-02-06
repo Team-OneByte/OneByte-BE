@@ -2,7 +2,7 @@ package classfit.example.classfit.member.dto.request;
 
 import classfit.example.classfit.common.annotation.PasswordMatch;
 import classfit.example.classfit.member.domain.Member;
-import classfit.example.classfit.member.domain.MemberStatus;
+import classfit.example.classfit.member.domain.enumType.MemberType;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -40,7 +40,7 @@ public record MemberRequest(
                 .name(name())
                 .phoneNumber(phoneNumber())
                 .email(email())
-                .status(MemberStatus.ACTIVE)
+                .status(MemberType.ACTIVE)
                 .password(bCryptPasswordEncoder.encode(password()))
                 .build();
     }
