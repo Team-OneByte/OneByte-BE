@@ -1,5 +1,5 @@
 ---
-name: "\U0001F41B [Fix]"
+name: Fix
 about: 버그 수정을 위한 이슈 템플릿 입니다.
 title: "[Fix]"
 labels: Fix

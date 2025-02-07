@@ -1,5 +1,5 @@
 ---
-name: "\U0001F477 [CI/CD]"
+name: CI/CD
 about: CI/CD 관련 설정, 개선, 문제 해결을 위한 이슈 템플릿입니다.
 title: "[CI/CD] "
 labels: Ci
