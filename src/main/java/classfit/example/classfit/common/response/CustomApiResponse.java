@@ -1,6 +1,6 @@
 package classfit.example.classfit.common.response;
 
-import classfit.example.classfit.common.domain.ResultType;
+import classfit.example.classfit.common.domain.enumType.ResultType;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;

@@ -2,7 +2,7 @@ package classfit.example.classfit.student.dto.request;
 
 import classfit.example.classfit.common.annotation.EnumValue;
 import classfit.example.classfit.common.annotation.NotBlankNullable;
-import classfit.example.classfit.student.domain.Gender;
+import classfit.example.classfit.student.domain.enumType.GenderType;
 import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -16,7 +16,7 @@ public record StudentUpdateRequest(
         @Size(max = 30) String name,
 
         @NotBlankNullable
-        @EnumValue(target = Gender.class, message = "존재하지 않는 성별입니다.", ignoreCase = true)
+        @EnumValue(target = GenderType.class, message = "존재하지 않는 성별입니다.", ignoreCase = true)
         String gender,
 
         @DateTimeFormat(pattern = "yyyy-MM-dd")

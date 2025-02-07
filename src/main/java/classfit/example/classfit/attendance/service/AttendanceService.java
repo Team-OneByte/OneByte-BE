@@ -3,8 +3,8 @@ package classfit.example.classfit.attendance.service;
 import classfit.example.classfit.attendance.domain.Attendance;
 import classfit.example.classfit.attendance.dto.response.AttendanceResponse;
 import classfit.example.classfit.attendance.dto.response.StudentAttendanceResponse;
-import classfit.example.classfit.classStudent.domain.ClassStudent;
-import classfit.example.classfit.classStudent.repository.ClassStudentRepository;
+import classfit.example.classfit.student.domain.Enrollment;
+import classfit.example.classfit.student.repository.EnrollmentRepository;
 import classfit.example.classfit.common.exception.ClassfitException;
 import classfit.example.classfit.common.response.ErrorCode;
 import classfit.example.classfit.common.util.DateRangeUtil;
@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 public class AttendanceService {
     private final StudentRepository studentRepository;
-    private final ClassStudentRepository classStudentRepository;
+    private final EnrollmentRepository enrollmentRepository;
 
     public Page<Student> getAllStudents(int page, Member loggedInMember) {
         Long academyId = loggedInMember.getAcademy().getId();
@@ -36,10 +36,10 @@ public class AttendanceService {
         return studentRepository.findAllByAcademyId(academyId, pageable);
     }
 
-    public Page<ClassStudent> getClassStudentsByMainClassAndSubClass(Long mainClassId, Long subClassId, int page, Member loggedInMember) {
+    public Page<Enrollment> getClassStudentsByMainClassAndSubClass(Long mainClassId, Long subClassId, int page, Member loggedInMember) {
         Long academyId = loggedInMember.getAcademy().getId();
         Pageable pageable = PageRequest.of(page, 50);
-        return classStudentRepository.findAllByMainClassAndSubClass(
+        return enrollmentRepository.findAllByMainClassAndSubClass(
             mainClassId, subClassId, academyId, pageable);
     }
 
@@ -53,7 +53,7 @@ public class AttendanceService {
     private StudentAttendanceResponse mapToStudentAttendanceDTO(Object studentObject, List<LocalDate> weekRange) {
         Student student = getStudentFromEntity(studentObject);
 
-        List<AttendanceResponse> attendanceDTOs = student.getClassStudents().stream()
+        List<AttendanceResponse> attendanceDTOs = student.getEnrollments().stream()
             .flatMap(classStudent -> classStudent.getAttendances().stream())
             .filter(attendance -> weekRange.contains(attendance.getDate()))
             .sorted(Comparator.comparing(Attendance::getDate))
@@ -66,8 +66,8 @@ public class AttendanceService {
     private Student getStudentFromEntity(Object entity) {
         if (entity instanceof Student) {
             return (Student) entity;
-        } else if (entity instanceof ClassStudent) {
-            return ((ClassStudent) entity).getStudent();
+        } else if (entity instanceof Enrollment) {
+            return ((Enrollment) entity).getStudent();
         }
         throw new ClassfitException(ErrorCode.ENTITY_TYPE_INVALID);
     }

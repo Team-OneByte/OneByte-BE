@@ -2,19 +2,19 @@ package classfit.example.classfit.student.service;
 
 import classfit.example.classfit.academy.domain.Academy;
 import classfit.example.classfit.attendance.domain.Attendance;
-import classfit.example.classfit.attendance.domain.AttendanceStatus;
+import classfit.example.classfit.attendance.domain.enumType.AttendanceStatus;
 import classfit.example.classfit.attendance.repository.AttendanceRepository;
-import classfit.example.classfit.category.domain.SubClass;
-import classfit.example.classfit.category.repository.SubClassRepository;
-import classfit.example.classfit.classStudent.domain.ClassStudent;
-import classfit.example.classfit.classStudent.repository.ClassStudentRepository;
+import classfit.example.classfit.course.domain.SubClass;
+import classfit.example.classfit.course.repository.SubClassRepository;
+import classfit.example.classfit.student.domain.Enrollment;
+import classfit.example.classfit.student.repository.EnrollmentRepository;
 import classfit.example.classfit.common.exception.ClassfitException;
 import classfit.example.classfit.common.response.ErrorCode;
 import classfit.example.classfit.member.domain.Member;
 import classfit.example.classfit.scoreReport.domain.ScoreReport;
 import classfit.example.classfit.scoreReport.domain.ScoreReportRepository;
 import classfit.example.classfit.scoreReport.service.ScoreReportService;
-import classfit.example.classfit.student.domain.Gender;
+import classfit.example.classfit.student.domain.enumType.GenderType;
 import classfit.example.classfit.student.domain.Student;
 import classfit.example.classfit.student.dto.request.StudentRequest;
 import classfit.example.classfit.student.dto.request.StudentUpdateRequest;
@@ -38,7 +38,7 @@ public class StudentService {
 
     private final StudentRepository studentRepository;
     private final SubClassRepository subClassRepository;
-    private final ClassStudentRepository classStudentRepository;
+    private final EnrollmentRepository enrollmentRepository;
     private final AttendanceRepository attendanceRepository;
     private final ScoreReportRepository scoreReportRepository;
     private final ScoreReportService scoreReportService;
@@ -50,8 +50,8 @@ public class StudentService {
 
         request.subClassList().forEach(subClassId -> {
             SubClass subClass = getSubClass(subClassId);
-            ClassStudent classStudent = ClassStudent.create(student, subClass);
-            classStudentRepository.save(classStudent);
+            Enrollment enrollment = Enrollment.create(student, subClass);
+            enrollmentRepository.save(enrollment);
 
             createAttendanceForSevenWeeks(student);
         });
@@ -63,9 +63,9 @@ public class StudentService {
         LocalDate currentDate = LocalDate.now();
         LocalDate weekStart = currentDate.with(DayOfWeek.MONDAY).minusWeeks(4);
 
-        List<ClassStudent> classStudents = classStudentRepository.findByStudent(student);
+        List<Enrollment> enrollments = enrollmentRepository.findByStudent(student);
 
-        classStudents.forEach(classStudent -> {
+        enrollments.forEach(classStudent -> {
             for (int i = 0; i < 7; i++) {
                 LocalDate weekDate = weekStart.plusWeeks(i);
                 AttendanceStatus status = (i < 4) ? AttendanceStatus.ABSENT : AttendanceStatus.PRESENT; // 4주 전은 ABSENT, 나머지는 PRESENT
@@ -76,7 +76,7 @@ public class StudentService {
                         .date(attendanceDate)
                         .week(j)
                         .status(status)
-                        .classStudent(classStudent)
+                        .enrollment(classStudent)
                         .build();
                     attendanceRepository.save(attendance);
                 }
@@ -97,7 +97,7 @@ public class StudentService {
 
                 scoreReportRepository.deleteByStudentId(student.getId());
                 attendanceRepository.deleteByStudentId(student.getId());
-                classStudentRepository.deleteAllByStudentId(student.getId());
+                enrollmentRepository.deleteAllByStudentId(student.getId());
                 studentRepository.delete(student);
             });
     }
@@ -158,7 +158,7 @@ public class StudentService {
             }
 
             if ("gender".equals(field.getName()) && newValue instanceof String) {
-                newValue = Gender.valueOf(((String) newValue).toUpperCase());
+                newValue = GenderType.valueOf(((String) newValue).toUpperCase());
             }
 
             Field studentField = Student.class.getDeclaredField(field.getName());
@@ -177,12 +177,12 @@ public class StudentService {
             return;
         }
 
-        classStudentRepository.deleteAllByStudentId(student.getId());
+        enrollmentRepository.deleteAllByStudentId(student.getId());
 
         subClassList.forEach(subClassId -> {
             SubClass subClass = getSubClass(subClassId);
-            ClassStudent classStudent = ClassStudent.create(student, subClass);
-            classStudentRepository.save(classStudent);
+            Enrollment enrollment = Enrollment.create(student, subClass);
+            enrollmentRepository.save(enrollment);
         });
     }
 

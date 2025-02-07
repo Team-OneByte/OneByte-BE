@@ -2,7 +2,7 @@ package classfit.example.classfit.drive.controller.docs;
 
 import classfit.example.classfit.common.annotation.AuthMember;
 import classfit.example.classfit.common.response.CustomApiResponse;
-import classfit.example.classfit.drive.domain.DriveType;
+import classfit.example.classfit.drive.domain.enumType.DriveType;
 import classfit.example.classfit.member.domain.Member;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

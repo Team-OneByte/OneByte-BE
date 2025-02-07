@@ -1,7 +1,7 @@
 package classfit.example.classfit.invitation.dto.response;
 
 import classfit.example.classfit.invitation.domain.Invitation;
-import classfit.example.classfit.invitation.domain.InvitationStatus;
+import classfit.example.classfit.invitation.domain.enumType.InvitationType;
 import lombok.Builder;
 
 @Builder
@@ -9,7 +9,7 @@ public record InvitationResponse(
         String staffName,
         String email,
         String academyName,
-        InvitationStatus status
+        InvitationType status
 ) {
     public static InvitationResponse from(final Invitation invitation) {
         return InvitationResponse.builder()

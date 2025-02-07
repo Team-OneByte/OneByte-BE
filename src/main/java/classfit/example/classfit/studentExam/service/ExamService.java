@@ -3,12 +3,12 @@ package classfit.example.classfit.studentExam.service;
 import classfit.example.classfit.academy.domain.Academy;
 import classfit.example.classfit.academy.repository.AcademyRepository;
 import classfit.example.classfit.common.annotation.AuthMember;
-import classfit.example.classfit.category.domain.MainClass;
-import classfit.example.classfit.category.domain.SubClass;
-import classfit.example.classfit.category.repository.MainClassRepository;
-import classfit.example.classfit.category.repository.SubClassRepository;
-import classfit.example.classfit.classStudent.domain.ClassStudent;
-import classfit.example.classfit.classStudent.repository.ClassStudentRepository;
+import classfit.example.classfit.course.domain.MainClass;
+import classfit.example.classfit.course.domain.SubClass;
+import classfit.example.classfit.course.repository.MainClassRepository;
+import classfit.example.classfit.course.repository.SubClassRepository;
+import classfit.example.classfit.student.domain.Enrollment;
+import classfit.example.classfit.student.repository.EnrollmentRepository;
 import classfit.example.classfit.common.exception.ClassfitException;
 import classfit.example.classfit.common.response.ErrorCode;
 import classfit.example.classfit.member.domain.Member;
@@ -50,7 +50,7 @@ public class ExamService {
     private final ExamRepository examRepository;
     private final MainClassRepository mainClassRepository;
     private final SubClassRepository subClassRepository;
-    private final ClassStudentRepository classStudentRepository;
+    private final EnrollmentRepository enrollmentRepository;
     private final StudentExamScoreRepository studentExamScoreRepository;
     private final AcademyRepository academyRepository;
     private final StudentRepository studentRepository;
@@ -97,8 +97,8 @@ public class ExamService {
             defaultScore = 0; // 기본값은 0
         }
 
-        List<ClassStudent> classStudents = classStudentRepository.findByAcademyIdAndSubClass(findMember.getAcademy().getId(), findSubClass);
-        List<StudentExamScore> studentExamScores = classStudents.stream().map(classStudent -> {
+        List<Enrollment> enrollments = enrollmentRepository.findByAcademyIdAndSubClass(findMember.getAcademy().getId(), findSubClass);
+        List<StudentExamScore> studentExamScores = enrollments.stream().map(classStudent -> {
             Student student = classStudent.getStudent();
             return new StudentExamScore(student, savedExam, defaultScore, null, null); // 초기 점수는 0
         }).collect(Collectors.toList());
@@ -168,7 +168,7 @@ public class ExamService {
 
         SubClass subClass = findExam.getSubClass();
         List<StudentExamScore> studentScores = findExam.getStudentExamScores();
-        List<ClassStudent> classStudents = classStudentRepository.findByAcademyIdAndSubClass(findMember.getAcademy().getId(), subClass);
+        List<Enrollment> enrollments = enrollmentRepository.findByAcademyIdAndSubClass(findMember.getAcademy().getId(), subClass);
         Integer perfectScore = studentScores.stream().mapToInt(StudentExamScore::getScore).max()
                 .orElse(findExam.getHighestScore());
         Integer lowestScore = studentScores.stream().mapToInt(StudentExamScore::getScore).min()
@@ -181,7 +181,7 @@ public class ExamService {
 
         examRepository.save(findExam);
 
-        List<ExamClassStudent> examClassStudents = classStudents.stream().map(classStudent -> {
+        List<ExamClassStudent> examClassStudents = enrollments.stream().map(classStudent -> {
                     Student student = classStudent.getStudent();
 
                     Integer score = studentScores.stream()
@@ -298,10 +298,10 @@ public class ExamService {
         studentExamScoreRepository.flush();
         Standard standard = findExam.getStandard();
 
-        List<ClassStudent> classStudents = classStudentRepository.findByAcademyIdAndSubClass(findMember.getAcademy().getId(),
+        List<Enrollment> enrollments = enrollmentRepository.findByAcademyIdAndSubClass(findMember.getAcademy().getId(),
                 findExam.getSubClass());
 
-        List<ExamStudent> examStudents = classStudents.stream().map(classStudent -> {
+        List<ExamStudent> examStudents = enrollments.stream().map(classStudent -> {
             Student student = classStudent.getStudent();
             Integer score = studentExamScoreRepository.findByExamAndStudentIdAndAcademyId(findMember.getAcademy().getId(), findExam,
                             student.getId())

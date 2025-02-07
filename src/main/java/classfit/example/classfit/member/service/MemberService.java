@@ -11,7 +11,7 @@ import classfit.example.classfit.member.dto.response.AcademyMemberResponse;
 import classfit.example.classfit.member.dto.response.MemberInfoResponse;
 import classfit.example.classfit.member.dto.response.MemberResponse;
 import classfit.example.classfit.member.repository.MemberRepository;
-import classfit.example.classfit.memberCalendar.service.MemberCalendarService;
+import classfit.example.classfit.calendar.memberCalendar.service.MemberCalendarService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;

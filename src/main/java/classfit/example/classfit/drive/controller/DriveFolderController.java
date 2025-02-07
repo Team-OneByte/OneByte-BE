@@ -3,7 +3,7 @@ package classfit.example.classfit.drive.controller;
 import classfit.example.classfit.common.annotation.AuthMember;
 import classfit.example.classfit.common.response.CustomApiResponse;
 import classfit.example.classfit.drive.controller.docs.DriveFolderControllerDocs;
-import classfit.example.classfit.drive.domain.DriveType;
+import classfit.example.classfit.drive.domain.enumType.DriveType;
 import classfit.example.classfit.drive.service.DriveFolderService;
 import classfit.example.classfit.member.domain.Member;
 import lombok.RequiredArgsConstructor;

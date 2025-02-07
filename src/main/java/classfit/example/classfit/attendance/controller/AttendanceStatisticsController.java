@@ -1,7 +1,7 @@
 package classfit.example.classfit.attendance.controller;
 
 import classfit.example.classfit.attendance.controller.docs.AttendanceStatisticsControllerDocs;
-import classfit.example.classfit.attendance.domain.AttendanceStatus;
+import classfit.example.classfit.attendance.domain.enumType.AttendanceStatus;
 import classfit.example.classfit.attendance.dto.response.StatisticsDateResponse;
 import classfit.example.classfit.attendance.dto.response.StatisticsMemberResponse;
 import classfit.example.classfit.attendance.service.AttendanceStatisticsService;

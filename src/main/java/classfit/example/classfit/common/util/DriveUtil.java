@@ -2,19 +2,18 @@ package classfit.example.classfit.common.util;
 
 import classfit.example.classfit.common.exception.ClassfitException;
 import classfit.example.classfit.common.response.ErrorCode;
-import classfit.example.classfit.drive.domain.DriveType;
-import classfit.example.classfit.drive.domain.FileType;
+import classfit.example.classfit.drive.domain.enumType.DriveType;
+import classfit.example.classfit.drive.domain.enumType.FileType;
 import classfit.example.classfit.drive.dto.response.FileResponse;
 import classfit.example.classfit.member.domain.Member;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
-import org.springframework.http.HttpStatus;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
-import static classfit.example.classfit.drive.domain.DriveType.PERSONAL;
-import static classfit.example.classfit.drive.domain.DriveType.SHARED;
+import static classfit.example.classfit.drive.domain.enumType.DriveType.PERSONAL;
+import static classfit.example.classfit.drive.domain.enumType.DriveType.SHARED;
 
 public class DriveUtil {
 

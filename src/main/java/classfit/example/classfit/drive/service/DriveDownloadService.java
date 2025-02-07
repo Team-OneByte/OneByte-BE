@@ -1,7 +1,7 @@
 package classfit.example.classfit.drive.service;
 
 import classfit.example.classfit.common.util.DriveUtil;
-import classfit.example.classfit.drive.domain.DriveType;
+import classfit.example.classfit.drive.domain.enumType.DriveType;
 import classfit.example.classfit.member.domain.Member;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.GetObjectRequest;
