@@ -2,7 +2,7 @@ package classfit.example.classfit.drive.service;
 
 import classfit.example.classfit.common.util.DriveUtil;
 import classfit.example.classfit.drive.domain.enumType.DriveType;
-import classfit.example.classfit.drive.domain.enumType.FileType;
+import classfit.example.classfit.drive.domain.enumType.ObjectType;
 import classfit.example.classfit.drive.dto.response.FileResponse;
 import classfit.example.classfit.member.domain.Member;
 import com.amazonaws.services.s3.AmazonS3;
@@ -95,7 +95,7 @@ public class DriveGetService {
         return Normalizer.normalize(input, Normalizer.Form.NFC).trim().toLowerCase();
     }
 
-    public List<FileResponse> classifyFilesByType(Member member, DriveType driveType, FileType filterFileType, String folderPath) {
+    public List<FileResponse> classifyFilesByType(Member member, DriveType driveType, ObjectType filterObjectType, String folderPath) {
         ListObjectsV2Request request = createListObjectsRequest(driveType, member, folderPath);
         ListObjectsV2Result result = amazonS3.listObjectsV2(request);
 
@@ -104,7 +104,8 @@ public class DriveGetService {
             .map(this::buildFileInfo)
             .filter(fileInfo -> {
                 boolean isNotFolderItself = !fileInfo.fileName().equals(folderPathWithSlash);
-                boolean matchesFileType = DriveUtil.getFileType(fileInfo.fileName()).equals(filterFileType);
+                boolean matchesFileType = DriveUtil.getFileType(fileInfo.fileName()).equals(
+                        filterObjectType);
                 boolean isInTargetFolder = fileInfo.folderPath().equals(folderPathWithSlash);
                 return isNotFolderItself && matchesFileType && isInTargetFolder;
             })

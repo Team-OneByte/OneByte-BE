@@ -3,7 +3,7 @@ package classfit.example.classfit.drive.controller.docs;
 import classfit.example.classfit.common.annotation.AuthMember;
 import classfit.example.classfit.common.response.CustomApiResponse;
 import classfit.example.classfit.drive.domain.enumType.DriveType;
-import classfit.example.classfit.drive.domain.enumType.FileType;
+import classfit.example.classfit.drive.domain.enumType.ObjectType;
 import classfit.example.classfit.drive.dto.response.FileResponse;
 import classfit.example.classfit.member.domain.Member;
 import io.swagger.v3.oas.annotations.Operation;
@@ -43,7 +43,7 @@ public interface DriveGetControllerDocs {
     CustomApiResponse<List<FileResponse>> filterFilesByExtension(
             @AuthMember Member member,
             @Parameter(description = "내 드라이브는 PERSONAL, 공유 드라이브는 SHARED 입니다.") @RequestParam DriveType driveType,
-            @Parameter(description = "파일 유형 필터링입니다. 빈 값이면 모든 확장자가 조회됩니다.") @RequestParam FileType fileType,
+            @Parameter(description = "파일 유형 필터링입니다. 빈 값이면 모든 확장자가 조회됩니다.") @RequestParam ObjectType objectType,
             @Parameter(description = "폴더 경로입니다. 비어 있으면 루트 폴더를 검색합니다.") @RequestParam(required = false, defaultValue = "") String folderPath
     );
 }

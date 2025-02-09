@@ -1,11 +1,11 @@
 package classfit.example.classfit.drive.dto.response;
 
-import classfit.example.classfit.drive.domain.enumType.FileType;
+import classfit.example.classfit.drive.domain.enumType.ObjectType;
 
 import java.time.LocalDateTime;
 
 public record FileResponse(
-        FileType fileType,
+        ObjectType objectType,
         String originalFileName,
         String fileName,
         String fileSize,

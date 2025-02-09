@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 import org.springframework.http.MediaType;
 
-public enum FileType {
+public enum ObjectType {
     FOLDER("folder"),
     DOCUMENT("pdf", "doc", "docx", "txt", "xls", "xlsx"),
     IMAGE("jpg", "jpeg", "png", "gif", "bmp", "tiff"),
@@ -17,7 +17,7 @@ public enum FileType {
 
     private final List<String> extensions;
 
-    FileType(String... extensions) {
+    ObjectType(String... extensions) {
         this.extensions = List.of(extensions);
     }
 
@@ -25,8 +25,8 @@ public enum FileType {
         return extensions.contains(extension.toLowerCase());
     }
 
-    public static FileType getFileTypeByExtension(String extension) {
-        for (FileType type : values()) {
+    public static ObjectType getFileTypeByExtension(String extension) {
+        for (ObjectType type : values()) {
             if (type.hasExtension(extension)) {
                 return type;
             }

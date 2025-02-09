@@ -3,7 +3,7 @@ package classfit.example.classfit.common.util;
 import classfit.example.classfit.common.exception.ClassfitException;
 import classfit.example.classfit.common.response.ErrorCode;
 import classfit.example.classfit.drive.domain.enumType.DriveType;
-import classfit.example.classfit.drive.domain.enumType.FileType;
+import classfit.example.classfit.drive.domain.enumType.ObjectType;
 import classfit.example.classfit.drive.dto.response.FileResponse;
 import classfit.example.classfit.member.domain.Member;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
@@ -49,14 +49,14 @@ public class DriveUtil {
     public static FileResponse getFileResponse(S3ObjectSummary summary, String fileName,
                                                String fileUrl,
                                                Map<String, String> tagMap) {
-        FileType fileType = getFileType(fileName);
+        ObjectType objectType = getFileType(fileName);
         String originalFileName = tagMap.getOrDefault("originalFileName", "");
         String fileNameWithoutPrefix = getFileNameWithoutPrefix(fileName);
         LocalDateTime uploadedAt = parseUploadedAt(tagMap.get("uploadedAt"));
         String fileSize = formatFileSize(summary.getSize());
 
         return new FileResponse(
-            fileType,
+                objectType,
             originalFileName,
             fileNameWithoutPrefix,
             fileSize,
@@ -67,12 +67,12 @@ public class DriveUtil {
         );
     }
 
-    public static FileType getFileType(String fileName) {
+    public static ObjectType getFileType(String fileName) {
         if (fileName.endsWith("/")) {
-            return FileType.FOLDER;
+            return ObjectType.FOLDER;
         }
         String extension = getFileExtension(fileName);
-        return FileType.getFileTypeByExtension(extension);
+        return ObjectType.getFileTypeByExtension(extension);
     }
 
     public static String getFileExtension(String fileName) {
@@ -89,7 +89,7 @@ public class DriveUtil {
             : LocalDateTime.parse(uploadedAtStr, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
     }
 
-    private static String formatFileSize(long sizeInBytes) {
+    public static String formatFileSize(long sizeInBytes) {
         double sizeInKB = sizeInBytes / 1024.0;
         if (sizeInKB >= 1024) {
             double sizeInMB = sizeInKB / 1024.0;

@@ -4,7 +4,7 @@ import classfit.example.classfit.common.annotation.AuthMember;
 import classfit.example.classfit.common.response.CustomApiResponse;
 import classfit.example.classfit.drive.controller.docs.DriveGetControllerDocs;
 import classfit.example.classfit.drive.domain.enumType.DriveType;
-import classfit.example.classfit.drive.domain.enumType.FileType;
+import classfit.example.classfit.drive.domain.enumType.ObjectType;
 import classfit.example.classfit.drive.dto.response.FileResponse;
 import classfit.example.classfit.drive.service.DriveGetService;
 import classfit.example.classfit.member.domain.Member;
@@ -51,10 +51,11 @@ public class DriveGetController implements DriveGetControllerDocs {
     public CustomApiResponse<List<FileResponse>> filterFilesByExtension(
             @AuthMember Member member,
             @RequestParam DriveType driveType,
-            @RequestParam FileType fileType,
+            @RequestParam ObjectType objectType,
             @RequestParam(required = false, defaultValue = "") String folderPath
     ) {
-        List<FileResponse> files = driveGetService.classifyFilesByType(member, driveType, fileType, folderPath);
+        List<FileResponse> files = driveGetService.classifyFilesByType(member, driveType,
+                objectType, folderPath);
         return CustomApiResponse.success(files, 200, "확장자 필터링 성공");
     }
 }
