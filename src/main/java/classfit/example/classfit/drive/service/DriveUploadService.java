@@ -1,84 +1,95 @@
 package classfit.example.classfit.drive.service;
 
-import classfit.example.classfit.common.annotation.AuthMember;
+import classfit.example.classfit.common.exception.ClassfitException;
+import classfit.example.classfit.common.response.ErrorCode;
 import classfit.example.classfit.common.util.DriveUtil;
+import classfit.example.classfit.drive.domain.Drive;
 import classfit.example.classfit.drive.domain.enumType.DriveType;
+import classfit.example.classfit.drive.dto.response.DrivePreSignedResponse;
+import classfit.example.classfit.drive.repository.DriveRepository;
 import classfit.example.classfit.member.domain.Member;
+import com.amazonaws.HttpMethod;
 import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.Headers;
 import com.amazonaws.services.s3.model.*;
+import jakarta.transaction.Transactional;
+import java.net.URL;
+import java.util.Date;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class DriveUploadService {
-    private final AmazonS3 amazonS3;
 
     @Value("${cloud.aws.s3.bucket}")
     private String bucketName;
+    private final AmazonS3 amazonS3;
+    private final DriveRepository driveRepository;
 
-    public List<String> uploadFiles(@AuthMember Member member, DriveType driveType, List<MultipartFile> files, String folderPath) {
-        return files.stream().map(file -> {
-                    try {
-                        return uploadFileToS3(member, file, driveType, folderPath);
-                    } catch (IOException e) {
-                        throw new RuntimeException("파일 업로드 중 오류 발생: " + file.getOriginalFilename(), e);
-                    }
+    public List<DrivePreSignedResponse> getPreSignedUrl(Member member, DriveType driveType,
+            String folderPath, List<String> fileName) {
+        return fileName.stream()
+                .map(file -> {
+                    String uniqueFileName = UUID.randomUUID() + "_" + file;
+                    String objectKey = DriveUtil.generatedOriginPath(member, driveType, folderPath,
+                            uniqueFileName);
+
+                    GeneratePresignedUrlRequest preSignedUrl = generatePreSignedUrl(bucketName,
+                            objectKey);
+                    URL url = amazonS3.generatePresignedUrl(preSignedUrl);
+
+                    return DrivePreSignedResponse.of(uniqueFileName, url.toString());
                 })
-                .collect(Collectors.toList());
+                .toList();
     }
 
-    private String uploadFileToS3(Member member, MultipartFile file, DriveType driveType, String folderPath) throws IOException {
-        String originalFileName = file.getOriginalFilename();
-        String uniqueFileName = UUID.randomUUID() + "_" + originalFileName;
-        String objectKey = DriveUtil.generatedOriginPath(member, driveType, folderPath, uniqueFileName);
+    @Transactional
+    public void uploadConfirm(Member member, DriveType driveType, String folderPath, List<String> fileNames) {
+        List<Drive> files = fileNames.stream()
+                .map(fileName -> createDriveEntity(member, driveType, folderPath, fileName))
+                .toList();
 
-        try (InputStream inputStream = file.getInputStream()) {
-            uploadToS3(objectKey, inputStream, file);
-        }
-        addTagsToS3Object(objectKey, member, folderPath, driveType, originalFileName);
-        return amazonS3.getUrl(bucketName, objectKey).toString();
+        driveRepository.saveAll(files);
     }
 
-    private void uploadToS3(String objectKey, InputStream inputStream, MultipartFile file) {
-        ObjectMetadata metadata = buildObjectMetadata(file);
-        PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, objectKey, inputStream, metadata);
-        amazonS3.putObject(putObjectRequest);
-    }
+    private GeneratePresignedUrlRequest generatePreSignedUrl(String bucket, String fileName) {
+        GeneratePresignedUrlRequest preSignedURL = new GeneratePresignedUrlRequest(bucket, fileName)
+                .withMethod(HttpMethod.PUT)
+                .withExpiration(preSignedUrlExpiration());
 
-    private ObjectMetadata buildObjectMetadata(MultipartFile file) {
-        ObjectMetadata metadata = new ObjectMetadata();
-        metadata.setContentType(file.getContentType());
-        metadata.setContentLength(file.getSize());
-        return metadata;
-    }
-
-    private void addTagsToS3Object(String objectKey, Member member, String folderPath, DriveType driveType, String originalFileName) {
-        LocalDateTime now = LocalDateTime.now();
-        String formattedDate = now.format(DateTimeFormatter.ISO_DATE_TIME);
-        String finalFolderPath = folderPath != null && !folderPath.trim().isEmpty() ? folderPath : "";
-
-        if (!finalFolderPath.isEmpty()) {
-            finalFolderPath = finalFolderPath + "/";
-        }
-
-        List<Tag> tags = List.of(
-                new Tag("folderPath", finalFolderPath),
-                new Tag("driveType", driveType.toString().toLowerCase()),
-                new Tag("originalFileName", originalFileName),
-                new Tag("uploadedBy", member.getName()),
-                new Tag("uploadedAt", formattedDate)
+        preSignedURL.addRequestParameter(
+                Headers.S3_CANNED_ACL,
+                CannedAccessControlList.PublicRead.toString()
         );
-        amazonS3.setObjectTagging(new SetObjectTaggingRequest(bucketName, objectKey, new ObjectTagging(tags)));
+
+        return preSignedURL;
+    }
+
+    private Date preSignedUrlExpiration() {
+        Date expiration = new Date();
+        long expTimeMillis = expiration.getTime();
+        expTimeMillis += 1000 * 60 * 2;
+        expiration.setTime(expTimeMillis);
+
+        return expiration;
+    }
+
+    private Drive createDriveEntity(Member member, DriveType driveType, String folderPath, String fileName) {
+        String objectKey = DriveUtil.generatedOriginPath(member, driveType, folderPath, fileName);
+        String originUrl = getS3FileUrl(objectKey);
+        ObjectMetadata metadata = amazonS3.getObjectMetadata(bucketName, objectKey);
+
+        return driveType.toEntity(fileName, folderPath, originUrl, metadata, member);
+    }
+
+    private String getS3FileUrl(String objectKey) {
+        if (!amazonS3.doesObjectExist(bucketName, objectKey)) {
+            throw new ClassfitException(ErrorCode.FILE_NOT_FOUND);
+        }
+        return amazonS3.getUrl(bucketName, objectKey).toString();
     }
 }
