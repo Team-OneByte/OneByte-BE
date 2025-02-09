@@ -1,6 +1,6 @@
 package classfit.example.classfit.studentExam.domain;
 
-import classfit.example.classfit.studentExam.domain.Exam;
+import classfit.example.classfit.studentExam.repository.ExamRepositoryCustom;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -8,8 +8,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface ExamRepository extends JpaRepository<Exam, Long> {
-
+public interface ExamRepository extends JpaRepository<Exam, Long>, ExamRepositoryCustom {
     @Query("SELECT e FROM Exam e " +
             "JOIN e.mainClass mc " +
             "JOIN mc.academy a " +
@@ -18,7 +17,6 @@ public interface ExamRepository extends JpaRepository<Exam, Long> {
             "AND m.name = :memberName")
     List<Exam> findByAcademyIdAndMemberName(@Param("academyId") Long academyId,
             @Param("memberName") String memberName);
-
 
     @Query("SELECT e FROM Exam e " +
             "JOIN e.mainClass mc " +
@@ -41,5 +39,6 @@ public interface ExamRepository extends JpaRepository<Exam, Long> {
     List<Exam> findByAcademyIdAndMainClassIdAndSubClassId(@Param("academyId") Long academyId,
             @Param("mainClassId") Long mainClassId,
             @Param("subClassId") Long subClassId);
+
 
 }

@@ -63,6 +63,7 @@ public class Exam extends BaseEntity {
     private Double average;
 
 
+    @Builder.Default
     @OneToMany(mappedBy = "exam", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ExamScore> examScores = new ArrayList<>();
 

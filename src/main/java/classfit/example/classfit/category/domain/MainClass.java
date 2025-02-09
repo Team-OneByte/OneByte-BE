@@ -23,6 +23,7 @@ public class MainClass extends BaseEntity {
     @Column(nullable = false, length = 20)
     private String mainClassName;
 
+    @Builder.Default
     @OneToMany(mappedBy = "mainClass", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SubClass> subClasses = new ArrayList<>();
 

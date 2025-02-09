@@ -108,29 +108,17 @@ public class ExamService {
     @Transactional(readOnly = true)
     public List<FindExamResponse> findExamList(@AuthMember Member findMember,
             FindExamRequest request) {
-
         validateAcademy(findMember, findMember.getAcademy().getId());
 
-        List<Exam> exams = null;
+        List<Exam> exams = examRepository.findExamsByConditions(
+                findMember.getAcademy().getId(),
+                request.mainClassId(),
+                request.subClassId(),
+                request.memberName(),
+                request.examName()
+        );
 
-        if (request.memberName() == null && request.examName() == null
-                && request.mainClassId() == null && request.subClassId() == null) {
-            exams = examRepository.findAllByAcademyId(findMember.getAcademy().getId());
-        } else if (request.mainClassId() != null && request.subClassId() != null) {
-            exams = examRepository.findByAcademyIdAndMainClassIdAndSubClassId(
-                    findMember.getAcademy().getId(), request.mainClassId(),
-                    request.subClassId());
-        } else if (request.memberName() != null && request.examName() == null) {
-            exams = examRepository.findByAcademyIdAndMemberName(findMember.getAcademy().getId(),
-                    request.memberName());
-        } else if (request.memberName() == null && request.examName() != null) {
-            exams = examRepository.findByAcademyIdAndExamName(findMember.getAcademy().getId(),
-                    request.examName());
-        } else {
-            throw new ClassfitException(ErrorCode.SEARCH_NOT_AVAILABLE);
-        }
-
-        if (exams == null || exams.isEmpty()) {
+        if (exams.isEmpty()) {
             throw new ClassfitException(ErrorCode.EXAM_NOT_FOUND);
         }
 

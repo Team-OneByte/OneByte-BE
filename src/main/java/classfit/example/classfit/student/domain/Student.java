@@ -53,9 +53,11 @@ public class Student extends BaseEntity {
 
     private String counselingLog;
 
+    @Builder.Default
     @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ExamScore> examScores = new ArrayList<>();
 
+    @Builder.Default
     @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ClassStudent> classStudents = new ArrayList<>();
 }

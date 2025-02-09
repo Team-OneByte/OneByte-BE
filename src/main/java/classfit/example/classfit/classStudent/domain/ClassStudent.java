@@ -29,6 +29,7 @@ public class ClassStudent {
     @JoinColumn(name = "sub_class_id", nullable = false)
     private SubClass subClass;
 
+    @Builder.Default
     @OneToMany(mappedBy = "classStudent", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Attendance> attendances = new ArrayList<>();
     
