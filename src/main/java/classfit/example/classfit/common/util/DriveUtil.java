@@ -18,15 +18,22 @@ import static classfit.example.classfit.drive.domain.enumType.DriveType.SHARED;
 public class DriveUtil {
 
     public static String generatedOriginPath(Member member, DriveType driveType, String folderPath, String fileName) {
-        String fullFolderPath = folderPath != null && !folderPath.trim().isEmpty() ? folderPath + "/" : "";
 
         if (driveType == PERSONAL) {
-            return String.format("personal/%d/%s%s", member.getId(), fullFolderPath, fileName);
+            return String.format("personal/%d/%s%s", member.getId(), folderPath, fileName);
         } else if (driveType == SHARED) {
             Long academyId = member.getAcademy().getId();
-            return String.format("shared/%d/%s%s", academyId, fullFolderPath, fileName);
+            return String.format("shared/%d/%s%s", academyId, folderPath, fileName);
         }
         throw new ClassfitException(ErrorCode.DRIVE_TYPE_INVALID);
+    }
+
+    public static String generateFolderPath(Member member, DriveType driveType, String folderName, String folderPath) {
+        String basePath = driveType == PERSONAL
+                ? String.format("personal/%d/", member.getId())
+                : String.format("shared/%d/", member.getAcademy().getId());
+
+        return basePath + folderPath + folderName + "/";
     }
 
     public static String buildPrefix(DriveType driveType, Member member, String folderPath) {

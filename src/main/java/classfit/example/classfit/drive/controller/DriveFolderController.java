@@ -23,10 +23,10 @@ public class DriveFolderController implements DriveFolderControllerDocs {
     public CustomApiResponse<String> createFolder(
             @AuthMember Member member,
             @RequestParam DriveType driveType,
-            @RequestParam String folderName,
-            @RequestParam(required = false, defaultValue = "") String folderPath
+            @RequestParam(required = false, defaultValue = "") String folderPath,
+            @RequestParam String folderName
     ) {
-        String fullPath = driveFolderService.createFolder(member, driveType, folderName, folderPath);
+        String fullPath = driveFolderService.createFolder(member, driveType, folderPath, folderName);
         return CustomApiResponse.success(fullPath, 200, "폴더 생성 성공");
     }
 
