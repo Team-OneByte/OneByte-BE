@@ -127,7 +127,6 @@ public class ExamService {
                 .collect(Collectors.toList());
     }
 
-
     @Transactional
     public ShowExamDetailResponse showExamDetail(@AuthMember Member findMember, Long examId) {
         Exam findExam = examRepository.findById(examId).orElseThrow(
@@ -222,7 +221,6 @@ public class ExamService {
                 findExam.getExamName(), examRangeList);
     }
 
-
     @Transactional
     public void deleteExam(@AuthMember Member findMember, Long examId) {
         Exam findExam = examRepository.findById(examId).orElseThrow(
@@ -230,74 +228,4 @@ public class ExamService {
         validateAcademy(findMember, findExam.getMainClass().getAcademy().getId());
         examRepository.delete(findExam);
     }
-
-    @Transactional
-    public UpdateExamScoreResponse updateStudentScore(@AuthMember Member findMember, Long examId,
-            List<UpdateExamScoreRequest> requests) {
-        Exam findExam = examRepository.findById(examId).orElseThrow(
-                () -> new ClassfitException(ErrorCode.EXAM_NOT_FOUND));
-        validateAcademy(findMember, findExam.getMainClass().getAcademy().getId());
-
-        for (UpdateExamScoreRequest request : requests) {
-            ExamScore examScore = studentExamScoreRepository.findByExamAndStudentIdAndAcademyId(
-                    findMember.getAcademy().getId(),
-                    findExam, request.studentId()).orElseGet(() -> {
-                Student student = studentRepository.findById(request.studentId()).orElseThrow(
-                        () -> new ClassfitException(ErrorCode.STUDENT_NOT_FOUND));
-                ExamScore newScore = ExamScore.create(findExam, student,
-                        request.score());
-                return studentExamScoreRepository.save(newScore);
-            });
-
-            examScore.updateScore(request.score());
-
-            if (findExam.getHighestScore() == -1) { // PF
-                if (request.score() == -3) {  // P
-                    examScore.updateScore(-3);
-                } else if (request.score() == -4) {  // F
-                    examScore.updateScore(-4);
-                }
-            } else if (findExam.getHighestScore() == -2) { // Evaluation
-                examScore.updateScore(-5);  // Evaluation -5
-                examScore.updateEvaluationDetail(request.evaluationDetail());
-            }
-
-            // 체크 상태 업데이트
-            examScore.updateCheckedStudent(request.checkedStudent());
-            studentExamScoreRepository.save(examScore);
-        }
-
-        studentExamScoreRepository.flush();
-        Standard standard = findExam.getStandard();
-
-        List<ClassStudent> classStudents = classStudentRepository.findByAcademyIdAndSubClass(
-                findMember.getAcademy().getId(),
-                findExam.getSubClass());
-
-        List<ExamStudent> examStudents = classStudents.stream().map(classStudent -> {
-            Student student = classStudent.getStudent();
-            Integer score = studentExamScoreRepository.findByExamAndStudentIdAndAcademyId(
-                            findMember.getAcademy().getId(), findExam,
-                            student.getId())
-                    .map(ExamScore::getScore)
-                    .orElse(0);
-            String evaluationDetail = studentExamScoreRepository.findByExamAndStudentIdAndAcademyId(
-                            findMember.getAcademy().getId(), findExam,
-                            student.getId())
-                    .map(ExamScore::getEvaluationDetail)
-                    .orElse(null);
-
-            boolean checkedStudent = requests.stream()
-                    .filter(request -> request.studentId().equals(student.getId()))
-                    .map(UpdateExamScoreRequest::checkedStudent)
-                    .findFirst()
-                    .orElse(false);
-
-            return ExamStudent.of(student.getId(), student.getName(), score,
-                    findExam.getHighestScore(), evaluationDetail, checkedStudent);
-        }).collect(Collectors.toList());
-
-        return new UpdateExamScoreResponse(standard, findExam.getHighestScore(), examStudents);
-    }
-
 }

@@ -1,37 +1,16 @@
 package classfit.example.classfit.studentExam.dto.examScoreRequest;
 
-import classfit.example.classfit.common.exception.ClassfitException;
-import classfit.example.classfit.common.response.ErrorCode;
+import classfit.example.classfit.studentExam.domain.StandardStatus;
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotNull;
-import lombok.Builder;
 
-@Builder
+
 public record UpdateExamScoreRequest(
         Long studentId,
-
-        @NotNull(message = "점수는 필수 입력값입니다.")
         @Min(value = 0, message ="시험의 최고점수는 0이상 이어야 합니다.")
         Integer score,
+        StandardStatus standardStatus,
         String evaluationDetail,
-
         boolean checkedStudent
 ) {
-    public static UpdateExamScoreRequest of(
-            Long studentId,
-            Integer score,
-            Integer highestScore,
-            String evaluationDetail,
-            boolean checkedStudent
-    ) {
-        if (score > highestScore) {
-            throw new ClassfitException(ErrorCode.SCORE_EXCEEDS_HIGHEST);
-        }
-        return UpdateExamScoreRequest.builder()
-                .studentId(studentId)
-                .score(score)
-                .evaluationDetail(evaluationDetail)
-                .checkedStudent(checkedStudent)
-                .build();
-    }
+
 }

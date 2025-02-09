@@ -65,4 +65,13 @@ public class ExamScore extends BaseEntity {
         this.standardStatus = standardStatus;
     }
 
+    public static ExamScore toEntity(
+            Student student,
+            Exam exam) {
+        return ExamScore.builder()
+                .student(student)
+                .exam(exam)
+                .build();
+    }
+
 }
