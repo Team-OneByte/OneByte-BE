@@ -41,14 +41,14 @@ public interface StudentControllerDocs {
         @ApiResponse(responseCode = "200", description = "학생 정보 수정 성공")
     })
     CustomApiResponse<Long> updateStudent(
-        @PathVariable Long studentId,
+        @PathVariable("studentId") Long studentId,
         @RequestBody StudentUpdateRequest req
     );
 
     @Operation(summary = "개별 학생 정보 조회", description = "특정 학생 정보를 조회하는 API 입니다.", responses = {
         @ApiResponse(responseCode = "200", description = "개별 학생 정보 조회 성공")
     })
-    CustomApiResponse<StudentInfoResponse> studentInfo(@PathVariable Long studentId);
+    CustomApiResponse<StudentInfoResponse> studentInfo(@PathVariable("studentId") Long studentId);
 
     @Operation(summary = "학생 이름 검색", description = "특정 학생 이름으로 목록 조회하는 API 입니다.", responses = {
         @ApiResponse(responseCode = "200", description = "학생 이름 검색 성공")

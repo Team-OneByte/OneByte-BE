@@ -41,5 +41,5 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
         "JOIN SubClass sc ON cs.subClass.id = sc.id " +
         "JOIN MainClass mc ON sc.mainClass.id = mc.id " +
         "WHERE mc.academy.id = :academyId")
-    List<Student> findStudentsByAcademyId(Long academyId);
+    List<Student> findStudentsByAcademyId(@Param("academyId") Long academyId);
 }
