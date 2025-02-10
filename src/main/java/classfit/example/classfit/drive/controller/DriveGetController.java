@@ -5,7 +5,7 @@ import classfit.example.classfit.common.response.CustomApiResponse;
 import classfit.example.classfit.drive.controller.docs.DriveGetControllerDocs;
 import classfit.example.classfit.drive.domain.enumType.DriveType;
 import classfit.example.classfit.drive.domain.enumType.ObjectType;
-import classfit.example.classfit.drive.dto.response.FileResponse;
+import classfit.example.classfit.drive.dto.response.DriveFileResponse;
 import classfit.example.classfit.drive.service.DriveGetService;
 import classfit.example.classfit.member.domain.Member;
 import lombok.RequiredArgsConstructor;
@@ -25,37 +25,36 @@ public class DriveGetController implements DriveGetControllerDocs {
 
     @Override
     @GetMapping("/files")
-    public CustomApiResponse<List<FileResponse>> getFiles(
+    public CustomApiResponse<List<DriveFileResponse>> getObjectList(
             @AuthMember Member member,
             @RequestParam DriveType driveType,
             @RequestParam(required = false, defaultValue = "") String folderPath
     ) {
-        List<FileResponse> fileUrls = driveGetService.getFilesFromS3(member, driveType, folderPath);
+        List<DriveFileResponse> fileUrls = driveGetService.getObjectList(member, driveType, folderPath);
         return CustomApiResponse.success(fileUrls, 200, "파일 조회 성공");
     }
 
     @Override
     @GetMapping("/search")
-    public CustomApiResponse<List<FileResponse>> searchFilesByName(
+    public CustomApiResponse<List<DriveFileResponse>> searchFilesByName(
             @AuthMember Member member,
             @RequestParam DriveType driveType,
             @RequestParam(required = false, defaultValue = "") String fileName,
             @RequestParam(required = false, defaultValue = "") String folderPath
     ) {
-        List<FileResponse> files = driveGetService.searchFilesByName(member, driveType, fileName, folderPath);
+        List<DriveFileResponse> files = driveGetService.searchFilesByName(member, driveType, fileName, folderPath);
         return CustomApiResponse.success(files, 200, "파일 이름 검색 성공");
     }
 
     @Override
     @GetMapping("/filter")
-    public CustomApiResponse<List<FileResponse>> filterFilesByExtension(
+    public CustomApiResponse<List<DriveFileResponse>> filterFilesByExtension(
             @AuthMember Member member,
             @RequestParam DriveType driveType,
-            @RequestParam ObjectType objectType,
+            @RequestParam String objectType,
             @RequestParam(required = false, defaultValue = "") String folderPath
     ) {
-        List<FileResponse> files = driveGetService.classifyFilesByType(member, driveType,
-                objectType, folderPath);
+        List<DriveFileResponse> files = driveGetService.classifyFilesByType(member, driveType, objectType, folderPath);
         return CustomApiResponse.success(files, 200, "확장자 필터링 성공");
     }
 }

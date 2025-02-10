@@ -8,6 +8,7 @@ import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import java.time.LocalDate;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
@@ -27,7 +28,8 @@ public class SharedDrive extends Drive {
             String folderPath,
             String originUrl,
             ObjectMetadata metadata,
-            Member member
+            Member member,
+            LocalDate dateTime
     ) {
         return SharedDrive.builder()
                 .objectName(fileName)
@@ -36,6 +38,7 @@ public class SharedDrive extends Drive {
                 .objectSize(DriveUtil.formatFileSize(metadata.getContentLength()))
                 .objectType(metadata.getContentType())
                 .uploadedBy(member.getName())
+                .uploadedAt(dateTime)
                 .academy(member.getAcademy())
                 .build();
     }

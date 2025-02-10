@@ -14,6 +14,7 @@ import com.amazonaws.services.s3.Headers;
 import com.amazonaws.services.s3.model.*;
 import jakarta.transaction.Transactional;
 import java.net.URL;
+import java.time.LocalDate;
 import java.util.Date;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,16 +31,13 @@ public class DriveUploadService {
     private final AmazonS3 amazonS3;
     private final DriveRepository driveRepository;
 
-    public List<DrivePreSignedResponse> getPreSignedUrl(Member member, DriveType driveType,
-            String folderPath, List<String> fileName) {
+    public List<DrivePreSignedResponse> getPreSignedUrl(Member member, DriveType driveType, String folderPath, List<String> fileName) {
         return fileName.stream()
                 .map(file -> {
                     String uniqueFileName = UUID.randomUUID() + "_" + file;
-                    String objectKey = DriveUtil.generatedOriginPath(member, driveType, folderPath,
-                            uniqueFileName);
+                    String objectKey = DriveUtil.generatedOriginPath(member, driveType, folderPath, uniqueFileName);
 
-                    GeneratePresignedUrlRequest preSignedUrl = generatePreSignedUrl(bucketName,
-                            objectKey);
+                    GeneratePresignedUrlRequest preSignedUrl = generatePreSignedUrl(bucketName, objectKey);
                     URL url = amazonS3.generatePresignedUrl(preSignedUrl);
 
                     return DrivePreSignedResponse.of(uniqueFileName, url.toString());
@@ -83,7 +81,7 @@ public class DriveUploadService {
         String originUrl = getS3FileUrl(objectKey);
         ObjectMetadata metadata = amazonS3.getObjectMetadata(bucketName, objectKey);
 
-        return driveType.toEntity(fileName, folderPath, originUrl, metadata, member);
+        return driveType.toEntity(fileName, folderPath, originUrl, metadata, member, LocalDate.now());
     }
 
     private String getS3FileUrl(String objectKey) {
