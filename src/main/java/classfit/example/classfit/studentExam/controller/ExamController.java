@@ -50,11 +50,11 @@ public class ExamController implements ExamControllerDocs {
 
     @Override
     @GetMapping("/{examId}")
-    public CustomApiResponse<List<ExamClassStudent>> findExamClassStudent(
+    public CustomApiResponse<List<FindExamStudentResponse>> findExamClassStudent(
         @AuthMember Member findMember,
         @PathVariable(name = "examId") Long examId
     ) {
-        List<ExamClassStudent> response = examService.findExamClassStudent(findMember,
+        List<FindExamStudentResponse> response = examService.findExamClassStudent(findMember,
             examId);
         return CustomApiResponse.success(response, 200, "해당 클래스 학생 조회 성공");
     }

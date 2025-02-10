@@ -28,14 +28,15 @@ public interface StudentExamScoreRepository extends JpaRepository<ExamScore, Lon
 
     Optional<ExamScore> findByStudentAndExamId(Student student, Long examId);
 
-    @Query("SELECT ses FROM ExamScore ses " +
-            "JOIN ses.exam e " +
-            "JOIN e.mainClass mc " +
-            "JOIN mc.academy a " +
-            "WHERE a.id = :academyId " +
-            "AND ses.exam = :exam")
-    List<ExamScore> findByAcademyIdAndExam(@Param("academyId") Long academyId,
-            @Param("exam") Exam exam);
+    @Query("SELECT DISTINCT s FROM Exam e " +
+            "JOIN e.subClass sc " +
+            "JOIN sc.classStudents cs " +
+            "JOIN cs.student s " +
+            "WHERE sc.mainClass.academy.id = :academyId " +
+            "AND e.id = :examId")
+    List<Student> findStudentsByExamIdAndAcademyId(@Param("academyId") Long academyId,
+            @Param("examId") Long examId);
+
 
     @Query("SELECT ses FROM ExamScore ses " +
             "JOIN ses.exam e " +

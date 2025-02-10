@@ -20,6 +20,7 @@ import classfit.example.classfit.studentExam.domain.Standard;
 import classfit.example.classfit.studentExam.domain.StandardStatus;
 import classfit.example.classfit.studentExam.domain.ExamScore;
 import classfit.example.classfit.studentExam.domain.StudentExamScoreRepository;
+import classfit.example.classfit.studentExam.dto.examResponse.FindExamStudentResponse;
 import classfit.example.classfit.studentExam.dto.process.ExamClassStudent;
 import classfit.example.classfit.studentExam.dto.process.ExamStudent;
 import classfit.example.classfit.studentExam.dto.examRequest.CreateExamRequest;
@@ -85,23 +86,20 @@ public class ExamService {
     }
 
     @Transactional(readOnly = true)
-    public List<ExamClassStudent> findExamClassStudent(@AuthMember Member findMember, Long examId) {
+    public List<FindExamStudentResponse> findExamClassStudent(@AuthMember Member findMember, Long examId) {
         Exam findExam = examRepository.findById(examId)
                 .orElseThrow(() -> new ClassfitException(ErrorCode.EXAM_NOT_FOUND));
         validateAcademy(findMember, findMember.getAcademy().getId());
 
-        List<ExamScore> examScores = studentExamScoreRepository.findByAcademyIdAndExam(
-                findMember.getAcademy().getId(), findExam);
+        List<Student> students = studentExamScoreRepository.findStudentsByExamIdAndAcademyId(
+                findMember.getAcademy().getId(), findExam.getId());
 
-        return examScores.stream().map(studentExamScore -> {
-            Student student = studentExamScore.getStudent();
-            Integer score = studentExamScore.getScore();
-            String evaluationDetail = studentExamScore.getEvaluationDetail();
-            boolean checkedStudent = studentExamScore.isCheckedStudent();
-
-            return ExamClassStudent.of(student.getId(), student.getName(), score,
-                    findExam.getHighestScore(), evaluationDetail, checkedStudent);
-        }).collect(Collectors.toList());
+        return students.stream()
+                .map(student -> FindExamStudentResponse.builder()
+                        .studentId(student.getId())
+                        .studentName(student.getName())
+                        .build())
+                .collect(Collectors.toList());
     }
 
 

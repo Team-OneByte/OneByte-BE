@@ -26,7 +26,7 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
         "JOIN cs.subClass sc " +
         "WHERE s.id = :studentId " +
         "AND sc.mainClass.academy.id = :academyId ")
-    Optional<Student> findByIdAndAcademyId(Long studentId, Long academyId);
+    Optional<Student> findByIdAndAcademyId(@Param("studentId") Long studentId, @Param("academyId") Long academyId);
 
     Optional<List<Student>> findAllByName(String studentName);
 

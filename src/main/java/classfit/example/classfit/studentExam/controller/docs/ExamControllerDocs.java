@@ -41,7 +41,7 @@ public interface ExamControllerDocs {
     @Operation(summary = "시험 등록 시 해당 클래스 학생 조회", description = "시험 등록시 해당 클래스 학생 조회하는 API 입니다.", responses = {
         @ApiResponse(responseCode = "200", description = "해당 클래스 학생 조회 성공")
     })
-    CustomApiResponse<List<ExamClassStudent>> findExamClassStudent(
+    CustomApiResponse<List<FindExamStudentResponse>> findExamClassStudent(
         @AuthMember Member findMember,
         @PathVariable Long examId
     );
