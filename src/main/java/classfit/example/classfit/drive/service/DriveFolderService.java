@@ -1,7 +1,6 @@
 package classfit.example.classfit.drive.service;
 
 import static classfit.example.classfit.drive.domain.enumType.DriveType.*;
-
 import classfit.example.classfit.common.exception.ClassfitException;
 import classfit.example.classfit.common.response.ErrorCode;
 import classfit.example.classfit.common.util.DriveUtil;
@@ -11,6 +10,7 @@ import classfit.example.classfit.drive.repository.DriveRepository;
 import classfit.example.classfit.member.domain.Member;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.*;
+import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -61,7 +61,7 @@ public class DriveFolderService {
         String originUrl = getS3FileUrl(folderKey);
         ObjectMetadata metadata = amazonS3.getObjectMetadata(bucketName, folderKey);
 
-        return driveType.toEntity(folderName + "/", folderPath, originUrl, metadata, member);
+        return driveType.toEntity(folderName + "/", folderPath, originUrl, metadata, member, LocalDate.now());
     }
 
     private String getS3FileUrl(String objectKey) {

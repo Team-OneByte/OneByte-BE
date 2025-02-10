@@ -8,7 +8,7 @@ public record DrivePreSignedResponse(
         String preSignedUrl
 ) {
 
-    public static DrivePreSignedResponse of(String preSignedUrl, String fileName) {
+    public static DrivePreSignedResponse of(String fileName, String preSignedUrl) {
         return DrivePreSignedResponse.builder()
                 .fileName(fileName)
                 .preSignedUrl(preSignedUrl)
