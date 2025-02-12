@@ -1,6 +1,6 @@
 package classfit.example.classfit.scoreReport.dto.process;
 
-import classfit.example.classfit.studentExam.domain.ExamPeriod;
+import classfit.example.classfit.exam.domain.enumType.ExamPeriod;
 
 import java.time.LocalDateTime;
 

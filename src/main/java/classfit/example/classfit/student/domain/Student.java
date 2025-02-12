@@ -2,7 +2,7 @@ package classfit.example.classfit.student.domain;
 
 import classfit.example.classfit.common.domain.BaseEntity;
 import classfit.example.classfit.student.domain.enumType.GenderType;
-import classfit.example.classfit.studentExam.domain.ExamScore;
+import classfit.example.classfit.exam.domain.ExamScore;
 import jakarta.persistence.*;
 import lombok.*;
 

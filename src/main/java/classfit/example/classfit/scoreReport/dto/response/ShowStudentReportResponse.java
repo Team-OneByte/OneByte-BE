@@ -1,7 +1,7 @@
 package classfit.example.classfit.scoreReport.dto.response;
 
 import classfit.example.classfit.attendance.dto.process.AttendanceInfo;
-import classfit.example.classfit.studentExam.dto.process.ExamHistory;
+import classfit.example.classfit.exam.dto.process.ExamHistory;
 import lombok.Builder;
 
 import java.time.LocalDate;
