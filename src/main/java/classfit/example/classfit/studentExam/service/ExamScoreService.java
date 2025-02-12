@@ -1,13 +1,12 @@
 package classfit.example.classfit.studentExam.service;
 
-
-import classfit.example.classfit.auth.annotation.AuthMember;
-import classfit.example.classfit.classStudent.domain.ClassStudent;
-import classfit.example.classfit.classStudent.repository.ClassStudentRepository;
+import classfit.example.classfit.common.annotation.AuthMember;
 import classfit.example.classfit.common.exception.ClassfitException;
 import classfit.example.classfit.common.response.ErrorCode;
 import classfit.example.classfit.member.domain.Member;
+import classfit.example.classfit.student.domain.Enrollment;
 import classfit.example.classfit.student.domain.Student;
+import classfit.example.classfit.student.repository.EnrollmentRepository;
 import classfit.example.classfit.student.repository.StudentRepository;
 import classfit.example.classfit.studentExam.domain.Exam;
 import classfit.example.classfit.studentExam.domain.ExamRepository;
@@ -24,7 +23,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,7 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class ExamScoreService {
 
     private final ExamRepository examRepository;
-    private final ClassStudentRepository classStudentRepository;
+    private final EnrollmentRepository enrollmentRepository;
     private final StudentExamScoreRepository studentExamScoreRepository;
     private final StudentRepository studentRepository;
 
@@ -49,19 +47,19 @@ public class ExamScoreService {
             }
         }
 
-        List<ClassStudent> classStudents = classStudentRepository.findByAcademyIdAndSubClass(
+        List<Enrollment> enrollments = enrollmentRepository.findByAcademyIdAndSubClass(
                 findMember.getAcademy().getId(), findExam.getSubClass());
 
         List<ExamScore> examScores = new ArrayList<>();
 
-        for (ClassStudent classStudent : classStudents) {
+        for (Enrollment enrollment : enrollments) {
             CreateExamScoreRequest studentRequest = requests.stream()
-                    .filter(req -> req.studentId().equals(classStudent.getStudent().getId()))
+                    .filter(req -> req.studentId().equals(enrollment.getStudent().getId()))
                     .findFirst()
                     .orElseThrow(() -> new ClassfitException(ErrorCode.STUDENT_NOT_FOUND));
 
             ExamScore newExamScore = ExamScore.toEntity(
-                    classStudent.getStudent(), findExam, studentRequest.standardStatus(),
+                    enrollment.getStudent(), findExam, studentRequest.standardStatus(),
                     studentRequest.checkedStudent());
 
             studentExamScoreRepository.save(newExamScore);
@@ -96,11 +94,11 @@ public class ExamScoreService {
             studentExamScoreRepository.save(examScore);
         }
 
-        List<ClassStudent> classStudents = classStudentRepository.findByAcademyIdAndSubClass(
+        List<Enrollment> enrollments = enrollmentRepository.findByAcademyIdAndSubClass(
                 findMember.getAcademy().getId(), findExam.getSubClass());
 
-        List<ExamStudent> examStudents = classStudents.stream().map(classStudent -> {
-            Student student = classStudent.getStudent();
+        List<ExamStudent> examStudents = enrollments.stream().map(enrollment -> {
+            Student student = enrollment.getStudent();
             Integer score = studentExamScoreRepository.findByExamAndStudentIdAndAcademyId(
                             findMember.getAcademy().getId(), findExam, student.getId())
                     .map(ExamScore::getScore).orElse(null);

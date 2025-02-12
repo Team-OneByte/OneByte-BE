@@ -1,25 +1,36 @@
 package classfit.example.classfit.studentExam.controller;
 
-import classfit.example.classfit.auth.annotation.AuthMember;
+
+import classfit.example.classfit.common.annotation.AuthMember;
 import classfit.example.classfit.common.response.CustomApiResponse;
 import classfit.example.classfit.member.domain.Member;
 import classfit.example.classfit.studentExam.controller.docs.ExamControllerDocs;
-import classfit.example.classfit.studentExam.dto.examScoreRequest.CreateExamScoreRequest;
-import classfit.example.classfit.studentExam.dto.examScoreResponse.CreateExamScoreResponse;
-import classfit.example.classfit.studentExam.dto.process.ExamClassStudent;
 import classfit.example.classfit.studentExam.dto.examRequest.CreateExamRequest;
 import classfit.example.classfit.studentExam.dto.examRequest.FindExamRequest;
 import classfit.example.classfit.studentExam.dto.examRequest.UpdateExamRequest;
+import classfit.example.classfit.studentExam.dto.examResponse.CreateExamResponse;
+import classfit.example.classfit.studentExam.dto.examResponse.FindExamResponse;
+import classfit.example.classfit.studentExam.dto.examResponse.FindExamStudentResponse;
+import classfit.example.classfit.studentExam.dto.examResponse.ShowExamDetailResponse;
+import classfit.example.classfit.studentExam.dto.examResponse.UpdateExamResponse;
+import classfit.example.classfit.studentExam.dto.examScoreRequest.CreateExamScoreRequest;
 import classfit.example.classfit.studentExam.dto.examScoreRequest.UpdateExamScoreRequest;
-import classfit.example.classfit.studentExam.dto.examResponse.*;
+import classfit.example.classfit.studentExam.dto.examScoreResponse.CreateExamScoreResponse;
 import classfit.example.classfit.studentExam.dto.examScoreResponse.UpdateExamScoreResponse;
 import classfit.example.classfit.studentExam.service.ExamScoreService;
 import classfit.example.classfit.studentExam.service.ExamService;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/v1/exam")

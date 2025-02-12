@@ -30,7 +30,7 @@ public interface StudentExamScoreRepository extends JpaRepository<ExamScore, Lon
 
     @Query("SELECT DISTINCT s FROM Exam e " +
             "JOIN e.subClass sc " +
-            "JOIN sc.classStudents cs " +
+            "JOIN sc.enrollments cs " +
             "JOIN cs.student s " +
             "WHERE sc.mainClass.academy.id = :academyId " +
             "AND e.id = :examId")

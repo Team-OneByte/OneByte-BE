@@ -16,33 +16,17 @@ import classfit.example.classfit.student.domain.Student;
 import classfit.example.classfit.student.repository.StudentRepository;
 import classfit.example.classfit.studentExam.domain.Exam;
 import classfit.example.classfit.studentExam.domain.ExamRepository;
-import classfit.example.classfit.studentExam.domain.Standard;
-import classfit.example.classfit.studentExam.domain.StandardStatus;
 import classfit.example.classfit.studentExam.domain.ExamScore;
 import classfit.example.classfit.studentExam.domain.StudentExamScoreRepository;
 import classfit.example.classfit.studentExam.dto.examResponse.FindExamStudentResponse;
 import classfit.example.classfit.studentExam.dto.process.ExamClassStudent;
-import classfit.example.classfit.studentExam.dto.process.ExamStudent;
-import classfit.example.classfit.studentExam.dto.request.CreateExamRequest;
-import classfit.example.classfit.studentExam.dto.request.FindExamRequest;
-import classfit.example.classfit.studentExam.dto.request.UpdateExamRequest;
-import classfit.example.classfit.studentExam.dto.request.UpdateStudentScoreRequest;
-import classfit.example.classfit.studentExam.dto.response.CreateExamResponse;
-import classfit.example.classfit.studentExam.dto.response.FindExamResponse;
-import classfit.example.classfit.studentExam.dto.response.ShowExamDetailResponse;
-import classfit.example.classfit.studentExam.dto.response.UpdateExamResponse;
-import classfit.example.classfit.studentExam.dto.response.UpdateStudentScoreResponse;
-
 import classfit.example.classfit.studentExam.dto.examRequest.CreateExamRequest;
 import classfit.example.classfit.studentExam.dto.examRequest.FindExamRequest;
 import classfit.example.classfit.studentExam.dto.examRequest.UpdateExamRequest;
-import classfit.example.classfit.studentExam.dto.examScoreRequest.CreateExamScoreRequest;
-import classfit.example.classfit.studentExam.dto.examScoreRequest.UpdateExamScoreRequest;
 import classfit.example.classfit.studentExam.dto.examResponse.CreateExamResponse;
 import classfit.example.classfit.studentExam.dto.examResponse.FindExamResponse;
 import classfit.example.classfit.studentExam.dto.examResponse.ShowExamDetailResponse;
 import classfit.example.classfit.studentExam.dto.examResponse.UpdateExamResponse;
-import classfit.example.classfit.studentExam.dto.examScoreResponse.UpdateExamScoreResponse;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Objects;
@@ -50,7 +34,6 @@ import java.util.stream.Collectors;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -60,7 +43,7 @@ public class ExamService {
     private final ExamRepository examRepository;
     private final MainClassRepository mainClassRepository;
     private final SubClassRepository subClassRepository;
-    private final ClassStudentRepository classStudentRepository;
+    private final EnrollmentRepository enrollmentRepository;
     private final StudentExamScoreRepository studentExamScoreRepository;
     private final AcademyRepository academyRepository;
     private final StudentRepository studentRepository;
@@ -144,12 +127,9 @@ public class ExamService {
 
         SubClass subClass = findExam.getSubClass();
         List<ExamScore> studentScores = findExam.getExamScores();
-        List<Enrollment> classStudents = classStudentRepository.findByAcademyIdAndSubClass(
+        List<Enrollment> enrollments = enrollmentRepository.findByAcademyIdAndSubClass(
                 findMember.getAcademy().getId(), subClass);
         Integer perfectScore = studentScores.stream().mapToInt(ExamScore::getScore).max()
-        List<StudentExamScore> studentScores = findExam.getStudentExamScores();
-        List<Enrollment> enrollments = enrollmentRepository.findByAcademyIdAndSubClass(findMember.getAcademy().getId(), subClass);
-        Integer perfectScore = studentScores.stream().mapToInt(StudentExamScore::getScore).max()
                 .orElse(findExam.getHighestScore());
         Integer lowestScore = studentScores.stream().mapToInt(ExamScore::getScore).min()
                 .orElse(0);
