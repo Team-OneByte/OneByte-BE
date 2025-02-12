@@ -25,7 +25,6 @@ public class SharedDrive extends Drive {
 
     public static Drive toEntity(
             String fileName,
-            String folderPath,
             String originUrl,
             ObjectMetadata metadata,
             Member member,
@@ -33,13 +32,13 @@ public class SharedDrive extends Drive {
     ) {
         return SharedDrive.builder()
                 .objectName(fileName)
-                .objectPath(folderPath)
                 .objectUrl(originUrl)
                 .objectSize(DriveUtil.formatFileSize(metadata.getContentLength()))
                 .objectType(metadata.getContentType())
                 .uploadedBy(member.getName())
                 .uploadedAt(dateTime)
                 .academy(member.getAcademy())
+                .isDeleted(false)
                 .build();
     }
 }

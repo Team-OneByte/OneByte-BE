@@ -31,31 +31,31 @@ public class DriveUploadService {
     private final AmazonS3 amazonS3;
     private final DriveRepository driveRepository;
 
-    public List<DrivePreSignedResponse> getPreSignedUrl(Member member, DriveType driveType, String folderPath, List<String> fileName) {
-        return fileName.stream()
-                .map(file -> {
-                    String uniqueFileName = UUID.randomUUID() + "_" + file;
-                    String objectKey = DriveUtil.generatedOriginPath(member, driveType, folderPath, uniqueFileName);
+    public List<DrivePreSignedResponse> getPreSignedUrl(Member member, DriveType driveType, List<String> objectNames) {
+        return objectNames.stream()
+                .map(object -> {
+                    String uniqueObjectName = UUID.randomUUID() + "_" + object;
+                    String objectKey = DriveUtil.generatedOriginPath(member, driveType, uniqueObjectName);
 
                     GeneratePresignedUrlRequest preSignedUrl = generatePreSignedUrl(bucketName, objectKey);
                     URL url = amazonS3.generatePresignedUrl(preSignedUrl);
 
-                    return DrivePreSignedResponse.of(uniqueFileName, url.toString());
+                    return DrivePreSignedResponse.of(uniqueObjectName, url.toString());
                 })
                 .toList();
     }
 
     @Transactional
-    public void uploadConfirm(Member member, DriveType driveType, String folderPath, List<String> fileNames) {
-        List<Drive> files = fileNames.stream()
-                .map(fileName -> createDriveEntity(member, driveType, folderPath, fileName))
+    public void uploadConfirm(Member member, DriveType driveType, List<String> objectNames) {
+        List<Drive> objects = objectNames.stream()
+                .map(objectName -> createDriveEntity(member, driveType, objectName))
                 .toList();
 
-        driveRepository.saveAll(files);
+        driveRepository.saveAll(objects);
     }
 
-    private GeneratePresignedUrlRequest generatePreSignedUrl(String bucket, String fileName) {
-        GeneratePresignedUrlRequest preSignedURL = new GeneratePresignedUrlRequest(bucket, fileName)
+    private GeneratePresignedUrlRequest generatePreSignedUrl(String bucket, String objectName) {
+        GeneratePresignedUrlRequest preSignedURL = new GeneratePresignedUrlRequest(bucket, objectName)
                 .withMethod(HttpMethod.PUT)
                 .withExpiration(preSignedUrlExpiration());
 
@@ -76,12 +76,12 @@ public class DriveUploadService {
         return expiration;
     }
 
-    private Drive createDriveEntity(Member member, DriveType driveType, String folderPath, String fileName) {
-        String objectKey = DriveUtil.generatedOriginPath(member, driveType, folderPath, fileName);
+    private Drive createDriveEntity(Member member, DriveType driveType, String objectName) {
+        String objectKey = DriveUtil.generatedOriginPath(member, driveType, objectName);
         String originUrl = getS3FileUrl(objectKey);
         ObjectMetadata metadata = amazonS3.getObjectMetadata(bucketName, objectKey);
 
-        return driveType.toEntity(fileName, folderPath, originUrl, metadata, member, LocalDate.now());
+        return driveType.toEntity(objectName, originUrl, metadata, member, LocalDate.now());
     }
 
     private String getS3FileUrl(String objectKey) {

@@ -8,28 +8,89 @@ import classfit.example.classfit.member.domain.Member;
 import io.lettuce.core.dynamic.annotation.Param;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.transaction.annotation.Transactional;
 
 public interface DriveRepository extends JpaRepository<Drive, Long> {
-    List<PersonalDrive> findByMemberAndObjectPath(Member member, String folderPath);
 
-    List<SharedDrive> findByAcademyAndObjectPath(Academy academy, String folderPath);
+    List<PersonalDrive> findByMemberAndIsDeletedFalse(Member member);
 
-    List<Drive> findByMemberAndObjectPathAndObjectType(Member member, String folderPath, String objectType);
+    List<SharedDrive> findByAcademyAndIsDeletedFalse(Academy academy);
 
-    List<Drive> findByAcademyAndObjectPathAndObjectType(Academy academy, String folderPath, String objectType);
+    List<PersonalDrive> findByMemberAndObjectTypeAndIsDeletedFalse(Member member, String objectType);
 
-    @Query("SELECT d FROM PersonalDrive d WHERE d.member = :member AND d.objectPath = :folderPath AND d.objectName LIKE %:fileName%")
+    List<SharedDrive> findByAcademyAndObjectTypeAndIsDeletedFalse(Academy academy, String objectType);
+
+    @Query("SELECT d FROM PersonalDrive d WHERE d.member = :member AND d.objectName LIKE %:objectName% AND d.isDeleted = false")
     List<PersonalDrive> findPersonalFilesByMember(
             @Param("member") Member member,
-            @Param("folderPath") String folderPath,
-            @Param("fileName") String fileName
+            @Param("objectName") String objectName
     );
 
-    @Query("SELECT d FROM SharedDrive d WHERE d.academy = :academy AND d.objectPath = :folderPath AND d.objectName LIKE %:fileName%")
+    @Query("SELECT d FROM SharedDrive d WHERE d.academy = :academy AND d.objectName LIKE %:objectName% AND d.isDeleted = false")
     List<SharedDrive> findSharedFilesByAcademy(
             @Param("academy") Academy academy,
-            @Param("folderPath") String folderPath,
-            @Param("fileName") String fileName
+            @Param("objectName") String objectName
+    );
+
+    @Transactional
+    @Modifying
+    @Query("DELETE FROM PersonalDrive d WHERE d.member = :member AND d.objectName IN :objectNames")
+    int deletePersonalFilesFromTrash(
+            @Param("member") Member member,
+            @Param("objectNames") List<String> objectNames
+    );
+
+    @Transactional
+    @Modifying
+    @Query("DELETE FROM SharedDrive d WHERE d.academy = :academy AND d.objectName IN :objectNames")
+    int deleteSharedFilesFromTrash(
+            @Param("academy") Academy academy,
+            @Param("objectNames") List<String> objectNames
+    );
+
+    @Transactional
+    @Modifying
+    @Query("UPDATE Drive d SET d.isDeleted = true " +
+            "WHERE d.member = :member " +
+            "AND d.objectName IN :objectNames ")
+    int storePersonalFiles(@Param("member") Member member,
+            @Param("objectNames") List<String> objectNames);
+
+    @Transactional
+    @Modifying
+    @Query("UPDATE Drive d SET d.isDeleted = true " +
+            "WHERE d.academy = :academy " +
+            "AND d.objectName IN :objectNames ")
+    int storeSharedFiles(
+            @Param("academy") Academy academy,
+            @Param("objectNames") List<String> objectNames
+    );
+
+    @Query("SELECT d FROM PersonalDrive d WHERE d.member = :member AND d.isDeleted = true")
+    List<PersonalDrive> findDeletedPersonalFiles(@Param("member") Member member);
+
+    @Query("SELECT d FROM SharedDrive d WHERE d.academy = :academy AND d.isDeleted = true")
+    List<SharedDrive> findDeletedSharedFiles(@Param("academy") Academy academy);
+
+    @Transactional
+    @Modifying
+    @Query("UPDATE Drive d SET d.isDeleted = false " +
+            "WHERE d.member = :member " +
+            "AND d.objectName IN :objectNames ")
+    int restorePersonalFiles(
+            @Param("member") Member member,
+            @Param("objectNames") List<String> objectNames
+    );
+
+    @Transactional
+    @Modifying
+    @Query("UPDATE Drive d SET d.isDeleted = false " +
+            "WHERE d.academy = :academy " +
+            "AND d.objectName IN :objectNames ")
+    int restoreSharedFiles(
+            @Param("academy") Academy academy,
+            @Param("objectNames") List<String> objectNames
     );
 }

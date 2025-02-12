@@ -12,37 +12,38 @@ import java.util.stream.Collectors;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class DriveGetService {
 
     private final DriveRepository driveRepository;
 
-    public List<DriveFileResponse> getObjectList(Member member, DriveType driveType, String folderPath) {
+    @Transactional(readOnly = true)
+    public List<DriveFileResponse> getObjectList(Member member, DriveType driveType) {
         List<? extends Drive> drives = (driveType == DriveType.PERSONAL)
-                ? driveRepository.findByMemberAndObjectPath(member, folderPath)
-                : driveRepository.findByAcademyAndObjectPath(member.getAcademy(), folderPath);
+                ? driveRepository.findByMemberAndIsDeletedFalse(member)
+                : driveRepository.findByAcademyAndIsDeletedFalse(member.getAcademy());
 
         return drives.stream()
                 .map(DriveFileResponse::of)
                 .collect(Collectors.toList());
     }
 
-
-    public List<DriveFileResponse> searchFilesByName(Member member, DriveType driveType, String fileName, String folderPath) {
+    @Transactional(readOnly = true)
+    public List<DriveFileResponse> searchFilesByName(Member member, DriveType driveType, String objectName) {
         List<? extends Drive> drives = (driveType == DriveType.PERSONAL)
-                ? driveRepository.findPersonalFilesByMember(member, folderPath, fileName)
-                : driveRepository.findSharedFilesByAcademy(member.getAcademy(), folderPath, fileName);
+                ? driveRepository.findPersonalFilesByMember(member, objectName)
+                : driveRepository.findSharedFilesByAcademy(member.getAcademy(), objectName);
 
         return drives.stream()
                 .map(DriveFileResponse::of)
                 .collect(Collectors.toList());
     }
 
-    public List<DriveFileResponse> classifyFilesByType(Member member, DriveType driveType, String objectType, String folderPath) {
-        List<Drive> drives = (driveType == DriveType.PERSONAL)
-                ? driveRepository.findByMemberAndObjectPathAndObjectType(member, folderPath, objectType)
-                : driveRepository.findByAcademyAndObjectPathAndObjectType(member.getAcademy(), folderPath, objectType);
+    @Transactional(readOnly = true)
+    public List<DriveFileResponse> classifyFilesByType(Member member, DriveType driveType, String objectType) {
+        List<? extends Drive> drives = (driveType == DriveType.PERSONAL)
+                ? driveRepository.findByMemberAndObjectTypeAndIsDeletedFalse(member, objectType)
+                : driveRepository.findByAcademyAndObjectTypeAndIsDeletedFalse(member.getAcademy(), objectType);
 
         return drives.stream()
                 .map(DriveFileResponse::of)

@@ -11,16 +11,16 @@ import java.time.LocalDate;
 public enum DriveType {
     PERSONAL {
         @Override
-        public Drive toEntity(String fileName, String folderPath, String originUrl, ObjectMetadata metadata, Member member, LocalDate dateTime) {
-            return PersonalDrive.toEntity(fileName, folderPath, originUrl, metadata, member, dateTime);
+        public Drive toEntity(String fileName,  String originUrl, ObjectMetadata metadata, Member member, LocalDate dateTime) {
+            return PersonalDrive.toEntity(fileName,  originUrl, metadata, member, dateTime);
         }
     },
     SHARED {
         @Override
-        public Drive toEntity(String fileName, String folderPath, String originUrl, ObjectMetadata metadata, Member member, LocalDate dateTime) {
-            return SharedDrive.toEntity(fileName, folderPath, originUrl, metadata, member, dateTime);
+        public Drive toEntity(String fileName,  String originUrl, ObjectMetadata metadata, Member member, LocalDate dateTime) {
+            return SharedDrive.toEntity(fileName,  originUrl, metadata, member, dateTime);
         }
     };
 
-    public abstract Drive toEntity(String fileName, String folderPath, String originUrl, ObjectMetadata metadata, Member member, LocalDate dateTime);
+    public abstract Drive toEntity(String fileName,  String originUrl, ObjectMetadata metadata, Member member, LocalDate dateTime);
 }

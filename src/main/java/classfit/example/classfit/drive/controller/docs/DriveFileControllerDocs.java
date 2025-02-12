@@ -9,11 +9,9 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.net.URL;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -26,8 +24,7 @@ public interface DriveFileControllerDocs {
     CustomApiResponse<List<DrivePreSignedResponse>> getPreSignedUrl(
             @AuthMember Member member,
             @Parameter(description = "내 드라이브는 PERSONAL, 공유 드라이브는 SHARED 입니다.") @RequestParam DriveType driveType,
-            @Parameter(description = "폴더 경로입니다. 비어 있으면 루트 폴더에 생성됩니다.") @RequestParam(required = false, defaultValue = "") String folderPath,
-            @Parameter(description = "업로드할 파일 이름입니다.") @RequestParam List<String> fileName
+            @Parameter(description = "업로드할 파일 이름입니다.") @RequestParam List<String> objectNames
     );
 
     @Operation(summary = "파일 업로드 확인", description = "파일 업로드 확인하는 API 입니다.", responses = {
@@ -36,8 +33,7 @@ public interface DriveFileControllerDocs {
     CustomApiResponse<Void> upLoadConfirm(
             @AuthMember Member member,
             @Parameter(description = "내 드라이브는 PERSONAL, 공유 드라이브는 SHARED 입니다.") @RequestParam DriveType driveType,
-            @Parameter(description = "폴더 경로입니다. 비어 있으면 루트 폴더에 생성됩니다.") @RequestParam(required = false, defaultValue = "") String folderPath,
-            @Parameter(description = "UUID까지 포함된 파일명입니다.") @RequestParam List<String> fileName
+            @Parameter(description = "UUID까지 포함된 파일명입니다.") @RequestParam List<String> objectNames
     );
 
     @Operation(summary = "파일 다운로드", description = "다중 파일을 압축하여 다운로드하는 API 입니다.", responses = {
@@ -46,6 +42,6 @@ public interface DriveFileControllerDocs {
     ResponseEntity<InputStreamResource> downloadMultipleFiles(
             @AuthMember Member member,
             @Parameter(description = "내 드라이브는 PERSONAL, 공유 드라이브는 SHARED 입니다.") @RequestParam DriveType driveType,
-            @Parameter(description = "다운로드할 파일 이름 목록입니다.") @RequestParam List<String> fileNames
+            @Parameter(description = "다운로드할 파일 이름 목록입니다.") @RequestParam List<String> objectNames
     );
 }

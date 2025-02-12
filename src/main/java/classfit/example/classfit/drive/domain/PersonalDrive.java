@@ -24,7 +24,6 @@ public class PersonalDrive extends Drive {
 
     public static Drive toEntity(
             String fileName,
-            String folderPath,
             String originUrl,
             ObjectMetadata metadata,
             Member member,
@@ -32,12 +31,12 @@ public class PersonalDrive extends Drive {
     ) {
         return PersonalDrive.builder()
                 .objectName(fileName)
-                .objectPath(folderPath)
                 .objectUrl(originUrl)
                 .objectSize(DriveUtil.formatFileSize(metadata.getContentLength()))
                 .objectType(metadata.getContentType())
                 .uploadedBy(member.getName())
                 .uploadedAt(dateTime)
+                .isDeleted(false)
                 .member(member)
                 .build();
     }

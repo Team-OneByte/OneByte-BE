@@ -13,6 +13,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Builder.Default;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
@@ -36,9 +37,6 @@ public abstract class Drive  {
     @Column(nullable = false, length = 50)
     private String objectName;
 
-    @Column(length = 50)
-    private String objectPath;
-
     @Column(nullable = false)
     private String objectUrl;
 
@@ -47,6 +45,9 @@ public abstract class Drive  {
 
     @Column(nullable = false, length = 100)
     private String objectType;
+
+    @Column(length = 10)
+    private boolean isDeleted;
 
     @Column(nullable = false, length = 100)
     private String uploadedBy;

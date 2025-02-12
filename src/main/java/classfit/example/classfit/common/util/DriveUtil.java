@@ -17,13 +17,13 @@ import static classfit.example.classfit.drive.domain.enumType.DriveType.SHARED;
 
 public class DriveUtil {
 
-    public static String generatedOriginPath(Member member, DriveType driveType, String folderPath, String fileName) {
+    public static String generatedOriginPath(Member member, DriveType driveType, String fileName) {
 
         if (driveType == PERSONAL) {
-            return String.format("personal/%d/%s%s", member.getId(), folderPath, fileName);
+            return String.format("personal/%d/%s", member.getId(), fileName);
         } else if (driveType == SHARED) {
             Long academyId = member.getAcademy().getId();
-            return String.format("shared/%d/%s%s", academyId, folderPath, fileName);
+            return String.format("shared/%d/%s", academyId, fileName);
         }
         throw new ClassfitException(ErrorCode.DRIVE_TYPE_INVALID);
     }
@@ -43,5 +43,12 @@ public class DriveUtil {
             return String.format("%.1f MB", sizeInMB);
         }
         return String.format("%.1f KB", sizeInKB);
+    }
+
+    public static String formatObjectName(String objectName) {
+        if (objectName == null || !objectName.contains("_")) {
+            return objectName; // _가 없으면 원본 문자열 그대로 반환
+        }
+        return objectName.substring(objectName.indexOf("_") + 1);
     }
 }

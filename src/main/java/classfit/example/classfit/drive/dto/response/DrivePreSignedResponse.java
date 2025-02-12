@@ -4,13 +4,13 @@ import lombok.Builder;
 
 @Builder
 public record DrivePreSignedResponse(
-        String fileName,
+        String objectName,
         String preSignedUrl
 ) {
 
-    public static DrivePreSignedResponse of(String fileName, String preSignedUrl) {
+    public static DrivePreSignedResponse of(String objectName, String preSignedUrl) {
         return DrivePreSignedResponse.builder()
-                .fileName(fileName)
+                .objectName(objectName)
                 .preSignedUrl(preSignedUrl)
                 .build();
     }

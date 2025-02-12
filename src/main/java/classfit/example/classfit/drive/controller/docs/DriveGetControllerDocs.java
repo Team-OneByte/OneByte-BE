@@ -3,7 +3,6 @@ package classfit.example.classfit.drive.controller.docs;
 import classfit.example.classfit.common.annotation.AuthMember;
 import classfit.example.classfit.common.response.CustomApiResponse;
 import classfit.example.classfit.drive.domain.enumType.DriveType;
-import classfit.example.classfit.drive.domain.enumType.ObjectType;
 import classfit.example.classfit.drive.dto.response.DriveFileResponse;
 import classfit.example.classfit.member.domain.Member;
 import io.swagger.v3.oas.annotations.Operation;
@@ -23,8 +22,7 @@ public interface DriveGetControllerDocs {
     })
     CustomApiResponse<List<DriveFileResponse>> getObjectList(
             @AuthMember Member member,
-            @Parameter(description = "내 드라이브는 PERSONAL, 공유 드라이브는 SHARED 입니다.") @RequestParam DriveType driveType,
-            @Parameter(description = "폴더 경로입니다. 비어 있으면 루트 폴더에 생성됩니다.") @RequestParam(required = false, defaultValue = "") String folderPath
+            @Parameter(description = "내 드라이브는 PERSONAL, 공유 드라이브는 SHARED 입니다.") @RequestParam DriveType driveType
     );
 
     @Operation(summary = "파일명으로 검색", description = "파일명을 기준으로 파일을 검색하는 API입니다.", responses = {
@@ -33,8 +31,7 @@ public interface DriveGetControllerDocs {
     CustomApiResponse<List<DriveFileResponse>> searchFilesByName(
             @AuthMember Member member,
             @Parameter(description = "내 드라이브는 PERSONAL, 공유 드라이브는 SHARED 입니다.") @RequestParam DriveType driveType,
-            @Parameter(description = "검색할 파일명입니다. 빈 값이면 모든 파일이 조회됩니다.") @RequestParam(required = false, defaultValue = "") String fileName,
-            @Parameter(description = "폴더 경로입니다. 비어 있으면 루트 폴더를 검색합니다.") @RequestParam(required = false, defaultValue = "") String folderPath
+            @Parameter(description = "검색할 파일명입니다. 빈 값이면 모든 파일이 조회됩니다.") @RequestParam(required = false, defaultValue = "") String objectName
     );
 
     @Operation(summary = "확장자 필터링", description = "파일 확장자로 필터링하여 파일을 조회하는 API입니다.", responses = {
@@ -43,7 +40,6 @@ public interface DriveGetControllerDocs {
     CustomApiResponse<List<DriveFileResponse>> filterFilesByExtension(
             @AuthMember Member member,
             @Parameter(description = "내 드라이브는 PERSONAL, 공유 드라이브는 SHARED 입니다.") @RequestParam DriveType driveType,
-            @Parameter(description = "파일 유형 필터링입니다. 빈 값이면 모든 확장자가 조회됩니다.") @RequestParam String objectType,
-            @Parameter(description = "폴더 경로입니다. 비어 있으면 루트 폴더를 검색합니다.") @RequestParam(required = false, defaultValue = "") String folderPath
+            @Parameter(description = "파일 유형 필터링입니다. 빈 값이면 모든 확장자가 조회됩니다.") @RequestParam String objectType
     );
 }
