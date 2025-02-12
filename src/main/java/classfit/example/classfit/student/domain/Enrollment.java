@@ -1,8 +1,7 @@
-package classfit.example.classfit.classStudent.domain;
+package classfit.example.classfit.student.domain;
 
 import classfit.example.classfit.attendance.domain.Attendance;
-import classfit.example.classfit.category.domain.SubClass;
-import classfit.example.classfit.student.domain.Student;
+import classfit.example.classfit.course.domain.SubClass;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -14,11 +13,11 @@ import java.util.List;
 @Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class ClassStudent {
+public class Enrollment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "class_student_id")
+    @Column(name = "enrollment_id")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -29,12 +28,11 @@ public class ClassStudent {
     @JoinColumn(name = "sub_class_id", nullable = false)
     private SubClass subClass;
 
-    @Builder.Default
-    @OneToMany(mappedBy = "classStudent", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "enrollment", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Attendance> attendances = new ArrayList<>();
     
-    public static ClassStudent create(Student student, SubClass subClass) {
-        return ClassStudent.builder()
+    public static Enrollment create(Student student, SubClass subClass) {
+        return Enrollment.builder()
             .student(student)
             .subClass(subClass)
             .build();
