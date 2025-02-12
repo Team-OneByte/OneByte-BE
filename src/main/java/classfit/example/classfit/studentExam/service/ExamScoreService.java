@@ -82,17 +82,10 @@ public class ExamScoreService {
         for (UpdateExamScoreRequest request : requests) {
             ExamScore examScore = studentExamScoreRepository.findByExamAndStudentIdAndAcademyId(
                             findMember.getAcademy().getId(), findExam, request.studentId())
-                    .orElseGet(() -> {
-                        Student student = studentRepository.findById(request.studentId())
-                                .orElseThrow(
-                                        () -> new ClassfitException(ErrorCode.STUDENT_NOT_FOUND));
-                        ExamScore newExamScore = ExamScore.toEntity(null, findExam, null,
-                                request.checkedStudent());
-                        studentExamScoreRepository.save(newExamScore);
-                        return newExamScore;
-                    });
+                    .orElseThrow(() -> new ClassfitException(ErrorCode.EXAM_NOT_FOUND));
 
             examScore.updateScore(request.score());
+            examScore.updateCheckedStudent(request.checkedStudent());
 
             if (findExam.getStandard() == Standard.PF) {
                 examScore.updateStandardStatus(request.standardStatus());
@@ -100,12 +93,8 @@ public class ExamScoreService {
                 examScore.updateEvaluationDetail(request.evaluationDetail());
             }
 
-            examScore.updateCheckedStudent(request.checkedStudent());
-
             studentExamScoreRepository.save(examScore);
         }
-
-        studentExamScoreRepository.flush();
 
         List<ClassStudent> classStudents = classStudentRepository.findByAcademyIdAndSubClass(
                 findMember.getAcademy().getId(), findExam.getSubClass());
@@ -114,7 +103,7 @@ public class ExamScoreService {
             Student student = classStudent.getStudent();
             Integer score = studentExamScoreRepository.findByExamAndStudentIdAndAcademyId(
                             findMember.getAcademy().getId(), findExam, student.getId())
-                    .map(ExamScore::getScore).orElse(0);
+                    .map(ExamScore::getScore).orElse(null);
 
             StandardStatus standardStatus = requests.stream()
                     .filter(request -> request.studentId().equals(student.getId()))
@@ -128,11 +117,11 @@ public class ExamScoreService {
                     .filter(request -> request.studentId().equals(student.getId()))
                     .map(UpdateExamScoreRequest::checkedStudent).findFirst().orElse(false);
 
-            return ExamStudent.of(student.getId(), student.getName(), score,
-                    findExam.getHighestScore(), standardStatus, evaluationDetail, checkedStudent);
+            return ExamStudent.of(student.getId(), student.getName(), score, standardStatus,
+                    evaluationDetail, checkedStudent);
         }).collect(Collectors.toList());
 
-        return new UpdateExamScoreResponse(findExam.getHighestScore(), examStudents);
+        return UpdateExamScoreResponse.of(findExam.getHighestScore(), examStudents);
     }
 
 }

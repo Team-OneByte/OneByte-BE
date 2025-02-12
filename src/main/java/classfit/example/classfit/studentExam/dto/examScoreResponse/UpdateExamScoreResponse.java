@@ -1,7 +1,5 @@
 package classfit.example.classfit.studentExam.dto.examScoreResponse;
 
-import classfit.example.classfit.studentExam.domain.Standard;
-import classfit.example.classfit.studentExam.domain.StandardStatus;
 import classfit.example.classfit.studentExam.dto.process.ExamStudent;
 import lombok.Builder;
 
@@ -14,9 +12,10 @@ public record UpdateExamScoreResponse(
 ) {
 
     public static UpdateExamScoreResponse of(
-            Integer highestScore) {
+            Integer highestScore, List<ExamStudent> examStudents) {
         return UpdateExamScoreResponse.builder()
                 .highestScore(highestScore)
+                .examStudents(examStudents)
                 .build();
     }
 }

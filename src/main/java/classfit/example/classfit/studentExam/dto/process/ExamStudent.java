@@ -1,7 +1,5 @@
 package classfit.example.classfit.studentExam.dto.process;
 
-import classfit.example.classfit.common.exception.ClassfitException;
-import classfit.example.classfit.common.response.ErrorCode;
 import classfit.example.classfit.studentExam.domain.StandardStatus;
 import jakarta.validation.constraints.Min;
 import lombok.Builder;
@@ -15,18 +13,15 @@ public record ExamStudent(
         String evaluationDetail,
         boolean checkedStudent
 ) {
+
     public static ExamStudent of(
             Long studentId,
             String name,
             Integer score,
-            Integer highestScore,
             StandardStatus standardStatus,
             String evaluationDetail,
             boolean checkedStudent
     ) {
-        if (score > highestScore) {
-            throw new ClassfitException(ErrorCode.SCORE_EXCEEDS_HIGHEST);
-        }
         return ExamStudent.builder()
                 .studentId(studentId)
                 .name(name)

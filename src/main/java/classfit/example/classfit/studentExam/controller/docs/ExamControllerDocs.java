@@ -5,7 +5,6 @@ import classfit.example.classfit.common.response.CustomApiResponse;
 import classfit.example.classfit.member.domain.Member;
 import classfit.example.classfit.studentExam.dto.examScoreRequest.CreateExamScoreRequest;
 import classfit.example.classfit.studentExam.dto.examScoreResponse.CreateExamScoreResponse;
-import classfit.example.classfit.studentExam.dto.process.ExamClassStudent;
 import classfit.example.classfit.studentExam.dto.examRequest.CreateExamRequest;
 import classfit.example.classfit.studentExam.dto.examRequest.FindExamRequest;
 import classfit.example.classfit.studentExam.dto.examRequest.UpdateExamRequest;
