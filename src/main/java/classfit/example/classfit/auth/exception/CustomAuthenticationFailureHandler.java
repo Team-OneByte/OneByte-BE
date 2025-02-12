@@ -17,7 +17,7 @@ import java.io.IOException;
 @Component
 public class CustomAuthenticationFailureHandler extends SimpleUrlAuthenticationFailureHandler {
 
-    private final static String DEFAULT_FAILURE_MESSAGE = "알 수 없는 이유로 로그인에 실패하였습니다 관리자에게 문의하세요.";
+    private final static String DEFAULT_FAILURE_MESSAGE = "로그인에 실패하였습니다.";
 
     @Override
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException {

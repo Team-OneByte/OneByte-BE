@@ -85,7 +85,7 @@ public class SecurityConfig {
     private void configureAuthorization(AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry auth) {
         auth
                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
-                .requestMatchers("/api/v1/signin", "/api/v1/password", "/api/v1/mails/**").permitAll()
+                .requestMatchers("/api/v1/signin", "/api/v1/signup","/api/v1/password", "/api/v1/mail/**").permitAll()
                 .requestMatchers("/api/v1/register", "/api/v1/academy/create", "/api/v1/academy/invite").permitAll()
                 .requestMatchers("/api/v1/**").hasAnyRole("MEMBER", "ADMIN")
                 .anyRequest().authenticated();

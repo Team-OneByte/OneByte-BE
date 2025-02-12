@@ -83,7 +83,9 @@ public enum ErrorCode {
     EVENT_CATEGORY_NOT_FOUND("해당 카테고리를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
 
     // 드라이브
-    DRIVE_TYPE_INVALID("지원하지 않는 드라이브 타입입니다.", HttpStatus.BAD_REQUEST);
+    DRIVE_TYPE_INVALID("지원하지 않는 드라이브 타입입니다.", HttpStatus.BAD_REQUEST),
+    FILE_NOT_FOUND("해당 파일을 찾을 수 없습니다", HttpStatus.NOT_FOUND),
+    DRIVE_FOLDER_NAME_NOT_EMPTY("폴더명은 비어있을 수 없습니다.", HttpStatus.BAD_REQUEST);
 
     private final String message;
     private final HttpStatus httpStatus;
