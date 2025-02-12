@@ -36,7 +36,7 @@ public interface ExamControllerDocs {
     })
     CustomApiResponse<List<CreateExamScoreResponse>> createExamScore(
             @AuthMember Member findMember,
-            CreateExamScoreRequest req
+            @RequestBody List<CreateExamScoreRequest> req
     );
     @Operation(summary = "시험 등록 시 해당 클래스 학생 조회", description = "시험 등록시 해당 클래스 학생 조회하는 API 입니다.", responses = {
         @ApiResponse(responseCode = "200", description = "해당 클래스 학생 조회 성공")

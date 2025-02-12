@@ -42,7 +42,7 @@ public class ExamController implements ExamControllerDocs {
     @PostMapping("/score")
     public CustomApiResponse<List<CreateExamScoreResponse>> createExamScore(
             @AuthMember Member findMember,
-            @RequestBody CreateExamScoreRequest req
+            @RequestBody List<CreateExamScoreRequest> req
     ) {
         List<CreateExamScoreResponse> response = examScoreService.createExamScore(findMember,req);
         return CustomApiResponse.success(response,201,"학생 시험 성적 등록 성공");

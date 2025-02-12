@@ -26,7 +26,7 @@ public class ExamScore extends BaseEntity {
     @JoinColumn(name = "exam_id", nullable = false)
     private Exam exam;
 
-    @Column(name = "score", nullable = false)
+    @Column(name = "score",nullable = true)
     private Integer score;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -65,13 +65,16 @@ public class ExamScore extends BaseEntity {
         this.standardStatus = standardStatus;
     }
 
-    public static ExamScore toEntity(
-            Student student,
-            Exam exam) {
-        return ExamScore.builder()
-                .student(student)
-                .exam(exam)
-                .build();
-    }
+        public static ExamScore toEntity(Student student, Exam exam, StandardStatus standardStatus, boolean checkedStudent) {
+            return ExamScore.builder()
+                    .student(student)
+                    .exam(exam)
+                    .score(builder().score)
+                    .standardStatus(standardStatus)
+                    .checkedStudent(checkedStudent)
+                    .build();
+        }
 
-}
+
+
+    }

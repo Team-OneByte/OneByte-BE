@@ -5,6 +5,7 @@ import classfit.example.classfit.studentExam.domain.StandardStatus;
 import java.util.List;
 import lombok.Builder;
 
+//TODO ExamStudent로 바꿔도 되지 않나
 @Builder
 public record CreateExamScoreResponse(
         Long examScoreId,
