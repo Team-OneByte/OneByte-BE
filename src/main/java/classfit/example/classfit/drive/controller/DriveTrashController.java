@@ -4,7 +4,7 @@ import classfit.example.classfit.common.annotation.AuthMember;
 import classfit.example.classfit.common.response.CustomApiResponse;
 import classfit.example.classfit.drive.controller.docs.DriveTrashControllerDocs;
 import classfit.example.classfit.drive.domain.enumType.DriveType;
-import classfit.example.classfit.drive.dto.response.FileResponse;
+import classfit.example.classfit.drive.dto.response.DriveFileResponse;
 import classfit.example.classfit.drive.service.DriveDeleteService;
 import classfit.example.classfit.drive.service.DriveRestoreService;
 import classfit.example.classfit.drive.service.DriveTrashService;
@@ -24,35 +24,24 @@ public class DriveTrashController implements DriveTrashControllerDocs {
     private final DriveDeleteService driveDeleteService;
 
     @Override
-    @GetMapping("/trash")
-    public CustomApiResponse<List<FileResponse>> trashList(
-            @AuthMember Member member,
-            @RequestParam DriveType driveType
-    ) {
-        List<FileResponse> filesFromTrash = driveTrashService.getFilesFromTrash(member, driveType);
-        return CustomApiResponse.success(filesFromTrash, 200, "휴지통 조회 성공");
-    }
-
-    @Override
     @PostMapping("/trash")
-    public CustomApiResponse<List<String>> storeTrash(
+    public CustomApiResponse<Integer> storeTrash(
             @AuthMember Member member,
             @RequestParam DriveType driveType,
-            @RequestParam(required = false, defaultValue = "") String folderPath,
-            @RequestParam List<String> fileNames
+            @RequestParam List<String> objectNames
     ) {
-        List<String> trashPathList = driveTrashService.storeTrash(member, driveType, folderPath, fileNames);
-        return CustomApiResponse.success(trashPathList, 200, "휴지통 이동 성공");
+        Integer updateObject = driveTrashService.storeTrash(member, driveType, objectNames);
+        return CustomApiResponse.success(updateObject, 200, "휴지통 이동 성공");
     }
 
     @Override
-    @PostMapping("/trash/restore")
-    public CustomApiResponse<List<String>> restoreTrash(
+    @PostMapping("/restore")
+    public CustomApiResponse<Integer> restoreTrash(
             @AuthMember Member member,
             @RequestParam DriveType driveType,
-            @RequestParam List<String> fileNames
+            @RequestParam List<String> objectNames
     ) {
-        List<String> restorePathList = driveRestoreService.restoreTrash(member, driveType, fileNames);
+        Integer restorePathList = driveRestoreService.restoreTrash(member, driveType, objectNames);
         return CustomApiResponse.success(restorePathList, 200, "휴지통 복원 성공");
     }
 
@@ -61,10 +50,19 @@ public class DriveTrashController implements DriveTrashControllerDocs {
     public CustomApiResponse<Void> deleteFromTrash(
             @AuthMember Member member,
             @RequestParam DriveType driveType,
-            @RequestParam(required = false, defaultValue = "") String folderPath,
-            @RequestParam List<String> fileNames
+            @RequestParam List<String> objectNames
     ) {
-        driveDeleteService.deleteFromTrash(member, driveType, folderPath, fileNames);
+        driveDeleteService.deleteFromTrash(member, driveType, objectNames);
         return CustomApiResponse.success(null, 200, "휴지통 영구삭제 성공");
+    }
+
+    @Override
+    @GetMapping("/trash")
+    public CustomApiResponse<List<DriveFileResponse>> getTrashList(
+            @AuthMember Member member,
+            @RequestParam DriveType driveType
+    ) {
+        List<DriveFileResponse> filesFromTrash = driveTrashService.getTrashList(member, driveType);
+        return CustomApiResponse.success(filesFromTrash, 200, "휴지통 조회 성공");
     }
 }
