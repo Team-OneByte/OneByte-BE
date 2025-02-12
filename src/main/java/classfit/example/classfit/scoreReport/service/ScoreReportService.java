@@ -4,13 +4,13 @@ import classfit.example.classfit.academy.domain.Academy;
 import classfit.example.classfit.academy.repository.AcademyRepository;
 import classfit.example.classfit.attendance.domain.Attendance;
 import classfit.example.classfit.attendance.dto.process.AttendanceInfo;
-import classfit.example.classfit.auth.annotation.AuthMember;
-import classfit.example.classfit.category.domain.MainClass;
-import classfit.example.classfit.category.domain.SubClass;
-import classfit.example.classfit.category.repository.MainClassRepository;
-import classfit.example.classfit.category.repository.SubClassRepository;
-import classfit.example.classfit.classStudent.domain.ClassStudent;
-import classfit.example.classfit.classStudent.repository.ClassStudentRepository;
+import classfit.example.classfit.common.annotation.AuthMember;
+import classfit.example.classfit.course.domain.MainClass;
+import classfit.example.classfit.course.domain.SubClass;
+import classfit.example.classfit.course.repository.MainClassRepository;
+import classfit.example.classfit.course.repository.SubClassRepository;
+import classfit.example.classfit.student.domain.Enrollment;
+import classfit.example.classfit.student.repository.EnrollmentRepository;
 import classfit.example.classfit.common.exception.ClassfitException;
 import classfit.example.classfit.common.response.ErrorCode;
 import classfit.example.classfit.member.domain.Member;
@@ -42,7 +42,7 @@ public class ScoreReportService {
     private final MainClassRepository mainClassRepository;
     private final SubClassRepository subClassRepository;
     private final ExamRepository examRepository;
-    private final ClassStudentRepository classStudentRepository;
+    private final EnrollmentRepository enrollmentRepository;
     private final StudentExamScoreRepository studentExamScoreRepository;
     private final AcademyRepository academyRepository;
 
@@ -55,11 +55,11 @@ public class ScoreReportService {
     public CreateReportResponse createReport(@AuthMember Member member,
                                              CreateReportRequest request) {
         MainClass mainClass = mainClassRepository.findById(request.mainClassId())
-            .orElseThrow(
-                () -> new ClassfitException(ErrorCode.MAIN_CLASS_NOT_FOUND));
+                .orElseThrow(
+                        () -> new ClassfitException(ErrorCode.MAIN_CLASS_NOT_FOUND));
         SubClass subClass = subClassRepository.findById(request.subClassId())
-            .orElseThrow(
-                () -> new ClassfitException(ErrorCode.SUB_CLASS_NOT_FOUND));
+                .orElseThrow(
+                        () -> new ClassfitException(ErrorCode.SUB_CLASS_NOT_FOUND));
         validateAcademy(member, member.getAcademy().getId());
 
         List<Exam> exams = examRepository.findAllById(request.examIdList());
@@ -67,7 +67,7 @@ public class ScoreReportService {
             throw new ClassfitException(ErrorCode.EXAM_NOT_FOUND);
         }
 
-        List<ClassStudent> studentsInSubClass = classStudentRepository.findAllBySubClassId(
+        List<Enrollment> studentsInSubClass = enrollmentRepository.findAllBySubClassId(
                 subClass.getId());
         if (studentsInSubClass.isEmpty()) {
             throw new ClassfitException(ErrorCode.STUDENT_NOT_FOUND);
@@ -75,8 +75,8 @@ public class ScoreReportService {
 
         List<StudentList> allStudents = new ArrayList<>();
 
-        for (ClassStudent classStudent : studentsInSubClass) {
-            Student student = classStudent.getStudent();
+        for (Enrollment enrollment : studentsInSubClass) {
+            Student student = enrollment.getStudent();
 
             ScoreReport report = request.toEntity(subClass, mainClass, student, member);
             scoreReportRepository.save(report);
@@ -110,17 +110,17 @@ public class ScoreReportService {
                                            Long subClassId) {
         validateAcademy(member, member.getAcademy().getId());
         List<ReportExam> reports = scoreReportRepository.findExamsByCreatedAtBetween(startDate,
-            endDate, mainClassId, subClassId, member.getAcademy().getId());
+                endDate, mainClassId, subClassId, member.getAcademy().getId());
         return reports.stream()
-            .map(report -> new ReportExam(
-                report.examId(),
-                report.examPeriod(),
-                report.mainClassName(),
-                report.subClassName(),
-                report.examName(),
-                report.createAt()
-            ))
-            .collect(Collectors.toList());
+                .map(report -> new ReportExam(
+                        report.examId(),
+                        report.examPeriod(),
+                        report.mainClassName(),
+                        report.subClassName(),
+                        report.examName(),
+                        report.createAt()
+                ))
+                .collect(Collectors.toList());
 
     }
 
@@ -128,25 +128,25 @@ public class ScoreReportService {
     public List<FindReportResponse> findReport(@AuthMember Member member, Long mainClassId,
                                                Long subClassId, String memberName) {
         MainClass mainClass = mainClassRepository.findById(mainClassId)
-            .orElseThrow(
-                () -> new ClassfitException(ErrorCode.MAIN_CLASS_NOT_FOUND));
+                .orElseThrow(
+                        () -> new ClassfitException(ErrorCode.MAIN_CLASS_NOT_FOUND));
         SubClass subClass = subClassRepository.findById(subClassId)
-            .orElseThrow(
-                () -> new ClassfitException(ErrorCode.SUB_CLASS_NOT_FOUND));
+                .orElseThrow(
+                        () -> new ClassfitException(ErrorCode.SUB_CLASS_NOT_FOUND));
         validateAcademy(member, mainClass.getAcademy().getId());
         List<ScoreReport> studentReports = scoreReportRepository.findAllReportsByMainClassAndSubClass(
-            mainClassId, subClassId, member.getAcademy().getId());
+                mainClassId, subClassId, member.getAcademy().getId());
 
         return studentReports.stream()
-            .map(report -> new FindReportResponse(
-                report.getId(),
-                report.getStudent().getId(),
-                report.getStudent().getName(),
-                report.getReportName(),
-                member.getName(),
-                report.getCreatedAt().toLocalDate()
-            ))
-            .collect(Collectors.toList());
+                .map(report -> new FindReportResponse(
+                        report.getId(),
+                        report.getStudent().getId(),
+                        report.getStudent().getName(),
+                        report.getReportName(),
+                        member.getName(),
+                        report.getCreatedAt().toLocalDate()
+                ))
+                .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
@@ -154,20 +154,20 @@ public class ScoreReportService {
         Long academyId = member.getAcademy().getId();
 
         Academy academy = academyRepository.findById(academyId)
-            .orElseThrow(() -> new ClassfitException(ErrorCode.ACADEMY_NOT_FOUND));
+                .orElseThrow(() -> new ClassfitException(ErrorCode.ACADEMY_NOT_FOUND));
 
         List<ScoreReport> scoreReports = scoreReportRepository.findAllByAcademy(academy);
 
         return scoreReports.stream()
-            .map(report -> new FindReportResponse(
-                report.getId(),
-                report.getStudent().getId(),
-                report.getStudent().getName(),
-                report.getReportName(),
-                report.getReportCreatedBy(),
-                report.getCreatedAt().toLocalDate()
-            ))
-            .collect(Collectors.toList());
+                .map(report -> new FindReportResponse(
+                        report.getId(),
+                        report.getStudent().getId(),
+                        report.getStudent().getName(),
+                        report.getReportName(),
+                        report.getReportCreatedBy(),
+                        report.getCreatedAt().toLocalDate()
+                ))
+                .collect(Collectors.toList());
     }
 
 
@@ -183,19 +183,19 @@ public class ScoreReportService {
                                                     Long subClassId) {
 
         MainClass mainClass = mainClassRepository.findById(mainClassId)
-            .orElseThrow(
-                () -> new ClassfitException(ErrorCode.MAIN_CLASS_NOT_FOUND));
+                .orElseThrow(
+                        () -> new ClassfitException(ErrorCode.MAIN_CLASS_NOT_FOUND));
         SubClass subClass = subClassRepository.findById(subClassId)
-            .orElseThrow(
-                () -> new ClassfitException(ErrorCode.SUB_CLASS_NOT_FOUND));
+                .orElseThrow(
+                        () -> new ClassfitException(ErrorCode.SUB_CLASS_NOT_FOUND));
         validateAcademy(member, member.getAcademy().getId());
 
-        List<FindClassStudent> classStudents = classStudentRepository.findStudentIdsByMainClassIdAndSubClassId(
-            mainClassId, subClassId);
+        List<FindClassStudent> classStudents = enrollmentRepository.findStudentIdsByMainClassIdAndSubClassId(
+                mainClassId, subClassId);
         return classStudents.stream()
-            .map(classStudent -> new FindClassStudent(
-                classStudent.studentId(), classStudent.studentName()))
-            .collect(Collectors.toList());
+                .map(classStudent -> new FindClassStudent(
+                        classStudent.studentId(), classStudent.studentName()))
+                .collect(Collectors.toList());
     }
 
     @Transactional
@@ -206,17 +206,17 @@ public class ScoreReportService {
 
         for (SentStudentOpinionRequest request : requests) {
             ScoreReport scoreReport = scoreReportRepository.findById(request.reportId())
-                .orElseThrow(
-                    () -> new ClassfitException(ErrorCode.REPORT_NOT_FOUND));
+                    .orElseThrow(
+                            () -> new ClassfitException(ErrorCode.REPORT_NOT_FOUND));
             validateAcademy(member, scoreReport.getMainClass().getAcademy().getId());
 
             scoreReport.updateStudentOpinion(request.studentOpinion());
 
             SentStudentOpinionResponse response = new SentStudentOpinionResponse(
-                scoreReport.getId(),
-                scoreReport.getStudent().getId(),
-                scoreReport.getStudent().getName(),
-                scoreReport.getStudentOpinion()
+                    scoreReport.getId(),
+                    scoreReport.getStudent().getId(),
+                    scoreReport.getStudent().getName(),
+                    scoreReport.getStudentOpinion()
             );
             responses.add(response);
         }
@@ -226,27 +226,27 @@ public class ScoreReportService {
     @Transactional(readOnly = true)
     public ShowStudentReportResponse showStudentReport(@AuthMember Member member, Long reportId) {
         ScoreReport scoreReport = scoreReportRepository.findById(reportId)
-            .orElseThrow(() -> new ClassfitException(ErrorCode.REPORT_NOT_FOUND));
+                .orElseThrow(() -> new ClassfitException(ErrorCode.REPORT_NOT_FOUND));
 
         validateAcademy(member, scoreReport.getMainClass().getAcademy().getId());
 
-        List<AttendanceInfo> attendanceInfoList = scoreReport.getStudent().getClassStudents().stream()
-            .flatMap(classStudent -> classStudent.getAttendances().stream())
-            .collect(Collectors.groupingBy(
-                Attendance::getStatus,
-                Collectors.summingInt(attendance -> 1)
-            ))
-            .entrySet()
-            .stream()
-            .map(entry -> new AttendanceInfo(
-                entry.getKey(),
-                entry.getValue()
-            ))
-            .toList();
+        List<AttendanceInfo> attendanceInfoList = scoreReport.getStudent().getEnrollments().stream()
+                .flatMap(classStudent -> classStudent.getAttendances().stream())
+                .collect(Collectors.groupingBy(
+                        Attendance::getStatus,
+                        Collectors.summingInt(attendance -> 1)
+                ))
+                .entrySet()
+                .stream()
+                .map(entry -> new AttendanceInfo(
+                        entry.getKey(),
+                        entry.getValue()
+                ))
+                .toList();
 
         Integer totalAttendanceCount = attendanceInfoList.stream()
-            .mapToInt(AttendanceInfo::attendanceCount)
-            .sum();
+                .mapToInt(AttendanceInfo::attendanceCount)
+                .sum();
 
         List<ExamScore> examScores = studentExamScoreRepository.findByScoreReport(
             scoreReport);
@@ -257,71 +257,71 @@ public class ScoreReportService {
             .map(studentExamScore -> {
                 Exam exam = studentExamScore.getExam();
 
-                if (exam.getStandard() == Standard.PF) {
-                    long pCount = studentExamScoreRepository.countByExamAndScore(exam, -3);
-                    long fCount = studentExamScoreRepository.countByExamAndScore(exam, -4);
+                    if (exam.getStandard() == Standard.PF) {
+                        long pCount = studentExamScoreRepository.countByExamAndScore(exam, -3);
+                        long fCount = studentExamScoreRepository.countByExamAndScore(exam, -4);
 
-                    exam.updateAverage(pCount > fCount ? 100 : 0);
+                        exam.updateAverage(pCount > fCount ? 100 : 0);
 
-                    // PF 일때
+                        // PF 일때
+                        return new ExamHistory(
+                                exam.getId(),
+                                exam.getExamName(),
+                                exam.getStandard(),
+                                String.format("%.1f", exam.getAverage()),
+                                studentExamScore.getScore()
+                        );
+                    }
+                    if (exam.getStandard() == Standard.QUESTION) {
+
+                        double maxScore = exam.getHighestScore();
+
+                        double convertedScore =
+                                (double) studentExamScore.getScore() / maxScore * 100.0;
+
+                        double convertedAverage = exam.getAverage() / maxScore * 100.0;
+
+                        return new ExamHistory(
+                                exam.getId(),
+                                exam.getExamName(),
+                                exam.getStandard(),
+                                String.format("%.1f", convertedAverage),
+                                (int) convertedScore
+                        );
+                    }
+
+                    // score 일때
                     return new ExamHistory(
-                        exam.getId(),
-                        exam.getExamName(),
-                        exam.getStandard(),
-                        String.format("%.1f", exam.getAverage()),
-                        studentExamScore.getScore()
+                            exam.getId(),
+                            exam.getExamName(),
+                            exam.getStandard(),
+                            String.format("%.1f", exam.getAverage()),
+                            studentExamScore.getScore()
                     );
-                }
-                if (exam.getStandard() == Standard.QUESTION) {
-
-                    double maxScore = exam.getHighestScore();
-
-                    double convertedScore =
-                        (double) studentExamScore.getScore() / maxScore * 100.0;
-
-                    double convertedAverage = exam.getAverage() / maxScore * 100.0;
-
-                    return new ExamHistory(
-                        exam.getId(),
-                        exam.getExamName(),
-                        exam.getStandard(),
-                        String.format("%.1f", convertedAverage),
-                        (int) convertedScore
-                    );
-                }
-
-                // score 일때
-                return new ExamHistory(
-                    exam.getId(),
-                    exam.getExamName(),
-                    exam.getStandard(),
-                    String.format("%.1f", exam.getAverage()),
-                    studentExamScore.getScore()
-                );
-            })
-            .toList();
+                })
+                .toList();
 
         return new ShowStudentReportResponse(
-            scoreReport.getStudent().getId(),
-            scoreReport.getStudent().getName(),
-            scoreReport.getMainClass().getMainClassName(),
-            scoreReport.getSubClass().getSubClassName(),
-            scoreReport.getReportName(),
-            scoreReport.getStartDate(),
-            scoreReport.getEndDate(),
-            attendanceInfoList,
-            totalAttendanceCount,
-            scoreReport.getIncludeAverage(),
-            examHistoryList,
-            scoreReport.getOverallOpinion(),
-            scoreReport.getStudentOpinion()
+                scoreReport.getStudent().getId(),
+                scoreReport.getStudent().getName(),
+                scoreReport.getMainClass().getMainClassName(),
+                scoreReport.getSubClass().getSubClassName(),
+                scoreReport.getReportName(),
+                scoreReport.getStartDate(),
+                scoreReport.getEndDate(),
+                attendanceInfoList,
+                totalAttendanceCount,
+                scoreReport.getIncludeAverage(),
+                examHistoryList,
+                scoreReport.getOverallOpinion(),
+                scoreReport.getStudentOpinion()
         );
     }
 
 
     private void validateAcademy(Member member, Long academyId) {
         Academy academy = academyRepository.findById(academyId)
-            .orElseThrow(() -> new ClassfitException(ErrorCode.ACADEMY_NOT_FOUND));
+                .orElseThrow(() -> new ClassfitException(ErrorCode.ACADEMY_NOT_FOUND));
         if (!Objects.equals(member.getAcademy().getId(), academyId)) {
             throw new ClassfitException(ErrorCode.ACADEMY_ACCESS_INVALID);
         }

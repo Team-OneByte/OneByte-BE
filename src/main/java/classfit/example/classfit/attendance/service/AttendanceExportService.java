@@ -4,7 +4,7 @@ import classfit.example.classfit.attendance.domain.Attendance;
 import classfit.example.classfit.attendance.dto.response.AttendanceResponse;
 import classfit.example.classfit.attendance.dto.response.StudentAttendanceResponse;
 import classfit.example.classfit.attendance.repository.AttendanceRepository;
-import classfit.example.classfit.classStudent.domain.ClassStudent;
+import classfit.example.classfit.student.domain.Enrollment;
 import classfit.example.classfit.member.domain.Member;
 import classfit.example.classfit.student.domain.Student;
 import java.util.Map;
@@ -30,8 +30,8 @@ public class AttendanceExportService {
         Long academyId = member.getAcademy().getId();
         List<Attendance> attendances = findAttendancesByAcademyAndSubClassAndMonth(academyId, subClassId, month);
 
-        Map<ClassStudent, List<Attendance>> groupedAttendances = attendances.stream()
-            .collect(Collectors.groupingBy(Attendance::getClassStudent));
+        Map<Enrollment, List<Attendance>> groupedAttendances = attendances.stream()
+            .collect(Collectors.groupingBy(Attendance::getEnrollment));
 
         return groupedAttendances.entrySet().stream()
             .sorted(Comparator.comparing(entry -> entry.getKey().getStudent().getName()))

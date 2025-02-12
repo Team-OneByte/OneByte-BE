@@ -1,6 +1,6 @@
 package classfit.example.classfit.studentExam.controller.docs;
 
-import classfit.example.classfit.auth.annotation.AuthMember;
+import classfit.example.classfit.common.annotation.AuthMember;
 import classfit.example.classfit.common.response.CustomApiResponse;
 import classfit.example.classfit.member.domain.Member;
 import classfit.example.classfit.studentExam.dto.examScoreRequest.CreateExamScoreRequest;

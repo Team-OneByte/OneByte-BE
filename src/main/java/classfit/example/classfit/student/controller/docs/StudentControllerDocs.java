@@ -1,6 +1,6 @@
 package classfit.example.classfit.student.controller.docs;
 
-import classfit.example.classfit.auth.annotation.AuthMember;
+import classfit.example.classfit.common.annotation.AuthMember;
 import classfit.example.classfit.common.response.CustomApiResponse;
 import classfit.example.classfit.member.domain.Member;
 import classfit.example.classfit.student.dto.request.StudentRequest;
@@ -20,25 +20,25 @@ import java.util.List;
 public interface StudentControllerDocs {
 
     @Operation(summary = "학생 정보 등록", description = "학생 정보를 등록하는 API 입니다.", responses = {
-        @ApiResponse(responseCode = "201", description = "학생 정보 등록 성공")
+            @ApiResponse(responseCode = "201", description = "학생 정보 등록 성공")
     })
     CustomApiResponse<StudentResponse> registerStudent(@RequestBody StudentRequest req);
 
     @Operation(summary = "전체 학생 정보 조회", description = "전체 학생 정보를 조회하는 API 입니다.", responses = {
-        @ApiResponse(responseCode = "200", description = "전체 학생 정보 조회 성공")
+            @ApiResponse(responseCode = "200", description = "전체 학생 정보 조회 성공")
     })
     CustomApiResponse<List<StudentResponse>> studentInfoAll(@AuthMember Member member);
 
     @Operation(summary = "학생 정보 삭제", description = "학생 정보를 삭제하는 API 입니다.", responses = {
-        @ApiResponse(responseCode = "200", description = "학생 정보 삭제 성공")
+            @ApiResponse(responseCode = "200", description = "학생 정보 삭제 성공")
     })
     CustomApiResponse<List<Long>> deleteStudent(
-        @AuthMember Member member,
-        @RequestParam List<Long> studentIds
+            @AuthMember Member member,
+            @RequestParam List<Long> studentIds
     );
 
     @Operation(summary = "학생 정보 수정", description = "학생 정보를 수정하는 API 입니다.", responses = {
-        @ApiResponse(responseCode = "200", description = "학생 정보 수정 성공")
+            @ApiResponse(responseCode = "200", description = "학생 정보 수정 성공")
     })
     CustomApiResponse<Long> updateStudent(
         @PathVariable("studentId") Long studentId,

@@ -1,6 +1,6 @@
 package classfit.example.classfit.student.dto.response;
 
-import classfit.example.classfit.student.domain.Gender;
+import classfit.example.classfit.student.domain.enumType.GenderType;
 import classfit.example.classfit.student.domain.Student;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
@@ -15,7 +15,7 @@ public record StudentInfoResponse(
 
         String name,
 
-        Gender gender,
+        GenderType genderType,
 
         LocalDate birth,
 
@@ -39,7 +39,7 @@ public record StudentInfoResponse(
         return StudentInfoResponse.builder()
                 .studentId(student.getId())
                 .name(student.getName())
-                .gender(student.getGender())
+                .genderType(student.getGenderType())
                 .birth(student.getBirth())
                 .studentNumber(student.getStudentNumber())
                 .parentNumber(student.getParentNumber())

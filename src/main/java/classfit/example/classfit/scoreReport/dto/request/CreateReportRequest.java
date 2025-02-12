@@ -1,7 +1,7 @@
 package classfit.example.classfit.scoreReport.dto.request;
 
-import classfit.example.classfit.category.domain.MainClass;
-import classfit.example.classfit.category.domain.SubClass;
+import classfit.example.classfit.course.domain.MainClass;
+import classfit.example.classfit.course.domain.SubClass;
 import classfit.example.classfit.member.domain.Member;
 import classfit.example.classfit.scoreReport.domain.ScoreReport;
 import classfit.example.classfit.student.domain.Student;

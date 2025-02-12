@@ -27,30 +27,19 @@ public class InvitationService {
     @Transactional
     public String findAcademyCode(Member member) {
         Academy academy = member.getAcademy();
-
         if (academy == null) {
             throw new ClassfitException(ErrorCode.ACADEMY_INVITATION_INVALID);
         }
-
         return academy.getCode();
     }
 
     @Transactional
     public void inviteStaffByEmail(Member member, InvitationRequest request) {
-
-        boolean exists = invitationRepository.existsByAcademyIdAndEmail(
-            member.getAcademy().getId(),
-            request.email()
-        );
-        System.out.println("Academy ID: " + member.getAcademy().getId());
-        System.out.println("Request Email: " + request.email());
-        System.out.println(exists + " exists");
-
+        boolean exists = invitationRepository.existsByAcademyIdAndEmail(member.getAcademy().getId(), request.email());
         if (!exists) {
             Invitation invitation = request.toEntity(member.getAcademy());
             invitationRepository.save(invitation);
         }
-
         emailService.sendEmail(request.email(), EmailPurpose.INVITATION);
     }
 
@@ -58,7 +47,7 @@ public class InvitationService {
     public List<InvitationResponse> staffInfoAll(Member member) {
         List<Invitation> invitations = invitationRepository.findByAcademy(member.getAcademy());
         return invitations.stream()
-            .map(InvitationResponse::from)
-            .collect(Collectors.toList());
+                .map(InvitationResponse::from)
+                .collect(Collectors.toList());
     }
 }

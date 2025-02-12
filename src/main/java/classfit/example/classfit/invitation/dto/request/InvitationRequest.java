@@ -2,7 +2,7 @@ package classfit.example.classfit.invitation.dto.request;
 
 import classfit.example.classfit.academy.domain.Academy;
 import classfit.example.classfit.invitation.domain.Invitation;
-import classfit.example.classfit.invitation.domain.InvitationStatus;
+import classfit.example.classfit.invitation.domain.enumType.InvitationType;
 import jakarta.validation.constraints.Email;
 
 public record InvitationRequest(
@@ -15,7 +15,7 @@ public record InvitationRequest(
         return Invitation.builder()
                 .name(name())
                 .email(email())
-                .status(InvitationStatus.IN_PROGRESS)
+                .status(InvitationType.IN_PROGRESS)
                 .academy(academy)
                 .build();
     }

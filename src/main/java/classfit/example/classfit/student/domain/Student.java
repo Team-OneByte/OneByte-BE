@@ -1,7 +1,8 @@
 package classfit.example.classfit.student.domain;
 
-import classfit.example.classfit.classStudent.domain.ClassStudent;
 import classfit.example.classfit.common.domain.BaseEntity;
+import classfit.example.classfit.student.domain.enumType.GenderType;
+import classfit.example.classfit.studentExam.domain.StudentExamScore;
 import classfit.example.classfit.studentExam.domain.ExamScore;
 import jakarta.persistence.*;
 import lombok.*;
@@ -27,7 +28,7 @@ public class Student extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "VARCHAR(10)", nullable = false)
-    private Gender gender;
+    private GenderType genderType;
 
     @Column(nullable = false, length = 10)
     private LocalDate birth;
@@ -59,5 +60,5 @@ public class Student extends BaseEntity {
 
     @Builder.Default
     @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ClassStudent> classStudents = new ArrayList<>();
+    private List<Enrollment> enrollments = new ArrayList<>();
 }

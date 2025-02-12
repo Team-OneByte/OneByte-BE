@@ -1,6 +1,6 @@
 package classfit.example.classfit.student.controller;
 
-import classfit.example.classfit.auth.annotation.AuthMember;
+import classfit.example.classfit.common.annotation.AuthMember;
 import classfit.example.classfit.common.response.CustomApiResponse;
 import classfit.example.classfit.member.domain.Member;
 import classfit.example.classfit.student.controller.docs.StudentControllerDocs;
@@ -39,8 +39,8 @@ public class StudentController implements StudentControllerDocs {
     @Override
     @DeleteMapping("/")
     public CustomApiResponse<List<Long>> deleteStudent(
-        @AuthMember Member member,
-        @RequestParam List<Long> studentIds
+            @AuthMember Member member,
+            @RequestParam List<Long> studentIds
     ) {
         studentService.deleteStudent(member, studentIds);
         return CustomApiResponse.success(studentIds.stream().toList(), 200, "학생 정보 삭제 성공");

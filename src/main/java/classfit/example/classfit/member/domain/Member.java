@@ -2,6 +2,7 @@ package classfit.example.classfit.member.domain;
 
 import classfit.example.classfit.academy.domain.Academy;
 import classfit.example.classfit.common.domain.BaseEntity;
+import classfit.example.classfit.member.domain.enumType.MemberType;
 import classfit.example.classfit.member.dto.request.MemberUpdateInfoRequest;
 import jakarta.persistence.*;
 import lombok.*;
@@ -37,7 +38,7 @@ public class Member extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "VARCHAR(20)", nullable = false)
-    private MemberStatus status;
+    private MemberType status;
 
     @Column(length = 20)
     private LocalDate birthDate;

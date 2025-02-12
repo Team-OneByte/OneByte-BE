@@ -1,6 +1,6 @@
 package classfit.example.classfit.auth.service;
 
-import classfit.example.classfit.auth.security.jwt.JWTUtil;
+import classfit.example.classfit.common.util.JWTUtil;
 import classfit.example.classfit.common.exception.ClassfitException;
 import classfit.example.classfit.common.response.ErrorCode;
 import classfit.example.classfit.common.util.CookieUtil;
@@ -11,7 +11,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -34,11 +36,11 @@ public class AuthService {
     public ResponseEntity<?> reissue(HttpServletRequest request, HttpServletResponse response) {
 
         String refreshToken = Arrays.stream(Optional.ofNullable(request.getCookies())
-                .orElseThrow(() -> new ClassfitException(ErrorCode.COOKIE_NOT_FOUND)))
-            .filter(cookie -> REFRESH_TOKEN_CATEGORY.equals(cookie.getName()))
-            .map(Cookie::getValue)
-            .findFirst()
-            .orElseThrow(() -> new ClassfitException(ErrorCode.REFRESH_TOKEN_NOT_FOUND));
+                        .orElseThrow(() -> new ClassfitException(ErrorCode.COOKIE_NOT_FOUND)))
+                .filter(cookie -> REFRESH_TOKEN_CATEGORY.equals(cookie.getName()))
+                .map(Cookie::getValue)
+                .findFirst()
+                .orElseThrow(() -> new ClassfitException(ErrorCode.REFRESH_TOKEN_NOT_FOUND));
 
         if (jwtUtil.isExpired(refreshToken)) {
             throw new ClassfitException(ErrorCode.REFRESH_TOKEN_EXPIRED);
@@ -62,10 +64,11 @@ public class AuthService {
         String newRefresh = jwtUtil.createJwt(REFRESH_TOKEN_CATEGORY, email, role, 1000 * 60 * 60 * 24 * 7L);
 
         redisUtil.deleteData(redisKey);
-        addRefreshEntity(email, newRefresh);
+        redisUtil.setDataExpire(redisKey, newRefresh, 1000 * 60 * 60 * 24 * 7L);
 
+        ResponseCookie responseCookie = CookieUtil.setCookie(REFRESH_TOKEN_CATEGORY, newRefresh, 60 * 60 * 24 * 7L);
         response.setHeader(CREDENTIAL, SECURITY_SCHEMA_TYPE + newAccess);
-        CookieUtil.setCookie(response, REFRESH_TOKEN_CATEGORY, refreshToken, 60 * 60 * 24 * 7L);
+        response.setHeader(HttpHeaders.SET_COOKIE, responseCookie.toString());
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -78,10 +81,5 @@ public class AuthService {
         }
 
         redisUtil.deleteData(redisRefreshTokenKey);
-    }
-
-    private void addRefreshEntity(String email, String refresh) {
-        String redisKey = REFRESH_TOKEN_CATEGORY + ":" + email;
-        redisUtil.setDataExpire(redisKey, refresh, 1000 * 60 * 60 * 24 * 7L);
     }
 }

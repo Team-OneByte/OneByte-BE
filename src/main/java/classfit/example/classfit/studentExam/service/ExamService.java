@@ -2,13 +2,13 @@ package classfit.example.classfit.studentExam.service;
 
 import classfit.example.classfit.academy.domain.Academy;
 import classfit.example.classfit.academy.repository.AcademyRepository;
-import classfit.example.classfit.auth.annotation.AuthMember;
-import classfit.example.classfit.category.domain.MainClass;
-import classfit.example.classfit.category.domain.SubClass;
-import classfit.example.classfit.category.repository.MainClassRepository;
-import classfit.example.classfit.category.repository.SubClassRepository;
-import classfit.example.classfit.classStudent.domain.ClassStudent;
-import classfit.example.classfit.classStudent.repository.ClassStudentRepository;
+import classfit.example.classfit.common.annotation.AuthMember;
+import classfit.example.classfit.course.domain.MainClass;
+import classfit.example.classfit.course.domain.SubClass;
+import classfit.example.classfit.course.repository.MainClassRepository;
+import classfit.example.classfit.course.repository.SubClassRepository;
+import classfit.example.classfit.student.domain.Enrollment;
+import classfit.example.classfit.student.repository.EnrollmentRepository;
 import classfit.example.classfit.common.exception.ClassfitException;
 import classfit.example.classfit.common.response.ErrorCode;
 import classfit.example.classfit.member.domain.Member;
@@ -23,6 +23,16 @@ import classfit.example.classfit.studentExam.domain.StudentExamScoreRepository;
 import classfit.example.classfit.studentExam.dto.examResponse.FindExamStudentResponse;
 import classfit.example.classfit.studentExam.dto.process.ExamClassStudent;
 import classfit.example.classfit.studentExam.dto.process.ExamStudent;
+import classfit.example.classfit.studentExam.dto.request.CreateExamRequest;
+import classfit.example.classfit.studentExam.dto.request.FindExamRequest;
+import classfit.example.classfit.studentExam.dto.request.UpdateExamRequest;
+import classfit.example.classfit.studentExam.dto.request.UpdateStudentScoreRequest;
+import classfit.example.classfit.studentExam.dto.response.CreateExamResponse;
+import classfit.example.classfit.studentExam.dto.response.FindExamResponse;
+import classfit.example.classfit.studentExam.dto.response.ShowExamDetailResponse;
+import classfit.example.classfit.studentExam.dto.response.UpdateExamResponse;
+import classfit.example.classfit.studentExam.dto.response.UpdateStudentScoreResponse;
+
 import classfit.example.classfit.studentExam.dto.examRequest.CreateExamRequest;
 import classfit.example.classfit.studentExam.dto.examRequest.FindExamRequest;
 import classfit.example.classfit.studentExam.dto.examRequest.UpdateExamRequest;
@@ -40,6 +50,7 @@ import java.util.stream.Collectors;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -133,9 +144,12 @@ public class ExamService {
 
         SubClass subClass = findExam.getSubClass();
         List<ExamScore> studentScores = findExam.getExamScores();
-        List<ClassStudent> classStudents = classStudentRepository.findByAcademyIdAndSubClass(
+        List<Enrollment> classStudents = classStudentRepository.findByAcademyIdAndSubClass(
                 findMember.getAcademy().getId(), subClass);
         Integer perfectScore = studentScores.stream().mapToInt(ExamScore::getScore).max()
+        List<StudentExamScore> studentScores = findExam.getStudentExamScores();
+        List<Enrollment> enrollments = enrollmentRepository.findByAcademyIdAndSubClass(findMember.getAcademy().getId(), subClass);
+        Integer perfectScore = studentScores.stream().mapToInt(StudentExamScore::getScore).max()
                 .orElse(findExam.getHighestScore());
         Integer lowestScore = studentScores.stream().mapToInt(ExamScore::getScore).min()
                 .orElse(0);
@@ -147,7 +161,7 @@ public class ExamService {
 
         examRepository.save(findExam);
 
-        List<ExamClassStudent> examClassStudents = classStudents.stream().map(classStudent -> {
+        List<ExamClassStudent> examClassStudents = enrollments.stream().map(classStudent -> {
                     Student student = classStudent.getStudent();
 
                     Integer score = studentScores.stream()
@@ -188,7 +202,7 @@ public class ExamService {
 
     @Transactional
     public UpdateExamResponse updateExam(@AuthMember Member findMember, Long examId,
-            UpdateExamRequest request) {
+                                         UpdateExamRequest request) {
         Exam findExam = examRepository.findById(examId).orElseThrow(
                 () -> new ClassfitException(ErrorCode.EXAM_NOT_FOUND));
         validateAcademy(findMember, findExam.getMainClass().getAcademy().getId());

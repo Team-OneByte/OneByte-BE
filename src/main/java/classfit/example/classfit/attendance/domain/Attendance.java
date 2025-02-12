@@ -1,6 +1,7 @@
 package classfit.example.classfit.attendance.domain;
 
-import classfit.example.classfit.classStudent.domain.ClassStudent;
+import classfit.example.classfit.attendance.domain.enumType.AttendanceStatus;
+import classfit.example.classfit.student.domain.Enrollment;
 import classfit.example.classfit.common.exception.ClassfitException;
 import classfit.example.classfit.common.response.ErrorCode;
 import jakarta.persistence.*;
@@ -29,7 +30,7 @@ public class Attendance {
 
     @ManyToOne
     @JoinColumn(name = "class_student_id")
-    private ClassStudent classStudent;
+    private Enrollment enrollment;
 
     public void updateStatus(String status) {
         try {

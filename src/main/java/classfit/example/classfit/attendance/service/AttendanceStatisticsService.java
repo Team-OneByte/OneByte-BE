@@ -1,12 +1,12 @@
 package classfit.example.classfit.attendance.service;
 
 import classfit.example.classfit.attendance.domain.Attendance;
-import classfit.example.classfit.attendance.domain.AttendanceStatus;
+import classfit.example.classfit.attendance.domain.enumType.AttendanceStatus;
 import classfit.example.classfit.attendance.dto.response.StatisticsDateResponse;
 import classfit.example.classfit.attendance.dto.response.StatisticsMemberResponse;
 import classfit.example.classfit.attendance.repository.AttendanceRepository;
-import classfit.example.classfit.classStudent.domain.ClassStudent;
-import classfit.example.classfit.classStudent.repository.ClassStudentRepository;
+import classfit.example.classfit.student.domain.Enrollment;
+import classfit.example.classfit.student.repository.EnrollmentRepository;
 import classfit.example.classfit.member.domain.Member;
 import classfit.example.classfit.student.domain.Student;
 import java.time.DayOfWeek;
@@ -25,7 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class AttendanceStatisticsService {
 
     private final AttendanceRepository attendanceRepository;
-    private final ClassStudentRepository classStudentRepository;
+    private final EnrollmentRepository enrollmentRepository;
 
     public List<StatisticsDateResponse> getAttendanceStatisticsByDate(
         LocalDate startDate,
@@ -49,7 +49,7 @@ public class AttendanceStatisticsService {
         List<Attendance> attendances = attendanceRepository.findByDateAndSubClassIdAndStatusAndAcademyId(date, subClassId, status, academyId);
 
         return attendances.stream()
-            .map(attendance -> attendance.getClassStudent().getStudent().getName())
+            .map(attendance -> attendance.getEnrollment().getStudent().getName())
             .collect(Collectors.toList());
     }
 
@@ -70,9 +70,9 @@ public class AttendanceStatisticsService {
         LocalDate endDate,
         Member member) {
         Long academyId = member.getAcademy().getId();
-        List<ClassStudent> allClassStudents = classStudentRepository.findByAcademyId(academyId);
+        List<Enrollment> allEnrollments = enrollmentRepository.findByAcademyId(academyId);
 
-        return allClassStudents.stream()
+        return allEnrollments.stream()
             .map(classStudent -> createStatisticsMemberResponse(classStudent, startDate, endDate))
             .sorted(Comparator.comparing(StatisticsMemberResponse::name))
             .collect(Collectors.toList());
@@ -91,10 +91,10 @@ public class AttendanceStatisticsService {
     }
 
     private StatisticsMemberResponse createStatisticsMemberResponse(
-        ClassStudent classStudent,
+        Enrollment enrollment,
         LocalDate startDate,
         LocalDate endDate) {
-        Student student = classStudent.getStudent();
+        Student student = enrollment.getStudent();
         List<Attendance> studentAttendances = attendanceRepository.findByStudentIdAndDateBetween(student.getId(), startDate, endDate);
 
         return new StatisticsMemberResponse(

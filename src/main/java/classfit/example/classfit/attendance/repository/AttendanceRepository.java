@@ -1,7 +1,7 @@
 package classfit.example.classfit.attendance.repository;
 
 import classfit.example.classfit.attendance.domain.Attendance;
-import classfit.example.classfit.attendance.domain.AttendanceStatus;
+import classfit.example.classfit.attendance.domain.enumType.AttendanceStatus;
 import classfit.example.classfit.student.domain.Student;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -15,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
     @Query("SELECT CASE WHEN COUNT(a) > 0 THEN true ELSE false END FROM Attendance a " +
-        "JOIN a.classStudent cs WHERE cs.student = :student AND a.date = :date")
+        "JOIN a.enrollment cs WHERE cs.student = :student AND a.date = :date")
     boolean existsByStudentAndDate(
         @Param("student") Student student,
         @Param("date") LocalDate date
@@ -24,22 +24,22 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
     @Query("SELECT MAX(a.date) FROM Attendance a")
     Optional<LocalDate> findLastGeneratedDate();
 
-    @Query("SELECT a FROM Attendance a WHERE a.classStudent.student IN " +
-        "(SELECT cs.student FROM ClassStudent cs WHERE cs.subClass.id = :subClassId AND cs.subClass.mainClass.academy.id =:academyId) " +
+    @Query("SELECT a FROM Attendance a WHERE a.enrollment.student IN " +
+        "(SELECT cs.student FROM Enrollment cs WHERE cs.subClass.id = :subClassId AND cs.subClass.mainClass.academy.id =:academyId) " +
         "AND FUNCTION('MONTH', a.date) = :month")
     List<Attendance> findByAcademyIdAndSubClassIdAndMonth(
         @Param("academyId") Long academyId,
         @Param("subClassId") Long subClassId,
         @Param("month") int month);
 
-    @Query("SELECT a FROM Attendance a WHERE a.classStudent.student IN " +
-        "(SELECT cs.student FROM ClassStudent cs WHERE cs.subClass.mainClass.academy.id =:academyId) " +
+    @Query("SELECT a FROM Attendance a WHERE a.enrollment.student IN " +
+        "(SELECT cs.student FROM Enrollment cs WHERE cs.subClass.mainClass.academy.id =:academyId) " +
         "AND FUNCTION('MONTH', a.date) = :month")
     List<Attendance> findByAcademyIdAndMonth(
         @Param("academyId") Long academyId,
         @Param("month") int month);
 
-    @Query("SELECT a FROM Attendance a JOIN a.classStudent cs " +
+    @Query("SELECT a FROM Attendance a JOIN a.enrollment cs " +
         "WHERE cs.subClass.id = :subClassId " +
         "AND cs.subClass.mainClass.academy.id = :academyId " +
         "AND a.date BETWEEN :startDate AND :endDate")
@@ -49,7 +49,7 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
         @Param("subClassId") Long subClassId,
         @Param("academyId") Long academyId);
 
-    @Query("SELECT a FROM Attendance a JOIN a.classStudent cs " +
+    @Query("SELECT a FROM Attendance a JOIN a.enrollment cs " +
         "WHERE cs.subClass.id = :subClassId " +
         "AND cs.subClass.mainClass.academy.id = :academyId " +
         "AND a.date = :date " +
@@ -60,7 +60,7 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
         @Param("status") AttendanceStatus status,
         @Param("academyId") Long academyId);
 
-    @Query("SELECT a FROM Attendance a JOIN a.classStudent cs " +
+    @Query("SELECT a FROM Attendance a JOIN a.enrollment cs " +
         "WHERE cs.student.id = :studentId " +
         "AND a.date BETWEEN :startDate AND :endDate")
     List<Attendance> findByStudentIdAndDateBetween(
@@ -68,8 +68,8 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
         @Param("startDate") LocalDate startDate,
         @Param("endDate") LocalDate endDate);
 
-    @Query("SELECT a FROM Attendance a JOIN a.classStudent cs " +
-        "WHERE a.classStudent.student.id = :studentId " +
+    @Query("SELECT a FROM Attendance a JOIN a.enrollment cs " +
+        "WHERE a.enrollment.student.id = :studentId " +
         "AND FUNCTION('MONTH', a.date) = :month " +
         "AND a.status = :status " +
         "AND cs.subClass.mainClass.academy.id = :academyId ")
@@ -81,6 +81,6 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
 
     @Modifying
     @Transactional
-    @Query("DELETE FROM Attendance a WHERE a.classStudent.student.id = :studentId")
+    @Query("DELETE FROM Attendance a WHERE a.enrollment.student.id = :studentId")
     void deleteByStudentId(@Param("studentId") Long studentId);
 }
