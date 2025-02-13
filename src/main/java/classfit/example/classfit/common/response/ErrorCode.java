@@ -77,6 +77,7 @@ public enum ErrorCode {
     SCORE_EXCEEDS_HIGHEST("시험 점수는 최고 점수를 초과할 수 없습니다.", HttpStatus.BAD_REQUEST),
     REPORT_NOT_FOUND("학습 리포트를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
     SEARCH_NOT_AVAILABLE("검색 조건이 잘못되었습니다.", HttpStatus.BAD_REQUEST),
+    SCORE_LESS_THAN_ZERO("시험 점수는 0 이상이어야 합니다.", HttpStatus.BAD_REQUEST),
 
     // 일정 관리
     EVENT_NOT_FOUND("해당 일정을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),

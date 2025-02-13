@@ -22,8 +22,11 @@ import classfit.example.classfit.scoreReport.dto.request.SentStudentOpinionReque
 import classfit.example.classfit.scoreReport.dto.response.*;
 import classfit.example.classfit.student.domain.Student;
 import classfit.example.classfit.student.dto.StudentList;
-import classfit.example.classfit.studentExam.domain.*;
-import classfit.example.classfit.studentExam.dto.process.ExamHistory;
+import classfit.example.classfit.exam.domain.*;
+import classfit.example.classfit.exam.domain.enumType.Standard;
+import classfit.example.classfit.exam.dto.process.ExamHistory;
+import classfit.example.classfit.exam.repository.ExamRepository;
+import classfit.example.classfit.exam.repository.ExamScoreRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,7 +46,7 @@ public class ScoreReportService {
     private final SubClassRepository subClassRepository;
     private final ExamRepository examRepository;
     private final EnrollmentRepository enrollmentRepository;
-    private final StudentExamScoreRepository studentExamScoreRepository;
+    private final ExamScoreRepository examScoreRepository;
     private final AcademyRepository academyRepository;
 
     @Transactional(readOnly = true)
@@ -84,10 +87,10 @@ public class ScoreReportService {
             allStudents.add(new StudentList(report.getId(), student.getId(), student.getName()));
 
             for (Long examId : request.examIdList()) {
-                StudentExamScore studentExamScore = studentExamScoreRepository.findByStudentAndExamId(student, examId)
-                        .orElseThrow(() -> new ClassfitException(ErrorCode.SCORE_NOT_FOUND));
-                studentExamScore.updateScoreReport(report);
-                studentExamScoreRepository.save(studentExamScore);
+                ExamScore examScore = examScoreRepository.findByStudentAndExamId(student, examId)
+                    .orElseThrow(() -> new ClassfitException(ErrorCode.SCORE_NOT_FOUND));
+                examScore.updateScoreReport(report);
+                examScoreRepository.save(examScore);
             }
         }
 
@@ -174,7 +177,7 @@ public class ScoreReportService {
     @Transactional
     public void deleteReport(@AuthMember Member member, Long studentReportId) {
         validateAcademy(member, member.getAcademy().getId());
-        studentExamScoreRepository.deleteByReportId(studentReportId);
+        examScoreRepository.deleteByReportId(studentReportId);
         scoreReportRepository.deleteById(studentReportId);
     }
 
@@ -248,18 +251,18 @@ public class ScoreReportService {
                 .mapToInt(AttendanceInfo::attendanceCount)
                 .sum();
 
-        List<StudentExamScore> studentExamScores = studentExamScoreRepository.findByScoreReport(
-                scoreReport);
+        List<ExamScore> examScores = examScoreRepository.findByScoreReport(
+            scoreReport);
 
-        List<ExamHistory> examHistoryList = studentExamScores.stream()
-                .filter(studentExamScore -> studentExamScore.getScoreReport().getId()
-                        .equals(scoreReport.getId()))
-                .map(studentExamScore -> {
-                    Exam exam = studentExamScore.getExam();
+        List<ExamHistory> examHistoryList = examScores.stream()
+            .filter(studentExamScore -> studentExamScore.getScoreReport().getId()
+                .equals(scoreReport.getId()))
+            .map(studentExamScore -> {
+                Exam exam = studentExamScore.getExam();
 
                     if (exam.getStandard() == Standard.PF) {
-                        long pCount = studentExamScoreRepository.countByExamAndScore(exam, -3);
-                        long fCount = studentExamScoreRepository.countByExamAndScore(exam, -4);
+                        long pCount = examScoreRepository.countByExamAndScore(exam, -3);
+                        long fCount = examScoreRepository.countByExamAndScore(exam, -4);
 
                         exam.updateAverage(pCount > fCount ? 100 : 0);
 

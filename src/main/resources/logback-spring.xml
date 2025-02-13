@@ -24,7 +24,7 @@
 
     <springProfile name="local">
         <logger name="classfit.example.classfit" level="DEBUG"/>
-        <root level="INFO">
+        <root level="ERROR">
             <appender-ref ref="CONSOLE"/>
             <appender-ref ref="FILE"/>
         </root>

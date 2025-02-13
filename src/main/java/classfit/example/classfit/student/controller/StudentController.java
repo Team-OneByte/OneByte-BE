@@ -49,8 +49,8 @@ public class StudentController implements StudentControllerDocs {
     @Override
     @PatchMapping("/{studentId}")
     public CustomApiResponse<Long> updateStudent(
-            @PathVariable Long studentId,
-            @RequestBody @Valid StudentUpdateRequest req
+        @PathVariable("studentId")Long studentId,
+        @RequestBody @Valid StudentUpdateRequest req
     ) {
         studentService.updateStudent(studentId, req);
         return CustomApiResponse.success(studentId, 200, "학생 정보 수정 성공");
@@ -58,7 +58,7 @@ public class StudentController implements StudentControllerDocs {
 
     @Override
     @GetMapping("/{studentId}")
-    public CustomApiResponse<StudentInfoResponse> studentInfo(@PathVariable Long studentId) {
+    public CustomApiResponse<StudentInfoResponse> studentInfo(@PathVariable("studentId") Long studentId) {
         StudentInfoResponse studentInfo = studentService.getStudentInfo(studentId);
         return CustomApiResponse.success(studentInfo, 200, "개별 학생 정보 조회 성공");
     }

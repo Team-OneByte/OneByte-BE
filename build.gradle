@@ -16,6 +16,30 @@ configurations {
     compileOnly {
         extendsFrom annotationProcessor
     }
+    querydsl.extendsFrom compileClasspath
+}
+
+def generated = 'src/main/generated'
+
+tasks.withType(JavaCompile) {
+    options.annotationProcessorPath = configurations.querydsl
+    options.generatedSourceOutputDirectory = file(generated)
+    destinationDirectory.set(file(generated))
+}
+
+sourceSets {
+    main.java.srcDirs += [ generated ]
+}
+
+clean {
+    delete file(generated)
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+    querydsl.extendsFrom compileClasspath
 }
 
 repositories {
@@ -24,6 +48,7 @@ repositories {
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'javax.persistence:javax.persistence-api:2.2'
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.kafka:spring-kafka'
@@ -40,6 +65,10 @@ dependencies {
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0' // swagger
     implementation 'net.nurigo:sdk:4.3.0'
+    // queryDSL
+    implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
+    annotationProcessor 'com.querydsl:querydsl-apt:5.0.0:jakarta'
+
 
 
     //jwt
