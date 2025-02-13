@@ -9,14 +9,8 @@ import classfit.example.classfit.course.domain.MainClass;
 import classfit.example.classfit.course.domain.SubClass;
 import classfit.example.classfit.course.repository.MainClassRepository;
 import classfit.example.classfit.course.repository.SubClassRepository;
-import classfit.example.classfit.member.domain.Member;
-import classfit.example.classfit.student.domain.Enrollment;
-import classfit.example.classfit.student.domain.Student;
-import classfit.example.classfit.student.repository.EnrollmentRepository;
 import classfit.example.classfit.exam.domain.Exam;
-import classfit.example.classfit.exam.repository.ExamRepository;
 import classfit.example.classfit.exam.domain.ExamScore;
-import classfit.example.classfit.exam.repository.ExamScoreRepository;
 import classfit.example.classfit.exam.dto.exam.request.CreateExamRequest;
 import classfit.example.classfit.exam.dto.exam.request.FindExamRequest;
 import classfit.example.classfit.exam.dto.exam.request.UpdateExamRequest;
@@ -26,7 +20,12 @@ import classfit.example.classfit.exam.dto.exam.response.FindExamStudentResponse;
 import classfit.example.classfit.exam.dto.exam.response.ShowExamDetailResponse;
 import classfit.example.classfit.exam.dto.exam.response.UpdateExamResponse;
 import classfit.example.classfit.exam.dto.process.ExamClassStudent;
-import java.util.Arrays;
+import classfit.example.classfit.exam.repository.ExamRepository;
+import classfit.example.classfit.exam.repository.ExamScoreRepository;
+import classfit.example.classfit.member.domain.Member;
+import classfit.example.classfit.student.domain.Enrollment;
+import classfit.example.classfit.student.domain.Student;
+import classfit.example.classfit.student.repository.EnrollmentRepository;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -77,7 +76,8 @@ public class ExamService {
     }
 
     @Transactional(readOnly = true)
-    public List<FindExamStudentResponse> findExamClassStudent(@AuthMember Member findMember, Long examId) {
+    public List<FindExamStudentResponse> findExamClassStudent(@AuthMember Member findMember,
+            Long examId) {
         Exam findExam = examRepository.findById(examId)
                 .orElseThrow(() -> new ClassfitException(ErrorCode.EXAM_NOT_FOUND));
         validateAcademy(findMember, findMember.getAcademy().getId());
@@ -126,63 +126,68 @@ public class ExamService {
         List<ExamScore> studentScores = findExam.getExamScores();
         List<Enrollment> enrollments = enrollmentRepository.findByAcademyIdAndSubClass(
                 findMember.getAcademy().getId(), subClass);
-        Integer perfectScore = studentScores.stream().mapToInt(ExamScore::getScore).max()
+
+        Integer perfectScore = studentScores.stream()
+                .mapToInt(ExamScore::getScore)
+                .max()
                 .orElse(findExam.getHighestScore());
-        Integer lowestScore = studentScores.stream().mapToInt(ExamScore::getScore).min()
+
+        Integer lowestScore = studentScores.stream()
+                .mapToInt(ExamScore::getScore)
+                .min()
                 .orElse(0);
-        Double average = (Double) studentScores.stream().mapToInt(ExamScore::getScore)
+
+        Double average = studentScores.stream()
+                .mapToInt(ExamScore::getScore)
                 .average()
                 .orElse((perfectScore + lowestScore) / 2.0);
-        String formattedAverage = String.format("%.1f", average);
-        findExam.updateScores(lowestScore, perfectScore, average);
 
+        String formattedAverage = String.format("%.1f", average);
+
+        findExam.updateScores(lowestScore, perfectScore, average);
         examRepository.save(findExam);
 
-        List<ExamClassStudent> examClassStudents = enrollments.stream().map(classStudent -> {
+        List<ExamClassStudent> examClassStudents = enrollments.stream()
+                .map(classStudent -> {
                     Student student = classStudent.getStudent();
-
                     Integer score = studentScores.stream()
-                            .filter(scoreObj -> scoreObj.getStudent().getId().equals(student.getId()))
-                            .map(ExamScore::getScore).findFirst().orElse(0);
+                            .filter(scoreObj -> scoreObj.getStudent().getId()
+                                    .equals(student.getId()))
+                            .map(ExamScore::getScore)
+                            .findFirst()
+                            .orElse(0);
 
                     String evaluationDetail = examScoreRepository.findByExamAndStudentIdAndAcademyId(
-                                    findMember.getAcademy().getId(), findExam,
-                                    student.getId())
+                                    findMember.getAcademy().getId(), findExam, student.getId())
                             .map(ExamScore::getEvaluationDetail)
                             .orElse(null);
+
                     boolean checkedStudent = studentScores.stream()
-                            .filter(scoreObj -> scoreObj.getStudent().getId().equals(student.getId()))
+                            .filter(scoreObj -> scoreObj.getStudent().getId()
+                                    .equals(student.getId()))
                             .map(ExamScore::isCheckedStudent)
                             .findFirst()
                             .orElse(false);
-                    //TODO 빌더패턴 수정
-                    return new ExamClassStudent(student.getId(), student.getName(), score, evaluationDetail,
-                            checkedStudent);
-                })
 
+                    return ExamClassStudent.of(student.getId(), student.getName(), score,
+                            findExam.getHighestScore(), evaluationDetail, checkedStudent);
+                })
                 .collect(Collectors.toList());
 
-        List<String> examRangeList = Arrays.asList(findExam.getExamRange().split(","));
-        return new ShowExamDetailResponse(findExam.getExamPeriod(), findExam.getExamName(),
-                findExam.getExamDate(), findExam.getMainClass().getMainClassName(),
-                findExam.getSubClass().getSubClassName(), lowestScore, perfectScore,
-                formattedAverage,
-                findExam.getHighestScore(),
-                examRangeList, findExam.getStandard(), examClassStudents);
+        return ShowExamDetailResponse.from(findExam, examClassStudents);
     }
+
 
     @Transactional
     public UpdateExamResponse updateExam(@AuthMember Member findMember, Long examId,
-                                         UpdateExamRequest request) {
+            UpdateExamRequest request) {
         Exam findExam = examRepository.findById(examId).orElseThrow(
                 () -> new ClassfitException(ErrorCode.EXAM_NOT_FOUND));
         validateAcademy(findMember, findExam.getMainClass().getAcademy().getId());
 
         Integer newHighestScore = request.highestScore();
-
         List<ExamScore> examScores = examScoreRepository.findAllByAcademyIdAndExam(
-                findMember.getAcademy().getId(),
-                findExam);
+                findMember.getAcademy().getId(), findExam);
 
         if (newHighestScore != null && newHighestScore > 0) {
             for (ExamScore examScore : examScores) {
@@ -197,12 +202,10 @@ public class ExamService {
         findExam.updateExam(request.examDate(), request.standard(), newHighestScore,
                 request.examPeriod(), request.examName(), examRangeList);
         examRepository.save(findExam);
-        // TODO 빌더 패턴 수정
-        return new UpdateExamResponse(findExam.getId(), findExam.getMainClass().getMainClassName(),
-                findExam.getSubClass().getSubClassName(), findExam.getExamDate(),
-                findExam.getStandard(), findExam.getHighestScore(), findExam.getExamPeriod(),
-                findExam.getExamName(), examRangeList);
+
+        return UpdateExamResponse.from(findExam);
     }
+
 
     @Transactional
     public void deleteExam(@AuthMember Member findMember, Long examId) {
