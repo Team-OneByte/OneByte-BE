@@ -30,7 +30,7 @@ public record UpdateExamResponse(
                 .highestScore(exam.getHighestScore())
                 .examPeriod(exam.getExamPeriod())
                 .examName(exam.getExamName())
-                .examRange(exam.getExamRange())
+                .examRange(List.of(exam.getExamRange().split(",")))
                 .build();
     }
 

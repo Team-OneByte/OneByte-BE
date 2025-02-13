@@ -85,12 +85,7 @@ public class ExamService {
         List<Student> students = examScoreRepository.findStudentsByExamIdAndAcademyId(
                 findMember.getAcademy().getId(), findExam.getId());
 
-        return students.stream()
-                .map(student -> FindExamStudentResponse.builder()
-                        .studentId(student.getId())
-                        .studentName(student.getName())
-                        .build())
-                .collect(Collectors.toList());
+        return FindExamStudentResponse.from(students);
     }
 
 
