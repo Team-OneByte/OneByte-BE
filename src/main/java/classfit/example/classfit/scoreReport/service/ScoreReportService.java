@@ -5,37 +5,41 @@ import classfit.example.classfit.academy.repository.AcademyRepository;
 import classfit.example.classfit.attendance.domain.Attendance;
 import classfit.example.classfit.attendance.dto.process.AttendanceInfo;
 import classfit.example.classfit.common.annotation.AuthMember;
+import classfit.example.classfit.common.exception.ClassfitException;
+import classfit.example.classfit.common.response.ErrorCode;
 import classfit.example.classfit.course.domain.MainClass;
 import classfit.example.classfit.course.domain.SubClass;
 import classfit.example.classfit.course.repository.MainClassRepository;
 import classfit.example.classfit.course.repository.SubClassRepository;
-import classfit.example.classfit.student.domain.Enrollment;
-import classfit.example.classfit.student.repository.EnrollmentRepository;
-import classfit.example.classfit.common.exception.ClassfitException;
-import classfit.example.classfit.common.response.ErrorCode;
-import classfit.example.classfit.member.domain.Member;
-import classfit.example.classfit.scoreReport.domain.ScoreReport;
-import classfit.example.classfit.scoreReport.domain.ScoreReportRepository;
-import classfit.example.classfit.scoreReport.dto.process.ReportExam;
-import classfit.example.classfit.scoreReport.dto.request.CreateReportRequest;
-import classfit.example.classfit.scoreReport.dto.request.SentStudentOpinionRequest;
-import classfit.example.classfit.scoreReport.dto.response.*;
-import classfit.example.classfit.student.domain.Student;
-import classfit.example.classfit.student.dto.StudentList;
-import classfit.example.classfit.exam.domain.*;
+import classfit.example.classfit.exam.domain.Exam;
+import classfit.example.classfit.exam.domain.ExamScore;
 import classfit.example.classfit.exam.domain.enumType.Standard;
 import classfit.example.classfit.exam.dto.process.ExamHistory;
 import classfit.example.classfit.exam.repository.ExamRepository;
 import classfit.example.classfit.exam.repository.ExamScoreRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
+import classfit.example.classfit.member.domain.Member;
+import classfit.example.classfit.scoreReport.domain.ScoreReport;
+import classfit.example.classfit.scoreReport.dto.process.ReportExam;
+import classfit.example.classfit.scoreReport.dto.request.CreateReportRequest;
+import classfit.example.classfit.scoreReport.dto.request.SentStudentOpinionRequest;
+import classfit.example.classfit.scoreReport.dto.response.CreateReportResponse;
+import classfit.example.classfit.scoreReport.dto.response.FindClassStudent;
+import classfit.example.classfit.scoreReport.dto.response.FindReportResponse;
+import classfit.example.classfit.scoreReport.dto.response.SentStudentOpinionResponse;
+import classfit.example.classfit.scoreReport.dto.response.ShowStudentReportResponse;
+import classfit.example.classfit.scoreReport.repository.ScoreReportRepository;
+import classfit.example.classfit.student.domain.Enrollment;
+import classfit.example.classfit.student.domain.Student;
+import classfit.example.classfit.student.dto.StudentList;
+import classfit.example.classfit.student.repository.EnrollmentRepository;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -56,7 +60,7 @@ public class ScoreReportService {
 
     @Transactional
     public CreateReportResponse createReport(@AuthMember Member member,
-                                             CreateReportRequest request) {
+            CreateReportRequest request) {
         MainClass mainClass = mainClassRepository.findById(request.mainClassId())
                 .orElseThrow(
                         () -> new ClassfitException(ErrorCode.MAIN_CLASS_NOT_FOUND));
@@ -88,7 +92,7 @@ public class ScoreReportService {
 
             for (Long examId : request.examIdList()) {
                 ExamScore examScore = examScoreRepository.findByStudentAndExamId(student, examId)
-                    .orElseThrow(() -> new ClassfitException(ErrorCode.SCORE_NOT_FOUND));
+                        .orElseThrow(() -> new ClassfitException(ErrorCode.SCORE_NOT_FOUND));
                 examScore.updateScoreReport(report);
                 examScoreRepository.save(examScore);
             }
@@ -109,8 +113,7 @@ public class ScoreReportService {
 
     @Transactional(readOnly = true)
     public List<ReportExam> showReportExam(@AuthMember Member member, LocalDate startDate,
-                                           LocalDate endDate, Long mainClassId,
-                                           Long subClassId) {
+            LocalDate endDate, Long mainClassId, Long subClassId) {
         validateAcademy(member, member.getAcademy().getId());
         List<ReportExam> reports = scoreReportRepository.findExamsByCreatedAtBetween(startDate,
                 endDate, mainClassId, subClassId, member.getAcademy().getId());
@@ -129,7 +132,7 @@ public class ScoreReportService {
 
     @Transactional(readOnly = true)
     public List<FindReportResponse> findReport(@AuthMember Member member, Long mainClassId,
-                                               Long subClassId, String memberName) {
+            Long subClassId, String memberName) {
         MainClass mainClass = mainClassRepository.findById(mainClassId)
                 .orElseThrow(
                         () -> new ClassfitException(ErrorCode.MAIN_CLASS_NOT_FOUND));
@@ -183,7 +186,7 @@ public class ScoreReportService {
 
     @Transactional(readOnly = true)
     public List<FindClassStudent> findClassStudents(@AuthMember Member member, Long mainClassId,
-                                                    Long subClassId) {
+            Long subClassId) {
 
         MainClass mainClass = mainClassRepository.findById(mainClassId)
                 .orElseThrow(
@@ -203,7 +206,7 @@ public class ScoreReportService {
 
     @Transactional
     public List<SentStudentOpinionResponse> sentStudentOpinion(@AuthMember Member member,
-                                                               List<SentStudentOpinionRequest> requests) {
+            List<SentStudentOpinionRequest> requests) {
 
         List<SentStudentOpinionResponse> responses = new ArrayList<>();
 
@@ -252,13 +255,13 @@ public class ScoreReportService {
                 .sum();
 
         List<ExamScore> examScores = examScoreRepository.findByScoreReport(
-            scoreReport);
+                scoreReport);
 
         List<ExamHistory> examHistoryList = examScores.stream()
-            .filter(studentExamScore -> studentExamScore.getScoreReport().getId()
-                .equals(scoreReport.getId()))
-            .map(studentExamScore -> {
-                Exam exam = studentExamScore.getExam();
+                .filter(studentExamScore -> studentExamScore.getScoreReport().getId()
+                        .equals(scoreReport.getId()))
+                .map(studentExamScore -> {
+                    Exam exam = studentExamScore.getExam();
 
                     if (exam.getStandard() == Standard.PF) {
                         long pCount = examScoreRepository.countByExamAndScore(exam, -3);
