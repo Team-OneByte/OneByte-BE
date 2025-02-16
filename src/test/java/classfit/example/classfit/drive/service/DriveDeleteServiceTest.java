@@ -63,7 +63,7 @@ class DriveDeleteServiceTest {
     }
 
     @Test
-    @DisplayName("공용 파일을 휴지통에서 삭제하고 S3에서도 삭제한다")
+    @DisplayName("공용 파일을 휴지통에서 삭제하고 S3에서 삭제한다")
     void 공용_드라이브_휴지통_비우기_케이스() {
         // Given
         DriveType driveType = DriveType.SHARED;

@@ -73,7 +73,7 @@ class DriveUploadServiceTest {
 
 
     @Test
-    @DisplayName("미리 서명된 URL을 발급한다")
+    @DisplayName("파얼 업로드에 실패한다.")
     void 파일_업로드_실패_케이스() {
         // given
         DriveType driveType = DriveType.PERSONAL;
