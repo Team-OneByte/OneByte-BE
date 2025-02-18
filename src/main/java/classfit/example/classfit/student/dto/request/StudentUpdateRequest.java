@@ -17,7 +17,7 @@ public record StudentUpdateRequest(
 
         @NotBlankNullable
         @EnumValue(target = GenderType.class, message = "존재하지 않는 성별입니다.", ignoreCase = true)
-        String gender,
+        String genderType,
 
         @DateTimeFormat(pattern = "yyyy-MM-dd")
         @Past LocalDate birth,

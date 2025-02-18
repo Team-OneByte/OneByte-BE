@@ -18,9 +18,11 @@ public interface DriveRepository extends JpaRepository<Drive, Long> {
 
     List<SharedDrive> findByAcademyAndIsDeletedFalse(Academy academy);
 
-    List<PersonalDrive> findByMemberAndObjectTypeAndIsDeletedFalse(Member member, String objectType);
+    List<PersonalDrive> findByMemberAndObjectTypeAndIsDeletedFalse(Member member,
+            String objectType);
 
-    List<SharedDrive> findByAcademyAndObjectTypeAndIsDeletedFalse(Academy academy, String objectType);
+    List<SharedDrive> findByAcademyAndObjectTypeAndIsDeletedFalse(Academy academy,
+            String objectType);
 
     @Query("SELECT d FROM PersonalDrive d WHERE d.member = :member AND d.objectName LIKE %:objectName% AND d.isDeleted = false")
     List<PersonalDrive> findPersonalFilesByMember(
@@ -52,15 +54,17 @@ public interface DriveRepository extends JpaRepository<Drive, Long> {
 
     @Transactional
     @Modifying
-    @Query("UPDATE Drive d SET d.isDeleted = true " +
+    @Query("UPDATE PersonalDrive d SET d.isDeleted = true " +
             "WHERE d.member = :member " +
             "AND d.objectName IN :objectNames ")
-    int storePersonalFiles(@Param("member") Member member,
-            @Param("objectNames") List<String> objectNames);
+    int storePersonalFiles(
+            @Param("member") Member member,
+            @Param("objectNames") List<String> objectNames
+    );
 
     @Transactional
     @Modifying
-    @Query("UPDATE Drive d SET d.isDeleted = true " +
+    @Query("UPDATE SharedDrive d SET d.isDeleted = true " +
             "WHERE d.academy = :academy " +
             "AND d.objectName IN :objectNames ")
     int storeSharedFiles(

@@ -158,7 +158,7 @@ public class StudentService {
                 return;
             }
 
-            if ("gender".equals(field.getName()) && newValue instanceof String) {
+            if ("genderType".equals(field.getName()) && newValue instanceof String) {
                 newValue = GenderType.valueOf(((String) newValue).toUpperCase());
             }
 

@@ -1,19 +1,12 @@
 package classfit.example.classfit.common.util;
 
+import static classfit.example.classfit.drive.domain.enumType.DriveType.PERSONAL;
+import static classfit.example.classfit.drive.domain.enumType.DriveType.SHARED;
+
 import classfit.example.classfit.common.exception.ClassfitException;
 import classfit.example.classfit.common.response.ErrorCode;
 import classfit.example.classfit.drive.domain.enumType.DriveType;
-import classfit.example.classfit.drive.domain.enumType.ObjectType;
-import classfit.example.classfit.drive.dto.response.DriveFileResponse;
 import classfit.example.classfit.member.domain.Member;
-import com.amazonaws.services.s3.model.S3ObjectSummary;
-
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Map;
-
-import static classfit.example.classfit.drive.domain.enumType.DriveType.PERSONAL;
-import static classfit.example.classfit.drive.domain.enumType.DriveType.SHARED;
 
 public class DriveUtil {
 
@@ -26,14 +19,6 @@ public class DriveUtil {
             return String.format("shared/%d/%s", academyId, fileName);
         }
         throw new ClassfitException(ErrorCode.DRIVE_TYPE_INVALID);
-    }
-
-    public static String generateFolderPath(Member member, DriveType driveType, String folderName, String folderPath) {
-        String basePath = driveType == PERSONAL
-                ? String.format("personal/%d/", member.getId())
-                : String.format("shared/%d/", member.getAcademy().getId());
-
-        return basePath + folderPath + folderName + "/";
     }
 
     public static String formatFileSize(long sizeInBytes) {
