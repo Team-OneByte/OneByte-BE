@@ -5,11 +5,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -22,25 +24,29 @@ import classfit.example.classfit.course.domain.SubClass;
 import classfit.example.classfit.course.repository.MainClassRepository;
 import classfit.example.classfit.course.repository.SubClassRepository;
 import classfit.example.classfit.exam.domain.Exam;
+import classfit.example.classfit.exam.domain.ExamScore;
 import classfit.example.classfit.exam.domain.enumType.ExamPeriod;
 import classfit.example.classfit.exam.domain.enumType.Standard;
 import classfit.example.classfit.exam.dto.exam.request.CreateExamRequest;
 import classfit.example.classfit.exam.dto.exam.request.FindExamRequest;
+import classfit.example.classfit.exam.dto.exam.request.UpdateExamRequest;
 import classfit.example.classfit.exam.dto.exam.response.CreateExamResponse;
 import classfit.example.classfit.exam.dto.exam.response.FindExamResponse;
 import classfit.example.classfit.exam.repository.ExamRepository;
+import classfit.example.classfit.exam.repository.ExamScoreRepository;
 import classfit.example.classfit.exam.service.ExamService;
 import classfit.example.classfit.member.domain.Member;
 import classfit.example.classfit.member.repository.MemberRepository;
 import classfit.example.classfit.student.domain.Enrollment;
 import classfit.example.classfit.student.domain.Student;
-import classfit.example.classfit.student.repository.EnrollmentRepository;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -64,10 +70,11 @@ public class ExamServiceTest {
     @Mock
     private AcademyRepository academyRepository;
     @Mock
-    private EnrollmentRepository enrollmentRepository;
+    private ExamScoreRepository examScoreRepository;
     private Member findMember;
     private SubClass findSubClass;
     private MainClass findMainClass;
+    private ExamScore examScore;
     private CreateExamRequest examRequest;
     private FindExamRequest findExamRequest;
     private List<Student> students;
@@ -342,6 +349,95 @@ public class ExamServiceTest {
         assertThrows(ClassfitException.class, () -> {
             examService.deleteExam(findMember, exam.getId());
         });
+    }
+
+    @Test
+    void 시험지_수정_성공() {
+        Exam exam = Exam.builder()
+                .id(1L)
+                .examDate(LocalDate.of(2025, 1, 1))
+                .examName("테스트시험")
+                .highestScore(100)
+                .examPeriod(ExamPeriod.DAILY)
+                .standard(Standard.QUESTION)
+                .mainClass(findMainClass)
+                .subClass(findSubClass)
+                .examRange("범위1")
+                .build();
+
+        lenient().when(examRepository.findById(1L)).thenReturn(Optional.of(exam));
+
+        UpdateExamRequest request = new UpdateExamRequest(
+                LocalDate.of(2025, 1, 1),
+                Standard.QUESTION,
+                70,
+                ExamPeriod.DAILY,
+                "테스트시험수정",
+                List.of("범위2", "범위3")
+        );
+
+        String examRangeString = String.join(",", request.examRange());
+
+        ExamScore score1 = mock(ExamScore.class);
+        when(score1.getScore()).thenReturn(80);
+
+        ExamScore score2 = mock(ExamScore.class);
+        when(score2.getScore()).thenReturn(60);
+
+        List<ExamScore> scores = List.of(score1, score2);
+
+        when(examRepository.findById(1L)).thenReturn(Optional.of(exam));
+        when(examScoreRepository.findAllByAcademyIdAndExam(anyLong(), any())).thenReturn(scores);
+
+        examService.updateExam(findMember, 1L, request);
+
+        assertEquals("테스트시험수정", exam.getExamName());
+        assertEquals(70, exam.getHighestScore());
+        assertEquals(examRangeString, exam.getExamRange());
+
+        verify(score1).updateScore(0);
+        verify(score2, never()).updateScore(anyInt());
+        verify(examRepository).save(exam);
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {-1, 0})
+    void 시험지_수정_실패(int highestScore) {
+        Exam exam = Exam.builder()
+                .id(1L)
+                .examDate(LocalDate.of(2025, 1, 1))
+                .examName("테스트시험")
+                .highestScore(100)
+                .examPeriod(ExamPeriod.DAILY)
+                .standard(Standard.QUESTION)
+                .mainClass(findMainClass)
+                .subClass(findSubClass)
+                .examRange("범위1")
+                .build();
+
+        UpdateExamRequest request = new UpdateExamRequest(
+                LocalDate.of(2025, 1, 1),
+                Standard.QUESTION,
+                highestScore,
+                ExamPeriod.DAILY,
+                "테스트시험수정",
+                List.of("범위2", "범위3")
+        );
+        assertThrows(ClassfitException.class, () -> {
+            examService.updateExam(findMember, exam.getId(), request);
+        });
+
+        lenient().when(memberRepository.findById(1L)).thenReturn(Optional.empty());
+        assertThrows(ClassfitException.class, () -> {
+            examService.updateExam(findMember, exam.getId(), request);
+        });
+
+        lenient().when(examRepository.findById(exam.getId())).thenReturn(Optional.empty());
+        assertThrows(ClassfitException.class, () -> {
+            examService.updateExam(findMember, exam.getId(), request);
+        });
+
+
     }
 }
 
