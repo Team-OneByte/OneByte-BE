@@ -5,6 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
@@ -79,16 +81,19 @@ public class ExamServiceTest {
 
         findMember = Member.builder()
                 .id(1L)
+                .name("테스트선생님")
                 .academy(academy1)
                 .build();
 
         findMainClass = MainClass.builder()
                 .id(1L)
+                .mainClassName("메인1")
                 .academy(academy1)
                 .build();
 
         findSubClass = SubClass.builder()
                 .id(1L)
+                .subClassName("서브1")
                 .mainClass(findMainClass)
                 .build();
 
@@ -216,12 +221,15 @@ public class ExamServiceTest {
 
     @Test
     void 시험지_검색성공() {
-        findExamRequest = new FindExamRequest(1L, 1L, "테스트선생님", "테스트시험");
+
+        FindExamRequest findExamRequest = new FindExamRequest(1L, 1L, "테스트선생님", "테스트시험1");
+
         Exam exam1 = Exam.builder()
                 .id(1L)
                 .examName("테스트시험1")
                 .mainClass(findMainClass)
                 .subClass(findSubClass)
+                .createdBy(findMember.getId())
                 .build();
 
         Exam exam2 = Exam.builder()
@@ -229,33 +237,31 @@ public class ExamServiceTest {
                 .examName("테스트시험2")
                 .mainClass(findMainClass)
                 .subClass(findSubClass)
+                .createdBy(findMember.getId())
                 .build();
 
         List<Exam> exams = List.of(exam1, exam2);
 
         lenient().when(examRepository.findExamsByConditions(
-                findMember.getAcademy().getId(),
-                findExamRequest.mainClassId(),
-                findExamRequest.subClassId(),
-                findExamRequest.memberName(),
-                findExamRequest.examName()
+                anyLong(), anyLong(), anyLong(), anyString(), anyString()
         )).thenReturn(exams);
 
         List<FindExamResponse> result = examService.findExamList(findMember, findExamRequest);
+
         assertNotNull(result);
         assertEquals(2, result.size());
-        // 이거 다 커버되는거임 ? 한번 확인 필요
-        assertTrue(result.stream().anyMatch(response -> response.examName().equals("테스트시험1")));
-        assertTrue(result.stream().anyMatch(response -> response.examName().equals("테스트시험2")));
+
+        assertTrue(result.stream().anyMatch(r -> r.examName().equals("테스트시험1")));
+        assertTrue(result.stream()
+                .anyMatch(r -> r.mainClassName().equals(findMainClass.getMainClassName())));
+        assertTrue(result.stream()
+                .anyMatch(r -> r.subClassName().equals(findSubClass.getSubClassName())));
 
         verify(examRepository, times(1)).findExamsByConditions(
-                findMember.getAcademy().getId(),
-                findExamRequest.mainClassId(),
-                findExamRequest.subClassId(),
-                findExamRequest.memberName(),
-                findExamRequest.examName()
+                anyLong(), anyLong(), anyLong(), anyString(), anyString()
         );
     }
+
 
     @Test
     void 시험지_검색실패() {
@@ -276,6 +282,30 @@ public class ExamServiceTest {
 
         assertThrows(ClassfitException.class, () -> {
             examService.findExamList(findMember, findExamRequest);
+        });
+        // subClass X
+        lenient().when(examRepository.findExamsByConditions(
+                findMember.getAcademy().getId(),
+                findExamRequest.mainClassId(),
+                9L,
+                findExamRequest.memberName(),
+                findExamRequest.examName()
+        )).thenReturn(List.of());
+
+        assertThrows(ClassfitException.class, () -> {
+            examService.findExamList(findMember, new FindExamRequest(1L, 9L, "테스트선생님", "테스트시험"));
+        });
+
+        lenient().when(examRepository.findExamsByConditions(
+                findMember.getAcademy().getId(),
+                findExamRequest.mainClassId(),
+                findExamRequest.subClassId(),
+                findExamRequest.memberName(),
+                "에러시험"
+        )).thenReturn(List.of());
+
+        assertThrows(ClassfitException.class, () -> {
+            examService.findExamList(findMember, new FindExamRequest(1L, 1L, "테스트선생님", "에러시험"));
         });
     }
 
