@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -243,6 +244,7 @@ public class ExamServiceTest {
         List<FindExamResponse> result = examService.findExamList(findMember, findExamRequest);
         assertNotNull(result);
         assertEquals(2, result.size());
+        // 이거 다 커버되는거임 ? 한번 확인 필요
         assertTrue(result.stream().anyMatch(response -> response.examName().equals("테스트시험1")));
         assertTrue(result.stream().anyMatch(response -> response.examName().equals("테스트시험2")));
 
@@ -277,5 +279,39 @@ public class ExamServiceTest {
         });
     }
 
+    @Test
+    void 시험지_삭제성공() {
+        Exam exam = Exam.builder()
+                .id(1L)
+                .examName("테스트시험")
+                .mainClass(findMainClass)
+                .build();
+        lenient().when(examRepository.findById(1L)).thenReturn(Optional.of(exam));
+
+        doNothing().when(examRepository).delete(exam);
+
+        examService.deleteExam(findMember, exam.getId());
+
+        verify(examRepository, times(1)).delete(exam);
+    }
+
+    @Test
+    void 시험지_삭제실패() {
+        Exam exam = Exam.builder()
+                .id(1L)
+                .examName("테스트시험")
+                .mainClass(findMainClass)
+                .build();
+
+        lenient().when(memberRepository.findById(1L)).thenReturn(Optional.empty());
+        assertThrows(ClassfitException.class, () -> {
+            examService.deleteExam(findMember, exam.getId());
+        });
+
+        lenient().when(examRepository.findById(exam.getId())).thenReturn(Optional.empty());
+        assertThrows(ClassfitException.class, () -> {
+            examService.deleteExam(findMember, exam.getId());
+        });
+    }
 }
 
