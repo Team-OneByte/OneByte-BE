@@ -78,7 +78,6 @@ public class ExamServiceTest {
     private Member findMember;
     private SubClass findSubClass;
     private MainClass findMainClass;
-    private ExamScore examScore;
     private CreateExamRequest examRequest;
     private FindExamRequest findExamRequest;
     private List<Student> students;
