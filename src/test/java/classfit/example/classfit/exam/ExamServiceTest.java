@@ -32,6 +32,7 @@ import classfit.example.classfit.exam.dto.exam.request.FindExamRequest;
 import classfit.example.classfit.exam.dto.exam.request.UpdateExamRequest;
 import classfit.example.classfit.exam.dto.exam.response.CreateExamResponse;
 import classfit.example.classfit.exam.dto.exam.response.FindExamResponse;
+import classfit.example.classfit.exam.dto.exam.response.ShowExamDetailResponse;
 import classfit.example.classfit.exam.repository.ExamRepository;
 import classfit.example.classfit.exam.repository.ExamScoreRepository;
 import classfit.example.classfit.exam.service.ExamService;
@@ -39,6 +40,7 @@ import classfit.example.classfit.member.domain.Member;
 import classfit.example.classfit.member.repository.MemberRepository;
 import classfit.example.classfit.student.domain.Enrollment;
 import classfit.example.classfit.student.domain.Student;
+import classfit.example.classfit.student.repository.EnrollmentRepository;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -65,6 +67,8 @@ public class ExamServiceTest {
 
     @Mock
     private ExamRepository examRepository;
+    @Mock
+    private EnrollmentRepository enrollmentRepository;
     @Mock
     private MemberRepository memberRepository;
     @Mock
@@ -436,8 +440,98 @@ public class ExamServiceTest {
         assertThrows(ClassfitException.class, () -> {
             examService.updateExam(findMember, exam.getId(), request);
         });
+    }
 
+    @Test
+    void 시험지_상세조회_성공() {
+        Exam exam = Exam.builder()
+                .id(1L)
+                .examDate(LocalDate.of(2025, 1, 1))
+                .examName("테스트시험")
+                .highestScore(100)
+                .examPeriod(ExamPeriod.DAILY)
+                .standard(Standard.QUESTION)
+                .mainClass(findMainClass)
+                .subClass(findSubClass)
+                .examRange("범위1")
+                .build();
 
+        when(examRepository.findById(1L)).thenReturn(Optional.of(exam));
+
+        List<ExamScore> studentScores = List.of(
+                ExamScore.builder()
+                        .id(1L)
+                        .student(students.get(0))
+                        .exam(exam)
+                        .score(90)
+                        .build(),
+
+                ExamScore.builder()
+                        .id(2L)
+                        .student(students.get(1))
+                        .exam(exam)
+                        .score(70)
+                        .build()
+        );
+
+        exam.getExamScores().addAll(studentScores);
+        lenient().when(examScoreRepository.findByExam(exam)).thenReturn(studentScores);
+
+        List<Enrollment> enrollments = List.of(
+                Enrollment.builder()
+                        .id(1L)
+                        .student(students.get(0))
+                        .subClass(findSubClass)
+                        .build(),
+
+                Enrollment.builder()
+                        .id(2L)
+                        .student(students.get(1))
+                        .subClass(findSubClass)
+                        .build()
+        );
+        when(enrollmentRepository.findByAcademyIdAndSubClass(findMember.getAcademy().getId(),
+                findSubClass)).thenReturn(enrollments);
+
+        when(examScoreRepository.findByExamAndStudentIdAndAcademyId(
+                findMember.getAcademy().getId(),
+                exam, students.get(0).getId()))
+                .thenReturn(Optional.of(studentScores.get(0)));
+        when(examScoreRepository.findByExamAndStudentIdAndAcademyId(
+                findMember.getAcademy().getId(),
+                exam, students.get(1).getId()))
+                .thenReturn(Optional.of(studentScores.get(1)));
+
+        ShowExamDetailResponse result = examService.showExamDetail(findMember, exam.getId());
+
+        assertEquals(ExamPeriod.DAILY, result.examPeriod());
+        assertEquals("테스트시험", result.examName());
+        assertEquals(LocalDate.of(2025, 1, 1), result.examDate());
+        assertEquals(70, result.lowestScore());
+        assertEquals(90, result.perfectScore());
+        assertEquals("80.0", result.average());
+        assertEquals(100, result.highestScore());
+        assertEquals(2, result.examClassStudents().size());
+        assertEquals(90, result.examClassStudents().get(0).score());
+        assertEquals(70, result.examClassStudents().get(1).score());
+    }
+
+    @Test
+    void 시험_상세조회_실패() {
+        Exam exam = Exam.builder()
+                .id(1L)
+                .examName("테스트시험")
+                .mainClass(findMainClass)
+                .build();
+
+        lenient().when(memberRepository.findById(1L)).thenReturn(Optional.empty());
+        assertThrows(ClassfitException.class, () -> {
+            examService.showExamDetail(findMember, exam.getId());
+        });
+        lenient().when(memberRepository.findById(1L)).thenReturn(Optional.empty());
+        assertThrows(ClassfitException.class, () -> {
+            examService.showExamDetail(findMember, exam.getId());
+        });
     }
 }
 
