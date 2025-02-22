@@ -16,7 +16,9 @@ import classfit.example.classfit.course.domain.SubClass;
 import classfit.example.classfit.exam.domain.Exam;
 import classfit.example.classfit.exam.domain.ExamScore;
 import classfit.example.classfit.exam.dto.examscore.request.CreateExamScoreRequest;
+import classfit.example.classfit.exam.dto.examscore.request.UpdateExamScoreRequest;
 import classfit.example.classfit.exam.dto.examscore.response.CreateExamScoreResponse;
+import classfit.example.classfit.exam.dto.examscore.response.UpdateExamScoreResponse;
 import classfit.example.classfit.exam.repository.ExamRepository;
 import classfit.example.classfit.exam.repository.ExamScoreRepository;
 import classfit.example.classfit.exam.service.ExamScoreService;
@@ -158,4 +160,80 @@ public class ExamScoreServiceTest {
         });
     }
 
+    @Test
+    void 학생점수_수정_성공() {
+
+        lenient().when(examRepository.findById(1L)).thenReturn(Optional.of(exam));
+        lenient().when(memberRepository.findById(1L)).thenReturn(Optional.of(findMember));
+
+        List<UpdateExamScoreRequest> requests = List.of(
+                new UpdateExamScoreRequest(1L, 80, null, null, true),
+                new UpdateExamScoreRequest(2L, 20, null, null, true)
+        );
+        List<ExamScore> studentScores = List.of(
+                ExamScore.builder()
+                        .id(1L)
+                        .student(students.get(0))
+                        .exam(exam)
+                        .score(90)
+                        .build(),
+
+                ExamScore.builder()
+                        .id(2L)
+                        .student(students.get(1))
+                        .exam(exam)
+                        .score(70)
+                        .build()
+        );
+        exam.getExamScores().addAll(studentScores);
+        lenient().when(examScoreRepository.findByExam(exam)).thenReturn(studentScores);
+
+        List<Enrollment> enrollments = List.of(
+                Enrollment.builder()
+                        .id(1L)
+                        .student(students.get(0))
+                        .subClass(findSubClass)
+                        .build(),
+
+                Enrollment.builder()
+                        .id(2L)
+                        .student(students.get(1))
+                        .subClass(findSubClass)
+                        .build()
+        );
+        when(enrollmentRepository.findByAcademyIdAndSubClass(findMember.getAcademy().getId(),
+                findSubClass)).thenReturn(enrollments);
+
+        lenient().when(examScoreRepository.save(any(ExamScore.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
+
+        UpdateExamScoreResponse responses = examScoreService.updateExamScore(findMember,
+                exam.getId(),
+                requests);
+
+        assertThat(responses).isNotNull();
+        assertThat(responses.examStudents()).hasSize(2);
+
+        assertThat(responses.examStudents().get(0).score()).isEqualTo(80);
+        assertThat(responses.examStudents().get(1).score()).isEqualTo(20);
+
+        verify(examScoreRepository, times(2)).save(any(ExamScore.class));
+    }
+
+    @Test
+    void 학생성적_수정_실패() {
+
+        List<UpdateExamScoreRequest> requests = List.of(
+                new UpdateExamScoreRequest(1L, 80, null, null, true),
+                new UpdateExamScoreRequest(2L, 20, null, null, true)
+        );
+        lenient().when(memberRepository.findById(1L)).thenReturn(Optional.empty());
+        assertThrows(ClassfitException.class, () -> {
+            examScoreService.updateExamScore(findMember, 1L, requests);
+        });
+        lenient().when(memberRepository.findById(1L)).thenReturn(Optional.empty());
+        assertThrows(ClassfitException.class, () -> {
+            examScoreService.updateExamScore(findMember, 1L, requests);
+        });
+    }
 }
