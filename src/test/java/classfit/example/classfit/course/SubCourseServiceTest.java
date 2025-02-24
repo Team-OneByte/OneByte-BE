@@ -3,6 +3,7 @@ package classfit.example.classfit.course;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -117,6 +118,41 @@ public class SubCourseServiceTest {
                 .hasMessage(ErrorCode.MAIN_CLASS_NOT_FOUND.getMessage());
 
         verify(subClassRepository, never()).save(any(SubClass.class));
+    }
+
+    @Test
+    void 서브클래스_수정_성공() {
+        academy1.getMembers().add(findMember);
+
+        SubClass subClass = SubClass.builder()
+                .id(1L)
+                .subClassName("테스트서브클래스")
+                .mainClass(findMainClass)
+                .build();
+
+        lenient().when(subClassRepository.save(any(SubClass.class))).thenReturn(subClass);
+        lenient().when(subClassRepository.findById(1L)).thenReturn(Optional.of(subClass));
+        lenient().when(mainClassRepository.findById(1L)).thenReturn(Optional.of(findMainClass));
+        SubClassRequest request = new SubClassRequest(findMainClass.getId(), "서브클래스수정");
+
+        SubClassResponse response = subClassService.updateSubClass(findMember, subClass.getId(),
+                request);
+
+        assertThat(response).isNotNull();
+        assertThat(response.subClassName()).isEqualTo("서브클래스수정");
+    }
+
+    @Test
+    void 서브클래스_수정_실패() {
+        academy1.getMembers().add(findMember);
+
+        SubClassRequest request = new SubClassRequest(findMainClass.getId(), "서브클래스수정");
+        when(mainClassRepository.findById(1L)).thenReturn(Optional.of(findMainClass));
+        when(subClassRepository.findById(1L)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> subClassService.updateSubClass(findMember, 1L, request))
+                .isInstanceOf(ClassfitException.class)
+                .hasMessage(ErrorCode.SUB_CLASS_NOT_FOUND.getMessage());
     }
 
 }
