@@ -2,20 +2,19 @@ package classfit.example.classfit.course.service;
 
 import classfit.example.classfit.academy.domain.Academy;
 import classfit.example.classfit.common.annotation.AuthMember;
+import classfit.example.classfit.common.exception.ClassfitException;
+import classfit.example.classfit.common.response.ErrorCode;
 import classfit.example.classfit.course.domain.MainClass;
 import classfit.example.classfit.course.dto.request.MainClassRequest;
 import classfit.example.classfit.course.dto.response.AllMainClassResponse;
 import classfit.example.classfit.course.dto.response.MainClassResponse;
 import classfit.example.classfit.course.repository.MainClassRepository;
-import classfit.example.classfit.common.exception.ClassfitException;
-import classfit.example.classfit.common.response.ErrorCode;
 import classfit.example.classfit.member.domain.Member;
+import java.util.List;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -41,7 +40,7 @@ public class MainClassService {
     }
 
     @Transactional(readOnly = true)
-    public List<AllMainClassResponse> showMainClass(Member findMember) {
+    public List<AllMainClassResponse> showMainClass(@AuthMember Member findMember) {
 
         Academy academy = findMember.getAcademy();
 
@@ -52,7 +51,7 @@ public class MainClassService {
     }
 
     @Transactional
-    public void deleteMainClass(Member findMember, Long mainClassId) {
+    public void deleteMainClass(@AuthMember Member findMember, Long mainClassId) {
 
         MainClass mainClass = mainClassRepository.findById(mainClassId).orElseThrow(
                 () -> new ClassfitException(ErrorCode.MAIN_CLASS_NOT_FOUND));
@@ -66,7 +65,8 @@ public class MainClassService {
     }
 
     @Transactional
-    public MainClassResponse updateMainClass(Member findMember, Long mainClassId, MainClassRequest request) {
+    public MainClassResponse updateMainClass(@AuthMember Member findMember, Long mainClassId,
+            MainClassRequest request) {
 
         MainClass mainClass = mainClassRepository.findById(mainClassId).orElseThrow(
                 () -> new ClassfitException(ErrorCode.MAIN_CLASS_NOT_FOUND));
