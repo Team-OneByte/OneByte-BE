@@ -19,7 +19,6 @@ import classfit.example.classfit.course.dto.response.MainClassResponse;
 import classfit.example.classfit.course.repository.MainClassRepository;
 import classfit.example.classfit.course.service.MainClassService;
 import classfit.example.classfit.member.domain.Member;
-import classfit.example.classfit.member.repository.MemberRepository;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -37,9 +36,6 @@ public class MainCourseServiceTest {
 
     @Mock
     private MainClassRepository mainClassRepository;
-
-    @Mock
-    private MemberRepository memberRepository;
 
     private Member findMember;
     private Academy academy1;
