@@ -1,5 +1,6 @@
 package classfit.example.classfit.exam;
 
+import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -32,6 +33,7 @@ import classfit.example.classfit.exam.dto.exam.request.FindExamRequest;
 import classfit.example.classfit.exam.dto.exam.request.UpdateExamRequest;
 import classfit.example.classfit.exam.dto.exam.response.CreateExamResponse;
 import classfit.example.classfit.exam.dto.exam.response.FindExamResponse;
+import classfit.example.classfit.exam.dto.exam.response.FindExamStudentResponse;
 import classfit.example.classfit.exam.dto.exam.response.ShowExamDetailResponse;
 import classfit.example.classfit.exam.repository.ExamRepository;
 import classfit.example.classfit.exam.repository.ExamScoreRepository;
@@ -81,10 +83,11 @@ public class ExamServiceTest {
     private CreateExamRequest examRequest;
     private FindExamRequest findExamRequest;
     private List<Student> students;
+    private Academy academy1;
 
     @BeforeEach
     void setUp() {
-        Academy academy1 = Academy.builder()
+        academy1 = Academy.builder()
                 .id(1L)
                 .name("테스트학원1")
                 .build();
@@ -108,11 +111,13 @@ public class ExamServiceTest {
                 .build();
 
         Student student1 = Student.builder()
-                .id(1L).
-                build();
+                .id(1L)
+                .name("테스트학생1")
+                .build();
 
         Student student2 = Student.builder()
                 .id(2L)
+                .name("테스트학생2")
                 .build();
 
         Enrollment enrollment1 = mock(Enrollment.class);
@@ -213,21 +218,51 @@ public class ExamServiceTest {
         });
     }
 
-    //    @Test
-//    void 시험지_반_학생찾기_성공() {
-//        Exam findExam = Exam.builder().id(1L).build();
-//        lenient().when(subClassRepository.findById(1L)).thenReturn(Optional.of(findSubClass));
-//        lenient().when(examRepository.findById(1L)).thenReturn(Optional.of(findExam));
-//        lenient().when(enrollmentRepository.findStudentsByAcademyIdAndSubClass(1L, findSubClass))
-//                .thenReturn(List.of(students.get(0), students.get(1)));
-//
-//        List<FindExamStudentResponse> result = examService.findExamClassStudent(findMember, 1L);
-//
-//        assertNotNull(result);
-//        assertEquals(2, result.size());
-//        assertTrue(result.contains(FindExamStudentResponse.of(students.get(0))));
-//        assertTrue(result.contains(FindExamStudentResponse.of(students.get(1))));
-//    }
+    @Test
+    void 시험지_반_학생찾기_성공() {
+
+        Exam findExam = Exam.builder()
+                .id(1L)
+                .subClass(findSubClass)
+                .mainClass(findMainClass)
+                .highestScore(100)
+                .standard(Standard.SCORE)
+                .examName("테스트시험")
+                .build();
+
+        academy1 = mock(Academy.class);
+        findMember = mock(Member.class);
+
+        lenient().when(findMember.getAcademy()).thenReturn(academy1);
+        lenient().when(academy1.getId()).thenReturn(1L);
+        lenient().when(examRepository.findById(findExam.getId())).thenReturn(Optional.of(findExam));
+        lenient().when(enrollmentRepository.findStudentsByAcademyIdAndSubClass(academy1.getId(),
+                        findSubClass))
+                .thenReturn(students);
+
+        List<FindExamStudentResponse> response = examService.findExamClassStudent(findMember,
+                findExam.getId());
+
+        assertThat(response).isNotNull();
+        assertThat(response).hasSize(2);
+        assertThat(response.get(0).studentName()).isEqualTo("테스트학생1");
+        assertThat(response.get(1).studentName()).isEqualTo("테스트학생2");
+
+        verify(examRepository, times(1)).findById(findExam.getId());
+        verify(enrollmentRepository, times(1)).findStudentsByAcademyIdAndSubClass(academy1.getId(),
+                findSubClass);
+    }
+
+    @Test
+    void 시험지_반_학생찾기_실패() {
+        lenient().when(examRepository.findById(1L)).thenReturn(Optional.empty());
+
+        assertThrows(ClassfitException.class, () -> {
+            examService.findExamClassStudent(findMember, 1L);
+        });
+
+        verify(examRepository, times(1)).findById(1L);
+    }
 
     @Test
     void 시험지_검색성공() {
