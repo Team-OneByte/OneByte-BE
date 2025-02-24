@@ -155,4 +155,30 @@ public class SubCourseServiceTest {
                 .hasMessage(ErrorCode.SUB_CLASS_NOT_FOUND.getMessage());
     }
 
+    @Test
+    void 서브클래스_삭제_성공() {
+        academy1.getMembers().add(findMember);
+
+        SubClass subClass = SubClass.builder()
+                .id(1L)
+                .subClassName("테스트서브클래스")
+                .mainClass(findMainClass)
+                .build();
+        when(subClassRepository.findById(1L)).thenReturn(Optional.of(subClass));
+
+        subClassService.deleteSubClass(findMember, 1L);
+
+        verify(subClassRepository, times(1)).delete(subClass);
+    }
+
+    @Test
+    void 서브클래스_삭제_실패() {
+        when(subClassRepository.findById(1L)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> subClassService.deleteSubClass(findMember, 1L))
+                .isInstanceOf(ClassfitException.class)
+                .hasMessage(ErrorCode.SUB_CLASS_NOT_FOUND.getMessage());
+
+        verify(subClassRepository, never()).delete(any(SubClass.class));
+    }
 }
