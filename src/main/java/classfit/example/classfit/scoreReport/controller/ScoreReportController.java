@@ -7,14 +7,25 @@ import classfit.example.classfit.scoreReport.controller.docs.ScoreReportControll
 import classfit.example.classfit.scoreReport.dto.process.ReportExam;
 import classfit.example.classfit.scoreReport.dto.request.CreateReportRequest;
 import classfit.example.classfit.scoreReport.dto.request.SentStudentOpinionRequest;
-import classfit.example.classfit.scoreReport.dto.response.*;
+import classfit.example.classfit.scoreReport.dto.response.CreateReportResponse;
+import classfit.example.classfit.scoreReport.dto.response.FindClassStudent;
+import classfit.example.classfit.scoreReport.dto.response.FindReportResponse;
+import classfit.example.classfit.scoreReport.dto.response.SentStudentOpinionResponse;
+import classfit.example.classfit.scoreReport.dto.response.ShowStudentReportResponse;
 import classfit.example.classfit.scoreReport.service.ScoreReportService;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.*;
-
 import java.time.LocalDate;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
@@ -42,8 +53,8 @@ public class ScoreReportController implements ScoreReportControllerDocs {
             @RequestParam("mainClassId") Long mainClassId,
             @RequestParam("subClassId") Long subClassId
     ) {
-        List<ReportExam> exams = scoreReportService.showReportExam(member, startDate, endDate, mainClassId,
-                subClassId);
+        List<ReportExam> exams = scoreReportService.showReportExam(member, startDate, endDate,
+                mainClassId, subClassId);
         return CustomApiResponse.success(exams, 200, "기간 내 시험지 조회 성공");
     }
 

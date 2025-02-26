@@ -1,6 +1,7 @@
-package classfit.example.classfit.scoreReport.domain;
+package classfit.example.classfit.scoreReport.repository;
 
 import classfit.example.classfit.academy.domain.Academy;
+import classfit.example.classfit.scoreReport.domain.ScoreReport;
 import classfit.example.classfit.scoreReport.dto.process.ReportExam;
 import java.time.LocalDate;
 import java.util.List;
@@ -16,7 +17,8 @@ import org.springframework.transaction.annotation.Transactional;
 public interface ScoreReportRepository extends JpaRepository<ScoreReport, Long> {
 
     @Query("SELECT new classfit.example.classfit.scoreReport.dto.process.ReportExam(" +
-            "e.id, e.examPeriod, e.mainClass.mainClassName, e.subClass.subClassName, e.examName, e.createdAt) " +
+            "e.id, e.examPeriod, e.mainClass.mainClassName, e.subClass.subClassName, e.examName, e.createdAt) "
+            +
             "FROM Exam e " +
             "WHERE FUNCTION('DATE', e.createdAt) BETWEEN :startDate AND :endDate " +
             "AND e.mainClass.id = :mainClassId " +
@@ -31,12 +33,12 @@ public interface ScoreReportRepository extends JpaRepository<ScoreReport, Long> 
             @Param("academyId") Long academyId);
 
     @Query("""
-            SELECT sr
-            FROM ScoreReport sr
-            WHERE sr.mainClass.id = :mainClassId
-              AND sr.subClass.id = :subClassId
-              AND sr.mainClass.academy.id = :academyId 
-    """)
+                    SELECT sr
+                    FROM ScoreReport sr
+                    WHERE sr.mainClass.id = :mainClassId
+                      AND sr.subClass.id = :subClassId
+                      AND sr.mainClass.academy.id = :academyId 
+            """)
     List<ScoreReport> findAllReportsByMainClassAndSubClass(
             @Param("mainClassId") Long mainClassId,
             @Param("subClassId") Long subClassId,
