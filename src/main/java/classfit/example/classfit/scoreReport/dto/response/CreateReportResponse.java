@@ -1,11 +1,10 @@
 package classfit.example.classfit.scoreReport.dto.response;
 
 import classfit.example.classfit.member.domain.Member;
-import classfit.example.classfit.student.dto.StudentList;
-import lombok.Builder;
-
+import classfit.example.classfit.scoreReport.dto.process.StudentList;
 import java.time.LocalDate;
 import java.util.List;
+import lombok.Builder;
 
 @Builder
 public record CreateReportResponse(
