@@ -61,14 +61,13 @@ public interface EnrollmentRepository extends JpaRepository<Enrollment, Long> {
             @Param("mainClassId") Long mainClassId,
             @Param("subClassId") Long subClassId);
 
-    @Query("SELECT DISTINCT cs.student FROM Enrollment cs " +
-            "JOIN cs.subClass sc " +
+    @Query("SELECT DISTINCT e.student FROM Enrollment e " +
+            "JOIN e.subClass sc " +
             "JOIN sc.mainClass mc " +
             "JOIN mc.academy a " +
             "WHERE a.id = :academyId " +
-            "AND sc = :subClass")
+            "AND sc.id = :subClassId")
     List<Student> findStudentsByAcademyIdAndSubClass(@Param("academyId") Long academyId,
-            @Param("subClass") SubClass subClass);
-
+            @Param("subClassId") Long subClassId);
 
 }

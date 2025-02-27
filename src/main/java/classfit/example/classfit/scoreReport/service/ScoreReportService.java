@@ -133,13 +133,10 @@ public class ScoreReportService {
 
     @Transactional(readOnly = true)
     public List<FindReportResponse> findReport(@AuthMember Member member, Long mainClassId,
-            Long subClassId, String memberName) {
+            Long subClassId) {
         MainClass mainClass = mainClassRepository.findById(mainClassId)
                 .orElseThrow(
                         () -> new ClassfitException(ErrorCode.MAIN_CLASS_NOT_FOUND));
-        SubClass subClass = subClassRepository.findById(subClassId)
-                .orElseThrow(
-                        () -> new ClassfitException(ErrorCode.SUB_CLASS_NOT_FOUND));
         validateAcademy(member, mainClass.getAcademy().getId());
         List<ScoreReport> studentReports = scoreReportRepository.findAllReportsByMainClassAndSubClass(
                 mainClassId, subClassId, member.getAcademy().getId());
@@ -189,12 +186,6 @@ public class ScoreReportService {
     public List<FindClassStudent> findClassStudents(@AuthMember Member member, Long mainClassId,
             Long subClassId) {
 
-        MainClass mainClass = mainClassRepository.findById(mainClassId)
-                .orElseThrow(
-                        () -> new ClassfitException(ErrorCode.MAIN_CLASS_NOT_FOUND));
-        SubClass subClass = subClassRepository.findById(subClassId)
-                .orElseThrow(
-                        () -> new ClassfitException(ErrorCode.SUB_CLASS_NOT_FOUND));
         validateAcademy(member, member.getAcademy().getId());
 
         List<FindClassStudent> classStudents = enrollmentRepository.findStudentIdsByMainClassIdAndSubClassId(
