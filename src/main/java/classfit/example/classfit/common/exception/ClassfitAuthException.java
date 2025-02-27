@@ -1,20 +1,19 @@
 package classfit.example.classfit.common.exception;
 
+import classfit.example.classfit.common.response.ErrorCode;
 import lombok.Getter;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.AuthenticationException;
 
 @Getter
 public class ClassfitAuthException extends AuthenticationException {
+    private final ErrorCode errorCode;
 
-    private final HttpStatus httpStatus;
-
-    public ClassfitAuthException(String message, HttpStatus httpStatus) {
-        super(message);
-        this.httpStatus = httpStatus;
+    public ClassfitAuthException(ErrorCode errorCode) {
+        super(errorCode.getMessage());
+        this.errorCode = errorCode;
     }
 
     public int getHttpStatusCode() {
-        return httpStatus.value();
+        return this.errorCode.getStatusCode();
     }
 }

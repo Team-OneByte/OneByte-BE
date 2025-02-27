@@ -1,7 +1,7 @@
 package classfit.example.classfit.attendance.service;
 
 import classfit.example.classfit.attendance.domain.Attendance;
-import classfit.example.classfit.attendance.domain.AttendanceStatus;
+import classfit.example.classfit.attendance.domain.enumType.AttendanceStatus;
 import classfit.example.classfit.attendance.repository.AttendanceRepository;
 import classfit.example.classfit.student.domain.Student;
 import classfit.example.classfit.student.repository.StudentRepository;

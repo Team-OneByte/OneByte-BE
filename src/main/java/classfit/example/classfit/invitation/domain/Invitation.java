@@ -2,13 +2,14 @@ package classfit.example.classfit.invitation.domain;
 
 import classfit.example.classfit.academy.domain.Academy;
 import classfit.example.classfit.common.domain.BaseEntity;
+import classfit.example.classfit.invitation.domain.enumType.InvitationType;
 import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
 @Getter
-@AllArgsConstructor
 @Builder
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Invitation extends BaseEntity {
 
@@ -25,13 +26,13 @@ public class Invitation extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "VARCHAR(20)", nullable = false)
-    private InvitationStatus status;
+    private InvitationType status;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "academy_id", nullable = false)
     private Academy academy;
 
-    public void updateStatus(InvitationStatus status) {
+    public void updateStatus(InvitationType status) {
         this.status = status;
     }
 }

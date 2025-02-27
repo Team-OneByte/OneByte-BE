@@ -1,54 +1,63 @@
 package classfit.example.classfit.drive.controller;
 
-import classfit.example.classfit.auth.annotation.AuthMember;
-import classfit.example.classfit.common.ApiResponse;
-import classfit.example.classfit.drive.domain.DriveType;
+import classfit.example.classfit.common.annotation.AuthMember;
+import classfit.example.classfit.common.response.CustomApiResponse;
+import classfit.example.classfit.drive.controller.docs.DriveFileControllerDocs;
+import classfit.example.classfit.drive.domain.enumType.DriveType;
+import classfit.example.classfit.drive.dto.response.DrivePreSignedResponse;
 import classfit.example.classfit.drive.service.DriveDownloadService;
 import classfit.example.classfit.drive.service.DriveUploadService;
 import classfit.example.classfit.member.domain.Member;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-import java.util.List;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/drive")
-@Tag(name = "드라이브 컨트롤러", description = "드라이브 관련 API입니다.")
-public class DriveFileController {
+public class DriveFileController implements DriveFileControllerDocs {
+
     private final DriveUploadService driveUploadService;
     private final DriveDownloadService driveDownloadService;
 
-    @PostMapping("/files")
-    @Operation(summary = "다중 파일 업로드", description = "다중 파일 업로드 API 입니다.")
-    public ApiResponse<List<String>> uploadFiles(
-        @AuthMember Member member,
-        @Parameter(description = "내 드라이브는 PERSONAL, 공용 드라이브는 SHARED 입니다.")
-        @RequestParam DriveType driveType,
-        @RequestParam("multipartFiles") List<MultipartFile> multipartFiles,
-        @Parameter(description = "폴더 경로입니다. 비어 있으면 루트 폴더에 생성됩니다.")
-        @RequestParam(required = false, defaultValue = "") String folderPath
+    @Override
+    @PostMapping("/request-url")
+    public CustomApiResponse<List<DrivePreSignedResponse>> getPreSignedUrl(
+            @AuthMember Member member,
+            @RequestParam DriveType driveType,
+            @RequestParam List<String> objectNames
     ) {
-        List<String> fileUrls = driveUploadService.uploadFiles(member, driveType, multipartFiles, folderPath);
-        return ApiResponse.success(fileUrls, 200, "SUCCESS");
+        List<DrivePreSignedResponse> preSignedUrl = driveUploadService.getPreSignedUrl(member, driveType, objectNames);
+        return CustomApiResponse.success(preSignedUrl, 200, "사전 서명된 URL 생성 성공");
     }
 
-    @GetMapping("/download")
-    @Operation(summary = "파일 다운로드", description = "다중 파일을 압축하여 다운로드하는 API 입니다.")
-    public ResponseEntity<InputStreamResource> downloadMultipleFiles(
-        @AuthMember Member member,
-        @Parameter(description = "내 드라이브는 PERSONAL, 공용 드라이브는 SHARED 입니다.")
-        @RequestParam DriveType driveType,
-        @RequestParam List<String> fileNames
+    @Override
+    @PostMapping("/upload-confirm")
+    public CustomApiResponse<Void> upLoadConfirm(
+            @AuthMember Member member,
+            @RequestParam DriveType driveType,
+            @RequestParam List<String> objectNames
     ) {
-        InputStreamResource resource = driveDownloadService.downloadMultipleFiles(member, driveType, fileNames);
-        String zipFileName = "files.zip";
+        driveUploadService.uploadConfirm(member, driveType, objectNames);
+        return CustomApiResponse.success(null, 200, "파일 업로드 확인 성공");
+    }
+
+    @Override
+    @GetMapping("/download")
+    public ResponseEntity<InputStreamResource> downloadMultipleFiles(
+            @AuthMember Member member,
+            @RequestParam DriveType driveType,
+            @RequestParam List<String> objectNames
+    ) {
+        InputStreamResource resource = driveDownloadService.downloadMultipleFiles(member, driveType, objectNames);
+        String zipFileName = "clasfit.zip";
 
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + zipFileName + "\"");

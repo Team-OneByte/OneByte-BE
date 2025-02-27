@@ -6,20 +6,18 @@ import lombok.Builder;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Builder
-public record StudentResponse
-    (
+public record StudentResponse(
         Long studentId,
         String name,
         String studentNumber,
         boolean isStudent
-    ) {
-
-    public static StudentResponse from(Student student) {
+) {
+    public static StudentResponse from(final Student student) {
         return StudentResponse.builder()
-            .studentId(student.getId())
-            .name(student.getName())
-            .studentNumber(student.getStudentNumber())
-            .isStudent(student.isStudent())
-            .build();
+                .studentId(student.getId())
+                .name(student.getName())
+                .studentNumber(student.getStudentNumber())
+                .isStudent(student.isStudent())
+                .build();
     }
 }

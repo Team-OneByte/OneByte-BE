@@ -1,8 +1,8 @@
 package classfit.example.classfit.sms.service;
 
 import classfit.example.classfit.common.exception.ClassfitException;
+import classfit.example.classfit.common.response.ErrorCode;
 import classfit.example.classfit.member.domain.Member;
-import classfit.example.classfit.member.repository.MemberRepository;
 import classfit.example.classfit.sms.dto.SendRequest;
 import classfit.example.classfit.student.domain.Student;
 import classfit.example.classfit.student.repository.StudentRepository;
@@ -22,25 +22,18 @@ public class SmsService {
 
     private final DefaultMessageService messageService;
     private final StudentRepository studentRepository;
-    private final MemberRepository memberRepository;
 
     public SmsService(
-            @Value("${coolsms.api-key}") String apiKey,
-            @Value("${coolsms.api-secret}") String apiSecretKey,
-            @Value("${coolsms.api-base-url}") String apiBaseUrl,
-            StudentRepository studentRepository,
-            MemberRepository memberRepository
+        @Value("${coolsms.api-key}") String apiKey,
+        @Value("${coolsms.api-secret}") String apiSecretKey,
+        @Value("${coolsms.api-base-url}") String apiBaseUrl,
+        StudentRepository studentRepository
     ) {
         this.messageService = new DefaultMessageService(apiKey, apiSecretKey, apiBaseUrl);
         this.studentRepository = studentRepository;
-        this.memberRepository = memberRepository;
     }
 
-    public MultipleDetailMessageSentResponse sendMessages(List<SendRequest> requestList,
-            Long memberId) {
-
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new ClassfitException("회원이 존재하지 않습니다.", HttpStatus.NOT_FOUND));
+    public MultipleDetailMessageSentResponse sendMessages(List<SendRequest> requestList, Member member) {
 
         String senderPhoneNumber = "01049259272";
 
@@ -48,8 +41,8 @@ public class SmsService {
 
         for (SendRequest request : requestList) {
             Student student = studentRepository.findById(Long.valueOf(request.studentId()))
-                    .orElseThrow(
-                            () -> new ClassfitException("학생을 찾을 수 없어요.", HttpStatus.NOT_FOUND));
+                .orElseThrow(
+                    () -> new ClassfitException(ErrorCode.STUDENT_NOT_FOUND));
 
             Message message = new Message();
             message.setFrom(senderPhoneNumber);

@@ -1,17 +1,14 @@
 package classfit.example.classfit.drive.controller;
 
-import classfit.example.classfit.auth.annotation.AuthMember;
-import classfit.example.classfit.common.ApiResponse;
-import classfit.example.classfit.drive.domain.DriveType;
-import classfit.example.classfit.drive.dto.response.FileResponse;
+import classfit.example.classfit.common.annotation.AuthMember;
+import classfit.example.classfit.common.response.CustomApiResponse;
+import classfit.example.classfit.drive.controller.docs.DriveTrashControllerDocs;
+import classfit.example.classfit.drive.domain.enumType.DriveType;
+import classfit.example.classfit.drive.dto.response.DriveFileResponse;
 import classfit.example.classfit.drive.service.DriveDeleteService;
 import classfit.example.classfit.drive.service.DriveRestoreService;
 import classfit.example.classfit.drive.service.DriveTrashService;
 import classfit.example.classfit.member.domain.Member;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,65 +17,52 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/drive")
-@Tag(name = "드라이브 휴지통 컨트롤러", description = "드라이브 휴지통 관련 API입니다.")
-public class DriveTrashController {
+public class DriveTrashController implements DriveTrashControllerDocs {
 
     private final DriveTrashService driveTrashService;
     private final DriveRestoreService driveRestoreService;
     private final DriveDeleteService driveDeleteService;
 
-    @GetMapping("/trash")
-    @Operation(summary = "휴지통 조회", description = "휴지통 조회 API 입니다.")
-    public ApiResponse<List<FileResponse>> trashList(
-        @AuthMember Member member,
-        @Parameter(description = "내 드라이브는 PERSONAL, 공용 드라이브는 SHARED 입니다.")
-        @RequestParam DriveType driveType
-    ) {
-        List<FileResponse> filesFromTrash = driveTrashService.getFilesFromTrash(member, driveType);
-        return ApiResponse.success(filesFromTrash, 200, "조회 성공");
-    }
-
+    @Override
     @PostMapping("/trash")
-    @Operation(summary = "휴지통 이동", description = "휴지통 이동 API 입니다.")
-    public ApiResponse<List<String>> storeTrash(
-        @AuthMember Member member,
-        @Parameter(description = "내 드라이브는 PERSONAL, 공용 드라이브는 SHARED 입니다.")
-        @RequestParam DriveType driveType,
-        @Parameter(description = "폴더 경로입니다. 비어 있으면 루트 폴더로 지정됩니다.")
-        @RequestParam(required = false, defaultValue = "") String folderPath,
-        @Parameter(description = "파일 이름")
-        @RequestParam List<String> fileNames
+    public CustomApiResponse<Integer> storeTrash(
+            @AuthMember Member member,
+            @RequestParam DriveType driveType,
+            @RequestParam List<String> objectNames
     ) {
-        List<String> trashPathList = driveTrashService.storeTrash(member, driveType, folderPath, fileNames);
-        return ApiResponse.success(trashPathList, 200, "휴지통 이동 완료");
+        Integer updateObject = driveTrashService.storeTrash(member, driveType, objectNames);
+        return CustomApiResponse.success(updateObject, 200, "휴지통 이동 성공");
     }
 
-    @PostMapping("/trash/restore")
-    @Operation(summary = "휴지통 복원", description = "휴지통 복원 API 입니다.")
-    public ApiResponse<List<String>> restoreTrash(
-        @AuthMember Member member,
-        @Parameter(description = "내 드라이브는 PERSONAL, 공용 드라이브는 SHARED 입니다.")
-        @RequestParam DriveType driveType,
-        @Parameter(description = "파일 이름")
-        @RequestParam List<String> fileNames
+    @Override
+    @PostMapping("/restore")
+    public CustomApiResponse<Integer> restoreTrash(
+            @AuthMember Member member,
+            @RequestParam DriveType driveType,
+            @RequestParam List<String> objectNames
     ) {
-        List<String> restorePathList = driveRestoreService.restoreTrash(member, driveType, fileNames);
-        return ApiResponse.success(restorePathList, 200, "복원 성공");
+        Integer restorePathList = driveRestoreService.restoreTrash(member, driveType, objectNames);
+        return CustomApiResponse.success(restorePathList, 200, "휴지통 복원 성공");
     }
 
+    @Override
     @DeleteMapping("/trash")
-    @Operation(summary = "휴지통 영구삭제", description = "휴지통 영구삭제 API 입니다.")
-    public ApiResponse<Nullable> deleteFromTrash(
-        @AuthMember Member member,
-        @Parameter(description = "내 드라이브는 PERSONAL, 공용 드라이브는 SHARED 입니다.")
-        @RequestParam DriveType driveType,
-        @Parameter(description = "폴더 경로입니다. 비어 있으면 루트 폴더로 지정됩니다.")
-        @RequestParam(required = false, defaultValue = "") String folderPath,
-        @Parameter(description = "파일 이름")
-        @RequestParam List<String> fileNames
-
+    public CustomApiResponse<Void> deleteFromTrash(
+            @AuthMember Member member,
+            @RequestParam DriveType driveType,
+            @RequestParam List<String> objectNames
     ) {
-        driveDeleteService.deleteFromTrash(member, driveType, folderPath, fileNames);
-        return ApiResponse.success(null, 200, "삭제 성공");
+        driveDeleteService.deleteFromTrash(member, driveType, objectNames);
+        return CustomApiResponse.success(null, 200, "휴지통 영구삭제 성공");
+    }
+
+    @Override
+    @GetMapping("/trash")
+    public CustomApiResponse<List<DriveFileResponse>> getTrashList(
+            @AuthMember Member member,
+            @RequestParam DriveType driveType
+    ) {
+        List<DriveFileResponse> filesFromTrash = driveTrashService.getTrashList(member, driveType);
+        return CustomApiResponse.success(filesFromTrash, 200, "휴지통 조회 성공");
     }
 }

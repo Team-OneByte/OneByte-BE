@@ -6,18 +6,16 @@ import lombok.Builder;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Builder
-public record AcademyMemberResponse
-    (
+public record AcademyMemberResponse(
         Long id,
         String name,
         String email
-    ) {
-
-    public static AcademyMemberResponse from(Member member) {
+) {
+    public static AcademyMemberResponse from(final Member member) {
         return AcademyMemberResponse.builder()
-            .id(member.getId())
-            .name(member.getName())
-            .email(member.getEmail())
-            .build();
+                .id(member.getId())
+                .name(member.getName())
+                .email(member.getEmail())
+                .build();
     }
 }

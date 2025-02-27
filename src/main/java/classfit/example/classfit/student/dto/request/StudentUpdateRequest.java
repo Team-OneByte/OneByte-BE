@@ -1,8 +1,8 @@
 package classfit.example.classfit.student.dto.request;
 
-import classfit.example.classfit.common.validation.EnumValue;
-import classfit.example.classfit.common.validation.NotBlankNullable;
-import classfit.example.classfit.student.domain.Gender;
+import classfit.example.classfit.common.annotation.EnumValue;
+import classfit.example.classfit.common.annotation.NotBlankNullable;
+import classfit.example.classfit.student.domain.enumType.GenderType;
 import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -11,14 +11,13 @@ import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDate;
 import java.util.List;
 
-public record StudentUpdateRequest
-    (
+public record StudentUpdateRequest(
         @NotBlankNullable
         @Size(max = 30) String name,
 
         @NotBlankNullable
-        @EnumValue(target = Gender.class, message = "존재하지 않는 성별입니다.", ignoreCase = true)
-        String gender,
+        @EnumValue(target = GenderType.class, message = "존재하지 않는 성별입니다.", ignoreCase = true)
+        String genderType,
 
         @DateTimeFormat(pattern = "yyyy-MM-dd")
         @Past LocalDate birth,
@@ -41,6 +40,5 @@ public record StudentUpdateRequest
         String remark,
 
         String counselingLog
-    ) {
-
+) {
 }

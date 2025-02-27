@@ -1,6 +1,7 @@
 package classfit.example.classfit.mail.handler;
 
 import classfit.example.classfit.common.exception.ClassfitException;
+import classfit.example.classfit.common.response.ErrorCode;
 import classfit.example.classfit.mail.dto.request.EmailPurpose;
 import classfit.example.classfit.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +24,7 @@ public class PasswordResetHandler implements EmailHandler {
     @Override
     public void validate(String email) {
         if (!memberRepository.existsByEmail(email)) {
-            throw new ClassfitException("존재하지 않는 계정입니다.", HttpStatus.NOT_FOUND);
+            throw new ClassfitException(ErrorCode.EMAIL_NOT_FOUND);
         }
     }
 
