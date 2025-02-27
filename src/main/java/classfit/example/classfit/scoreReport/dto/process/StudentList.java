@@ -1,4 +1,4 @@
-package classfit.example.classfit.student.dto;
+package classfit.example.classfit.scoreReport.dto.process;
 
 public record StudentList(
         Long reportId,
@@ -7,4 +7,5 @@ public record StudentList(
 
         String name
 ) {
+
 }

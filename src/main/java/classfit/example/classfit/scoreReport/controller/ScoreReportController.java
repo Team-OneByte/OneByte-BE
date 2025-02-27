@@ -67,7 +67,7 @@ public class ScoreReportController implements ScoreReportControllerDocs {
             @RequestParam(name = "memberName", required = false) String memberName
     ) {
         List<FindReportResponse> response = scoreReportService.findReport(member, mainClassId,
-                subClassId, memberName);
+                subClassId);
         return CustomApiResponse.success(response, 200, "학생 리포트 검색 성공");
     }
 

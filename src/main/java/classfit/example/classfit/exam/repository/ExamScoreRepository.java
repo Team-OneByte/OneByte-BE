@@ -1,9 +1,9 @@
 package classfit.example.classfit.exam.repository;
 
-import classfit.example.classfit.scoreReport.domain.ScoreReport;
-import classfit.example.classfit.student.domain.Student;
 import classfit.example.classfit.exam.domain.Exam;
 import classfit.example.classfit.exam.domain.ExamScore;
+import classfit.example.classfit.scoreReport.domain.ScoreReport;
+import classfit.example.classfit.student.domain.Student;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -27,6 +27,7 @@ public interface ExamScoreRepository extends JpaRepository<ExamScore, Long> {
             @Param("exam") Exam exam,
             @Param("studentId") Long studentId);
 
+    List<ExamScore> findByExam(Exam exam);
 
     Optional<ExamScore> findByStudentAndExamId(Student student, Long examId);
 
@@ -46,12 +47,14 @@ public interface ExamScoreRepository extends JpaRepository<ExamScore, Long> {
             "JOIN mc.academy a " +
             "WHERE a.id = :academyId " +
             "AND ses.exam = :exam")
-    List<ExamScore> findAllByAcademyIdAndExam(@Param("academyId") Long academyId,@Param("exam") Exam exam);
+    List<ExamScore> findAllByAcademyIdAndExam(@Param("academyId") Long academyId,
+            @Param("exam") Exam exam);
 
 
     List<ExamScore> findByScoreReport(ScoreReport scoreReport);
 
     long countByExamAndScore(Exam exam, int score);
+
     void deleteByScoreReport_Id(Long scoreReportId);
 
     @Modifying

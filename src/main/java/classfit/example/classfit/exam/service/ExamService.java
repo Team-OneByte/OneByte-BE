@@ -82,8 +82,8 @@ public class ExamService {
                 .orElseThrow(() -> new ClassfitException(ErrorCode.EXAM_NOT_FOUND));
         validateAcademy(findMember, findMember.getAcademy().getId());
 
-        List<Student> students = examScoreRepository.findStudentsByExamIdAndAcademyId(
-                findMember.getAcademy().getId(), findExam.getId());
+        List<Student> students = enrollmentRepository.findStudentsByAcademyIdAndSubClass(
+                findMember.getAcademy().getId(), findExam.getSubClass().getId());
 
         return FindExamStudentResponse.from(students);
     }
@@ -136,8 +136,6 @@ public class ExamService {
                 .mapToInt(ExamScore::getScore)
                 .average()
                 .orElse((perfectScore + lowestScore) / 2.0);
-
-        String formattedAverage = String.format("%.1f", average);
 
         findExam.updateScores(lowestScore, perfectScore, average);
         examRepository.save(findExam);

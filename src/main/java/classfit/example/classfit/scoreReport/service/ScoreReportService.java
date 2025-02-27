@@ -20,6 +20,7 @@ import classfit.example.classfit.exam.repository.ExamScoreRepository;
 import classfit.example.classfit.member.domain.Member;
 import classfit.example.classfit.scoreReport.domain.ScoreReport;
 import classfit.example.classfit.scoreReport.dto.process.ReportExam;
+import classfit.example.classfit.scoreReport.dto.process.StudentList;
 import classfit.example.classfit.scoreReport.dto.request.CreateReportRequest;
 import classfit.example.classfit.scoreReport.dto.request.SentStudentOpinionRequest;
 import classfit.example.classfit.scoreReport.dto.response.CreateReportResponse;
@@ -30,7 +31,6 @@ import classfit.example.classfit.scoreReport.dto.response.ShowStudentReportRespo
 import classfit.example.classfit.scoreReport.repository.ScoreReportRepository;
 import classfit.example.classfit.student.domain.Enrollment;
 import classfit.example.classfit.student.domain.Student;
-import classfit.example.classfit.student.dto.StudentList;
 import classfit.example.classfit.student.repository.EnrollmentRepository;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -113,7 +113,8 @@ public class ScoreReportService {
 
     @Transactional(readOnly = true)
     public List<ReportExam> showReportExam(@AuthMember Member member, LocalDate startDate,
-            LocalDate endDate, Long mainClassId, Long subClassId) {
+            LocalDate endDate, Long mainClassId,
+            Long subClassId) {
         validateAcademy(member, member.getAcademy().getId());
         List<ReportExam> reports = scoreReportRepository.findExamsByCreatedAtBetween(startDate,
                 endDate, mainClassId, subClassId, member.getAcademy().getId());
@@ -132,13 +133,10 @@ public class ScoreReportService {
 
     @Transactional(readOnly = true)
     public List<FindReportResponse> findReport(@AuthMember Member member, Long mainClassId,
-            Long subClassId, String memberName) {
+            Long subClassId) {
         MainClass mainClass = mainClassRepository.findById(mainClassId)
                 .orElseThrow(
                         () -> new ClassfitException(ErrorCode.MAIN_CLASS_NOT_FOUND));
-        SubClass subClass = subClassRepository.findById(subClassId)
-                .orElseThrow(
-                        () -> new ClassfitException(ErrorCode.SUB_CLASS_NOT_FOUND));
         validateAcademy(member, mainClass.getAcademy().getId());
         List<ScoreReport> studentReports = scoreReportRepository.findAllReportsByMainClassAndSubClass(
                 mainClassId, subClassId, member.getAcademy().getId());
@@ -188,12 +186,6 @@ public class ScoreReportService {
     public List<FindClassStudent> findClassStudents(@AuthMember Member member, Long mainClassId,
             Long subClassId) {
 
-        MainClass mainClass = mainClassRepository.findById(mainClassId)
-                .orElseThrow(
-                        () -> new ClassfitException(ErrorCode.MAIN_CLASS_NOT_FOUND));
-        SubClass subClass = subClassRepository.findById(subClassId)
-                .orElseThrow(
-                        () -> new ClassfitException(ErrorCode.SUB_CLASS_NOT_FOUND));
         validateAcademy(member, member.getAcademy().getId());
 
         List<FindClassStudent> classStudents = enrollmentRepository.findStudentIdsByMainClassIdAndSubClassId(
