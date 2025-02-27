@@ -83,7 +83,7 @@ public class ExamService {
         validateAcademy(findMember, findMember.getAcademy().getId());
 
         List<Student> students = enrollmentRepository.findStudentsByAcademyIdAndSubClass(
-                findMember.getAcademy().getId(), findExam.getSubClass());
+                findMember.getAcademy().getId(), findExam.getSubClass().getId());
 
         return FindExamStudentResponse.from(students);
     }

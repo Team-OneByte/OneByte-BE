@@ -237,7 +237,7 @@ public class ExamServiceTest {
         lenient().when(academy1.getId()).thenReturn(1L);
         lenient().when(examRepository.findById(findExam.getId())).thenReturn(Optional.of(findExam));
         lenient().when(enrollmentRepository.findStudentsByAcademyIdAndSubClass(academy1.getId(),
-                        findSubClass))
+                        findSubClass.getId()))
                 .thenReturn(students);
 
         List<FindExamStudentResponse> response = examService.findExamClassStudent(findMember,
@@ -250,7 +250,7 @@ public class ExamServiceTest {
 
         verify(examRepository, times(1)).findById(findExam.getId());
         verify(enrollmentRepository, times(1)).findStudentsByAcademyIdAndSubClass(academy1.getId(),
-                findSubClass);
+                findSubClass.getId());
     }
 
     @Test
