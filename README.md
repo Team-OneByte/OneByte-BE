@@ -141,6 +141,7 @@
 **2024.10.10 ~ 2025.01.18**
 
 * [release - v1.0.0](https://github.com/ITA-OneByte/OneByte-BE/releases/tag/v1.0.0)
+* [release - v1.1.0](https://github.com/Team-OneByte/OneByte-BE/releases/tag/v1.1.0)
 
 ---
 
